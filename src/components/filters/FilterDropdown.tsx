@@ -9,6 +9,7 @@ interface FilterDropdownProps {
   value?: string;
   className?: string;
   onClick?: () => void;
+  isOpen?: boolean;
 }
 
 const FilterDropdown: React.FC<FilterDropdownProps> = ({ 
@@ -16,7 +17,8 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
   placeholder = 'Select', 
   value,
   className,
-  onClick
+  onClick,
+  isOpen
 }) => {
   return (
     <div className={cn("relative", className)}>
@@ -27,7 +29,7 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
         className="flex items-center justify-between w-full px-3 py-2 text-sm bg-gray-100 border border-gray-200 rounded-md hover:bg-gray-200 transition-colors duration-200"
       >
         <span className="truncate">{value || placeholder}</span>
-        <ChevronDown className="h-4 w-4 text-gray-500" />
+        <ChevronDown className={cn("h-4 w-4 text-gray-500 transition-transform", isOpen && "rotate-180")} />
       </button>
     </div>
   );

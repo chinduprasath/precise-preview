@@ -7,13 +7,14 @@ import HashtagInput from '@/components/filters/HashtagInput';
 import InfluencerCard from '@/components/influencers/InfluencerCard';
 import ProfileStats from '@/components/profile/ProfileStats';
 import ProfileContent from '@/components/profile/ProfileContent';
-import { Share2 } from 'lucide-react';
+import { Share2, ChevronDown, ChevronUp } from 'lucide-react';
 import { Avatar } from '@/components/ui/avatar';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 interface Influencer {
   id: string;
@@ -31,6 +32,8 @@ const Index = () => {
   const [hashtags, setHashtags] = useState<string[]>([]);
   const [engagementRange, setEngagementRange] = useState<[number, number]>([2, 10]);
   const [followerRange, setFollowerRange] = useState<[number, number]>([0, 52.5]);
+  const [isBasicFilterOpen, setIsBasicFilterOpen] = useState(true);
+  const [isAudienceDemographicsOpen, setIsAudienceDemographicsOpen] = useState(true);
 
   const influencers: Influencer[] = [
     {
@@ -116,155 +119,187 @@ const Index = () => {
             <div className="p-6 animate-fade-in">
               <Card className="shadow-sm border-gray-200 mb-6">
                 <CardContent className="p-6">
-                  <div className="mb-8">
-                    <h2 className="text-lg font-medium mb-4">Basic Filter</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-x-6 gap-y-4">
-                      <div className="col-span-1">
-                        <h3 className="text-sm font-medium mb-2">Location</h3>
-                        <div className="flex flex-col space-y-2">
-                          <FilterDropdown
-                            label=""
-                            placeholder="Select Country"
-                            className="w-full"
-                          />
-                          <FilterDropdown
-                            label=""
-                            placeholder="Select State"
-                            className="w-full"
-                          />
-                          <FilterDropdown
-                            label=""
-                            placeholder="Select City"
-                            className="w-full"
-                          />
-                        </div>
-                      </div>
-                      <div className="col-span-1">
-                        <h3 className="text-sm font-medium mb-2">Engagement Rate</h3>
-                        <RangeSlider
-                          label=""
-                          min={0}
-                          max={20}
-                          value={engagementRange}
-                          onChange={setEngagementRange}
-                          formatValue={(v) => `${v}%`}
-                        />
-                      </div>
-                      <div className="col-span-1">
-                        <h3 className="text-sm font-medium mb-2">Content Type</h3>
-                        <FilterDropdown
-                          label=""
-                          placeholder="Select Type"
-                          className="w-full"
-                        />
-                      </div>
-                      <div className="col-span-1">
-                        <h3 className="text-sm font-medium mb-2">Hashtags</h3>
-                        <HashtagInput
-                          label=""
-                          tags={hashtags}
-                          onChange={setHashtags}
-                          placeholder="Enter Hashtags"
-                        />
-                      </div>
+                  <Collapsible
+                    open={isBasicFilterOpen}
+                    onOpenChange={setIsBasicFilterOpen}
+                    className="mb-6"
+                  >
+                    <div className="flex justify-between items-center mb-4">
+                      <h2 className="text-lg font-medium">Basic Filter</h2>
+                      <CollapsibleTrigger asChild>
+                        <Button variant="ghost" size="sm" className="p-0 h-8 w-8">
+                          {isBasicFilterOpen ? 
+                            <ChevronUp className="h-5 w-5" /> : 
+                            <ChevronDown className="h-5 w-5" />
+                          }
+                        </Button>
+                      </CollapsibleTrigger>
                     </div>
-                  </div>
-                  <div>
-                    <h2 className="text-lg font-medium mb-4">Audience Demographics</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-12 gap-x-6 gap-y-4">
-                      <div className="md:col-span-3">
-                        <h3 className="text-sm font-medium mb-2">Niche</h3>
-                        <FilterDropdown
-                          label=""
-                          placeholder="Select Niche"
-                          className="w-full"
-                        />
-                      </div>
-                      <div className="md:col-span-3">
-                        <h3 className="text-sm font-medium mb-2">Follower Count</h3>
-                        <RangeSlider
-                          label=""
-                          min={0}
-                          max={100}
-                          step={0.5}
-                          value={followerRange}
-                          onChange={setFollowerRange}
-                          formatValue={(v) => v === 0 ? '0' : v === 100 ? '100M+' : `${v}K`}
-                        />
-                      </div>
-                      <div className="md:col-span-3">
-                        <h3 className="text-sm font-medium mb-2">Platform</h3>
-                        <FilterDropdown
-                          label=""
-                          placeholder="Select Platform"
-                          className="w-full"
-                        />
-                      </div>
-                      <div className="md:col-span-3">
-                        <h3 className="text-sm font-medium mb-2">Price Range</h3>
-                        <div className="flex space-x-2">
-                          <div className="w-1/2">
-                            <Input
-                              type="text"
-                              placeholder="Min"
-                              className="bg-gray-100"
+                    <CollapsibleContent>
+                      <div className="grid grid-cols-1 md:grid-cols-4 gap-x-6 gap-y-4">
+                        <div className="col-span-1">
+                          <h3 className="text-sm font-medium mb-2">Location</h3>
+                          <div className="flex flex-col space-y-2">
+                            <FilterDropdown
+                              label=""
+                              placeholder="Select Country"
+                              className="w-full"
                             />
-                          </div>
-                          <div className="w-1/2">
-                            <Input
-                              type="text"
-                              placeholder="Max"
-                              className="bg-gray-100"
+                            <FilterDropdown
+                              label=""
+                              placeholder="Select State"
+                              className="w-full"
+                            />
+                            <FilterDropdown
+                              label=""
+                              placeholder="Select City"
+                              className="w-full"
                             />
                           </div>
                         </div>
-                      </div>
-                      <div className="md:col-span-3">
-                        <h3 className="text-sm font-medium mb-2">Age</h3>
-                        <FilterDropdown
-                          label=""
-                          placeholder="Select Age"
-                          className="w-full"
-                        />
-                      </div>
-                      <div className="md:col-span-3">
-                        <h3 className="text-sm font-medium mb-2">Gender</h3>
-                        <FilterDropdown
-                          label=""
-                          placeholder="Select Gender"
-                          className="w-full"
-                        />
-                      </div>
-                      <div className="md:col-span-3">
-                        <h3 className="text-sm font-medium mb-2">Interests</h3>
-                        <FilterDropdown
-                          label=""
-                          placeholder="Select Interests"
-                          className="w-full"
-                        />
-                      </div>
-                      <div className="md:col-span-3">
-                        <h3 className="text-sm font-medium mb-2">Location</h3>
-                        <div className="flex flex-col space-y-2">
-                          <FilterDropdown
+                        <div className="col-span-1">
+                          <h3 className="text-sm font-medium mb-2">Engagement Rate</h3>
+                          <RangeSlider
                             label=""
-                            placeholder="Select Country"
-                            className="w-full"
+                            min={0}
+                            max={20}
+                            value={engagementRange}
+                            onChange={setEngagementRange}
+                            formatValue={(v) => `${v}%`}
                           />
+                        </div>
+                        <div className="col-span-1">
+                          <h3 className="text-sm font-medium mb-2">Content Type</h3>
                           <FilterDropdown
                             label=""
-                            placeholder="Select State"
-                            className="w-full"
-                          />
-                          <FilterDropdown
-                            label=""
-                            placeholder="Select City"
+                            placeholder="Select Type"
                             className="w-full"
                           />
                         </div>
+                        <div className="col-span-1">
+                          <h3 className="text-sm font-medium mb-2">Hashtags</h3>
+                          <HashtagInput
+                            label=""
+                            tags={hashtags}
+                            onChange={setHashtags}
+                            placeholder="Enter Hashtags"
+                          />
+                        </div>
                       </div>
+                    </CollapsibleContent>
+                  </Collapsible>
+                  
+                  <Collapsible
+                    open={isAudienceDemographicsOpen}
+                    onOpenChange={setIsAudienceDemographicsOpen}
+                  >
+                    <div className="flex justify-between items-center mb-4">
+                      <h2 className="text-lg font-medium">Audience Demographics</h2>
+                      <CollapsibleTrigger asChild>
+                        <Button variant="ghost" size="sm" className="p-0 h-8 w-8">
+                          {isAudienceDemographicsOpen ? 
+                            <ChevronUp className="h-5 w-5" /> : 
+                            <ChevronDown className="h-5 w-5" />
+                          }
+                        </Button>
+                      </CollapsibleTrigger>
                     </div>
-                  </div>
+                    <CollapsibleContent>
+                      <div className="grid grid-cols-1 md:grid-cols-12 gap-x-6 gap-y-4">
+                        <div className="md:col-span-3">
+                          <h3 className="text-sm font-medium mb-2">Niche</h3>
+                          <FilterDropdown
+                            label=""
+                            placeholder="Select Niche"
+                            className="w-full"
+                          />
+                        </div>
+                        <div className="md:col-span-3">
+                          <h3 className="text-sm font-medium mb-2">Follower Count</h3>
+                          <RangeSlider
+                            label=""
+                            min={0}
+                            max={100}
+                            step={0.5}
+                            value={followerRange}
+                            onChange={setFollowerRange}
+                            formatValue={(v) => v === 0 ? '0' : v === 100 ? '100M+' : `${v}K`}
+                          />
+                        </div>
+                        <div className="md:col-span-3">
+                          <h3 className="text-sm font-medium mb-2">Platform</h3>
+                          <FilterDropdown
+                            label=""
+                            placeholder="Select Platform"
+                            className="w-full"
+                          />
+                        </div>
+                        <div className="md:col-span-3">
+                          <h3 className="text-sm font-medium mb-2">Price Range</h3>
+                          <div className="flex space-x-2">
+                            <div className="w-1/2">
+                              <Input
+                                type="text"
+                                placeholder="Min"
+                                className="bg-gray-100"
+                              />
+                            </div>
+                            <div className="w-1/2">
+                              <Input
+                                type="text"
+                                placeholder="Max"
+                                className="bg-gray-100"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div className="md:col-span-3">
+                          <h3 className="text-sm font-medium mb-2">Age</h3>
+                          <FilterDropdown
+                            label=""
+                            placeholder="Select Age"
+                            className="w-full"
+                          />
+                        </div>
+                        <div className="md:col-span-3">
+                          <h3 className="text-sm font-medium mb-2">Gender</h3>
+                          <FilterDropdown
+                            label=""
+                            placeholder="Select Gender"
+                            className="w-full"
+                          />
+                        </div>
+                        <div className="md:col-span-3">
+                          <h3 className="text-sm font-medium mb-2">Interests</h3>
+                          <FilterDropdown
+                            label=""
+                            placeholder="Select Interests"
+                            className="w-full"
+                          />
+                        </div>
+                        <div className="md:col-span-3">
+                          <h3 className="text-sm font-medium mb-2">Location</h3>
+                          <div className="flex flex-col space-y-2">
+                            <FilterDropdown
+                              label=""
+                              placeholder="Select Country"
+                              className="w-full"
+                            />
+                            <FilterDropdown
+                              label=""
+                              placeholder="Select State"
+                              className="w-full"
+                            />
+                            <FilterDropdown
+                              label=""
+                              placeholder="Select City"
+                              className="w-full"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </CollapsibleContent>
+                  </Collapsible>
                 </CardContent>
               </Card>
               
