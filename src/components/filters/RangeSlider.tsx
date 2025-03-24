@@ -23,14 +23,7 @@ const RangeSlider: React.FC<RangeSliderProps> = ({
 }) => {
   return (
     <div className="space-y-2">
-      <div className="flex items-center justify-between">
-        <label className="text-sm font-medium text-gray-700">{label}</label>
-        <div className="flex items-center gap-2 text-sm text-gray-500">
-          <span>{formatValue(value[0])}</span>
-          <span>-</span>
-          <span>{formatValue(value[1])}</span>
-        </div>
-      </div>
+      {label && <label className="text-sm font-medium text-gray-700 block">{label}</label>}
       <Slider
         defaultValue={value}
         max={max}
@@ -39,8 +32,9 @@ const RangeSlider: React.FC<RangeSliderProps> = ({
         onValueChange={(newValue) => onChange(newValue as [number, number])}
         className="py-2"
       />
-      <div className="flex justify-between text-xs text-gray-500">
+      <div className="flex justify-between text-xs text-gray-500 mt-1">
         <span>{formatValue(min)}</span>
+        <span className="flex-1 text-center">{formatValue(value[0])} - {formatValue(value[1])}</span>
         <span>{formatValue(max)}</span>
       </div>
     </div>

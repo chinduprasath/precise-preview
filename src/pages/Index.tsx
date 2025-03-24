@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
@@ -14,6 +13,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 interface Influencer {
   id: string;
@@ -32,7 +32,6 @@ const Index = () => {
   const [engagementRange, setEngagementRange] = useState<[number, number]>([2, 10]);
   const [followerRange, setFollowerRange] = useState<[number, number]>([0, 52.5]);
 
-  // Mock data for influencers
   const influencers: Influencer[] = [
     {
       id: '1',
@@ -115,32 +114,32 @@ const Index = () => {
         <div className="flex-1 flex overflow-hidden">
           <div className="flex-1 flex flex-col overflow-hidden">
             <div className="p-6 animate-fade-in">
-              <Card className="shadow-sm border-gray-200">
+              <Card className="shadow-sm border-gray-200 mb-6">
                 <CardContent className="p-6">
-                  <div>
+                  <div className="mb-8">
                     <h2 className="text-lg font-medium mb-4">Basic Filter</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                      <div>
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-x-6 gap-y-4">
+                      <div className="col-span-1">
                         <h3 className="text-sm font-medium mb-2">Location</h3>
-                        <div className="flex space-x-2">
+                        <div className="flex flex-col space-y-2">
                           <FilterDropdown
                             label=""
                             placeholder="Select Country"
-                            className="flex-1"
+                            className="w-full"
                           />
                           <FilterDropdown
                             label=""
                             placeholder="Select State"
-                            className="flex-1"
+                            className="w-full"
                           />
                           <FilterDropdown
                             label=""
                             placeholder="Select City"
-                            className="flex-1"
+                            className="w-full"
                           />
                         </div>
                       </div>
-                      <div>
+                      <div className="col-span-1">
                         <h3 className="text-sm font-medium mb-2">Engagement Rate</h3>
                         <RangeSlider
                           label=""
@@ -151,14 +150,15 @@ const Index = () => {
                           formatValue={(v) => `${v}%`}
                         />
                       </div>
-                      <div>
+                      <div className="col-span-1">
                         <h3 className="text-sm font-medium mb-2">Content Type</h3>
                         <FilterDropdown
                           label=""
                           placeholder="Select Type"
+                          className="w-full"
                         />
                       </div>
-                      <div>
+                      <div className="col-span-1">
                         <h3 className="text-sm font-medium mb-2">Hashtags</h3>
                         <HashtagInput
                           label=""
@@ -169,95 +169,106 @@ const Index = () => {
                       </div>
                     </div>
                   </div>
-                  
-                  <Separator className="my-6" />
-                  
                   <div>
                     <h2 className="text-lg font-medium mb-4">Audience Demographics</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                      <div>
-                        <div className="grid grid-cols-3 gap-2">
-                          <FilterDropdown
-                            label="Niche"
-                            placeholder="Select Niche"
-                            className="col-span-1"
-                          />
-                          <div className="col-span-2">
-                            <h3 className="text-sm font-medium mb-2">Follower Count</h3>
-                            <RangeSlider
-                              label=""
-                              min={0}
-                              max={100}
-                              step={0.5}
-                              value={followerRange}
-                              onChange={setFollowerRange}
-                              formatValue={(v) => v === 0 ? '0' : v === 100 ? '100M+' : `${v}K`}
-                            />
-                          </div>
-                        </div>
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-x-6 gap-y-4">
+                      <div className="md:col-span-3">
+                        <h3 className="text-sm font-medium mb-2">Niche</h3>
+                        <FilterDropdown
+                          label=""
+                          placeholder="Select Niche"
+                          className="w-full"
+                        />
                       </div>
-                      <div>
+                      <div className="md:col-span-3">
+                        <h3 className="text-sm font-medium mb-2">Follower Count</h3>
+                        <RangeSlider
+                          label=""
+                          min={0}
+                          max={100}
+                          step={0.5}
+                          value={followerRange}
+                          onChange={setFollowerRange}
+                          formatValue={(v) => v === 0 ? '0' : v === 100 ? '100M+' : `${v}K`}
+                        />
+                      </div>
+                      <div className="md:col-span-3">
                         <h3 className="text-sm font-medium mb-2">Platform</h3>
                         <FilterDropdown
                           label=""
                           placeholder="Select Platform"
+                          className="w-full"
                         />
                       </div>
-                      <div>
+                      <div className="md:col-span-3">
                         <h3 className="text-sm font-medium mb-2">Price Range</h3>
                         <div className="flex space-x-2">
-                          <FilterDropdown
-                            label=""
-                            placeholder="Min"
-                            className="flex-1"
-                          />
-                          <FilterDropdown
-                            label=""
-                            placeholder="Max"
-                            className="flex-1"
-                          />
+                          <div className="w-1/2">
+                            <Input
+                              type="text"
+                              placeholder="Min"
+                              className="bg-gray-100"
+                            />
+                          </div>
+                          <div className="w-1/2">
+                            <Input
+                              type="text"
+                              placeholder="Max"
+                              className="bg-gray-100"
+                            />
+                          </div>
                         </div>
                       </div>
-                      <div>
+                      <div className="md:col-span-3">
+                        <h3 className="text-sm font-medium mb-2">Age</h3>
+                        <FilterDropdown
+                          label=""
+                          placeholder="Select Age"
+                          className="w-full"
+                        />
+                      </div>
+                      <div className="md:col-span-3">
+                        <h3 className="text-sm font-medium mb-2">Gender</h3>
+                        <FilterDropdown
+                          label=""
+                          placeholder="Select Gender"
+                          className="w-full"
+                        />
+                      </div>
+                      <div className="md:col-span-3">
+                        <h3 className="text-sm font-medium mb-2">Interests</h3>
+                        <FilterDropdown
+                          label=""
+                          placeholder="Select Interests"
+                          className="w-full"
+                        />
+                      </div>
+                      <div className="md:col-span-3">
                         <h3 className="text-sm font-medium mb-2">Location</h3>
-                        <div className="flex space-x-2">
+                        <div className="flex flex-col space-y-2">
                           <FilterDropdown
                             label=""
                             placeholder="Select Country"
-                            className="flex-1"
+                            className="w-full"
                           />
                           <FilterDropdown
                             label=""
                             placeholder="Select State"
-                            className="flex-1"
+                            className="w-full"
                           />
                           <FilterDropdown
                             label=""
                             placeholder="Select City"
-                            className="flex-1"
+                            className="w-full"
                           />
                         </div>
                       </div>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                      <FilterDropdown
-                        label="Age"
-                        placeholder="Select Age"
-                      />
-                      <FilterDropdown
-                        label="Gender"
-                        placeholder="Select Gender"
-                      />
-                      <FilterDropdown
-                        label="Interests"
-                        placeholder="Select Interests"
-                      />
                     </div>
                   </div>
                 </CardContent>
               </Card>
               
-              <div className="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-1">
                   <Card className="shadow-sm border-gray-200">
                     <CardContent className="p-4">
