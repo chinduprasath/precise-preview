@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
@@ -7,7 +8,7 @@ import HashtagInput from '@/components/filters/HashtagInput';
 import InfluencerCard from '@/components/influencers/InfluencerCard';
 import ProfileStats from '@/components/profile/ProfileStats';
 import ProfileContent from '@/components/profile/ProfileContent';
-import { Share2, ChevronDown, ChevronUp } from 'lucide-react';
+import { Share2, ChevronDown, ChevronUp, X } from 'lucide-react';
 import { Avatar } from '@/components/ui/avatar';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
@@ -15,6 +16,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Badge } from "@/components/ui/badge";
 
 interface Influencer {
   id: string;
@@ -27,6 +29,12 @@ interface Influencer {
   }>;
 }
 
+interface FilterOption {
+  type: string;
+  label: string;
+  value: string | number | [number, number] | string[];
+}
+
 const Index = () => {
   const [selectedInfluencer, setSelectedInfluencer] = useState<Influencer | null>(null);
   const [hashtags, setHashtags] = useState<string[]>([]);
@@ -34,6 +42,101 @@ const Index = () => {
   const [followerRange, setFollowerRange] = useState<[number, number]>([0, 52.5]);
   const [isBasicFilterOpen, setIsBasicFilterOpen] = useState(true);
   const [isAudienceDemographicsOpen, setIsAudienceDemographicsOpen] = useState(true);
+  
+  // Filter selections
+  const [country, setCountry] = useState<string>("");
+  const [state, setState] = useState<string>("");
+  const [city, setCity] = useState<string>("");
+  const [contentType, setContentType] = useState<string>("");
+  const [niche, setNiche] = useState<string>("");
+  const [platform, setPlatform] = useState<string>("");
+  const [priceMin, setPriceMin] = useState<string>("");
+  const [priceMax, setPriceMax] = useState<string>("");
+  const [age, setAge] = useState<string>("");
+  const [gender, setGender] = useState<string>("");
+  const [interests, setInterests] = useState<string>("");
+
+  const getActiveBasicFilters = (): FilterOption[] => {
+    const filters: FilterOption[] = [];
+    
+    if (country) filters.push({ type: "country", label: "Country", value: country });
+    if (state) filters.push({ type: "state", label: "State", value: state });
+    if (city) filters.push({ type: "city", label: "City", value: city });
+    if (contentType) filters.push({ type: "contentType", label: "Content Type", value: contentType });
+    if (hashtags.length > 0) filters.push({ type: "hashtags", label: "Hashtags", value: hashtags });
+    if (engagementRange[0] !== 0 || engagementRange[1] !== 20) {
+      filters.push({ 
+        type: "engagementRate", 
+        label: "Engagement Rate", 
+        value: `${engagementRange[0]}% - ${engagementRange[1]}%` 
+      });
+    }
+    
+    return filters;
+  };
+
+  const getActiveAudienceFilters = (): FilterOption[] => {
+    const filters: FilterOption[] = [];
+    
+    if (niche) filters.push({ type: "niche", label: "Niche", value: niche });
+    if (platform) filters.push({ type: "platform", label: "Platform", value: platform });
+    if (priceMin || priceMax) {
+      const priceRange = `${priceMin || 0} - ${priceMax || "∞"}`;
+      filters.push({ type: "priceRange", label: "Price Range", value: priceRange });
+    }
+    if (age) filters.push({ type: "age", label: "Age", value: age });
+    if (gender) filters.push({ type: "gender", label: "Gender", value: gender });
+    if (interests) filters.push({ type: "interests", label: "Interests", value: interests });
+    if (followerRange[0] !== 0 || followerRange[1] !== 100) {
+      const formatFollower = (v: number) => v === 0 ? '0' : v === 100 ? '100M+' : `${v}K`;
+      filters.push({ 
+        type: "followerCount", 
+        label: "Followers", 
+        value: `${formatFollower(followerRange[0])} - ${formatFollower(followerRange[1])}` 
+      });
+    }
+    
+    return filters;
+  };
+
+  const clearFilter = (type: string) => {
+    switch (type) {
+      case "country": setCountry(""); break;
+      case "state": setState(""); break;
+      case "city": setCity(""); break;
+      case "contentType": setContentType(""); break;
+      case "hashtags": setHashtags([]); break;
+      case "engagementRate": setEngagementRange([0, 20]); break;
+      case "niche": setNiche(""); break;
+      case "platform": setPlatform(""); break;
+      case "priceRange": setPriceMin(""); setPriceMax(""); break;
+      case "age": setAge(""); break;
+      case "gender": setGender(""); break;
+      case "interests": setInterests(""); break;
+      case "followerCount": setFollowerRange([0, 100]); break;
+      default: break;
+    }
+  };
+
+  const handleInfluencerClick = (influencer: Influencer) => {
+    setSelectedInfluencer(influencer);
+  };
+
+  // Example dummy data for dropdown selections
+  const countryOptions = ["United States", "Canada", "United Kingdom", "Australia"];
+  const stateOptions = ["California", "New York", "Texas", "Florida"];
+  const cityOptions = ["Los Angeles", "New York", "Chicago", "Miami"];
+  const contentTypeOptions = ["Photo", "Video", "Reel", "Story", "Live"];
+  const nicheOptions = ["Fashion", "Beauty", "Fitness", "Travel", "Food", "Tech"];
+  const platformOptions = ["Instagram", "YouTube", "TikTok", "Twitter"];
+  const ageOptions = ["13-17", "18-24", "25-34", "35-44", "45+"];
+  const genderOptions = ["Male", "Female", "Non-binary"];
+  const interestOptions = ["Fashion", "Sports", "Music", "Gaming", "Technology"];
+
+  // Dummy function for dropdown click handling
+  const handleDropdownClick = (option: string, setter: React.Dispatch<React.SetStateAction<string>>) => {
+    setter(option);
+  };
 
   const influencers: Influencer[] = [
     {
@@ -105,9 +208,8 @@ const Index = () => {
     },
   ];
 
-  const handleInfluencerClick = (influencer: Influencer) => {
-    setSelectedInfluencer(influencer);
-  };
+  const activeBasicFilters = getActiveBasicFilters();
+  const activeAudienceFilters = getActiveAudienceFilters();
 
   return (
     <div className="flex h-screen overflow-hidden bg-gray-50">
@@ -125,7 +227,30 @@ const Index = () => {
                     className="mb-6"
                   >
                     <div className="flex justify-between items-center mb-4">
-                      <h2 className="text-lg font-medium">Basic Filter</h2>
+                      <div className="flex items-center gap-2">
+                        <h2 className="text-lg font-medium">Basic Filter</h2>
+                        
+                        {!isBasicFilterOpen && activeBasicFilters.length > 0 && (
+                          <div className="flex flex-wrap gap-2 ml-4">
+                            {activeBasicFilters.map((filter, index) => (
+                              <Badge 
+                                key={`basic-${index}`} 
+                                variant="outline"
+                                className="py-1 px-2 flex items-center gap-1 bg-gray-100"
+                              >
+                                <span className="text-xs">{filter.label}: {Array.isArray(filter.value) ? filter.value.join(', ') : filter.value}</span>
+                                <button
+                                  onClick={() => clearFilter(filter.type)}
+                                  className="text-gray-500 hover:text-gray-800"
+                                >
+                                  <X className="h-3 w-3" />
+                                </button>
+                              </Badge>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                      
                       <CollapsibleTrigger asChild>
                         <Button variant="ghost" size="sm" className="p-0 h-8 w-8">
                           {isBasicFilterOpen ? 
@@ -143,17 +268,33 @@ const Index = () => {
                             <FilterDropdown
                               label=""
                               placeholder="Select Country"
+                              value={country}
                               className="w-full"
+                              onClick={() => {
+                                // In a real app, this would open a dropdown with options
+                                handleDropdownClick(countryOptions[0], setCountry);
+                              }}
+                              onClear={() => setCountry("")}
                             />
                             <FilterDropdown
                               label=""
                               placeholder="Select State"
+                              value={state}
                               className="w-full"
+                              onClick={() => {
+                                handleDropdownClick(stateOptions[0], setState);
+                              }}
+                              onClear={() => setState("")}
                             />
                             <FilterDropdown
                               label=""
                               placeholder="Select City"
+                              value={city}
                               className="w-full"
+                              onClick={() => {
+                                handleDropdownClick(cityOptions[0], setCity);
+                              }}
+                              onClear={() => setCity("")}
                             />
                           </div>
                         </div>
@@ -173,7 +314,12 @@ const Index = () => {
                           <FilterDropdown
                             label=""
                             placeholder="Select Type"
+                            value={contentType}
                             className="w-full"
+                            onClick={() => {
+                              handleDropdownClick(contentTypeOptions[0], setContentType);
+                            }}
+                            onClear={() => setContentType("")}
                           />
                         </div>
                         <div className="col-span-1">
@@ -194,7 +340,30 @@ const Index = () => {
                     onOpenChange={setIsAudienceDemographicsOpen}
                   >
                     <div className="flex justify-between items-center mb-4">
-                      <h2 className="text-lg font-medium">Audience Demographics</h2>
+                      <div className="flex items-center gap-2">
+                        <h2 className="text-lg font-medium">Audience Demographics</h2>
+                        
+                        {!isAudienceDemographicsOpen && activeAudienceFilters.length > 0 && (
+                          <div className="flex flex-wrap gap-2 ml-4">
+                            {activeAudienceFilters.map((filter, index) => (
+                              <Badge 
+                                key={`audience-${index}`} 
+                                variant="outline"
+                                className="py-1 px-2 flex items-center gap-1 bg-gray-100"
+                              >
+                                <span className="text-xs">{filter.label}: {Array.isArray(filter.value) ? filter.value.join(', ') : filter.value}</span>
+                                <button
+                                  onClick={() => clearFilter(filter.type)}
+                                  className="text-gray-500 hover:text-gray-800"
+                                >
+                                  <X className="h-3 w-3" />
+                                </button>
+                              </Badge>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                      
                       <CollapsibleTrigger asChild>
                         <Button variant="ghost" size="sm" className="p-0 h-8 w-8">
                           {isAudienceDemographicsOpen ? 
@@ -211,7 +380,12 @@ const Index = () => {
                           <FilterDropdown
                             label=""
                             placeholder="Select Niche"
+                            value={niche}
                             className="w-full"
+                            onClick={() => {
+                              handleDropdownClick(nicheOptions[0], setNiche);
+                            }}
+                            onClear={() => setNiche("")}
                           />
                         </div>
                         <div className="md:col-span-3">
@@ -231,7 +405,12 @@ const Index = () => {
                           <FilterDropdown
                             label=""
                             placeholder="Select Platform"
+                            value={platform}
                             className="w-full"
+                            onClick={() => {
+                              handleDropdownClick(platformOptions[0], setPlatform);
+                            }}
+                            onClear={() => setPlatform("")}
                           />
                         </div>
                         <div className="md:col-span-3">
@@ -242,6 +421,8 @@ const Index = () => {
                                 type="text"
                                 placeholder="Min"
                                 className="bg-gray-100"
+                                value={priceMin}
+                                onChange={(e) => setPriceMin(e.target.value)}
                               />
                             </div>
                             <div className="w-1/2">
@@ -249,6 +430,8 @@ const Index = () => {
                                 type="text"
                                 placeholder="Max"
                                 className="bg-gray-100"
+                                value={priceMax}
+                                onChange={(e) => setPriceMax(e.target.value)}
                               />
                             </div>
                           </div>
@@ -258,7 +441,12 @@ const Index = () => {
                           <FilterDropdown
                             label=""
                             placeholder="Select Age"
+                            value={age}
                             className="w-full"
+                            onClick={() => {
+                              handleDropdownClick(ageOptions[0], setAge);
+                            }}
+                            onClear={() => setAge("")}
                           />
                         </div>
                         <div className="md:col-span-3">
@@ -266,7 +454,12 @@ const Index = () => {
                           <FilterDropdown
                             label=""
                             placeholder="Select Gender"
+                            value={gender}
                             className="w-full"
+                            onClick={() => {
+                              handleDropdownClick(genderOptions[0], setGender);
+                            }}
+                            onClear={() => setGender("")}
                           />
                         </div>
                         <div className="md:col-span-3">
@@ -274,7 +467,12 @@ const Index = () => {
                           <FilterDropdown
                             label=""
                             placeholder="Select Interests"
+                            value={interests}
                             className="w-full"
+                            onClick={() => {
+                              handleDropdownClick(interestOptions[0], setInterests);
+                            }}
+                            onClear={() => setInterests("")}
                           />
                         </div>
                         <div className="md:col-span-3">

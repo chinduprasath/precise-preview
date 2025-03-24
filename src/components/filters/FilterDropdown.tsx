@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface FilterDropdownProps {
@@ -10,6 +10,7 @@ interface FilterDropdownProps {
   className?: string;
   onClick?: () => void;
   isOpen?: boolean;
+  onClear?: () => void;
 }
 
 const FilterDropdown: React.FC<FilterDropdownProps> = ({ 
@@ -18,7 +19,8 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
   value,
   className,
   onClick,
-  isOpen
+  isOpen,
+  onClear
 }) => {
   return (
     <div className={cn("relative", className)}>
@@ -31,6 +33,18 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
         <span className="truncate">{value || placeholder}</span>
         <ChevronDown className={cn("h-4 w-4 text-gray-500 transition-transform", isOpen && "rotate-180")} />
       </button>
+      {value && onClear && (
+        <button 
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onClear();
+          }}
+          className="absolute right-10 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      )}
     </div>
   );
 };
