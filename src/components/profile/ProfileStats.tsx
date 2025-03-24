@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { Instagram, Facebook, Twitter, Youtube } from 'lucide-react';
 
 interface StatProps {
   platform: 'instagram' | 'facebook' | 'twitter' | 'youtube';
@@ -17,24 +18,26 @@ const formatNumber = (num: number): string => {
 };
 
 const PlatformIcon: React.FC<{ platform: string }> = ({ platform }) => {
-  const getIconClass = () => {
+  const getIconDetails = () => {
     switch (platform) {
       case 'instagram':
-        return 'text-social-instagram';
+        return { icon: <Instagram className="h-5 w-5" />, color: 'text-social-instagram' };
       case 'facebook':
-        return 'text-social-facebook';
+        return { icon: <Facebook className="h-5 w-5" />, color: 'text-social-facebook' };
       case 'twitter':
-        return 'text-social-twitter';
+        return { icon: <Twitter className="h-5 w-5" />, color: 'text-social-twitter' };
       case 'youtube':
-        return 'text-social-youtube';
+        return { icon: <Youtube className="h-5 w-5" />, color: 'text-social-youtube' };
       default:
-        return 'text-gray-400';
+        return { icon: null, color: 'text-gray-400' };
     }
   };
 
+  const { icon, color } = getIconDetails();
+
   return (
-    <div className={`flex items-center justify-center w-12 h-12 rounded-full ${getIconClass()} bg-white shadow-sm border`}>
-      <span className="text-2xl font-bold">{platform.charAt(0).toUpperCase()}</span>
+    <div className={`flex items-center justify-center w-12 h-12 rounded-full ${color} bg-white shadow-sm border`}>
+      {icon || <span className="text-2xl font-bold">{platform.charAt(0).toUpperCase()}</span>}
     </div>
   );
 };

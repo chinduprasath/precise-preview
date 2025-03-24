@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Avatar } from '@/components/ui/avatar';
+import { Instagram, Facebook, Twitter, Youtube } from 'lucide-react';
 
 interface SocialStats {
   platform: 'instagram' | 'facebook' | 'twitter' | 'youtube';
@@ -25,24 +26,32 @@ const formatNumber = (num: number): string => {
 };
 
 const SocialIcon: React.FC<{ platform: string; count: number }> = ({ platform, count }) => {
-  const getIconClass = () => {
+  const getIconDetails = () => {
     switch (platform) {
       case 'instagram':
-        return 'bg-social-instagram';
+        return { icon: <Instagram className="h-4 w-4" />, color: 'text-social-instagram' };
       case 'facebook':
-        return 'bg-social-facebook';
+        return { icon: <Facebook className="h-4 w-4" />, color: 'text-social-facebook' };
       case 'twitter':
-        return 'bg-social-twitter';
+        return { icon: <Twitter className="h-4 w-4" />, color: 'text-social-twitter' };
       case 'youtube':
-        return 'bg-social-youtube';
+        return { icon: <Youtube className="h-4 w-4" />, color: 'text-social-youtube' };
       default:
-        return 'bg-gray-400';
+        return { icon: null, color: 'text-gray-400' };
     }
   };
 
+  const { icon, color } = getIconDetails();
+  const bgColor = platform === 'instagram' ? 'bg-social-instagram' : 
+                  platform === 'facebook' ? 'bg-social-facebook' : 
+                  platform === 'twitter' ? 'bg-social-twitter' : 
+                  platform === 'youtube' ? 'bg-social-youtube' : 'bg-gray-400';
+
   return (
-    <div className="flex items-center gap-1">
-      <div className={`w-4 h-4 rounded-full ${getIconClass()}`}></div>
+    <div className="flex items-center gap-1.5">
+      <div className={`flex items-center justify-center w-5 h-5 rounded-full ${color}`}>
+        {icon}
+      </div>
       <span className="text-xs font-medium">{formatNumber(count)}</span>
     </div>
   );
