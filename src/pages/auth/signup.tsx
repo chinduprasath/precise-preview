@@ -65,10 +65,10 @@ const SignUpPage = () => {
       const metadata = {
         first_name: firstName,
         last_name: lastName,
-        name: name, // Keep full name for convenience
-        user_type: userType, // This is crucial for the database trigger
-        ...(userType === 'influencer' && { category }),
-        ...(userType === 'business' && { company }),
+        name,
+        user_type: userType,
+        ...(userType === 'influencer' && category ? { category } : {}),
+        ...(userType === 'business' && company ? { company } : {})
       };
       
       console.log("Signing up with metadata:", metadata);
@@ -78,7 +78,7 @@ const SignUpPage = () => {
         email,
         password,
         options: {
-          data: metadata,
+          data: metadata
         }
       });
       
@@ -96,11 +96,11 @@ const SignUpPage = () => {
         // Show success message
         toast({
           title: "Account created!",
-          description: "Welcome to InfluenceConnect.",
+          description: "Please check your email for a confirmation link, or contact an administrator.",
         });
         
-        // Redirect to the appropriate dashboard
-        navigate(`/dashboard/${userType}`);
+        // Redirect to the signin page
+        navigate('/signin');
       } else {
         throw new Error("User creation failed - no user data returned");
       }
