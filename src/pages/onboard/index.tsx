@@ -59,7 +59,6 @@ interface SocialFollowers {
 
 interface OnboardingUser {
   id: string;
-  user_id?: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -69,6 +68,18 @@ interface OnboardingUser {
   company?: string;
   category?: string;
   socialFollowers?: SocialFollowers;
+}
+
+// Define the shape of user profile data from Supabase
+interface UserProfile {
+  id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  role: string;
+  created_at: string;
+  settings: Record<string, any>;
+  [key: string]: any; // Allow additional properties
 }
 
 const OnboardPage = () => {
@@ -98,42 +109,92 @@ const OnboardPage = () => {
 
   // Check if user is admin
   useEffect(() => {
-    // We'll skip the auth check for now since this is just a test application
-    fetchUsers();
-  }, []);
+    const checkAdminAccess = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (!session) {
+          toast.error('You need to be logged in to access this page');
+          navigate('/signin');
+          return;
+        }
+        
+        // Check if user has admin type in metadata
+        const userType = session.user?.user_metadata?.user_type;
+        
+        if (userType !== 'admin') {
+          toast.error('You do not have access to this page');
+          navigate('/dashboard/business');
+        } else {
+          // Load user data since we've confirmed admin access
+          fetchUsers();
+        }
+      } catch (error) {
+        console.error("Error checking admin access:", error);
+        toast.error('Authentication error');
+        navigate('/signin');
+      }
+    };
+    
+    checkAdminAccess();
+  }, [navigate]);
 
-  // Fetch users data from the onboarding_users table
+  // Fetch users data - Called only after admin access is confirmed
   const fetchUsers = async () => {
     try {
       setLoading(true);
       
-      // Fetch onboarding users from our dedicated table
-      const { data, error } = await supabase
-        .from('onboarding_users')
+      // Fetch user profiles directly from the user_profiles table
+      const { data: profiles, error: profilesError } = await supabase
+        .from('user_profiles')
         .select('*')
         .order('created_at', { ascending: false });
         
-      if (error) {
-        console.error("Error fetching onboarding users:", error);
-        throw error;
+      if (profilesError) {
+        console.error("Error fetching profiles:", profilesError);
+        throw profilesError;
       }
 
-      console.log("Fetched onboarding users:", data);
+      console.log("Fetched profiles:", profiles);
       
-      // Transform data to match component state structure
-      const transformedUsers: OnboardingUser[] = (data || []).map(user => ({
-        id: user.id,
-        user_id: user.user_id,
-        firstName: user.first_name,
-        lastName: user.last_name,
-        email: user.email,
-        userType: user.user_type as UserType,
-        status: user.status as OnboardingStatus,
-        createdAt: user.created_at,
-        company: user.company,
-        category: user.category,
-        socialFollowers: user.social_followers as SocialFollowers
-      }));
+      // Ensure profiles is an array even if it's null/undefined and properly typed
+      const profilesArray = (profiles || []) as UserProfile[];
+      
+      // Map profiles to users without needing admin access to auth users
+      const transformedUsers: OnboardingUser[] = profilesArray.map(profile => {
+        // Safely access settings properties with proper type checking
+        const settings = profile.settings as Record<string, any> || {};
+        
+        // Parse social followers if available
+        const socialFollowers: SocialFollowers = {};
+        if (settings.social_followers) {
+          try {
+            const followers = typeof settings.social_followers === 'string' 
+              ? JSON.parse(settings.social_followers) 
+              : settings.social_followers;
+              
+            if (followers.instagram) socialFollowers.instagram = Number(followers.instagram);
+            if (followers.facebook) socialFollowers.facebook = Number(followers.facebook);
+            if (followers.twitter) socialFollowers.twitter = Number(followers.twitter);
+            if (followers.youtube) socialFollowers.youtube = Number(followers.youtube);
+          } catch (e) {
+            console.error("Error parsing social followers:", e);
+          }
+        }
+        
+        return {
+          id: profile.id,
+          firstName: profile.first_name || '',
+          lastName: profile.last_name || '',
+          email: profile.email || '',
+          userType: (profile.role as UserType) || 'business',
+          status: (settings.onboarding_status as OnboardingStatus) || 'pending',
+          createdAt: profile.created_at,
+          company: settings.company as string,
+          category: settings.category as string,
+          socialFollowers: Object.keys(socialFollowers).length > 0 ? socialFollowers : undefined
+        };
+      });
       
       console.log("Transformed users:", transformedUsers);
       setUsers(transformedUsers);
@@ -177,7 +238,7 @@ const OnboardPage = () => {
     setFilteredUsers(result);
   }, [users, searchQuery, statusFilter, typeFilter]);
 
-  // Handle adding new user - creates entry directly in onboarding_users table
+  // Handle adding new user
   const handleAddUser = async () => {
     try {
       // Validation
@@ -186,60 +247,124 @@ const OnboardPage = () => {
         return;
       }
       
-      // Prepare social followers if provided
-      const socialFollowers: Record<string, number> = {};
+      // Generate a random password
+      const tempPassword = Math.random().toString(36).slice(-10);
       
-      if (newUser.userType === 'influencer') {
-        if (newUser.socialFollowers.instagram) {
-          const instagramCount = parseInt(newUser.socialFollowers.instagram);
-          if (!isNaN(instagramCount)) {
-            socialFollowers.instagram = instagramCount;
-          }
-        }
-        
-        if (newUser.socialFollowers.facebook) {
-          const facebookCount = parseInt(newUser.socialFollowers.facebook);
-          if (!isNaN(facebookCount)) {
-            socialFollowers.facebook = facebookCount;
-          }
-        }
-        
-        if (newUser.socialFollowers.twitter) {
-          const twitterCount = parseInt(newUser.socialFollowers.twitter);
-          if (!isNaN(twitterCount)) {
-            socialFollowers.twitter = twitterCount;
-          }
-        }
-        
-        if (newUser.socialFollowers.youtube) {
-          const youtubeCount = parseInt(newUser.socialFollowers.youtube);
-          if (!isNaN(youtubeCount)) {
-            socialFollowers.youtube = youtubeCount;
-          }
-        }
+      // Prepare user metadata
+      const userMetadata = {
+        first_name: newUser.firstName,
+        last_name: newUser.lastName,
+        user_type: newUser.userType
+      };
+
+      // If business user, add company to metadata
+      if (newUser.userType === 'business' && newUser.company) {
+        userMetadata['company'] = newUser.company;
+      }
+
+      // If influencer user, add category to metadata
+      if (newUser.userType === 'influencer' && newUser.category) {
+        userMetadata['category'] = newUser.category;
       }
       
-      // Create an entry directly in the onboarding_users table without auth
-      const { data, error } = await supabase
-        .from('onboarding_users')
-        .insert({
-          first_name: newUser.firstName,
-          last_name: newUser.lastName,
-          email: newUser.email,
-          user_type: newUser.userType,
-          status: 'pending',
-          company: newUser.userType === 'business' ? newUser.company : null,
-          category: newUser.userType === 'influencer' ? newUser.category : null,
-          social_followers: Object.keys(socialFollowers).length > 0 ? socialFollowers : null
-        })
-        .select();
-          
+      console.log("Creating user with data:", {
+        email: newUser.email,
+        password: "***hidden***",
+        metadata: userMetadata
+      });
+      
+      // Create a new user with the sign up method
+      const { data, error } = await supabase.auth.signUp({
+        email: newUser.email,
+        password: tempPassword,
+        options: {
+          data: userMetadata
+        }
+      });
+      
       if (error) {
-        console.error("Error inserting onboarding user:", error);
+        console.error("Signup error:", error);
         throw error;
       }
       
-      console.log("Added new user:", data);
+      console.log("User created successfully:", data);
+      
+      // Get the new user's ID
+      const userId = data.user?.id;
+      
+      if (userId) {
+        // Prepare settings object for user_profiles table
+        const settings: Record<string, any> = {
+          onboarding_status: 'pending'
+        };
+        
+        // Add company for businesses
+        if (newUser.userType === 'business' && newUser.company) {
+          settings.company = newUser.company;
+        }
+        
+        // Add category and social followers for influencers
+        if (newUser.userType === 'influencer') {
+          if (newUser.category) {
+            settings.category = newUser.category;
+          }
+          
+          // Add social followers if provided
+          const socialFollowers: Record<string, number> = {};
+          
+          if (newUser.socialFollowers.instagram) {
+            const instagramCount = parseInt(newUser.socialFollowers.instagram);
+            if (!isNaN(instagramCount)) {
+              socialFollowers.instagram = instagramCount;
+            }
+          }
+          
+          if (newUser.socialFollowers.facebook) {
+            const facebookCount = parseInt(newUser.socialFollowers.facebook);
+            if (!isNaN(facebookCount)) {
+              socialFollowers.facebook = facebookCount;
+            }
+          }
+          
+          if (newUser.socialFollowers.twitter) {
+            const twitterCount = parseInt(newUser.socialFollowers.twitter);
+            if (!isNaN(twitterCount)) {
+              socialFollowers.twitter = twitterCount;
+            }
+          }
+          
+          if (newUser.socialFollowers.youtube) {
+            const youtubeCount = parseInt(newUser.socialFollowers.youtube);
+            if (!isNaN(youtubeCount)) {
+              socialFollowers.youtube = youtubeCount;
+            }
+          }
+          
+          if (Object.keys(socialFollowers).length > 0) {
+            settings.social_followers = socialFollowers;
+          }
+        }
+        
+        console.log("Updating user profile with settings:", settings);
+        
+        // Update the user profile - either creating or updating, depending on if the trigger already created it
+        const { error: upsertError } = await supabase
+          .from('user_profiles')
+          .upsert({
+            id: userId,
+            first_name: newUser.firstName,
+            last_name: newUser.lastName,
+            email: newUser.email,
+            role: newUser.userType,
+            settings: settings
+          });
+          
+        if (upsertError) {
+          console.error("Error upserting user profile:", upsertError);
+          toast.error("User created but profile settings couldn't be updated");
+        }
+      }
+      
       toast.success('User added successfully');
       setNewUserOpen(false);
       
@@ -268,14 +393,32 @@ const OnboardPage = () => {
     }
   };
 
-  // Handle status update in the onboarding_users table
+  // Handle status update
   const updateUserStatus = async (userId: string, status: OnboardingStatus) => {
     try {
-      console.log("Updating user status:", { userId, status });
+      // First, get the existing settings object to preserve other settings
+      const { data: existingProfile, error: fetchError } = await supabase
+        .from('user_profiles')
+        .select('settings')
+        .eq('id', userId)
+        .single();
       
+      if (fetchError) throw fetchError;
+      
+      // Merge the existing settings with the new onboarding status
+      const updatedSettings = {
+        ...(existingProfile?.settings as Record<string, any> || {}),
+        onboarding_status: status
+      };
+      
+      console.log("Updating user status:", { userId, status, updatedSettings });
+      
+      // Update the settings object with the merged data
       const { error } = await supabase
-        .from('onboarding_users')
-        .update({ status })
+        .from('user_profiles')
+        .update({
+          settings: updatedSettings
+        })
         .eq('id', userId);
         
       if (error) throw error;
@@ -291,27 +434,6 @@ const OnboardPage = () => {
     } catch (error) {
       console.error('Error updating user status:', error);
       toast.error('Failed to update user status');
-    }
-  };
-
-  // Handle user deletion
-  const deleteUser = async (userId: string) => {
-    try {
-      console.log("Deleting user:", userId);
-      
-      const { error } = await supabase
-        .from('onboarding_users')
-        .delete()
-        .eq('id', userId);
-        
-      if (error) throw error;
-      
-      // Update local state
-      setUsers(prevUsers => prevUsers.filter(user => user.id !== userId));
-      toast.success('User deleted successfully');
-    } catch (error) {
-      console.error('Error deleting user:', error);
-      toast.error('Failed to delete user');
     }
   };
 
@@ -348,7 +470,7 @@ const OnboardPage = () => {
               <DialogHeader>
                 <DialogTitle>Add New User</DialogTitle>
                 <DialogDescription>
-                  Create a new user in the onboarding system.
+                  Create a new user account in the system.
                 </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
@@ -657,56 +779,47 @@ const OnboardPage = () => {
                           {renderStatusBadge(user.status)}
                         </TableCell>
                         <TableCell>
-                          <div className="flex gap-2">
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button variant="outline" size="sm">
-                                  Update Status
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                <DropdownMenuItem 
-                                  onClick={() => updateUserStatus(user.id, 'approved')}
-                                  disabled={user.status === 'approved'}
-                                  className="text-green-600 hover:bg-green-50"
-                                >
-                                  <Check className="mr-2 h-4 w-4" />
-                                  Approve
-                                </DropdownMenuItem>
-                                <DropdownMenuItem 
-                                  onClick={() => updateUserStatus(user.id, 'rejected')}
-                                  disabled={user.status === 'rejected'}
-                                  className="text-red-600 hover:bg-red-50"
-                                >
-                                  <Check className="mr-2 h-4 w-4" />
-                                  Reject
-                                </DropdownMenuItem>
-                                <DropdownMenuItem 
-                                  onClick={() => updateUserStatus(user.id, 'pending')}
-                                  disabled={user.status === 'pending'}
-                                  className="text-yellow-600 hover:bg-yellow-50"
-                                >
-                                  <Check className="mr-2 h-4 w-4" />
-                                  Mark as Pending
-                                </DropdownMenuItem>
-                                <DropdownMenuItem 
-                                  onClick={() => updateUserStatus(user.id, 'completed')}
-                                  disabled={user.status === 'completed'}
-                                  className="text-blue-600 hover:bg-blue-50"
-                                >
-                                  <Check className="mr-2 h-4 w-4" />
-                                  Mark as Completed
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                            <Button 
-                              variant="destructive" 
-                              size="sm"
-                              onClick={() => deleteUser(user.id)}
-                            >
-                              Delete
-                            </Button>
-                          </div>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="outline" size="sm">
+                                Update Status
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem 
+                                onClick={() => updateUserStatus(user.id, 'approved')}
+                                disabled={user.status === 'approved'}
+                                className="text-green-600 hover:bg-green-50"
+                              >
+                                <Check className="mr-2 h-4 w-4" />
+                                Approve
+                              </DropdownMenuItem>
+                              <DropdownMenuItem 
+                                onClick={() => updateUserStatus(user.id, 'rejected')}
+                                disabled={user.status === 'rejected'}
+                                className="text-red-600 hover:bg-red-50"
+                              >
+                                <Check className="mr-2 h-4 w-4" />
+                                Reject
+                              </DropdownMenuItem>
+                              <DropdownMenuItem 
+                                onClick={() => updateUserStatus(user.id, 'pending')}
+                                disabled={user.status === 'pending'}
+                                className="text-yellow-600 hover:bg-yellow-50"
+                              >
+                                <Check className="mr-2 h-4 w-4" />
+                                Mark as Pending
+                              </DropdownMenuItem>
+                              <DropdownMenuItem 
+                                onClick={() => updateUserStatus(user.id, 'completed')}
+                                disabled={user.status === 'completed'}
+                                className="text-blue-600 hover:bg-blue-50"
+                              >
+                                <Check className="mr-2 h-4 w-4" />
+                                Mark as Completed
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </TableCell>
                       </TableRow>
                     ))
