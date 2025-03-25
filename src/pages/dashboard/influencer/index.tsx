@@ -1,11 +1,56 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { CheckCircle, XCircle, Bell, BarChart2, Users, DollarSign } from 'lucide-react';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
+import RequestsList from '@/components/dashboard/RequestsList';
+import { InfluencerRequest } from '@/types/request';
+import { useToast } from '@/components/ui/use-toast';
 
 const InfluencerDashboard = () => {
+  const [requests, setRequests] = useState<InfluencerRequest[]>([]);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    // In a real app, we would fetch this from an API
+    // For now, we'll use localStorage
+    const storedRequests = JSON.parse(localStorage.getItem('influencerRequests') || '[]');
+    setRequests(storedRequests);
+  }, []);
+
+  const handleApproveRequest = (requestId: string) => {
+    const updatedRequests = requests.map(request => 
+      request.id === requestId 
+        ? { ...request, status: 'approved', updatedAt: new Date().toISOString() } 
+        : request
+    );
+    
+    setRequests(updatedRequests);
+    localStorage.setItem('influencerRequests', JSON.stringify(updatedRequests));
+    
+    toast({
+      title: "Request Approved",
+      description: "The business has been notified of your approval.",
+    });
+  };
+
+  const handleRejectRequest = (requestId: string) => {
+    const updatedRequests = requests.map(request => 
+      request.id === requestId 
+        ? { ...request, status: 'rejected', updatedAt: new Date().toISOString() } 
+        : request
+    );
+    
+    setRequests(updatedRequests);
+    localStorage.setItem('influencerRequests', JSON.stringify(updatedRequests));
+    
+    toast({
+      title: "Request Rejected",
+      description: "The business has been notified of your decision.",
+    });
+  };
+
   return (
     <div className="flex h-screen bg-gray-50">
       <Sidebar />
@@ -26,7 +71,9 @@ const InfluencerDashboard = () => {
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Pending Requests</p>
-                    <p className="text-2xl font-bold">12</p>
+                    <p className="text-2xl font-bold">
+                      {requests.filter(request => request.status === 'pending').length}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -71,53 +118,15 @@ const InfluencerDashboard = () => {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
               <div className="lg:col-span-2 bg-white rounded-lg shadow-sm p-6">
                 <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-lg font-semibold">Request Queue</h2>
+                  <h2 className="text-lg font-semibold">Service Requests</h2>
                   <Button variant="outline" size="sm">View All</Button>
                 </div>
                 
-                <div className="space-y-4">
-                  {[1, 2, 3].map((i) => (
-                    <div key={i} className="border rounded-lg p-4">
-                      <div className="flex justify-between items-start mb-3">
-                        <div>
-                          <h3 className="font-medium">{
-                            i === 1 ? 'Fashion Brand Promotion' :
-                            i === 2 ? 'Tech Gadget Review' :
-                            'Fitness Product Showcase'
-                          }</h3>
-                          <p className="text-sm text-gray-500">{
-                            i === 1 ? 'FashionCo Inc.' :
-                            i === 2 ? 'TechGadgets LLC' :
-                            'FitLife Products'
-                          }</p>
-                        </div>
-                        <div className="bg-yellow-100 text-yellow-800 px-2 py-1 text-xs rounded-full">
-                          Pending
-                        </div>
-                      </div>
-                      
-                      <p className="text-sm text-gray-600 mb-4">{
-                        i === 1 ? 'Create a lifestyle post featuring our new summer collection. We\'ll provide the products.' :
-                        i === 2 ? 'Review our latest smartphone and share your honest opinion with your followers.' :
-                        'Create a workout video showcasing how to use our resistance bands effectively.'
-                      }</p>
-                      
-                      <div className="flex justify-between items-center">
-                        <div className="text-sm text-gray-500">
-                          Budget: <span className="font-medium">${i * 500}</span>
-                        </div>
-                        <div className="flex space-x-2">
-                          <Button size="sm" variant="outline" className="text-red-500 border-red-200 hover:bg-red-50">
-                            <XCircle className="h-4 w-4 mr-1" /> Decline
-                          </Button>
-                          <Button size="sm" className="bg-green-600 hover:bg-green-700">
-                            <CheckCircle className="h-4 w-4 mr-1" /> Accept
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                <RequestsList 
+                  requests={requests}
+                  onApprove={handleApproveRequest}
+                  onReject={handleRejectRequest}
+                />
               </div>
               
               <div className="bg-white rounded-lg shadow-sm p-6">

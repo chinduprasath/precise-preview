@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { 
   Plus, Search, Users, BarChart2, DollarSign, 
@@ -7,8 +6,53 @@ import {
 } from 'lucide-react';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
+import ServiceRequests from '@/components/dashboard/ServiceRequests';
+import { InfluencerRequest } from '@/types/request';
+import { useToast } from '@/components/ui/use-toast';
+import { useNavigate } from 'react-router-dom';
 
 const BusinessDashboard = () => {
+  const [requests, setRequests] = useState<InfluencerRequest[]>([]);
+  const { toast } = useToast();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const storedRequests = JSON.parse(localStorage.getItem('influencerRequests') || '[]');
+    setRequests(storedRequests);
+  }, []);
+
+  const handlePayRequest = (requestId: string) => {
+    const updatedRequests = requests.map(request => 
+      request.id === requestId 
+        ? { ...request, status: 'paid', updatedAt: new Date().toISOString() } 
+        : request
+    );
+    
+    setRequests(updatedRequests);
+    localStorage.setItem('influencerRequests', JSON.stringify(updatedRequests));
+    
+    toast({
+      title: "Payment Successful",
+      description: "Your payment has been processed successfully. The influencer has been notified.",
+    });
+    
+    setTimeout(() => {
+      const completedRequests = updatedRequests.map(request => 
+        request.id === requestId 
+          ? { ...request, status: 'completed', updatedAt: new Date().toISOString() } 
+          : request
+      );
+      
+      setRequests(completedRequests);
+      localStorage.setItem('influencerRequests', JSON.stringify(completedRequests));
+      
+      toast({
+        title: "Campaign Completed",
+        description: "The influencer has published your content. View analytics in the Reach page.",
+      });
+    }, 2000);
+  };
+
   return (
     <div className="flex h-screen bg-gray-50">
       <Sidebar />
@@ -21,8 +65,8 @@ const BusinessDashboard = () => {
                 <h1 className="text-2xl font-bold">Business Dashboard</h1>
                 <p className="text-gray-500">Manage your influencer marketing campaigns</p>
               </div>
-              <Button className="md:w-auto w-full">
-                <Plus className="mr-2 h-4 w-4" /> Create Campaign
+              <Button className="md:w-auto w-full" onClick={() => navigate('/influencers')}>
+                <Plus className="mr-2 h-4 w-4" /> Find Influencers
               </Button>
             </div>
             
@@ -33,8 +77,10 @@ const BusinessDashboard = () => {
                     <Users className="h-6 w-6 text-primary" />
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500">Influencers Engaged</p>
-                    <p className="text-2xl font-bold">24</p>
+                    <p className="text-sm text-gray-500">Active Requests</p>
+                    <p className="text-2xl font-bold">
+                      {requests.filter(req => req.status === 'pending' || req.status === 'approved').length}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -45,8 +91,10 @@ const BusinessDashboard = () => {
                     <BarChart2 className="h-6 w-6 text-primary" />
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500">Active Campaigns</p>
-                    <p className="text-2xl font-bold">7</p>
+                    <p className="text-sm text-gray-500">Completed Campaigns</p>
+                    <p className="text-2xl font-bold">
+                      {requests.filter(req => req.status === 'completed').length}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -57,8 +105,8 @@ const BusinessDashboard = () => {
                     <TrendingUp className="h-6 w-6 text-primary" />
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500">Audience Reach</p>
-                    <p className="text-2xl font-bold">2.4M</p>
+                    <p className="text-sm text-gray-500">Total Reach</p>
+                    <p className="text-2xl font-bold">1.2M</p>
                   </div>
                 </div>
               </div>
@@ -69,8 +117,12 @@ const BusinessDashboard = () => {
                     <DollarSign className="h-6 w-6 text-primary" />
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500">Campaign Budget</p>
-                    <p className="text-2xl font-bold">$15,750</p>
+                    <p className="text-sm text-gray-500">Total Spent</p>
+                    <p className="text-2xl font-bold">
+                      ${requests
+                        .filter(req => req.status === 'paid' || req.status === 'completed')
+                        .reduce((total, req) => total + req.price, 0)}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -79,80 +131,16 @@ const BusinessDashboard = () => {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
               <div className="lg:col-span-2 bg-white rounded-lg shadow-sm p-6">
                 <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-lg font-semibold">Find Influencers</h2>
-                  <Button variant="outline" size="sm">
-                    <Filter className="mr-2 h-4 w-4" /> Advanced Filters
+                  <h2 className="text-lg font-semibold">Service Requests</h2>
+                  <Button variant="outline" size="sm" onClick={() => navigate('/orders')}>
+                    View All Orders
                   </Button>
                 </div>
                 
-                <div className="relative mb-6">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <input 
-                    type="text" 
-                    placeholder="Search by name, category, or keyword..."
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
-                  />
-                </div>
-                
-                <div className="space-y-4">
-                  {[1, 2, 3].map((i) => (
-                    <div key={i} className="flex items-start border rounded-lg p-4">
-                      <div className="w-14 h-14 rounded-full bg-gray-200 mr-4 overflow-hidden flex-shrink-0">
-                        <img 
-                          src={`https://picsum.photos/id/${i + 20}/100/100`} 
-                          alt="Influencer"
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex flex-col sm:flex-row sm:justify-between mb-2">
-                          <div>
-                            <h3 className="font-medium">{
-                              i === 1 ? 'Alex Johnson' :
-                              i === 2 ? 'Sarah Williams' :
-                              'Michael Chen'
-                            }</h3>
-                            <p className="text-sm text-gray-500">{
-                              i === 1 ? 'Fashion & Lifestyle' :
-                              i === 2 ? 'Beauty & Skincare' :
-                              'Tech & Gaming'
-                            }</p>
-                          </div>
-                          <div className="flex items-center mt-2 sm:mt-0">
-                            <div className="flex items-center mr-4">
-                              <Users className="h-4 w-4 text-gray-400 mr-1" />
-                              <span className="text-sm">{
-                                i === 1 ? '245K' :
-                                i === 2 ? '532K' :
-                                '1.2M'
-                              }</span>
-                            </div>
-                            <div className="text-sm">
-                              <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">
-                                {i === 1 ? '4.2% Eng.' : i === 2 ? '3.8% Eng.' : '5.1% Eng.'}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                        <p className="text-sm text-gray-600 mb-4">{
-                          i === 1 ? 'Fashion blogger sharing the latest trends and style tips.' :
-                          i === 2 ? 'Beauty expert specializing in skincare reviews and tutorials.' :
-                          'Tech reviewer covering the latest gadgets and gaming content.'
-                        }</p>
-                        <div className="flex justify-between items-center">
-                          <div className="text-sm">
-                            <span className="font-medium">Rate:</span> ${i * 500} - ${i * 1000} per post
-                          </div>
-                          <Button size="sm">View Profile</Button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                
-                <div className="text-center mt-4">
-                  <Button variant="outline">View More Influencers</Button>
-                </div>
+                <ServiceRequests 
+                  requests={requests}
+                  onPayRequest={handlePayRequest}
+                />
               </div>
               
               <div className="bg-white rounded-lg shadow-sm p-6">
@@ -164,38 +152,39 @@ const BusinessDashboard = () => {
                 </div>
                 
                 <div className="space-y-4">
-                  {[1, 2, 3, 4].map((i) => (
-                    <div key={i} className="flex items-start">
+                  {requests
+                    .filter(req => req.status === 'paid' || req.status === 'completed')
+                    .slice(0, 4)
+                    .map((request, index) => (
+                    <div key={request.id} className="flex items-start">
                       <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mr-3 flex-shrink-0">
                         <span className="font-medium text-primary">
-                          {['05', '12', '18', '25'][i - 1]}
+                          {new Date(request.updatedAt).getDate()}
                         </span>
                       </div>
                       <div>
-                        <p className="font-medium">{
-                          i === 1 ? 'Summer Collection Launch' :
-                          i === 2 ? 'Product Review Campaign' :
-                          i === 3 ? 'Instagram Story Series' :
-                          'Brand Ambassador Kickoff'
-                        }</p>
+                        <p className="font-medium">
+                          {request.serviceType.charAt(0).toUpperCase() + request.serviceType.slice(1)} with {request.influencerName}
+                        </p>
                         <div className="flex items-center text-xs text-gray-500">
-                          <span>Due: May {['05', '12', '18', '25'][i - 1]}, 2023</span>
-                          <span className={`ml-2 px-2 py-0.5 rounded-full ${
-                            i === 1 ? 'bg-green-100 text-green-800' :
-                            i === 2 ? 'bg-blue-100 text-blue-800' :
-                            i === 3 ? 'bg-yellow-100 text-yellow-800' :
-                            'bg-purple-100 text-purple-800'
-                          }`}>
-                            {i === 1 ? 'Live' : i === 2 ? 'Planning' : i === 3 ? 'Upcoming' : 'Draft'}
+                          <span>Platform: {request.platform.charAt(0).toUpperCase() + request.platform.slice(1)}</span>
+                          <span className="ml-2 px-2 py-0.5 rounded-full bg-green-100 text-green-800">
+                            {request.status.charAt(0).toUpperCase() + request.status.slice(1)}
                           </span>
                         </div>
                       </div>
                     </div>
                   ))}
+                  
+                  {requests.filter(req => req.status === 'paid' || req.status === 'completed').length === 0 && (
+                    <div className="text-center py-6 text-gray-500">
+                      No active campaigns yet
+                    </div>
+                  )}
                 </div>
                 
-                <Button variant="outline" className="w-full mt-6">
-                  View Full Calendar
+                <Button variant="outline" className="w-full mt-6" onClick={() => navigate('/orders')}>
+                  View All Orders
                 </Button>
               </div>
             </div>
