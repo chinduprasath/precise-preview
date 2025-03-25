@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import OnboardUserForm from '@/components/onboard/OnboardUserForm';
 import OnboardUsersList, { OnboardUser } from '@/components/onboard/OnboardUsersList';
 import { supabase } from '@/integrations/supabase/client';
+import { Database } from '@/integrations/supabase/types';
 
 const OnboardPage: React.FC = () => {
   const [users, setUsers] = useState<OnboardUser[]>([]);
@@ -23,7 +24,13 @@ const OnboardPage: React.FC = () => {
       
       if (error) throw error;
       
-      setUsers(data || []);
+      // Convert the data to match the OnboardUser type by ensuring social_followers is Record<string, number>
+      const typedUsers: OnboardUser[] = (data || []).map(user => ({
+        ...user,
+        social_followers: user.social_followers as Record<string, number> || {}
+      }));
+      
+      setUsers(typedUsers);
     } catch (error: any) {
       console.error('Error fetching onboarding users:', error);
       toast({
