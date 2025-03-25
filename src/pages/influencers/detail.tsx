@@ -4,7 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
 import InfluencerProfile from '@/components/influencers/InfluencerProfile';
-import { ServiceType, SocialPlatform, RequestStatus } from '@/types/request';
+import { ServiceType, SocialPlatform } from '@/types/request';
 import { useToast } from '@/components/ui/use-toast';
 
 // Sample data for influencers (in a real app, this would come from API)
@@ -90,7 +90,7 @@ const InfluencerDetailPage = () => {
       id: requestId,
       businessId: 'business-1', // This would be the current user's ID
       businessName: 'Your Business', // This would be the current user's business name
-      status: 'pending' as RequestStatus,
+      status: 'pending',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       ...serviceData

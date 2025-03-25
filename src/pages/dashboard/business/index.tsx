@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { 
@@ -8,7 +7,7 @@ import {
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
 import ServiceRequests from '@/components/dashboard/ServiceRequests';
-import { InfluencerRequest, RequestStatus } from '@/types/request';
+import { InfluencerRequest } from '@/types/request';
 import { useToast } from '@/components/ui/use-toast';
 import { useNavigate } from 'react-router-dom';
 
@@ -18,21 +17,14 @@ const BusinessDashboard = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // In a real app, we would fetch this from an API
-    // For now, we'll use localStorage
     const storedRequests = JSON.parse(localStorage.getItem('influencerRequests') || '[]');
-    // Ensure the status values match the RequestStatus type
-    const typedRequests = storedRequests.map((req: any) => ({
-      ...req,
-      status: req.status as RequestStatus
-    }));
-    setRequests(typedRequests);
+    setRequests(storedRequests);
   }, []);
 
   const handlePayRequest = (requestId: string) => {
     const updatedRequests = requests.map(request => 
       request.id === requestId 
-        ? { ...request, status: 'paid' as RequestStatus, updatedAt: new Date().toISOString() } 
+        ? { ...request, status: 'paid', updatedAt: new Date().toISOString() } 
         : request
     );
     
@@ -47,7 +39,7 @@ const BusinessDashboard = () => {
     setTimeout(() => {
       const completedRequests = updatedRequests.map(request => 
         request.id === requestId 
-          ? { ...request, status: 'completed' as RequestStatus, updatedAt: new Date().toISOString() } 
+          ? { ...request, status: 'completed', updatedAt: new Date().toISOString() } 
           : request
       );
       
