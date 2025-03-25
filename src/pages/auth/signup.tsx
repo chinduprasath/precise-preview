@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -61,7 +62,7 @@ const SignUpPage = () => {
       const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
       
       // Create user metadata with basic information
-      const metadata = {
+      const metadata: Record<string, any> = {
         first_name: firstName,
         last_name: lastName,
         user_type: userType,
@@ -69,11 +70,11 @@ const SignUpPage = () => {
       
       // Add optional fields only if they have values
       if (userType === 'influencer' && category) {
-        metadata['category'] = category;
+        metadata.category = category;
       }
       
       if (userType === 'business' && company) {
-        metadata['company'] = company;
+        metadata.company = company;
       }
       
       console.log("Signing up with metadata:", JSON.stringify(metadata, null, 2));
@@ -84,7 +85,7 @@ const SignUpPage = () => {
         password,
         options: {
           data: metadata,
-          emailRedirectTo: window.location.origin + '/signin'
+          emailRedirectTo: `${window.location.origin}/signin`
         }
       });
       
@@ -95,7 +96,7 @@ const SignUpPage = () => {
       
       console.log("Sign up response:", JSON.stringify(data, null, 2));
       
-      // Show success message regardless of email confirmation
+      // Show success message
       toast({
         title: "Account created!",
         description: "Please check your email to confirm your account before signing in.",
