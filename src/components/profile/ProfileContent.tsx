@@ -162,7 +162,7 @@ const ProfileContent: React.FC = () => {
                   <div className="flex items-center justify-between gap-12">
                     <div className="flex items-center gap-2">
                       <Checkbox id="videos" checked />
-                      <label htmlFor="videos">Videos (>10m)</label>
+                      <label htmlFor="videos">Videos {'>'}10m</label>
                     </div>
                     <span className="font-semibold">499₹</span>
                   </div>
