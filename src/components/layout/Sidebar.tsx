@@ -1,6 +1,22 @@
+
 import React, { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
-import { LayoutDashboard, Users, MessageSquare, BarChart, LayoutGrid, FileSpreadsheet, FileText, ShoppingCart, ChevronLeft, ChevronRight, Settings, ShoppingCart, FileSpreadsheet, User, LogOut, ChevronDown, FileText } from 'lucide-react';
+import { 
+  LayoutDashboard, 
+  Users, 
+  MessageSquare, 
+  BarChart, 
+  LayoutGrid, 
+  FileSpreadsheet, 
+  FileText, 
+  ShoppingCart, 
+  ChevronLeft, 
+  ChevronRight, 
+  Settings, 
+  User, 
+  LogOut, 
+  ChevronDown 
+} from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
