@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 
 interface NavItemProps {
@@ -9,6 +8,7 @@ interface NavItemProps {
   href: string;
   isActive?: boolean;
   isCollapsed?: boolean;
+  onClick?: () => void;
 }
 
 export const NavItem: React.FC<NavItemProps> = ({
@@ -16,11 +16,20 @@ export const NavItem: React.FC<NavItemProps> = ({
   label,
   href,
   isActive,
-  isCollapsed
+  isCollapsed,
+  onClick
 }) => {
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (onClick) {
+      onClick();
+    }
+  };
+
   return (
-    <Link 
-      to={href} 
+    <a 
+      href={href} 
+      onClick={handleClick}
       className={cn(
         "flex items-center gap-3 rounded-lg text-sm font-medium transition-all duration-300 group", 
         isCollapsed ? "justify-center px-2 py-3" : "px-3 py-3", 
@@ -34,7 +43,7 @@ export const NavItem: React.FC<NavItemProps> = ({
         {icon}
       </div>
       {!isCollapsed && <span>{label}</span>}
-    </Link>
+    </a>
   );
 };
 

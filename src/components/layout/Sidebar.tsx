@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useIsMobile } from '@/hooks/use-mobile';
 import NavItem from './sidebar/NavItem';
@@ -11,11 +11,13 @@ import { createNavigationItems, isActiveLink } from './sidebar/navigationUtils';
 
 const Sidebar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const currentPath = location.pathname;
   const [userType, setUserType] = useState<string>('business');
   const [isCollapsed, setIsCollapsed] = useState<boolean>(false);
   const isMobile = useIsMobile();
 
+  // Load the collapsed state only once when component mounts
   useEffect(() => {
     const savedCollapsedState = localStorage.getItem('sidebar:collapsed');
     if (savedCollapsedState) {
@@ -23,16 +25,19 @@ const Sidebar = () => {
     }
   }, []);
 
+  // Update localStorage whenever isCollapsed changes
   useEffect(() => {
     localStorage.setItem('sidebar:collapsed', isCollapsed.toString());
   }, [isCollapsed]);
 
+  // Set collapsed state for mobile devices
   useEffect(() => {
     if (isMobile) {
       setIsCollapsed(true);
     }
   }, [isMobile]);
 
+  // Load user type from localStorage or Supabase session
   useEffect(() => {
     // Check for userType in localStorage first
     const storedUserType = localStorage.getItem('userType');
@@ -55,11 +60,17 @@ const Sidebar = () => {
   const dashboardPath = `/dashboard/${userType}`;
   const profilePath = `/account/${userType}`;
   
-  const navItems = createNavigationItems(userType);
+  // Memoize navigation items to prevent unnecessary re-renders
+  const navItems = React.useMemo(() => createNavigationItems(userType), [userType]);
 
   const toggleSidebar = () => {
     setIsCollapsed(!isCollapsed);
   };
+
+  // Use a stable function for navigation to prevent unnecessary re-renders
+  const handleNavigation = React.useCallback((href: string) => {
+    navigate(href);
+  }, [navigate]);
 
   return (
     <aside className={cn("flex flex-col border-r bg-white transition-all duration-300 h-screen", isCollapsed ? "w-16" : "w-60")}>
@@ -77,7 +88,8 @@ const Sidebar = () => {
             label={item.label} 
             href={item.href} 
             isActive={isActiveLink(currentPath, item.href, dashboardPath)} 
-            isCollapsed={isCollapsed} 
+            isCollapsed={isCollapsed}
+            onClick={() => handleNavigation(item.href)}
           />
         ))}
       </nav>
