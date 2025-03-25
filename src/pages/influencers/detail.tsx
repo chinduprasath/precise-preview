@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Sidebar from '@/components/layout/Sidebar';
@@ -10,9 +9,8 @@ import { Instagram, Facebook, Twitter, Youtube } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
-import { ServiceType, SocialPlatform } from '@/types/request';
+import { ServiceType, SocialPlatform, RequestStatus } from '@/types/request';
 
-// Sample data for influencers
 const sampleInfluencers = [
   {
     id: '1',
@@ -64,7 +62,6 @@ const sampleInfluencers = [
   }
 ];
 
-// Sample pricing data
 const samplePricing = [
   { serviceType: 'post', platform: 'instagram', price: 500 },
   { serviceType: 'story', platform: 'instagram', price: 300 },
@@ -90,7 +87,6 @@ const InfluencerDetailPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   
-  // Find the influencer from our sample data
   const influencer = sampleInfluencers.find(inf => inf.id === id);
   
   if (!influencer) {
@@ -137,7 +133,6 @@ const InfluencerDetailPage = () => {
 
     const price = getPrice(selectedService, selectedPlatform);
     
-    // In a real app, this would send the request to the backend
     console.log('Service request submitted:', {
       influencerId: id,
       influencerName: influencer.name,
@@ -147,14 +142,12 @@ const InfluencerDetailPage = () => {
       price
     });
     
-    // In a real implementation, we'd save this to the database
-    // For now, we'll just show a toast and save to localStorage
     const requestId = `req-${Date.now()}`;
     const newRequest = {
       id: requestId,
-      businessId: 'business-1', // This would be the current user's ID
-      businessName: 'Your Business', // This would be the current user's business name
-      status: 'pending',
+      businessId: 'business-1',
+      businessName: 'Your Business',
+      status: 'pending' as RequestStatus,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       influencerId: id,
@@ -165,7 +158,6 @@ const InfluencerDetailPage = () => {
       price
     };
     
-    // Save to localStorage for demo purposes
     const existingRequests = JSON.parse(localStorage.getItem('influencerRequests') || '[]');
     localStorage.setItem('influencerRequests', JSON.stringify([...existingRequests, newRequest]));
     

@@ -5,7 +5,7 @@ import { CheckCircle, XCircle, Bell, BarChart2, Users, DollarSign } from 'lucide
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
 import RequestsList from '@/components/dashboard/RequestsList';
-import { InfluencerRequest } from '@/types/request';
+import { InfluencerRequest, RequestStatus } from '@/types/request';
 import { useToast } from '@/components/ui/use-toast';
 
 const InfluencerDashboard = () => {
@@ -16,13 +16,20 @@ const InfluencerDashboard = () => {
     // In a real app, we would fetch this from an API
     // For now, we'll use localStorage
     const storedRequests = JSON.parse(localStorage.getItem('influencerRequests') || '[]');
-    setRequests(storedRequests);
+    
+    // Type cast the status from string to RequestStatus
+    const typedRequests = storedRequests.map((req: any) => ({
+      ...req,
+      status: req.status as RequestStatus
+    }));
+    
+    setRequests(typedRequests);
   }, []);
 
   const handleApproveRequest = (requestId: string) => {
     const updatedRequests = requests.map(request => 
       request.id === requestId 
-        ? { ...request, status: 'approved', updatedAt: new Date().toISOString() } 
+        ? { ...request, status: 'approved' as RequestStatus, updatedAt: new Date().toISOString() } 
         : request
     );
     
@@ -38,7 +45,7 @@ const InfluencerDashboard = () => {
   const handleRejectRequest = (requestId: string) => {
     const updatedRequests = requests.map(request => 
       request.id === requestId 
-        ? { ...request, status: 'rejected', updatedAt: new Date().toISOString() } 
+        ? { ...request, status: 'rejected' as RequestStatus, updatedAt: new Date().toISOString() } 
         : request
     );
     
