@@ -94,7 +94,7 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
                 {service.name}
               </label>
             </div>
-            <div className="text-sm font-semibold">{service.price}</div>
+            <div className="text-sm font-semibold">{service.price.replace('$', '₹')}</div>
           </div>
         ))}
       </div>
@@ -119,7 +119,7 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
                   <span className="text-xs text-gray-500">{pkg.platforms}</span>
                 </div>
               </div>
-              <div className="text-sm font-semibold">{pkg.price}</div>
+              <div className="text-sm font-semibold">{pkg.price.replace('$', '₹')}</div>
             </div>
           ))}
         </div>

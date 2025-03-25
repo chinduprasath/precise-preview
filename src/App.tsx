@@ -23,6 +23,7 @@ import BusinessDashboard from "./pages/dashboard/business";
 import BusinessProfile from "./pages/account/business";
 import InfluencerProfile from "./pages/account/influencer";
 import SettingsPage from "./pages/account/settings";
+import NotificationsPage from "./pages/notifications";
 import NotFound from "./pages/NotFound";
 import { BillingPage } from "./pages/billing";
 
@@ -47,6 +48,7 @@ function App() {
             <Route path="/orders" element={<OrdersPage />} />
             <Route path="/requests" element={<RequestsPage />} />
             <Route path="/reports" element={<ReportsPage />} />
+            <Route path="/notifications" element={<NotificationsPage />} />
             
             {/* New Landing and Auth Pages */}
             <Route path="/" element={<LandingPage />} />

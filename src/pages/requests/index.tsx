@@ -7,12 +7,26 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { InfluencerRequest, RequestStatus } from '@/types/request';
 import { useToast } from '@/components/ui/use-toast';
+import { useNavigate } from 'react-router-dom';
 
 const RequestsPage = () => {
   const [requests, setRequests] = useState<InfluencerRequest[]>([]);
   const { toast } = useToast();
+  const navigate = useNavigate();
   
   useEffect(() => {
+    // Check if user is an influencer
+    const userType = localStorage.getItem('userType');
+    if (userType !== 'influencer') {
+      toast({
+        title: "Access Denied",
+        description: "Only influencers can access the requests page.",
+        variant: "destructive",
+      });
+      navigate('/dashboard/business');
+      return;
+    }
+    
     // In a real app, this would be an API call to get the requests
     // For now, we'll use mock data
     const mockRequests: InfluencerRequest[] = [
@@ -132,7 +146,7 @@ const RequestsPage = () => {
     
     setRequests(mockRequests);
     // In a real app we could store this in localStorage like the other components do
-  }, []);
+  }, [navigate, toast]);
 
   const handleAcceptRequest = (requestId: string) => {
     const updatedRequests = requests.map(request => 
@@ -224,7 +238,7 @@ const RequestsPage = () => {
                         <div className="text-blue-600">Verified</div>
                         
                         <div>Amount:</div>
-                        <div className="text-blue-600">${request.price}</div>
+                        <div className="text-blue-600">₹{request.price}</div>
                       </div>
                     </div>
                     

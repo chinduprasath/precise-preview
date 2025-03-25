@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { 
@@ -104,19 +105,30 @@ const Sidebar = () => {
     icon: <FileSpreadsheet className="w-full h-full" />,
     label: "Reports",
     href: "/reports"
-  }, {
-    icon: <FileText className="w-full h-full" />,
-    label: "Requests",
-    href: "/requests"
-  }, {
-    icon: <ShoppingCart className="w-full h-full" />,
-    label: "Orders",
-    href: "/orders"
-  }, {
-    icon: <FileSpreadsheet className="w-full h-full" />,
-    label: "Billing",
-    href: "/billing"
   }];
+
+  // Only show Requests link for influencers
+  if (userType === 'influencer') {
+    navItems.push({
+      icon: <FileText className="w-full h-full" />,
+      label: "Requests",
+      href: "/requests"
+    });
+  }
+
+  // Add these items for all user types
+  navItems.push(
+    {
+      icon: <ShoppingCart className="w-full h-full" />,
+      label: "Orders",
+      href: "/orders"
+    },
+    {
+      icon: <FileSpreadsheet className="w-full h-full" />,
+      label: "Billing",
+      href: "/billing"
+    }
+  );
 
   const toggleSidebar = () => {
     setIsCollapsed(!isCollapsed);

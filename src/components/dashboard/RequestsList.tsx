@@ -58,7 +58,7 @@ const RequestsList: React.FC<RequestsListProps> = ({ requests, onApprove, onReje
                     <p className="text-sm mt-2">{request.description}</p>
                   </div>
                   <div className="p-4 bg-gray-50 flex justify-between items-center">
-                    <div className="text-lg font-bold">${request.price}</div>
+                    <div className="text-lg font-bold">₹{request.price}</div>
                     <div className="flex space-x-2">
                       <Button 
                         size="sm" 
@@ -104,7 +104,7 @@ const RequestsList: React.FC<RequestsListProps> = ({ requests, onApprove, onReje
                   </div>
                   <p className="text-sm">{request.description}</p>
                   <div className="mt-4 flex justify-between items-center">
-                    <div className="text-lg font-bold">${request.price}</div>
+                    <div className="text-lg font-bold">₹{request.price}</div>
                     {request.status === 'approved' && (
                       <Button size="sm" variant="outline">
                         View Details <ExternalLink className="ml-1 h-3 w-3" />

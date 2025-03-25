@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Bell, Search, ChevronDown, Settings, User, FileSpreadsheet, LogOut } from 'lucide-react';
+import { Bell, BadgeIndianRupee, Search, ChevronDown, Settings, User, FileSpreadsheet, LogOut } from 'lucide-react';
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import {
@@ -46,12 +46,12 @@ const Header = () => {
         </div>
       </div>
       <div className="flex items-center gap-4">
-        <button className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors duration-300 relative">
+        <Link to="/notifications" className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors duration-300 relative">
           <Bell className="h-5 w-5 text-gray-600" />
           <span className="absolute top-0 right-0 h-4 w-4 rounded-full bg-red-500 text-white text-xs flex items-center justify-center">
             3
           </span>
-        </button>
+        </Link>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="flex items-center gap-2 hover:bg-gray-50 p-1 rounded-lg transition-all duration-300">
@@ -83,6 +83,10 @@ const Header = () => {
             <DropdownMenuItem className="cursor-pointer flex items-center gap-2">
               <FileSpreadsheet className="h-4 w-4" />
               <Link to="/billing" className="w-full">Billing</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer flex items-center gap-2">
+              <BadgeIndianRupee className="h-4 w-4" />
+              <Link to="/payments" className="w-full">Payments</Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="cursor-pointer flex items-center gap-2" onClick={handleLogout}>

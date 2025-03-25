@@ -55,7 +55,7 @@ const ServiceRequests: React.FC<ServiceRequestsProps> = ({ requests, onPayReques
                   </div>
                   <p className="text-sm">{request.description}</p>
                   <div className="mt-4 flex justify-between items-center">
-                    <div className="text-lg font-bold">${request.price}</div>
+                    <div className="text-lg font-bold">₹{request.price}</div>
                     {request.status === 'approved' && (
                       <Button 
                         size="sm"
@@ -92,7 +92,7 @@ const ServiceRequests: React.FC<ServiceRequestsProps> = ({ requests, onPayReques
                   </div>
                   <p className="text-sm">{request.description}</p>
                   <div className="mt-4 flex justify-between items-center">
-                    <div className="text-lg font-bold">${request.price}</div>
+                    <div className="text-lg font-bold">₹{request.price}</div>
                     {request.status === 'paid' || request.status === 'completed' ? (
                       <Button size="sm" variant="outline" onClick={() => window.location.href = '/reach'}>
                         View Analytics <ExternalLink className="ml-1 h-3 w-3" />
