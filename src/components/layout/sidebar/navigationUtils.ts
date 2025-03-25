@@ -24,42 +24,42 @@ export const createNavigationItems = (userType: string): NavItem[] => {
   // Create an array to hold navigation items common to all user types
   const commonNavItems = [
     {
-      icon: <LayoutDashboard className="w-full h-full" />,
+      icon: React.createElement(LayoutDashboard, { className: "w-full h-full" }),
       label: "Dashboard",
       href: dashboardPath
     },
     {
-      icon: <Users className="w-full h-full" />,
+      icon: React.createElement(Users, { className: "w-full h-full" }),
       label: "Influencers",
       href: "/influencers"
     },
     {
-      icon: <MessageSquare className="w-full h-full" />,
+      icon: React.createElement(MessageSquare, { className: "w-full h-full" }),
       label: "Chats",
       href: "/chats"
     },
     {
-      icon: <BarChart className="w-full h-full" />,
+      icon: React.createElement(BarChart, { className: "w-full h-full" }),
       label: "Reach",
       href: "/reach"
     },
     {
-      icon: <LayoutGrid className="w-full h-full" />,
+      icon: React.createElement(LayoutGrid, { className: "w-full h-full" }),
       label: "Services",
       href: "/services"
     },
     {
-      icon: <FileSpreadsheet className="w-full h-full" />,
+      icon: React.createElement(FileSpreadsheet, { className: "w-full h-full" }),
       label: "Reports",
       href: "/reports"
     },
     {
-      icon: <ShoppingCart className="w-full h-full" />,
+      icon: React.createElement(ShoppingCart, { className: "w-full h-full" }),
       label: "Orders",
       href: "/orders"
     },
     {
-      icon: <FileSpreadsheet className="w-full h-full" />,
+      icon: React.createElement(FileSpreadsheet, { className: "w-full h-full" }),
       label: "Billing",
       href: "/billing"
     }
@@ -71,7 +71,7 @@ export const createNavigationItems = (userType: string): NavItem[] => {
   // Add Onboard menu item only for admin users (at position 1, after Dashboard)
   if (userType === 'admin') {
     navItems.splice(1, 0, {
-      icon: <UserPlus className="w-full h-full" />,
+      icon: React.createElement(UserPlus, { className: "w-full h-full" }),
       label: "Onboard",
       href: "/onboard"
     });
@@ -83,7 +83,7 @@ export const createNavigationItems = (userType: string): NavItem[] => {
     const ordersIndex = navItems.findIndex(item => item.label === "Orders");
     if (ordersIndex !== -1) {
       navItems.splice(ordersIndex, 0, {
-        icon: <FileText className="w-full h-full" />,
+        icon: React.createElement(FileText, { className: "w-full h-full" }),
         label: "Requests",
         href: "/requests"
       });
