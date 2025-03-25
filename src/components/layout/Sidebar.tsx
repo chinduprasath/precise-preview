@@ -220,7 +220,42 @@ const Sidebar = () => {
       </nav>
       
       <div className="border-t">
-        
+        <div className={cn("p-3", isCollapsed && "flex justify-center")}>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className={cn("flex items-center gap-2 p-2 rounded-lg hover:bg-gray-100 text-sm font-medium text-gray-700 w-full", isCollapsed && "justify-center")}>
+                <User size={16} className="text-gray-700" />
+                {!isCollapsed && (
+                  <>
+                    <span>Account</span>
+                    <ChevronDown size={14} className="ml-auto" />
+                  </>
+                )}
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <Link to={profilePath} className="flex items-center gap-2 cursor-pointer">
+                  <User size={14} />
+                  <span>Profile</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/account/settings" className="flex items-center gap-2 cursor-pointer">
+                  <Settings size={14} />
+                  <span>Settings</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleLogout} className="flex items-center gap-2 cursor-pointer text-red-500 hover:text-red-700">
+                <LogOut size={14} />
+                <span>Log out</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
       
       <div className={cn("p-4 border-t", isCollapsed && "hidden")}>
