@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { 
@@ -54,7 +53,6 @@ const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState<boolean>(false);
   const isMobile = useIsMobile();
 
-  // Check if sidebar collapse state is saved in localStorage
   useEffect(() => {
     const savedCollapsedState = localStorage.getItem('sidebar:collapsed');
     if (savedCollapsedState) {
@@ -62,12 +60,10 @@ const Sidebar = () => {
     }
   }, []);
 
-  // Save collapse state to localStorage whenever it changes
   useEffect(() => {
     localStorage.setItem('sidebar:collapsed', isCollapsed.toString());
   }, [isCollapsed]);
 
-  // If on mobile device, collapse sidebar by default
   useEffect(() => {
     if (isMobile) {
       setIsCollapsed(true);

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '@/components/layout/Sidebar';
@@ -20,6 +19,13 @@ const BusinessProfile = () => {
         navigate('/signin');
         return;
       }
+      
+      // Make sure we're setting the userType in localStorage
+      const currentUserType = localStorage.getItem('userType');
+      if (!currentUserType || currentUserType !== 'business') {
+        localStorage.setItem('userType', 'business');
+      }
+      
       setUser(data.session.user);
       setLoading(false);
     };
