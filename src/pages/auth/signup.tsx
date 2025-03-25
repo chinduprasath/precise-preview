@@ -56,13 +56,22 @@ const SignUpPage = () => {
     setIsLoading(true);
     
     try {
+      // Split name into first name and last name
+      const nameParts = name.trim().split(' ');
+      const firstName = nameParts[0];
+      const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
+      
       // Prepare metadata that includes user type and other relevant info
       const metadata = {
-        name,
+        first_name: firstName,
+        last_name: lastName,
+        name: name, // Keep full name for convenience
         user_type: userType,
         ...(userType === 'influencer' && { category }),
         ...(userType === 'business' && { company }),
       };
+      
+      console.log("Signing up with metadata:", metadata);
       
       // Sign up with Supabase
       const { data, error } = await supabase.auth.signUp({
@@ -74,6 +83,7 @@ const SignUpPage = () => {
       });
       
       if (error) {
+        console.error('Sign up error:', error);
         throw error;
       }
       
