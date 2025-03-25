@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
-import { Heart, Eye, MessageSquare, Share2, DollarSign } from 'lucide-react';
+import { Heart, Eye, MessageSquare, Share2, DollarSign, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -117,6 +117,7 @@ const PriceContentCard: React.FC<{ item: ContentItem }> = ({ item }) => {
 const ProfileContent: React.FC = () => {
   const [activeTab, setActiveTab] = useState('services');
   const [platform, setPlatform] = useState('instagram');
+  const [selectedPackage, setSelectedPackage] = useState('platform');
 
   // Mock data
   const serviceContent: ContentItem[] = [
@@ -142,33 +143,44 @@ const ProfileContent: React.FC = () => {
     },
   ];
   
-  // Price content data
-  const priceContent: ContentItem[] = [
-    {
-      id: '1',
-      image: 'https://images.unsplash.com/photo-1414609245224-afa02bfb3fda?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-      stats: { likes: 200, views: 0, comments: 500, shares: 0 },
-      price: 500
+  // Platform-based services
+  const platformServices = [
+    { id: 'post', name: 'Post Image', price: '499₹' },
+    { id: 'reel', name: 'Reel', price: '499₹' },
+    { id: 'story', name: 'Story (Image/Video)', price: '499₹' },
+    { id: 'shorts', name: 'Shorts', price: '499₹' },
+    { id: 'videos', name: 'Videos (>10m)', price: '499₹' },
+    { id: 'polls', name: 'Polls', price: '499₹' },
+  ];
+  
+  // Combo packages
+  const comboPackages = [
+    { 
+      id: 'package1', 
+      name: 'Packagename-1', 
+      platforms: 'Insta/FB/Youtube',
+      price: '499₹',
+      rating: 5
     },
-    {
-      id: '2',
-      image: 'https://images.unsplash.com/photo-1473186578172-c141e6798cf4?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-      stats: { likes: 200, views: 0, comments: 500, shares: 0 },
-      price: 500
+    { 
+      id: 'package2', 
+      name: 'Packagename-2', 
+      platforms: 'Insta/FB/Youtube',
+      price: '499₹',
+      rating: 0
     },
-    {
-      id: '3',
-      image: 'https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-      stats: { likes: 200, views: 0, comments: 500, shares: 0 },
-      price: 500
-    },
-    {
-      id: '4',
-      image: 'https://images.unsplash.com/photo-1504610926078-a1611febcad3?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-      stats: { likes: 200, views: 0, comments: 500, shares: 0 },
-      price: 500
+    { 
+      id: 'package3', 
+      name: 'Packagename-3', 
+      platforms: 'Insta/FB/Youtube',
+      price: '499₹',
+      rating: 0
     },
   ];
+
+  const handleBook = () => {
+    console.log('Booking service for package:', selectedPackage);
+  };
 
   return (
     <Tabs defaultValue="services" className="w-full mt-6" onValueChange={setActiveTab}>
@@ -186,10 +198,105 @@ const ProfileContent: React.FC = () => {
           ))}
         </TabsContent>
         
-        <TabsContent value="prices" className="mt-0 grid grid-cols-2 gap-4">
-          {priceContent.map(item => (
-            <PriceContentCard key={item.id} item={item} />
-          ))}
+        <TabsContent value="prices" className="mt-0">
+          <div className="space-y-6">
+            <div className="flex justify-center mb-4">
+              <Tabs defaultValue="platform" className="w-full" onValueChange={setSelectedPackage}>
+                <TabsList className="grid grid-cols-2 w-full max-w-md mx-auto">
+                  <TabsTrigger value="platform" className="text-sm">
+                    <div className="flex items-center gap-2">
+                      <div className="w-5 h-5 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs">
+                        1
+                      </div>
+                      Platform Based
+                    </div>
+                  </TabsTrigger>
+                  <TabsTrigger value="combo" className="text-sm">
+                    <div className="flex items-center gap-2">
+                      <div className="w-5 h-5 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs">
+                        2
+                      </div>
+                      Combo Package
+                    </div>
+                  </TabsTrigger>
+                </TabsList>
+                
+                <div className="mt-4">
+                  <TabsContent value="platform" className="mt-0">
+                    <div className="flex justify-between items-center mb-4">
+                      <div className="font-medium text-sm">Select Platform</div>
+                      <Select value={platform} onValueChange={setPlatform}>
+                        <SelectTrigger className="w-[180px]">
+                          <SelectValue placeholder="Select Platform" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="instagram">Instagram</SelectItem>
+                          <SelectItem value="facebook">Facebook</SelectItem>
+                          <SelectItem value="youtube">YouTube</SelectItem>
+                          <SelectItem value="tiktok">TikTok</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        {platformServices.map((service) => (
+                          <div key={service.id} className="flex items-center justify-between py-2 border-b">
+                            <div className="flex items-center gap-2">
+                              <Checkbox id={service.id} />
+                              <label htmlFor={service.id} className="text-sm font-medium">
+                                {service.name}
+                              </label>
+                            </div>
+                            <div className="text-sm font-semibold">{service.price}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </TabsContent>
+                  
+                  <TabsContent value="combo" className="mt-0">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        {comboPackages.map((pkg) => (
+                          <div key={pkg.id} className="flex items-center justify-between py-2 border-b">
+                            <div className="flex items-center gap-2">
+                              <Checkbox id={pkg.id} />
+                              <div>
+                                <label htmlFor={pkg.id} className="text-sm font-medium block">
+                                  {pkg.name}
+                                </label>
+                                <span className="text-xs text-gray-500">{pkg.platforms}</span>
+                              </div>
+                            </div>
+                            <div className="flex flex-col items-end">
+                              <div className="text-sm font-semibold">{pkg.price}</div>
+                              <div className="flex text-amber-500">
+                                {[...Array(5)].map((_, i) => (
+                                  <span key={i}>
+                                    {i < pkg.rating ? "★" : ""}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </TabsContent>
+                </div>
+              </Tabs>
+            </div>
+            
+            <div className="flex justify-center">
+              <Button 
+                className="bg-blue-500 hover:bg-blue-600 text-white px-10"
+                onClick={handleBook}
+              >
+                Book
+              </Button>
+            </div>
+          </div>
         </TabsContent>
         
         <TabsContent value="data" className="mt-0">
