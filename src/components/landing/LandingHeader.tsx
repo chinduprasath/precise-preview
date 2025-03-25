@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Menu, X } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 const LandingHeader = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -18,11 +19,15 @@ const LandingHeader = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleSignInClick = (e: React.MouseEvent) => {
-    // Check if user is already logged in
-    const userType = localStorage.getItem('userType');
-    if (userType) {
+  const handleSignInClick = async (e: React.MouseEvent) => {
+    // Check if user is already logged in with Supabase
+    const { data } = await supabase.auth.getSession();
+    
+    if (data.session) {
       e.preventDefault();
+      
+      // Use stored user type if available, otherwise default to business
+      const userType = localStorage.getItem('userType') || 'business';
       navigate(`/dashboard/${userType}`);
     }
   };
@@ -91,7 +96,10 @@ const LandingHeader = () => {
             </a>
             
             <div className="flex flex-col space-y-3 pt-3 border-t">
-              <Link to="/signin" onClick={() => setIsMenuOpen(false)}>
+              <Link to="/signin" onClick={(e) => {
+                setIsMenuOpen(false);
+                handleSignInClick(e);
+              }}>
                 <Button variant="outline" className="w-full">Sign In</Button>
               </Link>
               <Link to="/signup" onClick={() => setIsMenuOpen(false)}>

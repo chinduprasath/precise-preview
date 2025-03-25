@@ -21,6 +21,7 @@ import {
 } from '@/components/ui/select';
 import { Building2, User, Shield, ArrowLeft } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 type UserType = 'business' | 'influencer' | 'admin' | null;
 
@@ -30,6 +31,9 @@ const SignUpPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
+  const [category, setCategory] = useState('');
+  const [company, setCompany] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleUserTypeSelect = (type: UserType) => {
@@ -37,31 +41,62 @@ const SignUpPage = () => {
     setStep(2);
   };
 
-  const handleSignUp = (e: React.FormEvent) => {
+  const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Here you would typically handle signup with an auth provider
-    console.log('Signing up as:', userType, { name, email, password });
+    if (!email || !password || !name || !userType) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
     
-    // Show success message
-    toast({
-      title: "Account created!",
-      description: "Welcome to InfluenceConnect.",
-    });
+    setIsLoading(true);
     
-    // Redirect to the appropriate dashboard
-    switch (userType) {
-      case 'business':
-        navigate('/dashboard/business');
-        break;
-      case 'influencer':
-        navigate('/dashboard/influencer');
-        break;
-      case 'admin':
-        navigate('/dashboard/admin');
-        break;
-      default:
-        navigate('/');
+    try {
+      // Prepare metadata that includes user type and other relevant info
+      const metadata = {
+        name,
+        user_type: userType,
+        ...(userType === 'influencer' && { category }),
+        ...(userType === 'business' && { company }),
+      };
+      
+      // Sign up with Supabase
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: metadata,
+        }
+      });
+      
+      if (error) {
+        throw error;
+      }
+      
+      // Store the user type in localStorage
+      localStorage.setItem('userType', userType);
+      
+      // Show success message
+      toast({
+        title: "Account created!",
+        description: "Welcome to InfluenceConnect.",
+      });
+      
+      // Redirect to the appropriate dashboard
+      navigate(`/dashboard/${userType}`);
+    } catch (error: any) {
+      console.error('Sign up error:', error);
+      toast({
+        title: "Sign up failed",
+        description: error.message || "An error occurred during sign up. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -81,6 +116,7 @@ const SignUpPage = () => {
               <button
                 onClick={() => handleUserTypeSelect('business')}
                 className="flex items-center p-6 bg-white border border-gray-200 rounded-xl hover:border-primary hover:shadow-md transition-all text-left"
+                disabled={isLoading}
               >
                 <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mr-4">
                   <Building2 className="h-6 w-6 text-primary" />
@@ -94,6 +130,7 @@ const SignUpPage = () => {
               <button
                 onClick={() => handleUserTypeSelect('influencer')}
                 className="flex items-center p-6 bg-white border border-gray-200 rounded-xl hover:border-primary hover:shadow-md transition-all text-left"
+                disabled={isLoading}
               >
                 <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mr-4">
                   <User className="h-6 w-6 text-primary" />
@@ -107,6 +144,7 @@ const SignUpPage = () => {
               <button
                 onClick={() => handleUserTypeSelect('admin')}
                 className="flex items-center p-6 bg-white border border-gray-200 rounded-xl hover:border-primary hover:shadow-md transition-all text-left"
+                disabled={isLoading}
               >
                 <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mr-4">
                   <Shield className="h-6 w-6 text-primary" />
@@ -131,6 +169,8 @@ const SignUpPage = () => {
               <button
                 onClick={() => setStep(1)}
                 className="inline-flex items-center text-gray-500 hover:text-gray-700 mb-4"
+                type="button"
+                disabled={isLoading}
               >
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back
@@ -152,6 +192,7 @@ const SignUpPage = () => {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required
+                    disabled={isLoading}
                   />
                 </div>
                 
@@ -164,6 +205,7 @@ const SignUpPage = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
+                    disabled={isLoading}
                   />
                 </div>
                 
@@ -176,13 +218,14 @@ const SignUpPage = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
+                    disabled={isLoading}
                   />
                 </div>
                 
                 {userType === 'influencer' && (
                   <div className="space-y-2">
                     <Label htmlFor="category">Primary Content Category</Label>
-                    <Select>
+                    <Select value={category} onValueChange={setCategory} disabled={isLoading}>
                       <SelectTrigger id="category">
                         <SelectValue placeholder="Select your category" />
                       </SelectTrigger>
@@ -204,13 +247,19 @@ const SignUpPage = () => {
                 {userType === 'business' && (
                   <div className="space-y-2">
                     <Label htmlFor="company">Company Name</Label>
-                    <Input id="company" placeholder="Enter your company name" />
+                    <Input 
+                      id="company" 
+                      placeholder="Enter your company name" 
+                      value={company}
+                      onChange={(e) => setCompany(e.target.value)}
+                      disabled={isLoading}
+                    />
                   </div>
                 )}
               </CardContent>
               <CardFooter className="flex flex-col">
-                <Button type="submit" className="w-full">
-                  Create Account
+                <Button type="submit" className="w-full" disabled={isLoading}>
+                  {isLoading ? "Creating Account..." : "Create Account"}
                 </Button>
                 <p className="mt-4 text-center text-gray-600 text-sm">
                   By signing up, you agree to our{' '}
