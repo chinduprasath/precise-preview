@@ -15,5 +15,10 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
     autoRefreshToken: true,
     detectSessionInUrl: true,
     storage: typeof window !== 'undefined' ? window.localStorage : undefined
+  },
+  realtime: {
+    params: {
+      eventsPerSecond: 10
+    }
   }
 });
