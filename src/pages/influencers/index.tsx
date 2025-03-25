@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Sidebar from '@/components/layout/Sidebar';
@@ -16,6 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Avatar } from '@/components/ui/avatar';
+import InfluencerProfile from '@/components/influencers/InfluencerProfile';
 
 // Sample data for influencers
 const influencers = [
@@ -143,131 +143,39 @@ const formatNumber = (num: number): string => {
   return num.toString();
 };
 
-const InfluencerCard = ({ influencer }) => {
+const InfluencerCard = ({ influencer, onSelect }) => {
   return (
-    <Link to={`/influencers/${influencer.id}`} className="block">
-      <div className="flex items-center gap-3 py-3 hover:bg-gray-50 rounded-lg px-2 transition-colors">
-        <Avatar className="h-12 w-12">
-          <img 
-            src={influencer.image} 
-            alt={influencer.name} 
-            className="h-full w-full object-cover"
-          />
-        </Avatar>
-        <div className="flex-1">
-          <h3 className="font-medium">{influencer.name}</h3>
-          <div className="flex flex-wrap gap-x-4 mt-1">
-            <div className="flex items-center gap-1">
-              <Instagram className="h-4 w-4 text-pink-500" />
-              <span className="text-xs font-medium">{formatNumber(influencer.followers.instagram)}</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <Facebook className="h-4 w-4 text-blue-600" />
-              <span className="text-xs font-medium">{formatNumber(influencer.followers.facebook)}</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <Twitter className="h-4 w-4 text-blue-400" />
-              <span className="text-xs font-medium">{formatNumber(influencer.followers.twitter)}</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <Youtube className="h-4 w-4 text-red-600" />
-              <span className="text-xs font-medium">{formatNumber(influencer.followers.youtube)}</span>
-            </div>
+    <div 
+      className="flex items-center gap-3 py-3 hover:bg-gray-50 rounded-lg px-2 transition-colors cursor-pointer"
+      onClick={() => onSelect(influencer)}
+    >
+      <Avatar className="h-12 w-12">
+        <img 
+          src={influencer.image} 
+          alt={influencer.name} 
+          className="h-full w-full object-cover"
+        />
+      </Avatar>
+      <div className="flex-1">
+        <h3 className="font-medium">{influencer.name}</h3>
+        <div className="flex flex-wrap gap-x-4 mt-1">
+          <div className="flex items-center gap-1">
+            <Instagram className="h-4 w-4 text-pink-500" />
+            <span className="text-xs font-medium">{formatNumber(influencer.followers.instagram)}</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <Facebook className="h-4 w-4 text-blue-600" />
+            <span className="text-xs font-medium">{formatNumber(influencer.followers.facebook)}</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <Twitter className="h-4 w-4 text-blue-400" />
+            <span className="text-xs font-medium">{formatNumber(influencer.followers.twitter)}</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <Youtube className="h-4 w-4 text-red-600" />
+            <span className="text-xs font-medium">{formatNumber(influencer.followers.youtube)}</span>
           </div>
         </div>
-      </div>
-    </Link>
-  );
-};
-
-const InfluencerProfile = ({ influencer }) => {
-  const [activeTab, setActiveTab] = useState('services');
-  
-  return (
-    <div className="p-4">
-      <div className="flex items-start gap-4 mb-6">
-        <Avatar className="h-16 w-16">
-          <img 
-            src={influencer.image} 
-            alt={influencer.name} 
-            className="h-full w-full object-cover"
-          />
-        </Avatar>
-        <div>
-          <h2 className="text-xl font-semibold">{influencer.name}</h2>
-          <p className="text-sm text-gray-500">{influencer.username}</p>
-          
-          <div className="flex gap-6 mt-4">
-            <div className="flex flex-col items-center">
-              <Instagram className="h-6 w-6 text-pink-500" />
-              <span className="font-medium">{formatNumber(influencer.followers.instagram)}</span>
-            </div>
-            <div className="flex flex-col items-center">
-              <Facebook className="h-6 w-6 text-blue-600" />
-              <span className="font-medium">{formatNumber(influencer.followers.facebook)}</span>
-            </div>
-            <div className="flex flex-col items-center">
-              <Youtube className="h-6 w-6 text-red-600" />
-              <span className="font-medium">{formatNumber(influencer.followers.youtube)}</span>
-            </div>
-            <div className="flex flex-col items-center">
-              <Twitter className="h-6 w-6 text-blue-400" />
-              <span className="font-medium">{formatNumber(influencer.followers.twitter)}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <div className="border-b">
-        <div className="flex">
-          <button 
-            className={`px-4 py-2 border-b-2 ${activeTab === 'services' ? 'border-primary text-primary' : 'border-transparent'}`}
-            onClick={() => setActiveTab('services')}
-          >
-            Services
-          </button>
-          <button 
-            className={`px-4 py-2 border-b-2 ${activeTab === 'prices' ? 'border-primary text-primary' : 'border-transparent'}`}
-            onClick={() => setActiveTab('prices')}
-          >
-            Prices
-          </button>
-          <button 
-            className={`px-4 py-2 border-b-2 ${activeTab === 'data' ? 'border-primary text-primary' : 'border-transparent'}`}
-            onClick={() => setActiveTab('data')}
-          >
-            Data
-          </button>
-        </div>
-      </div>
-      
-      <div className="mt-4">
-        {activeTab === 'services' && (
-          <div className="grid grid-cols-2 gap-4">
-            <ContentCard platform="instagram" type="post" />
-            <ContentCard platform="instagram" type="story" />
-            <ContentCard platform="instagram" type="reel" />
-            <ContentCard platform="youtube" type="video" />
-          </div>
-        )}
-        
-        {activeTab === 'prices' && (
-          <div className="grid grid-cols-2 gap-4">
-            <PricingCard platform="instagram" type="post" />
-            <PricingCard platform="instagram" type="story" />
-            <PricingCard platform="facebook" type="post" />
-            <PricingCard platform="youtube" type="video" />
-          </div>
-        )}
-        
-        {activeTab === 'data' && (
-          <div className="grid grid-cols-2 gap-4">
-            <DataCard platform="instagram" type="post" />
-            <DataCard platform="facebook" type="post" />
-            <DataCard platform="youtube" type="video" />
-            <DataCard platform="twitter" type="post" />
-          </div>
-        )}
       </div>
     </div>
   );
@@ -393,17 +301,19 @@ const InfluencersPage = () => {
   const [selectedInfluencer, setSelectedInfluencer] = useState(influencers[0]);
   
   const filteredInfluencers = influencers.filter(influencer => {
-    // Search filter
     const matchesSearch = searchTerm === '' || 
       influencer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       influencer.category.toLowerCase().includes(searchTerm.toLowerCase());
     
-    // Category filter
     const matchesCategory = selectedCategory === '' || 
       influencer.category === selectedCategory;
     
     return matchesSearch && matchesCategory;
   });
+
+  const handleInfluencerSelect = (influencer) => {
+    setSelectedInfluencer(influencer);
+  };
   
   return (
     <div className="flex h-screen bg-gray-50">
@@ -412,8 +322,7 @@ const InfluencersPage = () => {
         <Header />
         <main className="flex-1 overflow-auto p-6">
           <div className="flex gap-6">
-            {/* Filters Panel */}
-            <div className="w-1/3 bg-white rounded-lg p-4 shadow-sm">
+            <div className="w-1/4 bg-white rounded-lg p-4 shadow-sm">
               <h2 className="text-lg font-semibold mb-4">Basic Filter</h2>
               
               <div className="mb-6">
@@ -610,28 +519,40 @@ const InfluencersPage = () => {
               </div>
             </div>
             
-            {/* Two panel layout */}
-            <div className="w-2/3 grid grid-cols-7 gap-4">
-              {/* Left panel - Influencer List */}
-              <div className="col-span-3 bg-white rounded-lg shadow-sm">
+            <div className="w-3/4 grid grid-cols-2 gap-4">
+              <div className="bg-white rounded-lg shadow-sm">
                 <div className="p-4 border-b">
                   <h2 className="text-lg font-semibold">Influencers</h2>
                 </div>
                 <div className="max-h-[calc(100vh-200px)] overflow-y-auto">
                   {filteredInfluencers.map((influencer) => (
-                    <div key={influencer.id} onClick={() => setSelectedInfluencer(influencer)}>
-                      <InfluencerCard influencer={influencer} />
+                    <div key={influencer.id}>
+                      <InfluencerCard 
+                        influencer={influencer} 
+                        onSelect={handleInfluencerSelect}
+                      />
                     </div>
                   ))}
                 </div>
               </div>
               
-              {/* Right panel - Profile View */}
-              <div className="col-span-4 bg-white rounded-lg shadow-sm">
+              <div className="bg-white rounded-lg shadow-sm">
                 <div className="p-4 border-b">
                   <h2 className="text-lg font-semibold">Profile</h2>
                 </div>
-                <InfluencerProfile influencer={selectedInfluencer} />
+                <div className="overflow-y-auto max-h-[calc(100vh-200px)]">
+                  <InfluencerProfile 
+                    id={selectedInfluencer.id}
+                    name={selectedInfluencer.name}
+                    category={selectedInfluencer.category}
+                    bio={selectedInfluencer.bio}
+                    followers={selectedInfluencer.followers.instagram}
+                    engagementRate={selectedInfluencer.engagementRate}
+                    profileImage={selectedInfluencer.image}
+                    coverImage="https://picsum.photos/id/30/1000/300"
+                    onRequestService={() => {}}
+                  />
+                </div>
               </div>
             </div>
           </div>

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
@@ -15,7 +14,6 @@ const RequestsPage = () => {
   const navigate = useNavigate();
   
   useEffect(() => {
-    // Check if user is an influencer
     const userType = localStorage.getItem('userType');
     if (userType !== 'influencer') {
       toast({
@@ -27,8 +25,6 @@ const RequestsPage = () => {
       return;
     }
     
-    // In a real app, this would be an API call to get the requests
-    // For now, we'll use mock data
     const mockRequests: InfluencerRequest[] = [
       {
         id: '1',
@@ -145,7 +141,6 @@ const RequestsPage = () => {
     ];
     
     setRequests(mockRequests);
-    // In a real app we could store this in localStorage like the other components do
   }, [navigate, toast]);
 
   const handleAcceptRequest = (requestId: string) => {
@@ -156,8 +151,6 @@ const RequestsPage = () => {
     );
     
     setRequests(updatedRequests);
-    // In a real app, this would be an API call to update the request status
-    
     toast({
       title: "Request Accepted",
       description: "You have accepted the request.",
@@ -172,15 +165,12 @@ const RequestsPage = () => {
     );
     
     setRequests(updatedRequests);
-    // In a real app, this would be an API call to update the request status
-    
     toast({
       title: "Request Rejected",
       description: "You have rejected the request.",
     });
   };
 
-  // Filter requests by status
   const pendingRequests = requests.filter(req => req.status === 'pending');
   const acceptedRequests = requests.filter(req => req.status === 'approved');
   const rejectedRequests = requests.filter(req => req.status === 'rejected');
@@ -192,7 +182,6 @@ const RequestsPage = () => {
         <Header />
         <main className="flex-1 overflow-auto p-6">
           <div className="max-w-7xl mx-auto">
-            {/* Pending Requests Section */}
             <div className="mb-8">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-bold">Pending Requests</h2>
@@ -269,7 +258,6 @@ const RequestsPage = () => {
               </div>
             </div>
             
-            {/* Accepted Requests Section */}
             <div className="mb-8">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-bold">Accepted</h2>
@@ -315,7 +303,6 @@ const RequestsPage = () => {
               </div>
             </div>
             
-            {/* Rejected Requests Section */}
             <div>
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-bold">Rejected</h2>

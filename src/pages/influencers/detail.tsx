@@ -63,13 +63,13 @@ const sampleInfluencers = [
 ];
 
 const samplePricing = [
-  { serviceType: 'post', platform: 'instagram', price: 500 },
-  { serviceType: 'story', platform: 'instagram', price: 300 },
-  { serviceType: 'reel', platform: 'instagram', price: 800 },
-  { serviceType: 'post', platform: 'facebook', price: 400 },
-  { serviceType: 'video', platform: 'youtube', price: 1500 },
-  { serviceType: 'short', platform: 'youtube', price: 700 },
-  { serviceType: 'post', platform: 'twitter', price: 250 },
+  { serviceType: 'post', platform: 'instagram', price: 25000 },
+  { serviceType: 'story', platform: 'instagram', price: 15000 },
+  { serviceType: 'reel', platform: 'instagram', price: 40000 },
+  { serviceType: 'post', platform: 'facebook', price: 20000 },
+  { serviceType: 'video', platform: 'youtube', price: 75000 },
+  { serviceType: 'short', platform: 'youtube', price: 35000 },
+  { serviceType: 'post', platform: 'twitter', price: 12500 },
 ];
 
 const formatNumber = (num: number): string => {
@@ -334,7 +334,7 @@ const InfluencerDetailPage = () => {
                         <div className="bg-muted p-4 rounded-md mb-6">
                           <div className="flex justify-between items-center">
                             <span className="font-medium">Price:</span>
-                            <span className="text-xl font-bold">${getPrice(selectedService, selectedPlatform)}</span>
+                            <span className="text-xl font-bold">₹{getPrice(selectedService, selectedPlatform)}</span>
                           </div>
                           <p className="text-xs text-muted-foreground mt-1">
                             This is the base price. Final price may vary based on specific requirements.
@@ -359,3 +359,4 @@ const InfluencerDetailPage = () => {
 };
 
 export default InfluencerDetailPage;
+

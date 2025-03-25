@@ -117,7 +117,7 @@ const InfluencerDashboard = () => {
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">Earnings (This Month)</p>
-                    <p className="text-2xl font-bold">$4,890</p>
+                    <p className="text-2xl font-bold">₹244,500</p>
                   </div>
                 </div>
               </div>
