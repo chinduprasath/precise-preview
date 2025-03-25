@@ -118,124 +118,124 @@ const ProfileContent: React.FC = () => {
         </TabsContent>
         
         <TabsContent value="prices" className="mt-0">
-          <div className="space-y-6">
-            <div className="flex items-start justify-between">
-              <div className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <div className="bg-primary/70 rounded-full w-6 h-6 flex items-center justify-center text-white text-xs">✓</div>
-                  <span className="font-medium">Platform Based</span>
-                </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Platform Based Section */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <div className="bg-purple-600 rounded-full w-6 h-6 flex items-center justify-center text-white text-xs">•</div>
+                <span className="font-medium">Platform Based</span>
                 
-                <div className="ml-8 space-y-2">
-                  <div className="flex items-center justify-between gap-12">
-                    <div className="flex items-center gap-2">
-                      <Checkbox id="post" checked />
-                      <label htmlFor="post">Post Image</label>
-                    </div>
-                    <span className="font-semibold">499₹</span>
-                  </div>
-                  
-                  <div className="flex items-center justify-between gap-12">
-                    <div className="flex items-center gap-2">
-                      <Checkbox id="reel" checked />
-                      <label htmlFor="reel">Reel</label>
-                    </div>
-                    <span className="font-semibold">499₹</span>
-                  </div>
-                  
-                  <div className="flex items-center justify-between gap-12">
-                    <div className="flex items-center gap-2">
-                      <Checkbox id="story" checked />
-                      <label htmlFor="story">Story (Image/Video)</label>
-                    </div>
-                    <span className="font-semibold">499₹</span>
-                  </div>
-                  
-                  <div className="flex items-center justify-between gap-12">
-                    <div className="flex items-center gap-2">
-                      <Checkbox id="shorts" checked />
-                      <label htmlFor="shorts">Shorts</label>
-                    </div>
-                    <span className="font-semibold">499₹</span>
-                  </div>
-                  
-                  <div className="flex items-center justify-between gap-12">
-                    <div className="flex items-center gap-2">
-                      <Checkbox id="videos" checked />
-                      <label htmlFor="videos">Videos {'>'}10m</label>
-                    </div>
-                    <span className="font-semibold">499₹</span>
-                  </div>
-                  
-                  <div className="flex items-center justify-between gap-12">
-                    <div className="flex items-center gap-2">
-                      <Checkbox id="polls" checked />
-                      <label htmlFor="polls">Polls</label>
-                    </div>
-                    <span className="font-semibold">499₹</span>
-                  </div>
+                <div className="ml-auto">
+                  <Select value={platform} onValueChange={setPlatform}>
+                    <SelectTrigger className="h-8 text-xs min-w-[150px] bg-gray-100">
+                      <SelectValue placeholder="Select Platform" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="instagram">Instagram</SelectItem>
+                      <SelectItem value="facebook">Facebook</SelectItem>
+                      <SelectItem value="youtube">YouTube</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
               
-              <div className="w-1/3">
-                <Select value={platform} onValueChange={setPlatform}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select Platform" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="instagram">Instagram</SelectItem>
-                    <SelectItem value="facebook">Facebook</SelectItem>
-                    <SelectItem value="youtube">YouTube</SelectItem>
-                  </SelectContent>
-                </Select>
+              <div className="space-y-2 ml-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Checkbox id="post" checked />
+                    <label htmlFor="post" className="text-sm">Post Image</label>
+                  </div>
+                  <span className="font-semibold text-sm">499₹</span>
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Checkbox id="reel" checked />
+                    <label htmlFor="reel" className="text-sm">Reel</label>
+                  </div>
+                  <span className="font-semibold text-sm">499₹</span>
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Checkbox id="story" checked />
+                    <label htmlFor="story" className="text-sm">Story (Image/Video)</label>
+                  </div>
+                  <span className="font-semibold text-sm">499₹</span>
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Checkbox id="shorts" checked />
+                    <label htmlFor="shorts" className="text-sm">Shorts</label>
+                  </div>
+                  <span className="font-semibold text-sm">499₹</span>
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Checkbox id="videos" checked />
+                    <label htmlFor="videos" className="text-sm">Videos {'>'}10m</label>
+                  </div>
+                  <span className="font-semibold text-sm">499₹</span>
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Checkbox id="polls" checked />
+                    <label htmlFor="polls" className="text-sm">Polls</label>
+                  </div>
+                  <span className="font-semibold text-sm">499₹</span>
+                </div>
               </div>
             </div>
             
+            {/* Combo Package Section */}
             <div className="space-y-4">
               <div className="flex items-center gap-2">
-                <div className="bg-primary/70 rounded-full w-6 h-6 flex items-center justify-center text-white text-xs">✓</div>
+                <div className="bg-purple-600 rounded-full w-6 h-6 flex items-center justify-center text-white text-xs">•</div>
                 <span className="font-medium">Combo Package</span>
               </div>
               
-              <div className="ml-8 space-y-2">
-                <div className="flex items-center justify-between gap-12">
+              <div className="space-y-2 ml-4">
+                <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Checkbox id="package1" checked />
                     <div>
-                      <div>Packagename-1</div>
+                      <div className="text-sm">Packagename-1</div>
                       <div className="text-xs text-gray-500">Insta/FB/Youtube</div>
                     </div>
                   </div>
-                  <span className="font-semibold">*****</span>
+                  <span className="font-semibold text-sm">*****</span>
                 </div>
                 
-                <div className="flex items-center justify-between gap-12">
+                <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Checkbox id="package2" checked />
                     <div>
-                      <div>Packagename-2</div>
+                      <div className="text-sm">Packagename-2</div>
                       <div className="text-xs text-gray-500">Insta/FB/Youtube</div>
                     </div>
                   </div>
-                  <span className="font-semibold">499₹</span>
+                  <span className="font-semibold text-sm">499₹</span>
                 </div>
                 
-                <div className="flex items-center justify-between gap-12">
+                <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Checkbox id="package3" checked />
                     <div>
-                      <div>Packagename-3</div>
+                      <div className="text-sm">Packagename-3</div>
                       <div className="text-xs text-gray-500">Insta/FB/Youtube</div>
                     </div>
                   </div>
-                  <span className="font-semibold">499₹</span>
+                  <span className="font-semibold text-sm">499₹</span>
                 </div>
               </div>
             </div>
-            
-            <div className="flex justify-center mt-8">
-              <Button className="bg-blue-500 hover:bg-blue-600 w-48">Book</Button>
-            </div>
+          </div>
+          
+          <div className="flex justify-center mt-8">
+            <Button className="bg-blue-500 hover:bg-blue-600 w-48">Book</Button>
           </div>
         </TabsContent>
         
