@@ -149,9 +149,12 @@ const OnboardPage = () => {
         console.error("Error fetching profiles:", profilesError);
         throw profilesError;
       }
+
+      // Ensure profiles is an array even if it's null/undefined
+      const profilesArray = profiles || [];
       
       // Map profiles to users
-      const transformedUsers: OnboardingUser[] = profiles.map(profile => {
+      const transformedUsers: OnboardingUser[] = profilesArray.map(profile => {
         // Find matching auth user for metadata
         const authUser = authUsers?.users?.find(u => u.id === profile.id);
         const userMetadata = authUser?.user_metadata as Record<string, any> || {};
