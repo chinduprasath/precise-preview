@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Layout } from '@/components/layout/Layout';
 import { 
@@ -68,6 +67,18 @@ interface OnboardingUser {
   company?: string;
   category?: string;
   socialFollowers?: SocialFollowers;
+}
+
+// Define the shape of user profile data from Supabase
+interface UserProfile {
+  id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  role: string;
+  created_at: string;
+  settings: Record<string, any>;
+  [key: string]: any; // Allow additional properties
 }
 
 const OnboardPage = () => {
@@ -150,8 +161,8 @@ const OnboardPage = () => {
         throw profilesError;
       }
 
-      // Ensure profiles is an array even if it's null/undefined
-      const profilesArray = profiles || [];
+      // Ensure profiles is an array even if it's null/undefined and properly typed
+      const profilesArray = (profiles || []) as UserProfile[];
       
       // Map profiles to users
       const transformedUsers: OnboardingUser[] = profilesArray.map(profile => {
