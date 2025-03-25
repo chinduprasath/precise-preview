@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Share, MessageSquare } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import ProfileContent from '@/components/profile/ProfileContent';
+import BusinessDetails from '@/components/profile/BusinessDetails';
 import BusinessDataTab from '@/components/profile/BusinessDataTab';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -81,43 +82,13 @@ const BusinessProfile = () => {
               <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* Left Column - Business Info */}
                 <div className="md:col-span-1">
-                  <Card>
-                    <CardContent className="p-6">
-                      <h2 className="text-xl font-bold mb-4">Business Info</h2>
-                      <div className="space-y-4">
-                        <div>
-                          <p className="text-gray-600 mb-1">Business Name</p>
-                          <p className="font-medium">ABC company</p>
-                        </div>
-                        <div>
-                          <p className="text-gray-600 mb-1">Category</p>
-                          <p className="font-medium">XYZ Products</p>
-                        </div>
-                        <div>
-                          <p className="text-gray-600 mb-1">Service Type</p>
-                          <p className="font-medium">Online & Offline</p>
-                        </div>
-                        <div>
-                          <p className="text-gray-600 mb-1">Visit our site</p>
-                          <p className="font-medium">www.xyz.com</p>
-                        </div>
-                        <div>
-                          <p className="text-gray-600 mb-1">Location</p>
-                          <p className="font-medium">[Address]</p>
-                        </div>
-                        <div>
-                          <p className="text-gray-600 mb-1">Account Management</p>
-                          <div className="flex items-center gap-2">
-                            <select className="border rounded px-2 py-1 bg-gray-100 text-gray-700 text-sm">
-                              <option>Select</option>
-                              <option>Option 1</option>
-                              <option>Option 2</option>
-                            </select>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
+                  <BusinessDetails 
+                    businessName="ABC company"
+                    category="XYZ Products"
+                    serviceType="Online & Offline"
+                    website="www.xyz.com"
+                    location="[Address]"
+                  />
                 </div>
 
                 {/* Right Column - Tabs */}
