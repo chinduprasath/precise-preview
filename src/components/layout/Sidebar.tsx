@@ -6,7 +6,7 @@ import {
   Users, 
   MessageSquare, 
   BarChart, 
-  FileText, 
+  LayoutGrid, 
   Settings, 
   ShoppingCart, 
   FileSpreadsheet
@@ -68,7 +68,7 @@ const Sidebar = () => {
       href: "/reach",
     },
     {
-      icon: <FileText className="w-full h-full" />,
+      icon: <LayoutGrid className="w-full h-full" />,
       label: "Services",
       href: "/services",
     },
@@ -91,7 +91,7 @@ const Sidebar = () => {
       href: "/orders",
     },
     {
-      icon: <FileText className="w-full h-full" />,
+      icon: <FileSpreadsheet className="w-full h-full" />,
       label: "Billing",
       href: "/billing",
     },

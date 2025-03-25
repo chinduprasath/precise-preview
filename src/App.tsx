@@ -9,6 +9,9 @@ import Index from "./pages/Index";
 import InfluencersPage from "./pages/influencers";
 import ChatsPage from "./pages/chats";
 import ReachPage from "./pages/reach";
+import ServicesPage from "./pages/services";
+import OrdersPage from "./pages/orders";
+import ReportsPage from "./pages/reports";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -25,6 +28,9 @@ const App = () => (
             <Route path="/influencers" element={<InfluencersPage />} />
             <Route path="/chats" element={<ChatsPage />} />
             <Route path="/reach" element={<ReachPage />} />
+            <Route path="/services" element={<ServicesPage />} />
+            <Route path="/orders" element={<OrdersPage />} />
+            <Route path="/reports" element={<ReportsPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
