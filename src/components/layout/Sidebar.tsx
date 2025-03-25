@@ -15,7 +15,8 @@ import {
   Settings, 
   User, 
   LogOut, 
-  ChevronDown 
+  ChevronDown,
+  UserPlus 
 } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -72,9 +73,21 @@ const Sidebar = () => {
   }, [isMobile]);
 
   useEffect(() => {
+    // Check for userType in localStorage first
     const storedUserType = localStorage.getItem('userType');
     if (storedUserType) {
       setUserType(storedUserType);
+    } else {
+      // If not in localStorage, check Supabase session
+      const checkUserType = async () => {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user?.user_metadata?.user_type) {
+          const type = session.user.user_metadata.user_type;
+          setUserType(type);
+          localStorage.setItem('userType', type);
+        }
+      };
+      checkUserType();
     }
   }, []);
 
@@ -85,27 +98,45 @@ const Sidebar = () => {
     icon: <LayoutDashboard className="w-full h-full" />,
     label: "Dashboard",
     href: dashboardPath
-  }, {
-    icon: <Users className="w-full h-full" />,
-    label: "Influencers",
-    href: "/influencers"
-  }, {
-    icon: <MessageSquare className="w-full h-full" />,
-    label: "Chats",
-    href: "/chats"
-  }, {
-    icon: <BarChart className="w-full h-full" />,
-    label: "Reach",
-    href: "/reach"
-  }, {
-    icon: <LayoutGrid className="w-full h-full" />,
-    label: "Services",
-    href: "/services"
-  }, {
-    icon: <FileSpreadsheet className="w-full h-full" />,
-    label: "Reports",
-    href: "/reports"
   }];
+  
+  // Add Onboard menu item only for admin users
+  if (userType === 'admin') {
+    navItems.push({
+      icon: <UserPlus className="w-full h-full" />,
+      label: "Onboard",
+      href: "/onboard"
+    });
+  }
+  
+  // Add common menu items
+  navItems.push(
+    {
+      icon: <Users className="w-full h-full" />,
+      label: "Influencers",
+      href: "/influencers"
+    },
+    {
+      icon: <MessageSquare className="w-full h-full" />,
+      label: "Chats",
+      href: "/chats"
+    },
+    {
+      icon: <BarChart className="w-full h-full" />,
+      label: "Reach",
+      href: "/reach"
+    },
+    {
+      icon: <LayoutGrid className="w-full h-full" />,
+      label: "Services",
+      href: "/services"
+    },
+    {
+      icon: <FileSpreadsheet className="w-full h-full" />,
+      label: "Reports",
+      href: "/reports"
+    }
+  );
 
   // Only show Requests link for influencers
   if (userType === 'influencer') {

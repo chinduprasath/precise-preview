@@ -26,6 +26,7 @@ import SettingsPage from "./pages/account/settings";
 import NotificationsPage from "./pages/notifications";
 import NotFound from "./pages/NotFound";
 import { BillingPage } from "./pages/billing";
+import OnboardPage from "./pages/onboard";
 
 // Create a new QueryClient instance
 const queryClient = new QueryClient();
@@ -65,6 +66,9 @@ function App() {
             <Route path="/account/influencer" element={<InfluencerProfile />} />
             <Route path="/account/settings" element={<SettingsPage />} />
             <Route path="/billing" element={<BillingPage />} />
+            
+            {/* New Onboard Route */}
+            <Route path="/onboard" element={<OnboardPage />} />
             
             {/* Redirect Profile route based on user type */}
             <Route path="/account" element={
