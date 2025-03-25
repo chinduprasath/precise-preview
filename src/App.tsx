@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -28,10 +28,11 @@ import NotFound from "./pages/NotFound";
 import { BillingPage } from "./pages/billing";
 import OnboardPage from "./pages/onboard";
 
-// Create a new QueryClient instance
-const queryClient = new QueryClient();
-
+// Create a new QueryClient instance - move this inside the component
 function App() {
+  // Create a new QueryClient instance inside the component
+  const queryClient = new QueryClient();
+
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
