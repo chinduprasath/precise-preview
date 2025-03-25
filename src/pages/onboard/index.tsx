@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Layout } from '@/components/layout/Layout';
 import { 
@@ -10,13 +11,14 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Plus, Filter, Search, UserCheck, UserX, User, Check } from 'lucide-react';
+import { Plus, Filter, Search, UserCheck, UserX, User, Check, Instagram, Facebook, Twitter, Youtube } from 'lucide-react';
 import { 
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from '@/components/ui/card';
 import {
   Dialog,
@@ -76,6 +78,12 @@ const OnboardPage = () => {
     userType: 'influencer' as UserType,
     company: '',
     category: '',
+    socialFollowers: {
+      instagram: '',
+      facebook: '',
+      twitter: '',
+      youtube: '',
+    }
   });
   
   const navigate = useNavigate();
@@ -183,18 +191,66 @@ const OnboardPage = () => {
         return;
       }
       
+      // Prepare metadata with user details
+      const metadata: Record<string, any> = {
+        first_name: newUser.firstName,
+        last_name: newUser.lastName,
+        user_type: newUser.userType,
+      };
+      
+      // Add category for influencers
+      if (newUser.userType === 'influencer') {
+        if (newUser.category) {
+          metadata.category = newUser.category;
+        }
+        
+        // Add social followers if provided
+        const socialFollowers: Record<string, number> = {};
+        
+        if (newUser.socialFollowers.instagram) {
+          const instagramCount = parseInt(newUser.socialFollowers.instagram);
+          if (!isNaN(instagramCount)) {
+            socialFollowers.instagram = instagramCount;
+          }
+        }
+        
+        if (newUser.socialFollowers.facebook) {
+          const facebookCount = parseInt(newUser.socialFollowers.facebook);
+          if (!isNaN(facebookCount)) {
+            socialFollowers.facebook = facebookCount;
+          }
+        }
+        
+        if (newUser.socialFollowers.twitter) {
+          const twitterCount = parseInt(newUser.socialFollowers.twitter);
+          if (!isNaN(twitterCount)) {
+            socialFollowers.twitter = twitterCount;
+          }
+        }
+        
+        if (newUser.socialFollowers.youtube) {
+          const youtubeCount = parseInt(newUser.socialFollowers.youtube);
+          if (!isNaN(youtubeCount)) {
+            socialFollowers.youtube = youtubeCount;
+          }
+        }
+        
+        if (Object.keys(socialFollowers).length > 0) {
+          metadata.social_followers = socialFollowers;
+        }
+      }
+      
+      // Add company for businesses
+      if (newUser.userType === 'business' && newUser.company) {
+        metadata.company = newUser.company;
+      }
+      
       // Create the user
       const { data, error } = await supabase.auth.signUp({
         email: newUser.email,
         password: Math.random().toString(36).slice(-10), // Generate random password
         options: {
-          data: {
-            first_name: newUser.firstName,
-            last_name: newUser.lastName,
-            user_type: newUser.userType,
-            company: newUser.company,
-            category: newUser.category
-          }
+          data: metadata
         }
       });
       
@@ -211,6 +267,12 @@ const OnboardPage = () => {
         userType: 'influencer',
         company: '',
         category: '',
+        socialFollowers: {
+          instagram: '',
+          facebook: '',
+          twitter: '',
+          youtube: '',
+        }
       });
       
       // Refresh user list
@@ -296,7 +358,7 @@ const OnboardPage = () => {
                 <span>Add User</span>
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-[500px]">
               <DialogHeader>
                 <DialogTitle>Add New User</DialogTitle>
                 <DialogDescription>
@@ -364,15 +426,103 @@ const OnboardPage = () => {
                 )}
                 
                 {newUser.userType === 'influencer' && (
-                  <div className="space-y-2">
-                    <label htmlFor="category" className="text-sm font-medium">Category</label>
-                    <Input
-                      id="category"
-                      value={newUser.category}
-                      onChange={(e) => setNewUser({...newUser, category: e.target.value})}
-                      placeholder="Lifestyle, Fashion, etc."
-                    />
-                  </div>
+                  <>
+                    <div className="space-y-2">
+                      <label htmlFor="category" className="text-sm font-medium">Category</label>
+                      <Input
+                        id="category"
+                        value={newUser.category}
+                        onChange={(e) => setNewUser({...newUser, category: e.target.value})}
+                        placeholder="Lifestyle, Fashion, etc."
+                      />
+                    </div>
+                    
+                    <div className="space-y-4 pt-2">
+                      <label className="text-sm font-medium">Social Media Followers</label>
+                      
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2">
+                            <Instagram size={16} className="text-pink-600" />
+                            <label htmlFor="instagram" className="text-sm">Instagram</label>
+                          </div>
+                          <Input
+                            id="instagram"
+                            value={newUser.socialFollowers.instagram}
+                            onChange={(e) => setNewUser({
+                              ...newUser, 
+                              socialFollowers: {
+                                ...newUser.socialFollowers,
+                                instagram: e.target.value
+                              }
+                            })}
+                            placeholder="Follower count"
+                            type="number"
+                          />
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2">
+                            <Facebook size={16} className="text-blue-600" />
+                            <label htmlFor="facebook" className="text-sm">Facebook</label>
+                          </div>
+                          <Input
+                            id="facebook"
+                            value={newUser.socialFollowers.facebook}
+                            onChange={(e) => setNewUser({
+                              ...newUser, 
+                              socialFollowers: {
+                                ...newUser.socialFollowers,
+                                facebook: e.target.value
+                              }
+                            })}
+                            placeholder="Follower count"
+                            type="number"
+                          />
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2">
+                            <Twitter size={16} className="text-blue-400" />
+                            <label htmlFor="twitter" className="text-sm">Twitter</label>
+                          </div>
+                          <Input
+                            id="twitter"
+                            value={newUser.socialFollowers.twitter}
+                            onChange={(e) => setNewUser({
+                              ...newUser, 
+                              socialFollowers: {
+                                ...newUser.socialFollowers,
+                                twitter: e.target.value
+                              }
+                            })}
+                            placeholder="Follower count"
+                            type="number"
+                          />
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2">
+                            <Youtube size={16} className="text-red-600" />
+                            <label htmlFor="youtube" className="text-sm">YouTube</label>
+                          </div>
+                          <Input
+                            id="youtube"
+                            value={newUser.socialFollowers.youtube}
+                            onChange={(e) => setNewUser({
+                              ...newUser, 
+                              socialFollowers: {
+                                ...newUser.socialFollowers,
+                                youtube: e.target.value
+                              }
+                            })}
+                            placeholder="Subscriber count"
+                            type="number"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </>
                 )}
               </div>
               <DialogFooter>
