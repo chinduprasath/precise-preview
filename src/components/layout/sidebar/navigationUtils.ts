@@ -65,11 +65,12 @@ export const createNavigationItems = (userType: string): NavItem[] => {
     }
   ];
   
-  // Create the complete navItems array based on user type
+  // Create a new array to hold all navigation items
   let navItems = [...commonNavItems];
   
-  // Add Onboard menu item only for admin users (at position 1, after Dashboard)
+  // Add Onboard menu item only for admin users
   if (userType === 'admin') {
+    // Insert after Dashboard (at position 1)
     navItems.splice(1, 0, {
       icon: React.createElement(UserPlus, { className: "w-full h-full" }),
       label: "Onboard",
@@ -77,7 +78,7 @@ export const createNavigationItems = (userType: string): NavItem[] => {
     });
   }
   
-  // Add Requests link only for influencers (before Orders)
+  // Add Requests link only for influencers
   if (userType === 'influencer') {
     // Find the index of Orders to insert Requests right before it
     const ordersIndex = navItems.findIndex(item => item.label === "Orders");

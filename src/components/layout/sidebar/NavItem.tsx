@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { memo } from 'react';
 import { cn } from '@/lib/utils';
 
 interface NavItemProps {
@@ -11,7 +11,7 @@ interface NavItemProps {
   onClick?: () => void;
 }
 
-export const NavItem: React.FC<NavItemProps> = ({
+export const NavItem: React.FC<NavItemProps> = memo(({
   icon,
   label,
   href,
@@ -45,6 +45,8 @@ export const NavItem: React.FC<NavItemProps> = ({
       {!isCollapsed && <span>{label}</span>}
     </a>
   );
-};
+});
+
+NavItem.displayName = 'NavItem';
 
 export default NavItem;
