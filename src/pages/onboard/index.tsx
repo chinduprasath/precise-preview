@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Layout } from '@/components/layout/Layout';
 import { 
@@ -81,6 +82,14 @@ interface UserProfile {
   [key: string]: any; // Allow additional properties
 }
 
+// Define the shape of auth user data from Supabase
+interface AuthUser {
+  id: string;
+  email?: string;
+  user_metadata: Record<string, any>;
+  // Add other properties as needed
+}
+
 const OnboardPage = () => {
   const [users, setUsers] = useState<OnboardingUser[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<OnboardingUser[]>([]);
@@ -144,11 +153,14 @@ const OnboardPage = () => {
       setLoading(true);
       
       // First get all auth users to merge metadata with profiles
-      const { data: authUsers, error: authError } = await supabase.auth.admin.listUsers();
+      const { data: authUsersData, error: authError } = await supabase.auth.admin.listUsers();
       
       if (authError) {
         throw authError;
       }
+      
+      // Properly type the auth users data
+      const authUsers = (authUsersData?.users || []) as AuthUser[];
       
       // Fetch user profiles
       const { data: profiles, error: profilesError } = await supabase
@@ -167,7 +179,7 @@ const OnboardPage = () => {
       // Map profiles to users
       const transformedUsers: OnboardingUser[] = profilesArray.map(profile => {
         // Find matching auth user for metadata
-        const authUser = authUsers?.users?.find(u => u.id === profile.id);
+        const authUser = authUsers.find(u => u.id === profile.id);
         const userMetadata = authUser?.user_metadata as Record<string, any> || {};
         
         // Safely access settings properties with proper type checking
@@ -195,7 +207,7 @@ const OnboardPage = () => {
           firstName: profile.first_name || userMetadata.first_name || '',
           lastName: profile.last_name || userMetadata.last_name || '',
           email: profile.email || authUser?.email || '',
-          userType: userMetadata.user_type as UserType || profile.role as UserType,
+          userType: (userMetadata.user_type as UserType) || (profile.role as UserType),
           status: (settings.onboarding_status as OnboardingStatus) || 'pending',
           createdAt: profile.created_at,
           company: settings.company as string || userMetadata.company,
