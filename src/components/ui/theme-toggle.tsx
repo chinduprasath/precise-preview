@@ -9,7 +9,11 @@ export function ThemeToggle() {
   const { theme, setTheme } = useTheme()
   
   return (
-    <ToggleGroup type="single" value={theme} onValueChange={(value) => value && setTheme(value)}>
+    <ToggleGroup type="single" value={theme} onValueChange={(value) => {
+      if (value === "light" || value === "dark" || value === "system") {
+        setTheme(value)
+      }
+    }}>
       <ToggleGroupItem value="light" aria-label="Light mode" className="px-4 py-2 gap-2 data-[state=on]:bg-primary/10">
         <Sun size={16} />
         <span>Light</span>
