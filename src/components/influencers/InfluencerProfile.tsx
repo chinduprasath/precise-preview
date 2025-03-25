@@ -30,13 +30,13 @@ interface InfluencerProfileProps {
 
 // Sample pricing data (in a real app, this would come from the backend)
 const samplePricing = [
-  { serviceType: 'post', platform: 'instagram', price: 25000 },
-  { serviceType: 'story', platform: 'instagram', price: 15000 },
-  { serviceType: 'reel', platform: 'instagram', price: 40000 },
-  { serviceType: 'post', platform: 'facebook', price: 20000 },
-  { serviceType: 'video', platform: 'youtube', price: 75000 },
-  { serviceType: 'short', platform: 'youtube', price: 35000 },
-  { serviceType: 'post', platform: 'twitter', price: 12500 },
+  { serviceType: 'post', platform: 'instagram', price: 500 },
+  { serviceType: 'story', platform: 'instagram', price: 300 },
+  { serviceType: 'reel', platform: 'instagram', price: 800 },
+  { serviceType: 'post', platform: 'facebook', price: 400 },
+  { serviceType: 'video', platform: 'youtube', price: 1500 },
+  { serviceType: 'short', platform: 'youtube', price: 700 },
+  { serviceType: 'post', platform: 'twitter', price: 250 },
 ];
 
 const InfluencerProfile: React.FC<InfluencerProfileProps> = ({
@@ -107,14 +107,8 @@ const InfluencerProfile: React.FC<InfluencerProfileProps> = ({
                 
                 <TabsContent value="prices" className="mt-0">
                   <PricesTabContent 
-                    platformServices={platformServicesData.map(service => ({
-                      ...service,
-                      price: `₹${(parseInt(service.price.replace('$', '')) * 50)}`
-                    }))} 
-                    comboPackages={comboPackagesData.map(pkg => ({
-                      ...pkg,
-                      price: `₹${(parseInt(pkg.price.replace('$', '')) * 50)}`
-                    }))}
+                    platformServices={platformServicesData} 
+                    comboPackages={comboPackagesData}
                     influencerName={name}
                   />
                 </TabsContent>
