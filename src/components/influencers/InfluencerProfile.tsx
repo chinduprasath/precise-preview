@@ -63,11 +63,11 @@ const InfluencerProfile: React.FC<InfluencerProfileProps> = ({
 
   return (
     <div className="container mx-auto py-4">
-      <div className="bg-white rounded-xl overflow-hidden">
+      <div className="bg-white rounded-xl overflow-hidden shadow-sm">
         <div className="p-6">
           <div className="flex flex-col md:flex-row gap-6">
             {/* Left Column - Influencer Details */}
-            <div className="md:w-1/3">
+            <div className="md:w-1/3 flex-shrink-0">
               <InfluencerDetails 
                 id={id}
                 name={name}
@@ -82,7 +82,7 @@ const InfluencerProfile: React.FC<InfluencerProfileProps> = ({
             </div>
 
             {/* Right Column - Tabs */}
-            <div className="md:w-2/3">
+            <div className="md:w-2/3 flex-grow">
               <Tabs defaultValue="services" className="w-full">
                 <div className="border-b mb-6">
                   <TabsList className="w-full flex justify-between bg-transparent p-0">

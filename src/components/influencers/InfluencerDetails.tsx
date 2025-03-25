@@ -26,7 +26,8 @@ const InfluencerDetails: React.FC<InfluencerDetailsProps> = ({
   followers,
 }) => {
   return (
-    <div className="md:w-full">
+    <div className="w-full">
+      {/* Profile Info */}
       <div className="flex items-center space-x-4 mb-4">
         <div className="h-16 w-16 rounded-full overflow-hidden">
           <img 
@@ -40,17 +41,17 @@ const InfluencerDetails: React.FC<InfluencerDetailsProps> = ({
           <p className="text-gray-500 text-sm">{email || `${name.toLowerCase()}@gmail.com`}</p>
         </div>
         <div className="ml-auto flex gap-2">
-          <button className="text-gray-500">
+          <button className="text-gray-500 hover:text-gray-700">
             <Share2 className="w-5 h-5" />
           </button>
-          <button className="text-gray-500">
+          <button className="text-gray-500 hover:text-gray-700">
             <MessageSquare className="w-5 h-5" />
           </button>
         </div>
       </div>
 
       {/* Social Platforms */}
-      <div className="flex justify-between mb-6 mt-4">
+      <div className="flex justify-between mb-6">
         <div className="flex flex-col items-center">
           <div className="w-10 h-10 bg-pink-600 rounded-full flex items-center justify-center text-white mb-1">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-instagram"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
@@ -77,36 +78,36 @@ const InfluencerDetails: React.FC<InfluencerDetailsProps> = ({
         </div>
       </div>
 
-      {/* Stats Cards */}
+      {/* Stats Cards - Now in a 3x2 grid with rounded corners as per screenshot */}
       <div className="grid grid-cols-3 gap-4 mb-6">
-        <div className="bg-gray-50 p-4 rounded-md text-center">
+        <div className="bg-gray-50 p-4 rounded-lg text-center">
           <div className="text-xl font-bold">90</div>
           <div className="text-xs text-gray-500">Total Campaigns</div>
         </div>
-        <div className="bg-gray-50 p-4 rounded-md text-center">
+        <div className="bg-gray-50 p-4 rounded-lg text-center">
           <div className="text-xl font-bold">90</div>
           <div className="text-xs text-gray-500">Avg Likes</div>
         </div>
-        <div className="bg-gray-50 p-4 rounded-md text-center">
+        <div className="bg-gray-50 p-4 rounded-lg text-center">
           <div className="text-xl font-bold">90</div>
           <div className="text-xs text-gray-500">Engagement</div>
         </div>
-        <div className="bg-gray-50 p-4 rounded-md text-center">
+        <div className="bg-gray-50 p-4 rounded-lg text-center">
           <div className="text-xl font-bold">90</div>
           <div className="text-xs text-gray-500">Avg Comments</div>
         </div>
-        <div className="bg-gray-50 p-4 rounded-md text-center">
+        <div className="bg-gray-50 p-4 rounded-lg text-center">
           <div className="text-xl font-bold">90</div>
           <div className="text-xs text-gray-500">Avg Shares</div>
         </div>
-        <div className="bg-gray-50 p-4 rounded-md text-center">
+        <div className="bg-gray-50 p-4 rounded-lg text-center">
           <div className="text-xl font-bold">90</div>
           <div className="text-xs text-gray-500">Fake Followers</div>
         </div>
       </div>
 
-      {/* Network Stats */}
-      <div className="mt-4">
+      {/* Network Stats - From the screenshot */}
+      <div className="mt-4 bg-white rounded-lg">
         <div className="space-y-6">
           <div>
             <div className="flex items-center gap-2 mb-2">
@@ -114,7 +115,7 @@ const InfluencerDetails: React.FC<InfluencerDetailsProps> = ({
               <span className="font-medium">Upload</span>
               <span className="ml-auto text-gray-700 font-medium">5,03 mbps</span>
             </div>
-            <div className="h-16 bg-gray-50 rounded-lg mb-4 overflow-hidden relative">
+            <div className="h-16 bg-blue-50 rounded-lg mb-4 overflow-hidden relative">
               <div className="absolute inset-0 flex items-end">
                 <svg className="w-full h-full" viewBox="0 0 100 25">
                   <path d="M0,15 Q10,10 20,15 T40,10 T60,20 T80,5 T100,15" fill="none" stroke="#3b82f6" strokeWidth="2"></path>
@@ -129,7 +130,7 @@ const InfluencerDetails: React.FC<InfluencerDetailsProps> = ({
               <span className="font-medium">Download</span>
               <span className="ml-auto text-gray-700 font-medium">14,34 mbps</span>
             </div>
-            <div className="h-16 bg-gray-50 rounded-lg mb-4 overflow-hidden relative">
+            <div className="h-16 bg-blue-50 rounded-lg mb-4 overflow-hidden relative">
               <div className="absolute inset-0 flex items-end">
                 <svg className="w-full h-full" viewBox="0 0 100 25">
                   <path d="M0,10 Q10,20 20,5 T40,15 T60,5 T80,20 T100,10" fill="none" stroke="#93c5fd" strokeWidth="2"></path>
@@ -144,11 +145,10 @@ const InfluencerDetails: React.FC<InfluencerDetailsProps> = ({
               <span className="font-medium">Ping</span>
               <span className="ml-auto text-gray-700 font-medium">10 ms</span>
             </div>
-            <div className="h-16 bg-gray-50 rounded-lg overflow-hidden relative">
+            <div className="h-16 bg-green-50 rounded-lg overflow-hidden relative">
               <div className="absolute inset-0 flex items-end">
                 <svg className="w-full h-full" viewBox="0 0 100 25">
                   <path d="M0,15 Q10,10 20,15 T40,10 T60,15 T80,5 T100,10" fill="none" stroke="#22c55e" strokeWidth="2"></path>
-                  <path d="M0,15 Q10,10 20,15 T40,10 T60,15 T80,5 T100,10" fill="rgb(240, 253, 244, 0.5)"></path>
                 </svg>
               </div>
             </div>
