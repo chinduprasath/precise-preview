@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { 
@@ -140,9 +139,6 @@ const Sidebar = () => {
       label: "Orders",
       href: "/orders",
     },
-  ];
-
-  const bottomNavItems = [
     {
       icon: <FileSpreadsheet className="w-full h-full" />,
       label: "Billing",
@@ -150,6 +146,8 @@ const Sidebar = () => {
     },
   ];
 
+  // Remove bottomNavItems since we're no longer using it
+  
   const toggleSidebar = () => {
     setIsCollapsed(!isCollapsed);
   };
@@ -212,17 +210,6 @@ const Sidebar = () => {
       
       <div className="border-t">
         <nav className="px-3 py-3 space-y-1">
-          {bottomNavItems.map((item) => (
-            <NavItem
-              key={item.href}
-              icon={item.icon}
-              label={item.label}
-              href={item.href}
-              isActive={currentPath.startsWith(item.href)}
-              isCollapsed={isCollapsed}
-            />
-          ))}
-          
           {isCollapsed ? (
             <NavItem
               icon={<User className="w-full h-full" />}
