@@ -1,12 +1,13 @@
 
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Menu, X } from 'lucide-react';
 
 const LandingHeader = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -16,6 +17,15 @@ const LandingHeader = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const handleSignInClick = (e: React.MouseEvent) => {
+    // Check if user is already logged in
+    const userType = localStorage.getItem('userType');
+    if (userType) {
+      e.preventDefault();
+      navigate(`/dashboard/${userType}`);
+    }
+  };
 
   return (
     <header 
@@ -37,7 +47,7 @@ const LandingHeader = () => {
         
         {/* Desktop Auth Buttons */}
         <div className="hidden md:flex items-center space-x-4">
-          <Link to="/signin">
+          <Link to="/signin" onClick={handleSignInClick}>
             <Button variant="outline">Sign In</Button>
           </Link>
           <Link to="/signup">

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { 
@@ -45,12 +44,25 @@ const NavItem = ({ icon, label, href, isActive }: NavItemProps) => {
 const Sidebar = () => {
   const location = useLocation();
   const currentPath = location.pathname;
+  
+  const getUserType = () => {
+    if (currentPath.includes('/dashboard/admin')) return 'admin';
+    if (currentPath.includes('/dashboard/influencer')) return 'influencer';
+    if (currentPath.includes('/dashboard/business')) return 'business';
+    
+    const storedUserType = localStorage.getItem('userType');
+    return storedUserType || 'business';
+  };
+  
+  const userType = getUserType();
+  
+  const dashboardPath = `/dashboard/${userType}`;
 
   const navItems = [
     {
       icon: <LayoutDashboard className="w-full h-full" />,
       label: "Dashboard",
-      href: "/",
+      href: dashboardPath,
     },
     {
       icon: <Users className="w-full h-full" />,
@@ -101,10 +113,10 @@ const Sidebar = () => {
     <aside className="w-60 h-screen flex flex-col border-r bg-white">
       <div className="p-4">
         <div className="flex items-center gap-2 py-2">
-          <div className="text-primary font-bold text-2xl">
+          <Link to={dashboardPath} className="text-primary font-bold text-2xl">
             <span className="text-primary">Influence</span>
             <span className="text-gray-800">Connect</span>
-          </div>
+          </Link>
         </div>
       </div>
       <nav className="flex-1 overflow-y-auto px-3 py-3 space-y-1">
@@ -115,8 +127,8 @@ const Sidebar = () => {
             label={item.label}
             href={item.href}
             isActive={
-              item.href === "/" 
-                ? currentPath === "/" 
+              (item.href === dashboardPath && (currentPath === dashboardPath || currentPath === '/'))
+                ? true
                 : currentPath.startsWith(item.href)
             }
           />

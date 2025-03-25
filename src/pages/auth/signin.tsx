@@ -27,15 +27,26 @@ const SignInPage = () => {
     // Here you would typically handle signin with an auth provider
     console.log('Signing in with:', { email, password });
     
+    // Mock user type detection based on email domain
+    // In a real app, this would come from your authentication system
+    let userType = 'business'; // default
+    if (email.includes('admin')) {
+      userType = 'admin';
+    } else if (email.includes('influencer')) {
+      userType = 'influencer';
+    }
+    
+    // Store the user type in localStorage
+    localStorage.setItem('userType', userType);
+    
     // Show success message
     toast({
       title: "Signed in successfully!",
       description: "Welcome back to InfluenceConnect.",
     });
     
-    // For demonstration, we'll redirect to a mocked dashboard
-    // In a real app, you would route based on the user's type from authentication
-    navigate('/');
+    // Redirect to the appropriate dashboard
+    navigate(`/dashboard/${userType}`);
   };
 
   return (
