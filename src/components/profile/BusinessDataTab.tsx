@@ -1,120 +1,115 @@
 
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Area, Bar, BarChart, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
-const MetricCard: React.FC<{ value: string; title: string }> = ({ value, title }) => (
-  <Card className="bg-gray-100">
-    <CardContent className="p-4 text-center">
-      <div className="text-3xl font-bold">{value}</div>
-      <div className="text-xs text-gray-500">{title}</div>
-    </CardContent>
-  </Card>
-);
+const data = [
+  { name: 'Jan', value: 400 },
+  { name: 'Feb', value: 300 },
+  { name: 'Mar', value: 600 },
+  { name: 'Apr', value: 800 },
+  { name: 'May', value: 500 },
+  { name: 'Jun', value: 900 },
+];
 
-const BusinessDataTab: React.FC = () => {
-  // Data for the Level chart
-  const levelData = [
-    { name: 'M', volume: 60, service: 40 },
-    { name: 'T', volume: 80, service: 50 },
-    { name: 'W', volume: 50, service: 30 },
-    { name: 'T', volume: 70, service: 40 },
-    { name: 'F', volume: 40, service: 25 },
-    { name: 'S', volume: 30, service: 20 },
-    { name: 'S', volume: 25, service: 15 },
-  ];
+const pieData = [
+  { name: 'Instagram', value: 65, color: '#E1306C' },
+  { name: 'Facebook', value: 25, color: '#4267B2' },
+  { name: 'Twitter', value: 10, color: '#1DA1F2' },
+];
 
-  // Data for the Visitor Insights chart
-  const visitorData = [
-    { name: 'Jan', visitors: 100 },
-    { name: 'Feb', visitors: 120 },
-    { name: 'Mar', visitors: 140 },
-    { name: 'Apr', visitors: 400 },
-    { name: 'May', visitors: 300 },
-    { name: 'Jun', visitors: 250 },
-    { name: 'Jul', visitors: 350 },
-    { name: 'Aug', visitors: 400 },
-    { name: 'Sep', visitors: 350 },
-    { name: 'Oct', visitors: 300 },
-    { name: 'Nov', visitors: 200 },
-    { name: 'Dec', visitors: 250 },
-  ];
-
+const BusinessDataTab = () => {
   return (
     <div className="space-y-6">
-      {/* Metrics Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        <MetricCard value="90" title="Total Campaigns" />
-        <MetricCard value="90" title="Avg Likes" />
-        <MetricCard value="90" title="Engagement" />
-        <MetricCard value="90" title="Avg Comments" />
-        <MetricCard value="90" title="Avg Shares" />
-        <MetricCard value="90" title="Impressions" />
-      </div>
+      <Card className="border border-gray-200">
+        <CardContent className="p-4">
+          <h3 className="text-lg font-semibold mb-4">Performance Overview</h3>
+          <div className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={data}
+                margin={{ top: 5, right: 5, left: 5, bottom: 5 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} />
+                <YAxis axisLine={false} tickLine={false} />
+                <Tooltip />
+                <Bar dataKey="value" fill="#8884d8" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </CardContent>
+      </Card>
 
-      {/* Charts Row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Level Chart */}
-        <Card className="bg-gray-100">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Card className="border border-gray-200">
           <CardContent className="p-4">
-            <h3 className="font-medium text-lg mb-4">Level</h3>
-            <div className="h-48">
+            <h3 className="text-lg font-semibold mb-4">Audience Demographics</h3>
+            <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={levelData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Bar dataKey="volume" name="Volume" fill="#000" />
-                  <Bar dataKey="service" name="Service" fill="#4f46e5" />
-                </BarChart>
+                <PieChart>
+                  <Pie
+                    data={pieData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={80}
+                    paddingAngle={5}
+                    dataKey="value"
+                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                  >
+                    {pieData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip formatter={(value) => `${value}%`} />
+                </PieChart>
               </ResponsiveContainer>
-            </div>
-            <div className="flex justify-center items-center gap-8 mt-4">
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-black"></div>
-                <span className="text-sm">Volume</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-indigo-600"></div>
-                <span className="text-sm">Service</span>
-              </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Earnings Card */}
-        <Card className="bg-gray-100">
+        <Card className="border border-gray-200">
           <CardContent className="p-4">
-            <h3 className="font-medium text-lg mb-4">Earnings</h3>
-            <div className="text-center">
-              <p className="text-xs text-gray-500">Total Earnings</p>
-              <p className="text-3xl font-bold text-blue-600">$6078.76</p>
-              <p className="text-xs text-gray-500 mt-2">
-                Profit is 48% More than last Month
-              </p>
-            </div>
-            
-            <div className="mt-4 relative h-24 flex items-center justify-center">
-              <div className="relative w-32 h-32">
-                <svg viewBox="0 0 100 50" className="w-full">
-                  {/* Background arc */}
-                  <path
-                    d="M 0,50 A 50,50 0 0,1 100,50"
-                    fill="none"
-                    stroke="#e5e7eb"
-                    strokeWidth="10"
-                  />
-                  {/* Foreground arc (80% filled) */}
-                  <path
-                    d="M 0,50 A 50,50 0 0,1 80,50"
-                    fill="none"
-                    stroke="#4f46e5"
-                    strokeWidth="10"
-                  />
-                </svg>
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-2xl font-bold">
-                  80%
+            <h3 className="text-lg font-semibold mb-4">Top Metrics</h3>
+            <div className="space-y-4">
+              <div>
+                <div className="flex justify-between mb-1">
+                  <span className="text-sm text-gray-500">Engagement Rate</span>
+                  <span className="text-sm font-medium">4.2%</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-1.5">
+                  <div className="bg-purple-600 h-1.5 rounded-full" style={{ width: '42%' }}></div>
+                </div>
+              </div>
+              
+              <div>
+                <div className="flex justify-between mb-1">
+                  <span className="text-sm text-gray-500">Click-through Rate</span>
+                  <span className="text-sm font-medium">2.8%</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-1.5">
+                  <div className="bg-blue-500 h-1.5 rounded-full" style={{ width: '28%' }}></div>
+                </div>
+              </div>
+              
+              <div>
+                <div className="flex justify-between mb-1">
+                  <span className="text-sm text-gray-500">Conversion Rate</span>
+                  <span className="text-sm font-medium">1.5%</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-1.5">
+                  <div className="bg-green-500 h-1.5 rounded-full" style={{ width: '15%' }}></div>
+                </div>
+              </div>
+              
+              <div>
+                <div className="flex justify-between mb-1">
+                  <span className="text-sm text-gray-500">Bounce Rate</span>
+                  <span className="text-sm font-medium">35%</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-1.5">
+                  <div className="bg-amber-500 h-1.5 rounded-full" style={{ width: '35%' }}></div>
                 </div>
               </div>
             </div>
@@ -122,35 +117,37 @@ const BusinessDataTab: React.FC = () => {
         </Card>
       </div>
 
-      {/* Visitor Insights */}
-      <Card className="bg-gray-100">
+      <Card className="border border-gray-200">
         <CardContent className="p-4">
-          <h3 className="font-medium text-lg mb-4">Visitor Insights</h3>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart
-                data={visitorData}
-                margin={{ top: 10, right: 30, left: 0, bottom: 5 }}
-              >
-                <defs>
-                  <linearGradient id="colorVisitors" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.8} />
-                    <stop offset="95%" stopColor="#4f46e5" stopOpacity={0.1} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Area
-                  type="monotone"
-                  dataKey="visitors"
-                  stroke="#4f46e5"
-                  fillOpacity={1}
-                  fill="url(#colorVisitors)"
-                />
-              </AreaChart>
-            </ResponsiveContainer>
+          <h3 className="text-lg font-semibold mb-4">Campaign Results</h3>
+          <div className="space-y-4">
+            <div className="flex items-center p-3 bg-gray-50 rounded-lg">
+              <div className="h-12 w-12 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 mr-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+              </div>
+              <div className="flex-1">
+                <h4 className="font-medium">Facebook Campaign</h4>
+                <p className="text-sm text-gray-500">145K Impressions • 4.2% Engagement</p>
+              </div>
+              <div className="text-right">
+                <p className="font-medium">$1,245</p>
+                <p className="text-sm text-green-600">+12%</p>
+              </div>
+            </div>
+            
+            <div className="flex items-center p-3 bg-gray-50 rounded-lg">
+              <div className="h-12 w-12 rounded-full bg-pink-100 flex items-center justify-center text-pink-600 mr-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line></svg>
+              </div>
+              <div className="flex-1">
+                <h4 className="font-medium">Instagram Campaign</h4>
+                <p className="text-sm text-gray-500">267K Impressions • 5.8% Engagement</p>
+              </div>
+              <div className="text-right">
+                <p className="font-medium">$2,156</p>
+                <p className="text-sm text-green-600">+24%</p>
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>
