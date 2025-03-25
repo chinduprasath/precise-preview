@@ -4,7 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
 import InfluencersPage from "./pages/influencers";
 import InfluencerDetailPage from "./pages/influencers/detail";
@@ -63,6 +63,11 @@ function App() {
             <Route path="/account/influencer" element={<InfluencerProfile />} />
             <Route path="/account/settings" element={<SettingsPage />} />
             <Route path="/billing" element={<BillingPage />} />
+            
+            {/* Redirect Profile route based on user type */}
+            <Route path="/account" element={
+              <Navigate to={`/account/${localStorage.getItem('userType') || 'business'}`} replace />
+            } />
             
             <Route path="*" element={<NotFound />} />
           </Routes>

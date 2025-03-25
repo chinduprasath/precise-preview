@@ -82,6 +82,8 @@ const Sidebar = () => {
   }, []);
 
   const dashboardPath = `/dashboard/${userType}`;
+  const profilePath = `/account/${userType}`;
+  
   const navItems = [{
     icon: <LayoutDashboard className="w-full h-full" />,
     label: "Dashboard",
