@@ -152,17 +152,8 @@ const OnboardPage = () => {
     try {
       setLoading(true);
       
-      // First get all auth users to merge metadata with profiles
-      const { data: authUsersData, error: authError } = await supabase.auth.admin.listUsers();
-      
-      if (authError) {
-        throw authError;
-      }
-      
-      // Properly type the auth users data
-      const authUsers = (authUsersData?.users || []) as AuthUser[];
-      
-      // Fetch user profiles
+      // Fetch user profiles directly from the user_profiles table
+      // instead of trying to use the admin API
       const { data: profiles, error: profilesError } = await supabase
         .from('user_profiles')
         .select('*')
@@ -176,12 +167,8 @@ const OnboardPage = () => {
       // Ensure profiles is an array even if it's null/undefined and properly typed
       const profilesArray = (profiles || []) as UserProfile[];
       
-      // Map profiles to users
+      // Map profiles to users without needing admin access to auth users
       const transformedUsers: OnboardingUser[] = profilesArray.map(profile => {
-        // Find matching auth user for metadata
-        const authUser = authUsers.find(u => u.id === profile.id);
-        const userMetadata = authUser?.user_metadata as Record<string, any> || {};
-        
         // Safely access settings properties with proper type checking
         const settings = profile.settings as Record<string, any> || {};
         
@@ -204,14 +191,14 @@ const OnboardPage = () => {
         
         return {
           id: profile.id,
-          firstName: profile.first_name || userMetadata.first_name || '',
-          lastName: profile.last_name || userMetadata.last_name || '',
-          email: profile.email || authUser?.email || '',
-          userType: (userMetadata.user_type as UserType) || (profile.role as UserType),
+          firstName: profile.first_name || '',
+          lastName: profile.last_name || '',
+          email: profile.email || '',
+          userType: (profile.role as UserType) || 'business',
           status: (settings.onboarding_status as OnboardingStatus) || 'pending',
           createdAt: profile.created_at,
-          company: settings.company as string || userMetadata.company,
-          category: settings.category as string || userMetadata.category,
+          company: settings.company as string,
+          category: settings.category as string,
           socialFollowers: Object.keys(socialFollowers).length > 0 ? socialFollowers : undefined
         };
       });
@@ -269,29 +256,19 @@ const OnboardPage = () => {
       // Generate a random password
       const tempPassword = Math.random().toString(36).slice(-10);
       
-      // Prepare metadata with user details
-      const metadata: Record<string, any> = {
-        first_name: newUser.firstName,
-        last_name: newUser.lastName,
-        user_type: newUser.userType,
-      };
-      
-      // Add category for influencers
-      if (newUser.userType === 'influencer' && newUser.category) {
-        metadata.category = newUser.category;
-      }
-      
-      // Add company for businesses
-      if (newUser.userType === 'business' && newUser.company) {
-        metadata.company = newUser.company;
-      }
-      
-      // Create the user
-      const { data, error } = await supabase.auth.admin.createUser({
+      // Create a new user with the sign up method rather than admin.createUser
+      const { data, error } = await supabase.auth.signUp({
         email: newUser.email,
         password: tempPassword,
-        email_confirm: true,
-        user_metadata: metadata
+        options: {
+          data: {
+            first_name: newUser.firstName,
+            last_name: newUser.lastName,
+            user_type: newUser.userType,
+            company: newUser.userType === 'business' ? newUser.company : undefined,
+            category: newUser.userType === 'influencer' ? newUser.category : undefined
+          }
+        }
       });
       
       if (error) throw error;
@@ -352,15 +329,12 @@ const OnboardPage = () => {
           }
         }
         
-        // Make sure we have first_name, last_name, and email in the profile
+        // Update the user profile - but the trigger should create it automatically
+        // This is just in case we need to update anything
         const { error: profileError } = await supabase
           .from('user_profiles')
           .update({ 
-            settings,
-            first_name: newUser.firstName,
-            last_name: newUser.lastName,
-            email: newUser.email,
-            role: newUser.userType
+            settings
           })
           .eq('id', userId);
           
