@@ -102,6 +102,7 @@ const OnboardPage = () => {
         const { data: { session } } = await supabase.auth.getSession();
         
         if (!session) {
+          toast.error('You need to be logged in to access this page');
           navigate('/signin');
           return;
         }
@@ -110,8 +111,8 @@ const OnboardPage = () => {
         const userType = session.user?.user_metadata?.user_type;
         
         if (userType !== 'admin') {
-          navigate('/dashboard/business');
           toast.error('You do not have access to this page');
+          navigate('/dashboard/business');
         } else {
           // Load user data since we've confirmed admin access
           fetchUsers();
@@ -126,20 +127,35 @@ const OnboardPage = () => {
     checkAdminAccess();
   }, [navigate]);
 
-  // Fetch users data - Now called only after admin access is confirmed
+  // Fetch users data - Called only after admin access is confirmed
   const fetchUsers = async () => {
     try {
       setLoading(true);
+      
+      // First get all auth users to merge metadata with profiles
+      const { data: authUsers, error: authError } = await supabase.auth.admin.listUsers();
+      
+      if (authError) {
+        throw authError;
+      }
+      
       // Fetch user profiles
-      const { data: profiles, error } = await supabase
+      const { data: profiles, error: profilesError } = await supabase
         .from('user_profiles')
         .select('*')
         .order('created_at', { ascending: false });
         
-      if (error) throw error;
+      if (profilesError) {
+        console.error("Error fetching profiles:", profilesError);
+        throw profilesError;
+      }
       
-      // Transform profiles to onboarding users format
+      // Map profiles to users
       const transformedUsers: OnboardingUser[] = profiles.map(profile => {
+        // Find matching auth user for metadata
+        const authUser = authUsers?.users?.find(u => u.id === profile.id);
+        const userMetadata = authUser?.user_metadata as Record<string, any> || {};
+        
         // Safely access settings properties with proper type checking
         const settings = profile.settings as Record<string, any> || {};
         
@@ -162,14 +178,14 @@ const OnboardPage = () => {
         
         return {
           id: profile.id,
-          firstName: profile.first_name,
-          lastName: profile.last_name,
-          email: profile.email,
-          userType: profile.role as UserType,
+          firstName: profile.first_name || userMetadata.first_name || '',
+          lastName: profile.last_name || userMetadata.last_name || '',
+          email: profile.email || authUser?.email || '',
+          userType: userMetadata.user_type as UserType || profile.role as UserType,
           status: (settings.onboarding_status as OnboardingStatus) || 'pending',
           createdAt: profile.created_at,
-          company: settings.company as string || undefined,
-          category: settings.category as string || undefined,
+          company: settings.company as string || userMetadata.company,
+          category: settings.category as string || userMetadata.category,
           socialFollowers: Object.keys(socialFollowers).length > 0 ? socialFollowers : undefined
         };
       });
@@ -224,6 +240,9 @@ const OnboardPage = () => {
         return;
       }
       
+      // Generate a random password
+      const tempPassword = Math.random().toString(36).slice(-10);
+      
       // Prepare metadata with user details
       const metadata: Record<string, any> = {
         first_name: newUser.firstName,
@@ -231,65 +250,22 @@ const OnboardPage = () => {
         user_type: newUser.userType,
       };
       
-      // Prepare settings object for user_profiles table
-      const settings: Record<string, any> = {
-        onboarding_status: 'pending'
-      };
-      
       // Add category for influencers
-      if (newUser.userType === 'influencer') {
-        if (newUser.category) {
-          settings.category = newUser.category;
-        }
-        
-        // Add social followers if provided
-        const socialFollowers: Record<string, number> = {};
-        
-        if (newUser.socialFollowers.instagram) {
-          const instagramCount = parseInt(newUser.socialFollowers.instagram);
-          if (!isNaN(instagramCount)) {
-            socialFollowers.instagram = instagramCount;
-          }
-        }
-        
-        if (newUser.socialFollowers.facebook) {
-          const facebookCount = parseInt(newUser.socialFollowers.facebook);
-          if (!isNaN(facebookCount)) {
-            socialFollowers.facebook = facebookCount;
-          }
-        }
-        
-        if (newUser.socialFollowers.twitter) {
-          const twitterCount = parseInt(newUser.socialFollowers.twitter);
-          if (!isNaN(twitterCount)) {
-            socialFollowers.twitter = twitterCount;
-          }
-        }
-        
-        if (newUser.socialFollowers.youtube) {
-          const youtubeCount = parseInt(newUser.socialFollowers.youtube);
-          if (!isNaN(youtubeCount)) {
-            socialFollowers.youtube = youtubeCount;
-          }
-        }
-        
-        if (Object.keys(socialFollowers).length > 0) {
-          settings.social_followers = socialFollowers;
-        }
+      if (newUser.userType === 'influencer' && newUser.category) {
+        metadata.category = newUser.category;
       }
       
       // Add company for businesses
       if (newUser.userType === 'business' && newUser.company) {
-        settings.company = newUser.company;
+        metadata.company = newUser.company;
       }
       
       // Create the user
-      const { data, error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.admin.createUser({
         email: newUser.email,
-        password: Math.random().toString(36).slice(-10), // Generate random password
-        options: {
-          data: metadata
-        }
+        password: tempPassword,
+        email_confirm: true,
+        user_metadata: metadata
       });
       
       if (error) throw error;
@@ -298,10 +274,68 @@ const OnboardPage = () => {
       const userId = data.user?.id;
       
       if (userId) {
-        // Update the user_profiles table with additional settings
+        // Prepare settings object for user_profiles table
+        const settings: Record<string, any> = {
+          onboarding_status: 'pending'
+        };
+        
+        // Add company for businesses
+        if (newUser.userType === 'business' && newUser.company) {
+          settings.company = newUser.company;
+        }
+        
+        // Add category and social followers for influencers
+        if (newUser.userType === 'influencer') {
+          if (newUser.category) {
+            settings.category = newUser.category;
+          }
+          
+          // Add social followers if provided
+          const socialFollowers: Record<string, number> = {};
+          
+          if (newUser.socialFollowers.instagram) {
+            const instagramCount = parseInt(newUser.socialFollowers.instagram);
+            if (!isNaN(instagramCount)) {
+              socialFollowers.instagram = instagramCount;
+            }
+          }
+          
+          if (newUser.socialFollowers.facebook) {
+            const facebookCount = parseInt(newUser.socialFollowers.facebook);
+            if (!isNaN(facebookCount)) {
+              socialFollowers.facebook = facebookCount;
+            }
+          }
+          
+          if (newUser.socialFollowers.twitter) {
+            const twitterCount = parseInt(newUser.socialFollowers.twitter);
+            if (!isNaN(twitterCount)) {
+              socialFollowers.twitter = twitterCount;
+            }
+          }
+          
+          if (newUser.socialFollowers.youtube) {
+            const youtubeCount = parseInt(newUser.socialFollowers.youtube);
+            if (!isNaN(youtubeCount)) {
+              socialFollowers.youtube = youtubeCount;
+            }
+          }
+          
+          if (Object.keys(socialFollowers).length > 0) {
+            settings.social_followers = socialFollowers;
+          }
+        }
+        
+        // Make sure we have first_name, last_name, and email in the profile
         const { error: profileError } = await supabase
           .from('user_profiles')
-          .update({ settings })
+          .update({ 
+            settings,
+            first_name: newUser.firstName,
+            last_name: newUser.lastName,
+            email: newUser.email,
+            role: newUser.userType
+          })
           .eq('id', userId);
           
         if (profileError) {
