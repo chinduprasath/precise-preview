@@ -61,15 +61,22 @@ const SignUpPage = () => {
       const firstName = nameParts[0];
       const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
       
-      // Prepare metadata that includes user type and other relevant info
+      // Create a simpler metadata object
       const metadata = {
         first_name: firstName,
         last_name: lastName,
         name,
         user_type: userType,
-        ...(userType === 'influencer' && category ? { category } : {}),
-        ...(userType === 'business' && company ? { company } : {})
       };
+      
+      // Only add these if they exist and are relevant
+      if (userType === 'influencer' && category) {
+        metadata['category'] = category;
+      }
+      
+      if (userType === 'business' && company) {
+        metadata['company'] = company;
+      }
       
       console.log("Signing up with metadata:", metadata);
       
@@ -87,6 +94,8 @@ const SignUpPage = () => {
         throw error;
       }
       
+      console.log("Sign up response:", data);
+      
       if (data?.user) {
         console.log("User created successfully:", data.user);
         
@@ -96,7 +105,7 @@ const SignUpPage = () => {
         // Show success message
         toast({
           title: "Account created!",
-          description: "Please check your email for a confirmation link, or contact an administrator.",
+          description: "Please check your email to confirm your account or sign in directly.",
         });
         
         // Redirect to the signin page
