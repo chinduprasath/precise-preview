@@ -145,11 +145,12 @@ const BusinessDashboard = () => {
             fetchDashboardData();
             
             // Show notification
-            const newStatus = payload.new?.status;
-            const oldStatus = payload.old?.status;
-            if (newStatus && oldStatus !== newStatus) {
-              toast(`Order status updated to: ${newStatus}`, {
-                description: `Your order has been ${newStatus}`,
+            // Fix the type error by adding type checking
+            if (payload.new && 'status' in payload.new && 
+                payload.old && 'status' in payload.old && 
+                payload.new.status !== payload.old.status) {
+              toast(`Order status updated to: ${payload.new.status}`, {
+                description: `Your order has been ${payload.new.status}`,
                 duration: 5000,
               });
             }
@@ -165,11 +166,14 @@ const BusinessDashboard = () => {
             table: 'notifications',
             filter: `user_id=eq.${user.id}`
           }, (payload) => {
-            if (payload.new) {
-              toast(payload.new.title || 'New notification', {
-                description: payload.new.message || '',
-                duration: 5000,
-              });
+            if (payload.new && typeof payload.new === 'object') {
+              toast(
+                (payload.new.title as string) || 'New notification', 
+                {
+                  description: (payload.new.message as string) || '',
+                  duration: 5000,
+                }
+              );
             }
           })
           .subscribe();
