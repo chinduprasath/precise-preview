@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/components/ui/use-toast';
@@ -51,15 +51,57 @@ const InfluencerProfile: React.FC<InfluencerProfileProps> = ({
   onRequestService
 }) => {
   const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [selectedService, setSelectedService] = useState<ServiceType>('post');
   const [selectedPlatform, setSelectedPlatform] = useState<SocialPlatform>('instagram');
   const [selectedPackage, setSelectedPackage] = useState('platform');
   const [description, setDescription] = useState('');
 
+  useEffect(() => {
+    // Simulating data loading
+    try {
+      setIsLoading(true);
+      // Load influencer data or other initializations
+      // If using actual API calls, this would be where to place them
+
+      setIsLoading(false);
+    } catch (err) {
+      setError("Failed to load influencer data");
+      setIsLoading(false);
+      console.error("Error loading influencer profile:", err);
+    }
+  }, [id]);
+
   const getPrice = (serviceType: ServiceType, platform: SocialPlatform): number => {
     const pricing = samplePricing.find(p => p.serviceType === serviceType && p.platform === platform);
     return pricing ? pricing.price : 0;
   };
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto py-4 flex justify-center items-center min-h-[300px]">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto py-4">
+        <div className="bg-red-50 p-4 rounded-md text-red-800">
+          <p>{error}</p>
+          <Button 
+            variant="outline" 
+            className="mt-2" 
+            onClick={() => window.location.reload()}
+          >
+            Retry
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto py-4">

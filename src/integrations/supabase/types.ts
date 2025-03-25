@@ -195,6 +195,51 @@ export type Database = {
           },
         ]
       }
+      onboarding_users: {
+        Row: {
+          category: string | null
+          company: string | null
+          created_at: string | null
+          email: string
+          first_name: string
+          id: string
+          last_name: string
+          social_followers: Json | null
+          status: string
+          updated_at: string | null
+          user_id: string | null
+          user_type: Database["public"]["Enums"]["user_role"]
+        }
+        Insert: {
+          category?: string | null
+          company?: string | null
+          created_at?: string | null
+          email: string
+          first_name: string
+          id?: string
+          last_name: string
+          social_followers?: Json | null
+          status?: string
+          updated_at?: string | null
+          user_id?: string | null
+          user_type: Database["public"]["Enums"]["user_role"]
+        }
+        Update: {
+          category?: string | null
+          company?: string | null
+          created_at?: string | null
+          email?: string
+          first_name?: string
+          id?: string
+          last_name?: string
+          social_followers?: Json | null
+          status?: string
+          updated_at?: string | null
+          user_id?: string | null
+          user_type?: Database["public"]["Enums"]["user_role"]
+        }
+        Relationships: []
+      }
       order_requests: {
         Row: {
           attachments: Json | null
