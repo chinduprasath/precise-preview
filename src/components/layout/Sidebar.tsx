@@ -164,6 +164,7 @@ const Sidebar = () => {
   const toggleSidebar = () => {
     setIsCollapsed(!isCollapsed);
   };
+  
   const handleLogout = async () => {
     try {
       await supabase.auth.signOut();
@@ -189,7 +190,18 @@ const Sidebar = () => {
       </div>
       
       <nav className="flex-1 overflow-y-auto px-3 py-3 space-y-1">
-        {navItems.map(item => <NavItem key={item.href} icon={item.icon} label={item.label} href={item.href} isActive={item.href === dashboardPath && (currentPath === dashboardPath || currentPath === '/') ? true : currentPath.startsWith(item.href)} isCollapsed={isCollapsed} />)}
+        {navItems.map(item => <NavItem 
+          key={item.href} 
+          icon={item.icon} 
+          label={item.label} 
+          href={item.href} 
+          isActive={
+            /* Update active item logic to work correctly for single-level paths */
+            (item.href === dashboardPath && (currentPath === dashboardPath || currentPath === '/')) || 
+            (item.href !== dashboardPath && currentPath === item.href)
+          } 
+          isCollapsed={isCollapsed} 
+        />)}
       </nav>
       
       <div className="border-t">

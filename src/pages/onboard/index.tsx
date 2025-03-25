@@ -61,6 +61,12 @@ interface OnboardingUser {
   createdAt: string;
   company?: string;
   category?: string;
+  socialFollowers?: {
+    instagram?: number;
+    facebook?: number;
+    twitter?: number;
+    youtube?: number;
+  };
 }
 
 const OnboardPage = () => {
@@ -91,68 +97,95 @@ const OnboardPage = () => {
   // Check if user is admin
   useEffect(() => {
     const checkAdminAccess = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (!session) {
+          navigate('/signin');
+          return;
+        }
+        
+        // Check if user has admin type in metadata
+        const userType = session.user?.user_metadata?.user_type;
+        
+        console.log("Current user type:", userType);
+        
+        if (userType !== 'admin') {
+          console.log("Non-admin user trying to access onboard page, redirecting");
+          navigate('/dashboard/business');
+          toast.error('You do not have access to this page');
+        } else {
+          console.log("Admin user confirmed, loading onboard page");
+          // Load user data since we've confirmed admin access
+          fetchUsers();
+        }
+      } catch (error) {
+        console.error("Error checking admin access:", error);
+        toast.error('Authentication error');
         navigate('/signin');
-        return;
-      }
-      
-      // Check if user has admin type in metadata
-      const userType = session.user?.user_metadata?.user_type;
-      if (userType !== 'admin') {
-        navigate('/dashboard/business');
-        toast.error('You do not have access to this page');
       }
     };
     
     checkAdminAccess();
   }, [navigate]);
 
-  // Fetch users data
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        // Fetch user profiles
-        const { data: profiles, error } = await supabase
-          .from('user_profiles')
-          .select('*')
-          .order('created_at', { ascending: false });
-          
-        if (error) throw error;
+  // Fetch users data - Now called only after admin access is confirmed
+  const fetchUsers = async () => {
+    try {
+      setLoading(true);
+      // Fetch user profiles
+      const { data: profiles, error } = await supabase
+        .from('user_profiles')
+        .select('*')
+        .order('created_at', { ascending: false });
         
-        // Transform profiles to onboarding users format
-        const transformedUsers: OnboardingUser[] = profiles.map(profile => {
-          // Safely access settings properties with proper type checking
-          const settings = profile.settings as Record<string, any> || {};
-          
-          return {
-            id: profile.id,
-            firstName: profile.first_name,
-            lastName: profile.last_name,
-            email: profile.email,
-            userType: profile.role as UserType,
-            status: (settings.onboarding_status as OnboardingStatus) || 'pending',
-            createdAt: profile.created_at,
-            company: profile.role === 'business' ? 
-              (settings.company as string || '') : undefined,
-            category: profile.role === 'influencer' ? 
-              (settings.category as string || '') : undefined
-          };
-        });
+      if (error) throw error;
+      
+      // Transform profiles to onboarding users format
+      const transformedUsers: OnboardingUser[] = profiles.map(profile => {
+        // Safely access settings properties with proper type checking
+        const settings = profile.settings as Record<string, any> || {};
         
-        setUsers(transformedUsers);
-        setFilteredUsers(transformedUsers);
-      } catch (error) {
-        console.error('Error fetching users:', error);
-        toast.error('Failed to load users');
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    fetchUsers();
-  }, []);
+        // Parse social followers if available
+        const socialFollowers: Record<string, number> = {};
+        if (settings.social_followers) {
+          try {
+            const followers = typeof settings.social_followers === 'string' 
+              ? JSON.parse(settings.social_followers) 
+              : settings.social_followers;
+              
+            if (followers.instagram) socialFollowers.instagram = Number(followers.instagram);
+            if (followers.facebook) socialFollowers.facebook = Number(followers.facebook);
+            if (followers.twitter) socialFollowers.twitter = Number(followers.twitter);
+            if (followers.youtube) socialFollowers.youtube = Number(followers.youtube);
+          } catch (e) {
+            console.error("Error parsing social followers:", e);
+          }
+        }
+        
+        return {
+          id: profile.id,
+          firstName: profile.first_name,
+          lastName: profile.last_name,
+          email: profile.email,
+          userType: profile.role as UserType,
+          status: (settings.onboarding_status as OnboardingStatus) || 'pending',
+          createdAt: profile.created_at,
+          company: settings.company as string || undefined,
+          category: settings.category as string || undefined,
+          socialFollowers: Object.keys(socialFollowers).length > 0 ? socialFollowers : undefined
+        };
+      });
+      
+      setUsers(transformedUsers);
+      setFilteredUsers(transformedUsers);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      toast.error('Failed to load users');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Apply filters and search
   useEffect(() => {
