@@ -82,7 +82,6 @@ const ChatsPage = () => {
                 type="search"
                 placeholder="Search Influencer" 
                 className="bg-gray-50"
-                prefix={<span className="text-gray-400">🔍</span>}
               />
             </div>
           </div>
