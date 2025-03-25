@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { User, Settings, FileSpreadsheet, LogOut, ChevronDown } from 'lucide-react';
+import { User, Settings, LogOut, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -13,6 +13,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
+import { ThemeToggle } from '@/components/ui/theme-toggle';
+import { useTheme } from '@/components/theme-provider';
 
 interface SidebarFooterProps {
   isCollapsed: boolean;
@@ -24,6 +26,7 @@ export const SidebarFooter: React.FC<SidebarFooterProps> = ({
   profilePath
 }) => {
   const navigate = useNavigate();
+  const { theme } = useTheme();
 
   const handleLogout = async () => {
     try {
@@ -44,10 +47,10 @@ export const SidebarFooter: React.FC<SidebarFooterProps> = ({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button className={cn(
-                "flex items-center gap-2 p-2 rounded-lg hover:bg-gray-100 text-sm font-medium text-gray-700 w-full", 
+                "flex items-center gap-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-200 w-full", 
                 isCollapsed && "justify-center"
               )}>
-                <User size={16} className="text-gray-700" />
+                <User size={16} className="text-gray-700 dark:text-gray-200" />
                 {!isCollapsed && (
                   <>
                     <span>Account</span>
@@ -85,13 +88,8 @@ export const SidebarFooter: React.FC<SidebarFooterProps> = ({
       </div>
       
       <div className={cn("p-4 border-t", isCollapsed && "hidden")}>
-        <div className="flex gap-4 items-center justify-between">
-          <button className="px-4 py-2 rounded-md border border-gray-200 text-sm font-medium transition-all duration-300 hover:bg-gray-50">
-            Light Mode
-          </button>
-          <button className="px-4 py-2 rounded-md bg-gray-800 text-white text-sm font-medium transition-all duration-300 hover:bg-gray-700">
-            Dark Mode
-          </button>
+        <div className="flex items-center justify-center">
+          <ThemeToggle />
         </div>
       </div>
     </>
