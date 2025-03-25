@@ -12,6 +12,7 @@ import ChatsPage from "./pages/chats";
 import ReachPage from "./pages/reach";
 import ServicesPage from "./pages/services";
 import OrdersPage from "./pages/orders";
+import RequestsPage from "./pages/requests";
 import ReportsPage from "./pages/reports";
 import LandingPage from "./pages/landing";
 import SignUpPage from "./pages/auth/signup";
@@ -44,6 +45,7 @@ function App() {
             <Route path="/reach" element={<ReachPage />} />
             <Route path="/services" element={<ServicesPage />} />
             <Route path="/orders" element={<OrdersPage />} />
+            <Route path="/requests" element={<RequestsPage />} />
             <Route path="/reports" element={<ReportsPage />} />
             
             {/* New Landing and Auth Pages */}

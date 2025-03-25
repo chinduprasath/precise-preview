@@ -7,6 +7,7 @@ import Header from '@/components/layout/Header';
 import RequestsList from '@/components/dashboard/RequestsList';
 import { InfluencerRequest, RequestStatus } from '@/types/request';
 import { useToast } from '@/components/ui/use-toast';
+import { Link } from 'react-router-dom';
 
 const InfluencerDashboard = () => {
   const [requests, setRequests] = useState<InfluencerRequest[]>([]);
@@ -126,7 +127,9 @@ const InfluencerDashboard = () => {
               <div className="lg:col-span-2 bg-white rounded-lg shadow-sm p-6">
                 <div className="flex justify-between items-center mb-6">
                   <h2 className="text-lg font-semibold">Service Requests</h2>
-                  <Button variant="outline" size="sm">View All</Button>
+                  <Button variant="outline" size="sm" asChild>
+                    <Link to="/requests">View All</Link>
+                  </Button>
                 </div>
                 
                 <RequestsList 
