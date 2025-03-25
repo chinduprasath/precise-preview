@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
-import { LayoutDashboard, Users, MessageSquare, BarChart, LayoutGrid, Settings, ShoppingCart, FileSpreadsheet, User, LogOut, ChevronLeft, ChevronRight, ChevronDown, FileText } from 'lucide-react';
+import { LayoutDashboard, Users, MessageSquare, BarChart, LayoutGrid, FileSpreadsheet, FileText, ShoppingCart, ChevronLeft, ChevronRight, Settings, ShoppingCart, FileSpreadsheet, User, LogOut, ChevronDown, FileText } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+
 interface NavItemProps {
   icon: React.ReactNode;
   label: string;
@@ -13,6 +14,7 @@ interface NavItemProps {
   isActive?: boolean;
   isCollapsed?: boolean;
 }
+
 const NavItem = ({
   icon,
   label,
@@ -27,6 +29,7 @@ const NavItem = ({
       {!isCollapsed && <span>{label}</span>}
     </Link>;
 };
+
 const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -54,12 +57,14 @@ const Sidebar = () => {
       setIsCollapsed(true);
     }
   }, [isMobile]);
+
   useEffect(() => {
     const storedUserType = localStorage.getItem('userType');
     if (storedUserType) {
       setUserType(storedUserType);
     }
   }, []);
+
   const dashboardPath = `/dashboard/${userType}`;
   const navItems = [{
     icon: <LayoutDashboard className="w-full h-full" />,
@@ -99,8 +104,6 @@ const Sidebar = () => {
     href: "/billing"
   }];
 
-  // Remove bottomNavItems since we're no longer using it
-
   const toggleSidebar = () => {
     setIsCollapsed(!isCollapsed);
   };
@@ -115,6 +118,7 @@ const Sidebar = () => {
       toast.error('Failed to log out');
     }
   };
+
   return <aside className={cn("flex flex-col border-r bg-white transition-all duration-300 h-screen", isCollapsed ? "w-16" : "w-60")}>
       <div className={cn("p-4 flex justify-between items-center", isCollapsed && "justify-center")}>
         {!isCollapsed && <Link to={dashboardPath} className="text-primary font-bold text-2xl">
@@ -147,4 +151,5 @@ const Sidebar = () => {
       </div>
     </aside>;
 };
+
 export default Sidebar;

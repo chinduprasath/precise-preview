@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
-import { Bell, Search, ChevronDown } from 'lucide-react';
-import { Avatar } from '@/components/ui/avatar';
+import { Bell, Search, ChevronDown, Settings, User, FileSpreadsheet, LogOut } from 'lucide-react';
+import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import {
   DropdownMenu,
@@ -11,9 +11,25 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Link, useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 const Header = () => {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      localStorage.removeItem('userType');
+      navigate('/');
+      toast.success('Logged out successfully');
+    } catch (error) {
+      console.error('Error logging out:', error);
+      toast.error('Failed to log out');
+    }
+  };
 
   return (
     <header className="h-16 border-b bg-white px-6 flex items-center justify-between">
@@ -40,7 +56,7 @@ const Header = () => {
           <DropdownMenuTrigger asChild>
             <button className="flex items-center gap-2 hover:bg-gray-50 p-1 rounded-lg transition-all duration-300">
               <Avatar>
-                <img 
+                <AvatarImage 
                   src="https://picsum.photos/id/1005/200/200" 
                   alt="User avatar" 
                   className="h-full w-full object-cover"
@@ -56,11 +72,23 @@ const Header = () => {
           <DropdownMenuContent className="w-56 animate-fade-in" align="end">
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="cursor-pointer">Profile</DropdownMenuItem>
-            <DropdownMenuItem className="cursor-pointer">Settings</DropdownMenuItem>
-            <DropdownMenuItem className="cursor-pointer">Billing</DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer flex items-center gap-2">
+              <User className="h-4 w-4" />
+              <Link to="/account/business" className="w-full">Profile</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer flex items-center gap-2">
+              <Settings className="h-4 w-4" />
+              <Link to="/account/settings" className="w-full">Settings</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer flex items-center gap-2">
+              <FileSpreadsheet className="h-4 w-4" />
+              <Link to="/billing" className="w-full">Billing</Link>
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="cursor-pointer">Log out</DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer flex items-center gap-2" onClick={handleLogout}>
+              <LogOut className="h-4 w-4" />
+              <span>Log out</span>
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
