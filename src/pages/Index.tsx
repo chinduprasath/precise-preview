@@ -506,8 +506,8 @@ const Index = () => {
                   <Card className="shadow-sm border-gray-200">
                     <CardContent className="p-4">
                       <h2 className="text-lg font-medium mb-4">Influencers</h2>
-                      <ScrollArea className="h-[600px] pr-4">
-                        <div className="space-y-3">
+                      <ScrollArea className="h-[calc(100vh-300px)] pr-4">
+                        <div className="space-y-3 pr-4">
                           {influencers.map((influencer) => (
                             <InfluencerCard
                               key={influencer.id}
