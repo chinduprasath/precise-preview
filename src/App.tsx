@@ -22,11 +22,13 @@ import BusinessProfile from "./pages/account/business";
 import InfluencerProfile from "./pages/account/influencer";
 import SettingsPage from "./pages/account/settings";
 import NotFound from "./pages/NotFound";
+import { BillingPage } from "./pages/billing";
 
+// Create a new QueryClient instance
 const queryClient = new QueryClient();
 
-const App = () => (
-  <React.StrictMode>
+function App() {
+  return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Toaster />
@@ -56,13 +58,14 @@ const App = () => (
             <Route path="/account/business" element={<BusinessProfile />} />
             <Route path="/account/influencer" element={<InfluencerProfile />} />
             <Route path="/account/settings" element={<SettingsPage />} />
+            <Route path="/billing" element={<BillingPage />} />
             
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
-  </React.StrictMode>
-);
+  );
+}
 
 export default App;
