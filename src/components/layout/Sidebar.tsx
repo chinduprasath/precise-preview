@@ -94,23 +94,13 @@ const Sidebar = () => {
   const dashboardPath = `/dashboard/${userType}`;
   const profilePath = `/account/${userType}`;
   
-  const navItems = [{
-    icon: <LayoutDashboard className="w-full h-full" />,
-    label: "Dashboard",
-    href: dashboardPath
-  }];
-  
-  // Add Onboard menu item only for admin users
-  if (userType === 'admin') {
-    navItems.push({
-      icon: <UserPlus className="w-full h-full" />,
-      label: "Onboard",
-      href: "/onboard"
-    });
-  }
-  
-  // Add common menu items
-  navItems.push(
+  // Create an array to hold navigation items common to all user types
+  const commonNavItems = [
+    {
+      icon: <LayoutDashboard className="w-full h-full" />,
+      label: "Dashboard",
+      href: dashboardPath
+    },
     {
       icon: <Users className="w-full h-full" />,
       label: "Influencers",
@@ -135,20 +125,7 @@ const Sidebar = () => {
       icon: <FileSpreadsheet className="w-full h-full" />,
       label: "Reports",
       href: "/reports"
-    }
-  );
-
-  // Only show Requests link for influencers
-  if (userType === 'influencer') {
-    navItems.push({
-      icon: <FileText className="w-full h-full" />,
-      label: "Requests",
-      href: "/requests"
-    });
-  }
-
-  // Add these items for all user types
-  navItems.push(
+    },
     {
       icon: <ShoppingCart className="w-full h-full" />,
       label: "Orders",
@@ -159,7 +136,32 @@ const Sidebar = () => {
       label: "Billing",
       href: "/billing"
     }
-  );
+  ];
+  
+  // Create the complete navItems array based on user type
+  let navItems = [...commonNavItems];
+  
+  // Add Onboard menu item only for admin users (at position 1, after Dashboard)
+  if (userType === 'admin') {
+    navItems.splice(1, 0, {
+      icon: <UserPlus className="w-full h-full" />,
+      label: "Onboard",
+      href: "/onboard"
+    });
+  }
+  
+  // Add Requests link only for influencers (before Orders)
+  if (userType === 'influencer') {
+    // Find the index of Orders to insert Requests right before it
+    const ordersIndex = navItems.findIndex(item => item.label === "Orders");
+    if (ordersIndex !== -1) {
+      navItems.splice(ordersIndex, 0, {
+        icon: <FileText className="w-full h-full" />,
+        label: "Requests",
+        href: "/requests"
+      });
+    }
+  }
 
   const toggleSidebar = () => {
     setIsCollapsed(!isCollapsed);
