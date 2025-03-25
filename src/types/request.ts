@@ -17,11 +17,14 @@ export interface InfluencerRequest {
   businessName: string;
   influencerId: string;
   influencerName: string;
+  influencerImage?: string;
   serviceType: ServiceType;
   platform: SocialPlatform;
   description: string;
   price: number;
+  currency?: string;
   status: RequestStatus;
+  dateRequested?: string;
   createdAt: string;
   updatedAt: string;
 }

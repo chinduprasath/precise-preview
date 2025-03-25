@@ -51,6 +51,7 @@ const BusinessDashboard = () => {
             created_at,
             updated_at,
             influencer_id,
+            business_id,
             influencer_profiles:influencer_id(id, user_profiles(first_name, last_name, profile_image_url))
           `)
           .eq('business_id', user.id)
@@ -85,13 +86,15 @@ const BusinessDashboard = () => {
         }
         
         // Transform the data to match our existing interface
-        const formattedRequests = orderRequests.map(request => {
+        const formattedRequests: InfluencerRequest[] = orderRequests.map(request => {
           const influencerData = request.influencer_profiles;
           const firstName = influencerData?.user_profiles?.first_name || '';
           const lastName = influencerData?.user_profiles?.last_name || '';
           
           return {
             id: request.id,
+            businessId: request.business_id || user.id,
+            businessName: 'Your Business', // We could fetch this if needed
             influencerId: request.influencer_id,
             influencerName: `${firstName} ${lastName}`.trim(),
             influencerImage: influencerData?.user_profiles?.profile_image_url || 'https://picsum.photos/200/200',
@@ -100,7 +103,7 @@ const BusinessDashboard = () => {
             price: request.price,
             currency: request.currency,
             status: request.status as RequestStatus,
-            dateRequested: new Date(request.created_at).toISOString(),
+            createdAt: new Date(request.created_at).toISOString(),
             updatedAt: new Date(request.updated_at).toISOString(),
             description: request.description
           };
@@ -142,10 +145,11 @@ const BusinessDashboard = () => {
             fetchDashboardData();
             
             // Show notification
-            const status = payload.new.status;
-            if (status && payload.old.status !== status) {
-              toast(`Order status updated to: ${status}`, {
-                description: `Your order has been ${status}`,
+            const newStatus = payload.new?.status;
+            const oldStatus = payload.old?.status;
+            if (newStatus && oldStatus !== newStatus) {
+              toast(`Order status updated to: ${newStatus}`, {
+                description: `Your order has been ${newStatus}`,
                 duration: 5000,
               });
             }
@@ -161,10 +165,12 @@ const BusinessDashboard = () => {
             table: 'notifications',
             filter: `user_id=eq.${user.id}`
           }, (payload) => {
-            toast(payload.new.title, {
-              description: payload.new.message,
-              duration: 5000,
-            });
+            if (payload.new) {
+              toast(payload.new.title || 'New notification', {
+                description: payload.new.message || '',
+                duration: 5000,
+              });
+            }
           })
           .subscribe();
           
