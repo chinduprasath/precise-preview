@@ -13,12 +13,23 @@ import {
   User,
   LogOut,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  ChevronDown,
+  FileText
 } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface NavItemProps {
   icon: React.ReactNode;
@@ -119,24 +130,19 @@ const Sidebar = () => {
       label: "Reports",
       href: "/reports",
     },
-  ];
-
-  const bottomNavItems = [
     {
-      icon: <User className="w-full h-full" />,
-      label: "My Profile",
-      href: `/account/${userType}`,
-    },
-    {
-      icon: <Settings className="w-full h-full" />,
-      label: "Settings",
-      href: "/account/settings",
+      icon: <FileText className="w-full h-full" />,
+      label: "Requests",
+      href: "/requests",
     },
     {
       icon: <ShoppingCart className="w-full h-full" />,
       label: "Orders",
       href: "/orders",
     },
+  ];
+
+  const bottomNavItems = [
     {
       icon: <FileSpreadsheet className="w-full h-full" />,
       label: "Billing",
@@ -216,18 +222,69 @@ const Sidebar = () => {
               isCollapsed={isCollapsed}
             />
           ))}
-          <button 
-            onClick={handleLogout}
-            className={cn(
-              "flex items-center rounded-lg text-sm font-medium transition-all duration-300 w-full text-red-600 hover:bg-red-50",
-              isCollapsed ? "justify-center px-2 py-3" : "gap-3 px-3 py-3 text-left"
-            )}
-          >
-            <div className="w-5 h-5 transition-transform duration-300">
-              <LogOut className="w-full h-full" />
+          
+          {isCollapsed ? (
+            <NavItem
+              icon={<User className="w-full h-full" />}
+              label="My Account"
+              href={`/account/${userType}`}
+              isActive={currentPath.includes('/account')}
+              isCollapsed={isCollapsed}
+            />
+          ) : (
+            <div className="relative">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className={cn(
+                    "flex items-center justify-between w-full rounded-lg text-sm font-medium transition-all duration-300 px-3 py-3 text-gray-700 hover:bg-secondary",
+                    currentPath.includes('/account') && "bg-primary text-white"
+                  )}>
+                    <div className="flex items-center gap-3">
+                      <div className={cn(
+                        "w-5 h-5 transition-transform duration-300 group-hover:scale-110",
+                        currentPath.includes('/account') ? "text-white" : "text-gray-700"
+                      )}>
+                        <User className="w-full h-full" />
+                      </div>
+                      <span>My Account</span>
+                    </div>
+                    <ChevronDown className="h-4 w-4" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-52">
+                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link to={`/account/${userType}`}>Profile</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/account/settings">Settings</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/billing">Billing</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem className="text-red-600 cursor-pointer" onClick={handleLogout}>
+                    Log out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
-            {!isCollapsed && <span>Logout</span>}
-          </button>
+          )}
+          
+          {isCollapsed && (
+            <button 
+              onClick={handleLogout}
+              className={cn(
+                "flex items-center rounded-lg text-sm font-medium transition-all duration-300 w-full text-red-600 hover:bg-red-50",
+                "justify-center px-2 py-3"
+              )}
+            >
+              <div className="w-5 h-5 transition-transform duration-300">
+                <LogOut className="w-full h-full" />
+              </div>
+            </button>
+          )}
         </nav>
       </div>
       
