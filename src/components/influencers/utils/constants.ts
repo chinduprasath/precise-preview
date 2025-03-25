@@ -3,12 +3,12 @@
 export const serviceContentData = [
   {
     id: '1',
-    image: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+    image: 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
     stats: { likes: 200, views: 500, comments: 50, shares: 10 }
   },
   {
     id: '2',
-    image: 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+    image: 'https://images.unsplash.com/photo-1526726538690-5cbf956ae2fd?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
     stats: { likes: 200, views: 500, comments: 50, shares: 10 }
   },
   {
@@ -18,27 +18,27 @@ export const serviceContentData = [
   },
   {
     id: '4',
-    image: 'https://images.unsplash.com/photo-1526726538690-5cbf956ae2fd?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+    image: 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
     stats: { likes: 200, views: 500, comments: 50, shares: 10 }
   },
   {
     id: '5',
-    image: 'https://images.unsplash.com/photo-1542362567-b07e54358753?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-    stats: { likes: 200, views: 500, comments: 50, shares: 10 }
-  },
-  {
-    id: '6',
     image: 'https://images.unsplash.com/photo-1526726538690-5cbf956ae2fd?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
     stats: { likes: 200, views: 500, comments: 50, shares: 10 }
   },
   {
+    id: '6',
+    image: 'https://images.unsplash.com/photo-1542362567-b07e54358753?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+    stats: { likes: 200, views: 500, comments: 50, shares: 10 }
+  },
+  {
     id: '7',
-    image: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+    image: 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
     stats: { likes: 200, views: 500, comments: 50, shares: 10 }
   },
   {
     id: '8',
-    image: 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+    image: 'https://images.unsplash.com/photo-1526726538690-5cbf956ae2fd?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
     stats: { likes: 200, views: 500, comments: 50, shares: 10 }
   },
 ];

@@ -27,27 +27,13 @@ const ContentCard = ({ item }: { item: ContentItem }) => {
           alt="Content" 
           className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
-          <div className="p-3 w-full">
-            <div className="flex justify-between text-white">
-              <div className="flex items-center gap-1">
-                <Heart className="w-4 h-4" />
-                <span className="text-xs">{formatNumber(item.stats.likes)}</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Eye className="w-4 h-4" />
-                <span className="text-xs">{formatNumber(item.stats.views)}</span>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
-      <div className="p-3 flex justify-between text-sm text-gray-500 bg-white">
-        <div className="flex items-center gap-1">
+      <div className="px-3 py-2 flex flex-wrap justify-between text-sm text-gray-500 bg-white">
+        <div className="flex items-center gap-1 mb-1">
           <Heart className="w-4 h-4 text-red-500" />
           <span className="text-xs">{formatNumber(item.stats.likes)}</span>
         </div>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 mb-1">
           <Eye className="w-4 h-4" />
           <span className="text-xs">{formatNumber(item.stats.views)}</span>
         </div>
