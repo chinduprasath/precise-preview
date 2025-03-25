@@ -59,6 +59,7 @@ interface SocialFollowers {
 
 interface OnboardingUser {
   id: string;
+  user_id?: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -68,18 +69,6 @@ interface OnboardingUser {
   company?: string;
   category?: string;
   socialFollowers?: SocialFollowers;
-}
-
-// Define the shape of user profile data from Supabase
-interface UserProfile {
-  id: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-  role: string;
-  created_at: string;
-  settings: Record<string, any>;
-  [key: string]: any; // Allow additional properties
 }
 
 const OnboardPage = () => {
@@ -139,62 +128,38 @@ const OnboardPage = () => {
     checkAdminAccess();
   }, [navigate]);
 
-  // Fetch users data - Called only after admin access is confirmed
+  // Fetch users data from the new onboarding_users table
   const fetchUsers = async () => {
     try {
       setLoading(true);
       
-      // Fetch user profiles directly from the user_profiles table
-      const { data: profiles, error: profilesError } = await supabase
-        .from('user_profiles')
+      // Fetch onboarding users from our new dedicated table
+      const { data, error } = await supabase
+        .from('onboarding_users')
         .select('*')
         .order('created_at', { ascending: false });
         
-      if (profilesError) {
-        console.error("Error fetching profiles:", profilesError);
-        throw profilesError;
+      if (error) {
+        console.error("Error fetching onboarding users:", error);
+        throw error;
       }
 
-      console.log("Fetched profiles:", profiles);
+      console.log("Fetched onboarding users:", data);
       
-      // Ensure profiles is an array even if it's null/undefined and properly typed
-      const profilesArray = (profiles || []) as UserProfile[];
-      
-      // Map profiles to users without needing admin access to auth users
-      const transformedUsers: OnboardingUser[] = profilesArray.map(profile => {
-        // Safely access settings properties with proper type checking
-        const settings = profile.settings as Record<string, any> || {};
-        
-        // Parse social followers if available
-        const socialFollowers: SocialFollowers = {};
-        if (settings.social_followers) {
-          try {
-            const followers = typeof settings.social_followers === 'string' 
-              ? JSON.parse(settings.social_followers) 
-              : settings.social_followers;
-              
-            if (followers.instagram) socialFollowers.instagram = Number(followers.instagram);
-            if (followers.facebook) socialFollowers.facebook = Number(followers.facebook);
-            if (followers.twitter) socialFollowers.twitter = Number(followers.twitter);
-            if (followers.youtube) socialFollowers.youtube = Number(followers.youtube);
-          } catch (e) {
-            console.error("Error parsing social followers:", e);
-          }
-        }
-        
-        return {
-          id: profile.id,
-          firstName: profile.first_name || '',
-          lastName: profile.last_name || '',
-          email: profile.email || '',
-          userType: (profile.role as UserType) || 'business',
-          status: (settings.onboarding_status as OnboardingStatus) || 'pending',
-          createdAt: profile.created_at,
-          company: settings.company as string,
-          category: settings.category as string,
-          socialFollowers: Object.keys(socialFollowers).length > 0 ? socialFollowers : undefined
-        };
-      });
+      // Transform data to match component state structure
+      const transformedUsers: OnboardingUser[] = (data || []).map(user => ({
+        id: user.id,
+        user_id: user.user_id,
+        firstName: user.first_name,
+        lastName: user.last_name,
+        email: user.email,
+        userType: user.user_type as UserType,
+        status: user.status as OnboardingStatus,
+        createdAt: user.created_at,
+        company: user.company,
+        category: user.category,
+        socialFollowers: user.social_followers as SocialFollowers
+      }));
       
       console.log("Transformed users:", transformedUsers);
       setUsers(transformedUsers);
@@ -238,7 +203,7 @@ const OnboardPage = () => {
     setFilteredUsers(result);
   }, [users, searchQuery, statusFilter, typeFilter]);
 
-  // Handle adding new user
+  // Handle adding new user - now creates entry in onboarding_users table
   const handleAddUser = async () => {
     try {
       // Validation
@@ -247,7 +212,7 @@ const OnboardPage = () => {
         return;
       }
       
-      // Generate a random password
+      // Generate a random password for new user accounts
       const tempPassword = Math.random().toString(36).slice(-10);
       
       // Prepare user metadata
@@ -257,16 +222,6 @@ const OnboardPage = () => {
         user_type: newUser.userType
       };
 
-      // If business user, add company to metadata
-      if (newUser.userType === 'business' && newUser.company) {
-        userMetadata['company'] = newUser.company;
-      }
-
-      // If influencer user, add category to metadata
-      if (newUser.userType === 'influencer' && newUser.category) {
-        userMetadata['category'] = newUser.category;
-      }
-      
       console.log("Creating user with data:", {
         email: newUser.email,
         password: "***hidden***",
@@ -293,25 +248,10 @@ const OnboardPage = () => {
       const userId = data.user?.id;
       
       if (userId) {
-        // Prepare settings object for user_profiles table
-        const settings: Record<string, any> = {
-          onboarding_status: 'pending'
-        };
+        // Prepare social followers if provided
+        const socialFollowers: Record<string, number> = {};
         
-        // Add company for businesses
-        if (newUser.userType === 'business' && newUser.company) {
-          settings.company = newUser.company;
-        }
-        
-        // Add category and social followers for influencers
         if (newUser.userType === 'influencer') {
-          if (newUser.category) {
-            settings.category = newUser.category;
-          }
-          
-          // Add social followers if provided
-          const socialFollowers: Record<string, number> = {};
-          
           if (newUser.socialFollowers.instagram) {
             const instagramCount = parseInt(newUser.socialFollowers.instagram);
             if (!isNaN(instagramCount)) {
@@ -339,29 +279,26 @@ const OnboardPage = () => {
               socialFollowers.youtube = youtubeCount;
             }
           }
-          
-          if (Object.keys(socialFollowers).length > 0) {
-            settings.social_followers = socialFollowers;
-          }
         }
         
-        console.log("Updating user profile with settings:", settings);
-        
-        // Update the user profile - either creating or updating, depending on if the trigger already created it
-        const { error: upsertError } = await supabase
-          .from('user_profiles')
-          .upsert({
-            id: userId,
+        // Create an entry in the onboarding_users table
+        const { error: insertError } = await supabase
+          .from('onboarding_users')
+          .insert({
+            user_id: userId,
             first_name: newUser.firstName,
             last_name: newUser.lastName,
             email: newUser.email,
-            role: newUser.userType,
-            settings: settings
+            user_type: newUser.userType,
+            status: 'pending',
+            company: newUser.userType === 'business' ? newUser.company : null,
+            category: newUser.userType === 'influencer' ? newUser.category : null,
+            social_followers: Object.keys(socialFollowers).length > 0 ? socialFollowers : null
           });
           
-        if (upsertError) {
-          console.error("Error upserting user profile:", upsertError);
-          toast.error("User created but profile settings couldn't be updated");
+        if (insertError) {
+          console.error("Error inserting onboarding user:", insertError);
+          toast.error("User created but onboarding record couldn't be created");
         }
       }
       
@@ -393,32 +330,14 @@ const OnboardPage = () => {
     }
   };
 
-  // Handle status update
+  // Handle status update in the onboarding_users table
   const updateUserStatus = async (userId: string, status: OnboardingStatus) => {
     try {
-      // First, get the existing settings object to preserve other settings
-      const { data: existingProfile, error: fetchError } = await supabase
-        .from('user_profiles')
-        .select('settings')
-        .eq('id', userId)
-        .single();
+      console.log("Updating user status:", { userId, status });
       
-      if (fetchError) throw fetchError;
-      
-      // Merge the existing settings with the new onboarding status
-      const updatedSettings = {
-        ...(existingProfile?.settings as Record<string, any> || {}),
-        onboarding_status: status
-      };
-      
-      console.log("Updating user status:", { userId, status, updatedSettings });
-      
-      // Update the settings object with the merged data
       const { error } = await supabase
-        .from('user_profiles')
-        .update({
-          settings: updatedSettings
-        })
+        .from('onboarding_users')
+        .update({ status })
         .eq('id', userId);
         
       if (error) throw error;
