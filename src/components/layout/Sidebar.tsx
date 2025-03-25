@@ -177,20 +177,22 @@ const Sidebar = () => {
     }
   };
 
-  // Check if current path exactly matches the item's href or is a subpath
+  // Improved function to check if a navigation item is active
   const isActiveLink = (href: string) => {
-    if (href === dashboardPath) {
-      return currentPath === dashboardPath || currentPath === '/';
-    }
-    
-    // Handle exact match for paths like /onboard
-    if (href === currentPath) {
+    // Check exact match first
+    if (currentPath === href) {
       return true;
     }
     
-    // Handle subpaths
-    if (href !== dashboardPath && href !== '/') {
-      return currentPath.startsWith(href);
+    // Special handling for dashboard path
+    if (href === dashboardPath && (currentPath === '/' || currentPath === dashboardPath)) {
+      return true;
+    }
+    
+    // For other paths, check if current path starts with the href
+    // But make sure it's not just a partial string match (e.g., "/on" matching "/onboard")
+    if (href !== '/' && href !== dashboardPath) {
+      return currentPath.startsWith(href + '/') || currentPath === href;
     }
     
     return false;
