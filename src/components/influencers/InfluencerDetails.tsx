@@ -24,7 +24,23 @@ const InfluencerDetails: React.FC<InfluencerDetailsProps> = ({
 }) => {
   return <div className="w-full">
       {/* Profile Info */}
-      
+      <div className="flex items-center space-x-4 mb-4">
+        <div className="h-16 w-16 rounded-full overflow-hidden">
+          <img src={profileImage || "https://picsum.photos/200"} alt={name} className="w-full h-full object-cover" />
+        </div>
+        <div>
+          <h1 className="text-xl font-bold">{name}</h1>
+          <p className="text-gray-500 text-sm">{email || `${name.toLowerCase()}@gmail.com`}</p>
+        </div>
+        <div className="ml-auto flex gap-2">
+          <button className="text-gray-500 hover:text-gray-700">
+            <Share2 className="w-5 h-5" />
+          </button>
+          <button className="text-gray-500 hover:text-gray-700">
+            <MessageSquare className="w-5 h-5" />
+          </button>
+        </div>
+      </div>
 
       {/* Social Platforms */}
       <div className="flex justify-between mb-6 mx-[30px]">
