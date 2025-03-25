@@ -82,14 +82,6 @@ interface UserProfile {
   [key: string]: any; // Allow additional properties
 }
 
-// Define the shape of auth user data from Supabase
-interface AuthUser {
-  id: string;
-  email?: string;
-  user_metadata: Record<string, any>;
-  // Add other properties as needed
-}
-
 const OnboardPage = () => {
   const [users, setUsers] = useState<OnboardingUser[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<OnboardingUser[]>([]);
@@ -153,7 +145,6 @@ const OnboardPage = () => {
       setLoading(true);
       
       // Fetch user profiles directly from the user_profiles table
-      // instead of trying to use the admin API
       const { data: profiles, error: profilesError } = await supabase
         .from('user_profiles')
         .select('*')
@@ -164,6 +155,8 @@ const OnboardPage = () => {
         throw profilesError;
       }
 
+      console.log("Fetched profiles:", profiles);
+      
       // Ensure profiles is an array even if it's null/undefined and properly typed
       const profilesArray = (profiles || []) as UserProfile[];
       
@@ -203,6 +196,7 @@ const OnboardPage = () => {
         };
       });
       
+      console.log("Transformed users:", transformedUsers);
       setUsers(transformedUsers);
       setFilteredUsers(transformedUsers);
     } catch (error) {
@@ -256,22 +250,44 @@ const OnboardPage = () => {
       // Generate a random password
       const tempPassword = Math.random().toString(36).slice(-10);
       
-      // Create a new user with the sign up method rather than admin.createUser
+      // Prepare user metadata
+      const userMetadata = {
+        first_name: newUser.firstName,
+        last_name: newUser.lastName,
+        user_type: newUser.userType
+      };
+
+      // If business user, add company to metadata
+      if (newUser.userType === 'business' && newUser.company) {
+        userMetadata['company'] = newUser.company;
+      }
+
+      // If influencer user, add category to metadata
+      if (newUser.userType === 'influencer' && newUser.category) {
+        userMetadata['category'] = newUser.category;
+      }
+      
+      console.log("Creating user with data:", {
+        email: newUser.email,
+        password: "***hidden***",
+        metadata: userMetadata
+      });
+      
+      // Create a new user with the sign up method
       const { data, error } = await supabase.auth.signUp({
         email: newUser.email,
         password: tempPassword,
         options: {
-          data: {
-            first_name: newUser.firstName,
-            last_name: newUser.lastName,
-            user_type: newUser.userType,
-            company: newUser.userType === 'business' ? newUser.company : undefined,
-            category: newUser.userType === 'influencer' ? newUser.category : undefined
-          }
+          data: userMetadata
         }
       });
       
-      if (error) throw error;
+      if (error) {
+        console.error("Signup error:", error);
+        throw error;
+      }
+      
+      console.log("User created successfully:", data);
       
       // Get the new user's ID
       const userId = data.user?.id;
@@ -329,17 +345,22 @@ const OnboardPage = () => {
           }
         }
         
-        // Update the user profile - but the trigger should create it automatically
-        // This is just in case we need to update anything
-        const { error: profileError } = await supabase
+        console.log("Updating user profile with settings:", settings);
+        
+        // Update the user profile - either creating or updating, depending on if the trigger already created it
+        const { error: upsertError } = await supabase
           .from('user_profiles')
-          .update({ 
-            settings
-          })
-          .eq('id', userId);
+          .upsert({
+            id: userId,
+            first_name: newUser.firstName,
+            last_name: newUser.lastName,
+            email: newUser.email,
+            role: newUser.userType,
+            settings: settings
+          });
           
-        if (profileError) {
-          console.error("Error updating user profile:", profileError);
+        if (upsertError) {
+          console.error("Error upserting user profile:", upsertError);
           toast.error("User created but profile settings couldn't be updated");
         }
       }
@@ -386,9 +407,11 @@ const OnboardPage = () => {
       
       // Merge the existing settings with the new onboarding status
       const updatedSettings = {
-        ...(existingProfile.settings as Record<string, any> || {}),
+        ...(existingProfile?.settings as Record<string, any> || {}),
         onboarding_status: status
       };
+      
+      console.log("Updating user status:", { userId, status, updatedSettings });
       
       // Update the settings object with the merged data
       const { error } = await supabase
