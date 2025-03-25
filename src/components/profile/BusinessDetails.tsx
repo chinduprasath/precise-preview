@@ -18,23 +18,32 @@ const BusinessDetails: React.FC<BusinessDetailsProps> = ({
   website,
   location
 }) => {
+  // Format example price in INR
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      maximumFractionDigits: 0
+    }).format(amount);
+  };
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Business Info Card */}
-      <Card>
+      <Card className="overflow-hidden">
         <CardContent className="p-4">
-          <h2 className="text-xl font-bold mb-4">Business Info</h2>
-          <div className="space-y-4">
+          <h2 className="text-lg font-bold mb-3">Business Info</h2>
+          <div className="space-y-3">
             <div>
-              <p className="text-gray-600 mb-1">Business Name</p>
+              <p className="text-gray-600 text-sm mb-1">Business Name</p>
               <p className="font-medium">{businessName}</p>
             </div>
             <div>
-              <p className="text-gray-600 mb-1">Category</p>
+              <p className="text-gray-600 text-sm mb-1">Category</p>
               <p className="font-medium">{category}</p>
             </div>
             <div>
-              <p className="text-gray-600 mb-1">Ratings</p>
+              <p className="text-gray-600 text-sm mb-1">Ratings</p>
               <div className="flex text-amber-400">
                 <Star className="h-4 w-4 fill-current" />
                 <Star className="h-4 w-4 fill-current" />
@@ -44,19 +53,23 @@ const BusinessDetails: React.FC<BusinessDetailsProps> = ({
               </div>
             </div>
             <div>
-              <p className="text-gray-600 mb-1">Service Type</p>
+              <p className="text-gray-600 text-sm mb-1">Service Type</p>
               <p className="font-medium">{serviceType}</p>
             </div>
             <div>
-              <p className="text-gray-600 mb-1">Visit our site</p>
+              <p className="text-gray-600 text-sm mb-1">Visit our site</p>
               <p className="font-medium">{website}</p>
             </div>
             <div>
-              <p className="text-gray-600 mb-1">Location</p>
+              <p className="text-gray-600 text-sm mb-1">Location</p>
               <p className="font-medium">{location}</p>
             </div>
             <div>
-              <p className="text-gray-600 mb-1">Account Management</p>
+              <p className="text-gray-600 text-sm mb-1">Price Range</p>
+              <p className="font-medium">{formatCurrency(5000)} - {formatCurrency(50000)}</p>
+            </div>
+            <div>
+              <p className="text-gray-600 text-sm mb-1">Account Management</p>
               <div className="flex items-center gap-2">
                 <select className="border rounded px-2 py-1 bg-gray-100 text-gray-700 text-sm">
                   <option>Select</option>
@@ -70,17 +83,17 @@ const BusinessDetails: React.FC<BusinessDetailsProps> = ({
       </Card>
 
       {/* Activity Chart */}
-      <Card>
+      <Card className="overflow-hidden">
         <CardContent className="p-4">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-bold">Your Activity</h2>
+          <div className="flex justify-between items-center mb-3">
+            <h2 className="text-lg font-bold">Your Activity</h2>
             <select className="border rounded px-2 py-1 bg-gray-100 text-gray-700 text-sm">
               <option>Weekly</option>
               <option>Monthly</option>
               <option>Yearly</option>
             </select>
           </div>
-          <div className="h-48 relative">
+          <div className="h-40 relative">
             {/* Simple chart visualization */}
             <svg
               className="w-full h-full"
@@ -105,7 +118,7 @@ const BusinessDetails: React.FC<BusinessDetailsProps> = ({
               />
               <circle cx="150" cy="30" r="4" fill="#3b82f6" />
             </svg>
-            <div className="absolute bottom-0 w-full flex justify-between text-xs text-gray-500 py-2">
+            <div className="absolute bottom-0 w-full flex justify-between text-xs text-gray-500 py-1">
               <span>Mon</span>
               <span>Tue</span>
               <span>Wed</span>
@@ -119,10 +132,10 @@ const BusinessDetails: React.FC<BusinessDetailsProps> = ({
       </Card>
 
       {/* Images Section */}
-      <Card>
+      <Card className="overflow-hidden">
         <CardContent className="p-4">
-          <h2 className="text-xl font-bold mb-4">Images</h2>
-          <div className="grid grid-cols-2 gap-2">
+          <h2 className="text-lg font-bold mb-3">Images</h2>
+          <div className="grid grid-cols-3 gap-2">
             {[1, 2, 3, 4, 5, 6].map((item) => (
               <div key={item} className="overflow-hidden rounded-md bg-gray-100 aspect-square">
                 <img

@@ -16,11 +16,13 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { ArrowLeft } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 const SignInPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [userType, setUserType] = useState<'business' | 'influencer' | 'admin'>('business');
   const navigate = useNavigate();
 
   const handleSignIn = async (e: React.FormEvent) => {
@@ -48,21 +50,28 @@ const SignInPage = () => {
         throw error;
       }
       
-      // Determine user type based on email (can be improved with custom claims or a profiles table)
-      let userType = 'business'; // default
-      if (email.includes('admin')) {
-        userType = 'admin';
-      } else if (email.includes('influencer')) {
-        userType = 'influencer';
-      }
-      
       // Store the user type in localStorage
       localStorage.setItem('userType', userType);
+      
+      // Store login details in the database
+      const { error: loginDetailsError } = await supabase
+        .from('login_details')
+        .insert({
+          user_id: data.user.id,
+          login_type: userType,
+          login_method: 'email',
+          ip_address: 'client-side', // We don't have access to real IP on client
+          user_agent: navigator.userAgent
+        });
+      
+      if (loginDetailsError) {
+        console.error('Error storing login details:', loginDetailsError);
+      }
       
       // Show success message
       toast({
         title: "Signed in successfully!",
-        description: "Welcome back to InfluenceConnect.",
+        description: `Welcome back to InfluenceConnect as ${userType}.`,
       });
       
       // Redirect to the appropriate dashboard
@@ -95,6 +104,29 @@ const SignInPage = () => {
           </CardHeader>
           <form onSubmit={handleSignIn}>
             <CardContent className="space-y-4">
+              <div className="space-y-4">
+                <Label>Sign in as</Label>
+                <RadioGroup 
+                  defaultValue="business" 
+                  value={userType}
+                  onValueChange={(value) => setUserType(value as 'business' | 'influencer' | 'admin')}
+                  className="grid grid-cols-3 gap-4"
+                >
+                  <div className="flex items-center space-x-2 border rounded-md p-3 hover:bg-gray-50 cursor-pointer">
+                    <RadioGroupItem value="business" id="business" />
+                    <Label htmlFor="business" className="cursor-pointer">Business</Label>
+                  </div>
+                  <div className="flex items-center space-x-2 border rounded-md p-3 hover:bg-gray-50 cursor-pointer">
+                    <RadioGroupItem value="influencer" id="influencer" />
+                    <Label htmlFor="influencer" className="cursor-pointer">Influencer</Label>
+                  </div>
+                  <div className="flex items-center space-x-2 border rounded-md p-3 hover:bg-gray-50 cursor-pointer">
+                    <RadioGroupItem value="admin" id="admin" />
+                    <Label htmlFor="admin" className="cursor-pointer">Admin</Label>
+                  </div>
+                </RadioGroup>
+              </div>
+              
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input 

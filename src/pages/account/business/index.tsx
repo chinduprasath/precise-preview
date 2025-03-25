@@ -55,7 +55,7 @@ const BusinessProfile = () => {
     <div className="flex h-screen bg-gray-50">
       <Sidebar />
       <div className="flex-1 overflow-auto">
-        <div className="max-w-7xl mx-auto px-4 py-6">
+        <div className="max-w-7xl mx-auto px-3 py-6">
           <div className="bg-white rounded-xl shadow-sm overflow-hidden">
             {/* Profile Header */}
             <div className="relative">
@@ -80,12 +80,12 @@ const BusinessProfile = () => {
             </div>
 
             {/* Profile Info with Two Column Layout */}
-            <div className="pt-16 px-6 pb-6">
+            <div className="pt-16 px-4 pb-6">
               <h1 className="text-2xl font-bold">{user?.email?.split('@')[0] || 'Username'}</h1>
               <p className="text-gray-600">{user?.email || 'username@gmail.com'}</p>
 
               {/* Two Column Layout: Business Details and Tabs */}
-              <div className="mt-6 flex flex-col md:flex-row gap-6">
+              <div className="mt-6 flex flex-col md:flex-row gap-4">
                 {/* Left Column - Business Details */}
                 <div className="md:w-1/3 flex-shrink-0">
                   <BusinessDetails 
