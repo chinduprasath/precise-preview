@@ -18,6 +18,9 @@ import SignInPage from "./pages/auth/signin";
 import AdminDashboard from "./pages/dashboard/admin";
 import InfluencerDashboard from "./pages/dashboard/influencer";
 import BusinessDashboard from "./pages/dashboard/business";
+import BusinessProfile from "./pages/account/business";
+import InfluencerProfile from "./pages/account/influencer";
+import SettingsPage from "./pages/account/settings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -48,6 +51,11 @@ const App = () => (
             <Route path="/dashboard/admin" element={<AdminDashboard />} />
             <Route path="/dashboard/influencer" element={<InfluencerDashboard />} />
             <Route path="/dashboard/business" element={<BusinessDashboard />} />
+            
+            {/* Account Routes */}
+            <Route path="/account/business" element={<BusinessProfile />} />
+            <Route path="/account/influencer" element={<InfluencerProfile />} />
+            <Route path="/account/settings" element={<SettingsPage />} />
             
             <Route path="*" element={<NotFound />} />
           </Routes>

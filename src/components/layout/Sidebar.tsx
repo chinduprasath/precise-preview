@@ -1,4 +1,5 @@
-import React from 'react';
+
+import React, { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { 
   LayoutDashboard, 
@@ -8,9 +9,13 @@ import {
   LayoutGrid, 
   Settings, 
   ShoppingCart, 
-  FileSpreadsheet
+  FileSpreadsheet,
+  User,
+  LogOut
 } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface NavItemProps {
   icon: React.ReactNode;
@@ -43,18 +48,16 @@ const NavItem = ({ icon, label, href, isActive }: NavItemProps) => {
 
 const Sidebar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const currentPath = location.pathname;
+  const [userType, setUserType] = useState<string>('business');
   
-  const getUserType = () => {
-    if (currentPath.includes('/dashboard/admin')) return 'admin';
-    if (currentPath.includes('/dashboard/influencer')) return 'influencer';
-    if (currentPath.includes('/dashboard/business')) return 'business';
-    
+  useEffect(() => {
     const storedUserType = localStorage.getItem('userType');
-    return storedUserType || 'business';
-  };
-  
-  const userType = getUserType();
+    if (storedUserType) {
+      setUserType(storedUserType);
+    }
+  }, []);
   
   const dashboardPath = `/dashboard/${userType}`;
 
@@ -93,9 +96,14 @@ const Sidebar = () => {
 
   const bottomNavItems = [
     {
+      icon: <User className="w-full h-full" />,
+      label: "My Profile",
+      href: `/account/${userType}`,
+    },
+    {
       icon: <Settings className="w-full h-full" />,
       label: "Settings",
-      href: "/settings",
+      href: "/account/settings",
     },
     {
       icon: <ShoppingCart className="w-full h-full" />,
@@ -108,6 +116,18 @@ const Sidebar = () => {
       href: "/billing",
     },
   ];
+
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      localStorage.removeItem('userType');
+      navigate('/');
+      toast.success('Logged out successfully');
+    } catch (error) {
+      console.error('Error logging out:', error);
+      toast.error('Failed to log out');
+    }
+  };
 
   return (
     <aside className="w-60 h-screen flex flex-col border-r bg-white">
@@ -145,6 +165,15 @@ const Sidebar = () => {
               isActive={currentPath.startsWith(item.href)}
             />
           ))}
+          <button 
+            onClick={handleLogout}
+            className="flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-all duration-300 w-full text-left text-red-600 hover:bg-red-50"
+          >
+            <div className="w-5 h-5 transition-transform duration-300">
+              <LogOut className="w-full h-full" />
+            </div>
+            <span>Logout</span>
+          </button>
         </nav>
       </div>
       <div className="p-4 border-t">
