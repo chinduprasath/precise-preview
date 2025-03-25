@@ -38,8 +38,10 @@ function App() {
         retry: 1,
         staleTime: 30000,
         refetchOnWindowFocus: false,
-        onError: (error) => {
-          console.error("Query error:", error);
+        onSettled: (_, error) => {
+          if (error) {
+            console.error("Query error:", error);
+          }
         }
       }
     }
