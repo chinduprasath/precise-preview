@@ -38,8 +38,8 @@ function App() {
         retry: 1,
         staleTime: 30000,
         refetchOnWindowFocus: false,
-        onSettled: (_, error) => {
-          if (error) {
+        meta: {
+          errorHandler: (error: Error) => {
             console.error("Query error:", error);
           }
         }
