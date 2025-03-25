@@ -66,7 +66,7 @@ const SignUpPage = () => {
         first_name: firstName,
         last_name: lastName,
         name: name, // Keep full name for convenience
-        user_type: userType, // This is the key field needed for the database trigger
+        user_type: userType, // This is crucial for the database trigger
         ...(userType === 'influencer' && { category }),
         ...(userType === 'business' && { company }),
       };
@@ -87,17 +87,23 @@ const SignUpPage = () => {
         throw error;
       }
       
-      // Store the user type in localStorage
-      localStorage.setItem('userType', userType);
-      
-      // Show success message
-      toast({
-        title: "Account created!",
-        description: "Welcome to InfluenceConnect.",
-      });
-      
-      // Redirect to the appropriate dashboard
-      navigate(`/dashboard/${userType}`);
+      if (data?.user) {
+        console.log("User created successfully:", data.user);
+        
+        // Store the user type in localStorage
+        localStorage.setItem('userType', userType);
+        
+        // Show success message
+        toast({
+          title: "Account created!",
+          description: "Welcome to InfluenceConnect.",
+        });
+        
+        // Redirect to the appropriate dashboard
+        navigate(`/dashboard/${userType}`);
+      } else {
+        throw new Error("User creation failed - no user data returned");
+      }
     } catch (error: any) {
       console.error('Sign up error:', error);
       toast({
