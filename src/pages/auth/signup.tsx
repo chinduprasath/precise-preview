@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -61,15 +60,14 @@ const SignUpPage = () => {
       const firstName = nameParts[0];
       const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
       
-      // Create a simpler metadata object
+      // Create user metadata with basic information
       const metadata = {
         first_name: firstName,
         last_name: lastName,
-        name,
         user_type: userType,
       };
       
-      // Only add these if they exist and are relevant
+      // Add optional fields only if they have values
       if (userType === 'influencer' && category) {
         metadata['category'] = category;
       }
@@ -78,14 +76,15 @@ const SignUpPage = () => {
         metadata['company'] = company;
       }
       
-      console.log("Signing up with metadata:", metadata);
+      console.log("Signing up with metadata:", JSON.stringify(metadata, null, 2));
       
       // Sign up with Supabase
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          data: metadata
+          data: metadata,
+          emailRedirectTo: window.location.origin + '/signin'
         }
       });
       
@@ -94,25 +93,19 @@ const SignUpPage = () => {
         throw error;
       }
       
-      console.log("Sign up response:", data);
+      console.log("Sign up response:", JSON.stringify(data, null, 2));
       
-      if (data?.user) {
-        console.log("User created successfully:", data.user);
-        
-        // Store the user type in localStorage
-        localStorage.setItem('userType', userType);
-        
-        // Show success message
-        toast({
-          title: "Account created!",
-          description: "Please check your email to confirm your account or sign in directly.",
-        });
-        
-        // Redirect to the signin page
+      // Show success message regardless of email confirmation
+      toast({
+        title: "Account created!",
+        description: "Please check your email to confirm your account before signing in.",
+      });
+      
+      // Redirect to the signin page after a short delay
+      setTimeout(() => {
         navigate('/signin');
-      } else {
-        throw new Error("User creation failed - no user data returned");
-      }
+      }, 2000);
+      
     } catch (error: any) {
       console.error('Sign up error:', error);
       toast({
