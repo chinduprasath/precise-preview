@@ -11,14 +11,13 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Plus, Filter, Search, UserCheck, UserX, User, Check, Instagram, Facebook, Twitter, Youtube } from 'lucide-react';
+import { Plus, Filter, Search, Check, Instagram, Facebook, Twitter, Youtube } from 'lucide-react';
 import { 
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-  CardFooter,
 } from '@/components/ui/card';
 import {
   Dialog,
@@ -51,6 +50,13 @@ import { toast } from 'sonner';
 type OnboardingStatus = 'pending' | 'approved' | 'rejected' | 'completed';
 type UserType = 'influencer' | 'business' | 'admin';
 
+interface SocialFollowers {
+  instagram?: number;
+  facebook?: number;
+  twitter?: number;
+  youtube?: number;
+}
+
 interface OnboardingUser {
   id: string;
   firstName: string;
@@ -61,12 +67,7 @@ interface OnboardingUser {
   createdAt: string;
   company?: string;
   category?: string;
-  socialFollowers?: {
-    instagram?: number;
-    facebook?: number;
-    twitter?: number;
-    youtube?: number;
-  };
+  socialFollowers?: SocialFollowers;
 }
 
 const OnboardPage = () => {
@@ -108,14 +109,10 @@ const OnboardPage = () => {
         // Check if user has admin type in metadata
         const userType = session.user?.user_metadata?.user_type;
         
-        console.log("Current user type:", userType);
-        
         if (userType !== 'admin') {
-          console.log("Non-admin user trying to access onboard page, redirecting");
           navigate('/dashboard/business');
           toast.error('You do not have access to this page');
         } else {
-          console.log("Admin user confirmed, loading onboard page");
           // Load user data since we've confirmed admin access
           fetchUsers();
         }
@@ -147,7 +144,7 @@ const OnboardPage = () => {
         const settings = profile.settings as Record<string, any> || {};
         
         // Parse social followers if available
-        const socialFollowers: Record<string, number> = {};
+        const socialFollowers: SocialFollowers = {};
         if (settings.social_followers) {
           try {
             const followers = typeof settings.social_followers === 'string' 
@@ -205,6 +202,9 @@ const OnboardPage = () => {
     // Apply status filter
     if (statusFilter !== 'all') {
       result = result.filter(user => user.status === statusFilter);
+    } else {
+      // Always filter out rejected users unless specifically viewing rejected
+      result = result.filter(user => user.status !== 'rejected');
     }
     
     // Apply type filter
@@ -231,10 +231,15 @@ const OnboardPage = () => {
         user_type: newUser.userType,
       };
       
+      // Prepare settings object for user_profiles table
+      const settings: Record<string, any> = {
+        onboarding_status: 'pending'
+      };
+      
       // Add category for influencers
       if (newUser.userType === 'influencer') {
         if (newUser.category) {
-          metadata.category = newUser.category;
+          settings.category = newUser.category;
         }
         
         // Add social followers if provided
@@ -269,13 +274,13 @@ const OnboardPage = () => {
         }
         
         if (Object.keys(socialFollowers).length > 0) {
-          metadata.social_followers = socialFollowers;
+          settings.social_followers = socialFollowers;
         }
       }
       
       // Add company for businesses
       if (newUser.userType === 'business' && newUser.company) {
-        metadata.company = newUser.company;
+        settings.company = newUser.company;
       }
       
       // Create the user
@@ -288,6 +293,22 @@ const OnboardPage = () => {
       });
       
       if (error) throw error;
+      
+      // Get the new user's ID
+      const userId = data.user?.id;
+      
+      if (userId) {
+        // Update the user_profiles table with additional settings
+        const { error: profileError } = await supabase
+          .from('user_profiles')
+          .update({ settings })
+          .eq('id', userId);
+          
+        if (profileError) {
+          console.error("Error updating user profile:", profileError);
+          toast.error("User created but profile settings couldn't be updated");
+        }
+      }
       
       toast.success('User added successfully');
       setNewUserOpen(false);
@@ -309,10 +330,7 @@ const OnboardPage = () => {
       });
       
       // Refresh user list
-      // In a real app, we'd add the new user to the list instead of reloading
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000);
+      fetchUsers();
       
     } catch (error: any) {
       console.error('Error adding user:', error);
@@ -600,22 +618,19 @@ const OnboardPage = () => {
                         className={typeFilter === 'all' ? 'bg-accent text-accent-foreground' : ''}
                         onClick={() => setTypeFilter('all')}
                       >
-                        <User className="mr-2 h-4 w-4" />
-                        <span>All Users</span>
+                        All Users
                       </DropdownMenuItem>
                       <DropdownMenuItem 
                         className={typeFilter === 'influencer' ? 'bg-accent text-accent-foreground' : ''}
                         onClick={() => setTypeFilter('influencer')}
                       >
-                        <User className="mr-2 h-4 w-4" />
-                        <span>Influencers</span>
+                        Influencers
                       </DropdownMenuItem>
                       <DropdownMenuItem 
                         className={typeFilter === 'business' ? 'bg-accent text-accent-foreground' : ''}
                         onClick={() => setTypeFilter('business')}
                       >
-                        <User className="mr-2 h-4 w-4" />
-                        <span>Businesses</span>
+                        Businesses
                       </DropdownMenuItem>
                     </DropdownMenuGroup>
                     <DropdownMenuSeparator />
@@ -625,7 +640,7 @@ const OnboardPage = () => {
                         className={statusFilter === 'all' ? 'bg-accent text-accent-foreground' : ''}
                         onClick={() => setStatusFilter('all')}
                       >
-                        All Statuses
+                        All Statuses (except rejected)
                       </DropdownMenuItem>
                       <DropdownMenuItem 
                         className={statusFilter === 'pending' ? 'bg-accent text-accent-foreground' : ''}
@@ -707,35 +722,47 @@ const OnboardPage = () => {
                           {renderStatusBadge(user.status)}
                         </TableCell>
                         <TableCell>
-                          <div className="flex space-x-2">
-                            <Button 
-                              variant="outline" 
-                              size="icon"
-                              onClick={() => updateUserStatus(user.id, 'approved')}
-                              disabled={user.status === 'approved'}
-                              title="Approve"
-                            >
-                              <UserCheck className="h-4 w-4 text-green-600" />
-                            </Button>
-                            <Button 
-                              variant="outline" 
-                              size="icon"
-                              onClick={() => updateUserStatus(user.id, 'rejected')}
-                              disabled={user.status === 'rejected'}
-                              title="Reject"
-                            >
-                              <UserX className="h-4 w-4 text-red-600" />
-                            </Button>
-                            <Button 
-                              variant="outline" 
-                              size="icon"
-                              onClick={() => updateUserStatus(user.id, 'completed')}
-                              disabled={user.status === 'completed'}
-                              title="Mark as Completed"
-                            >
-                              <Check className="h-4 w-4 text-blue-600" />
-                            </Button>
-                          </div>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="outline" size="sm">
+                                Update Status
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem 
+                                onClick={() => updateUserStatus(user.id, 'approved')}
+                                disabled={user.status === 'approved'}
+                                className="text-green-600 hover:bg-green-50"
+                              >
+                                <Check className="mr-2 h-4 w-4" />
+                                Approve
+                              </DropdownMenuItem>
+                              <DropdownMenuItem 
+                                onClick={() => updateUserStatus(user.id, 'rejected')}
+                                disabled={user.status === 'rejected'}
+                                className="text-red-600 hover:bg-red-50"
+                              >
+                                <Check className="mr-2 h-4 w-4" />
+                                Reject
+                              </DropdownMenuItem>
+                              <DropdownMenuItem 
+                                onClick={() => updateUserStatus(user.id, 'pending')}
+                                disabled={user.status === 'pending'}
+                                className="text-yellow-600 hover:bg-yellow-50"
+                              >
+                                <Check className="mr-2 h-4 w-4" />
+                                Mark as Pending
+                              </DropdownMenuItem>
+                              <DropdownMenuItem 
+                                onClick={() => updateUserStatus(user.id, 'completed')}
+                                disabled={user.status === 'completed'}
+                                className="text-blue-600 hover:bg-blue-50"
+                              >
+                                <Check className="mr-2 h-4 w-4" />
+                                Mark as Completed
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </TableCell>
                       </TableRow>
                     ))

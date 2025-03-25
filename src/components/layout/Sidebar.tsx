@@ -177,6 +177,25 @@ const Sidebar = () => {
     }
   };
 
+  // Check if current path exactly matches the item's href or is a subpath
+  const isActiveLink = (href: string) => {
+    if (href === dashboardPath) {
+      return currentPath === dashboardPath || currentPath === '/';
+    }
+    
+    // Handle exact match for paths like /onboard
+    if (href === currentPath) {
+      return true;
+    }
+    
+    // Handle subpaths
+    if (href !== dashboardPath && href !== '/') {
+      return currentPath.startsWith(href);
+    }
+    
+    return false;
+  };
+
   return <aside className={cn("flex flex-col border-r bg-white transition-all duration-300 h-screen", isCollapsed ? "w-16" : "w-60")}>
       <div className={cn("p-4 flex justify-between items-center", isCollapsed && "justify-center")}>
         {!isCollapsed && <Link to={dashboardPath} className="text-primary font-bold text-2xl">
@@ -195,11 +214,7 @@ const Sidebar = () => {
           icon={item.icon} 
           label={item.label} 
           href={item.href} 
-          isActive={
-            /* Update active item logic to work correctly for single-level paths */
-            (item.href === dashboardPath && (currentPath === dashboardPath || currentPath === '/')) || 
-            (item.href !== dashboardPath && currentPath === item.href)
-          } 
+          isActive={isActiveLink(item.href)} 
           isCollapsed={isCollapsed} 
         />)}
       </nav>
