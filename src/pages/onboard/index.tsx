@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Layout } from '@/components/layout/Layout';
 import { 
@@ -11,7 +10,7 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Plus, Filter, Search, UserCheck, UserX, User, Check, X } from 'lucide-react';
+import { Plus, Filter, Search, UserCheck, UserX, User, Check } from 'lucide-react';
 import { 
   Card,
   CardContent,
@@ -48,7 +47,7 @@ import { toast } from 'sonner';
 
 // Types for onboarding data
 type OnboardingStatus = 'pending' | 'approved' | 'rejected' | 'completed';
-type UserType = 'influencer' | 'business';
+type UserType = 'influencer' | 'business' | 'admin';
 
 interface OnboardingUser {
   id: string;
@@ -115,19 +114,24 @@ const OnboardPage = () => {
         if (error) throw error;
         
         // Transform profiles to onboarding users format
-        const transformedUsers: OnboardingUser[] = profiles.map(profile => ({
-          id: profile.id,
-          firstName: profile.first_name,
-          lastName: profile.last_name,
-          email: profile.email,
-          userType: profile.role,
-          status: profile.settings?.onboarding_status || 'pending',
-          createdAt: profile.created_at,
-          company: profile.role === 'business' ? 
-            (profile.settings?.company || '') : undefined,
-          category: profile.role === 'influencer' ? 
-            (profile.settings?.category || '') : undefined
-        }));
+        const transformedUsers: OnboardingUser[] = profiles.map(profile => {
+          // Safely access settings properties with proper type checking
+          const settings = profile.settings as Record<string, any> || {};
+          
+          return {
+            id: profile.id,
+            firstName: profile.first_name,
+            lastName: profile.last_name,
+            email: profile.email,
+            userType: profile.role as UserType,
+            status: (settings.onboarding_status as OnboardingStatus) || 'pending',
+            createdAt: profile.created_at,
+            company: profile.role === 'business' ? 
+              (settings.company as string || '') : undefined,
+            category: profile.role === 'influencer' ? 
+              (settings.category as string || '') : undefined
+          };
+        });
         
         setUsers(transformedUsers);
         setFilteredUsers(transformedUsers);
@@ -224,10 +228,26 @@ const OnboardPage = () => {
   // Handle status update
   const updateUserStatus = async (userId: string, status: OnboardingStatus) => {
     try {
+      // First, get the existing settings object to preserve other settings
+      const { data: existingProfile, error: fetchError } = await supabase
+        .from('user_profiles')
+        .select('settings')
+        .eq('id', userId)
+        .single();
+      
+      if (fetchError) throw fetchError;
+      
+      // Merge the existing settings with the new onboarding status
+      const updatedSettings = {
+        ...(existingProfile.settings as Record<string, any> || {}),
+        onboarding_status: status
+      };
+      
+      // Update the settings object with the merged data
       const { error } = await supabase
         .from('user_profiles')
         .update({
-          settings: { onboarding_status: status }
+          settings: updatedSettings
         })
         .eq('id', userId);
         
