@@ -66,7 +66,7 @@ const SignUpPage = () => {
         first_name: firstName,
         last_name: lastName,
         name: name, // Keep full name for convenience
-        user_type: userType,
+        user_type: userType, // This is the key field needed for the database trigger
         ...(userType === 'influencer' && { category }),
         ...(userType === 'business' && { company }),
       };
