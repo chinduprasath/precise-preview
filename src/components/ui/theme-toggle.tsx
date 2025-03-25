@@ -1,6 +1,6 @@
 
 import * as React from "react"
-import { Moon, Sun } from "lucide-react"
+import { Moon, Sun, Monitor } from "lucide-react"
 import { useTheme } from "@/components/theme-provider"
 import { Button } from "@/components/ui/button"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
@@ -22,6 +22,10 @@ export function ThemeToggle() {
         <Moon size={16} />
         <span>Dark</span>
       </ToggleGroupItem>
+      <ToggleGroupItem value="system" aria-label="System theme" className="px-4 py-2 gap-2 data-[state=on]:bg-primary/10">
+        <Monitor size={16} />
+        <span>System</span>
+      </ToggleGroupItem>
     </ToggleGroup>
   )
 }
@@ -35,6 +39,7 @@ export function ThemeToggleMinimal() {
       size="icon"
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
       className="rounded-full"
+      aria-label="Toggle theme"
     >
       <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
       <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />

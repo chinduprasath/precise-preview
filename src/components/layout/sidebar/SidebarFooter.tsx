@@ -13,7 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
-import { ThemeToggle } from '@/components/ui/theme-toggle';
+import { ThemeToggle, ThemeToggleMinimal } from '@/components/ui/theme-toggle';
 import { useTheme } from '@/components/theme-provider';
 
 interface SidebarFooterProps {
@@ -92,6 +92,14 @@ export const SidebarFooter: React.FC<SidebarFooterProps> = ({
           <ThemeToggle />
         </div>
       </div>
+      
+      {isCollapsed && (
+        <div className="p-3 border-t">
+          <div className="flex items-center justify-center">
+            <ThemeToggleMinimal />
+          </div>
+        </div>
+      )}
     </>
   );
 };

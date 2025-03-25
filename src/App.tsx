@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -47,7 +48,7 @@ function App() {
   });
 
   return (
-    <ThemeProvider defaultTheme="light">
+    <ThemeProvider defaultTheme="system">
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
           <Toaster />
