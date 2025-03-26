@@ -56,7 +56,10 @@ function App() {
           <ErrorBoundary>
             <BrowserRouter>
               <Routes>
+                {/* Make Index the explicit default route for / */}
+                <Route path="/" element={<Index />} />
                 <Route path="/app" element={<Index />} />
+                
                 <Route path="/influencers" element={<InfluencersPage />} />
                 <Route path="/influencers/:id" element={<InfluencerDetailPage />} />
                 <Route path="/chats" element={<ChatsPage />} />
@@ -67,7 +70,7 @@ function App() {
                 <Route path="/reports" element={<ReportsPage />} />
                 <Route path="/notifications" element={<NotificationsPage />} />
                 
-                <Route path="/" element={<LandingPage />} />
+                <Route path="/landing" element={<LandingPage />} />
                 <Route path="/signup" element={<SignUpPage />} />
                 <Route path="/signin" element={<SignInPage />} />
                 
