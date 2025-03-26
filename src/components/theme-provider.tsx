@@ -13,11 +13,15 @@ type ThemeProviderProps = {
 type ThemeProviderState = {
   theme: Theme
   setTheme: (theme: Theme) => void
+  resolvedTheme: "dark" | "light"
+  systemTheme: "dark" | "light"
 }
 
 const initialState: ThemeProviderState = {
   theme: "system",
   setTheme: () => null,
+  resolvedTheme: "light",
+  systemTheme: "light"
 }
 
 const ThemeProviderContext = createContext<ThemeProviderState>(initialState)
@@ -31,39 +35,54 @@ export function ThemeProvider({
   const [theme, setTheme] = useState<Theme>(
     () => (localStorage.getItem(storageKey) as Theme) || defaultTheme
   )
+  
+  const [systemTheme, setSystemTheme] = useState<"dark" | "light">(
+    window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
+  )
+  
+  const resolvedTheme = theme === "system" ? systemTheme : theme
 
+  // Effect to apply the theme to the document
   useEffect(() => {
     const root = window.document.documentElement
     
     root.classList.remove("light", "dark")
     
     if (theme === "system") {
-      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
-        .matches
-        ? "dark"
-        : "light"
-      
       root.classList.add(systemTheme)
-      return
+    } else {
+      root.classList.add(theme)
     }
-    
-    root.classList.add(theme)
-  }, [theme])
+  }, [theme, systemTheme])
 
   // Listen for changes to the prefers-color-scheme media query
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)")
     
     const handleChange = () => {
+      const newSystemTheme = mediaQuery.matches ? "dark" : "light"
+      setSystemTheme(newSystemTheme)
+      
       if (theme === "system") {
         const root = window.document.documentElement
         root.classList.remove("light", "dark")
-        root.classList.add(mediaQuery.matches ? "dark" : "light")
+        root.classList.add(newSystemTheme)
       }
     }
     
-    mediaQuery.addEventListener("change", handleChange)
-    return () => mediaQuery.removeEventListener("change", handleChange)
+    // Initial check
+    handleChange()
+    
+    // Listen for changes
+    try {
+      // Modern browsers
+      mediaQuery.addEventListener("change", handleChange)
+      return () => mediaQuery.removeEventListener("change", handleChange)
+    } catch (err) {
+      // Fallback for older browsers
+      mediaQuery.addListener(handleChange)
+      return () => mediaQuery.removeListener(handleChange)
+    }
   }, [theme])
 
   const value = {
@@ -72,6 +91,8 @@ export function ThemeProvider({
       localStorage.setItem(storageKey, theme)
       setTheme(theme)
     },
+    resolvedTheme,
+    systemTheme
   }
 
   return (

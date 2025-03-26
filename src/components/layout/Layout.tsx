@@ -9,7 +9,7 @@ interface LayoutProps {
 
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-background text-foreground transition-colors duration-300">
       <Sidebar />
       <div className="flex flex-col flex-1 overflow-hidden">
         <Header />
