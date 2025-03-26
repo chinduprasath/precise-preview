@@ -56,10 +56,16 @@ function App() {
           <ErrorBoundary>
             <BrowserRouter>
               <Routes>
-                {/* Make Index the explicit default route for / */}
+                {/* Root routes */}
                 <Route path="/" element={<Index />} />
+                <Route path="/landing" element={<LandingPage />} />
                 <Route path="/app" element={<Index />} />
                 
+                {/* Auth routes */}
+                <Route path="/signin" element={<SignInPage />} />
+                <Route path="/signup" element={<SignUpPage />} />
+                
+                {/* Main application routes */}
                 <Route path="/influencers" element={<InfluencersPage />} />
                 <Route path="/influencers/:id" element={<InfluencerDetailPage />} />
                 <Route path="/chats" element={<ChatsPage />} />
@@ -70,25 +76,23 @@ function App() {
                 <Route path="/reports" element={<ReportsPage />} />
                 <Route path="/notifications" element={<NotificationsPage />} />
                 
-                <Route path="/landing" element={<LandingPage />} />
-                <Route path="/signup" element={<SignUpPage />} />
-                <Route path="/signin" element={<SignInPage />} />
-                
+                {/* Dashboard routes */}
                 <Route path="/dashboard/admin" element={<AdminDashboard />} />
                 <Route path="/dashboard/influencer" element={<InfluencerDashboard />} />
                 <Route path="/dashboard/business" element={<BusinessDashboard />} />
                 
+                {/* Account routes */}
                 <Route path="/account/business" element={<BusinessProfile />} />
                 <Route path="/account/influencer" element={<InfluencerProfile />} />
                 <Route path="/account/settings" element={<SettingsPage />} />
                 <Route path="/billing" element={<BillingPage />} />
-                
                 <Route path="/onboard" element={<OnboardPage />} />
                 
                 <Route path="/account" element={
                   <Navigate to={`/account/${localStorage.getItem('userType') || 'business'}`} replace />
                 } />
                 
+                {/* 404 route */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>

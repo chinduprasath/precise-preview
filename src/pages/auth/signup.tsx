@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -56,19 +55,16 @@ const SignUpPage = () => {
     setIsLoading(true);
     
     try {
-      // Split name into first name and last name
       const nameParts = name.trim().split(' ');
       const firstName = nameParts[0];
       const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
       
-      // Create user metadata with basic information
       const metadata: Record<string, any> = {
         first_name: firstName,
         last_name: lastName,
         user_type: userType,
       };
       
-      // Add optional fields only if they have values
       if (userType === 'influencer' && category) {
         metadata.category = category;
       }
@@ -79,7 +75,6 @@ const SignUpPage = () => {
       
       console.log("Signing up with metadata:", JSON.stringify(metadata, null, 2));
       
-      // Sign up with Supabase
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -96,13 +91,11 @@ const SignUpPage = () => {
       
       console.log("Sign up response:", JSON.stringify(data, null, 2));
       
-      // Show success message
       toast({
         title: "Account created!",
         description: "Please check your email to confirm your account before signing in.",
       });
       
-      // Redirect to the signin page after a short delay
       setTimeout(() => {
         navigate('/signin');
       }, 2000);
@@ -120,7 +113,7 @@ const SignUpPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-12">
+    <div className="min-h-screen flex items-center justify-center bg-background text-foreground px-4 py-12 transition-colors duration-300">
       <div className="max-w-md w-full">
         {step === 1 ? (
           <div className="text-center mb-8">
@@ -129,12 +122,12 @@ const SignUpPage = () => {
               Back to home
             </Link>
             <h1 className="text-3xl font-bold mb-2">Join InfluenceConnect</h1>
-            <p className="text-gray-600 mb-8">Select how you'd like to use our platform</p>
+            <p className="text-muted-foreground mb-8">Select how you'd like to use our platform</p>
             
             <div className="grid grid-cols-1 gap-4">
               <button
                 onClick={() => handleUserTypeSelect('business')}
-                className="flex items-center p-6 bg-white border border-gray-200 rounded-xl hover:border-primary hover:shadow-md transition-all text-left"
+                className="flex items-center p-6 bg-card border border-border rounded-xl hover:border-primary hover:shadow-md transition-all text-left"
                 disabled={isLoading}
               >
                 <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mr-4">
@@ -142,13 +135,13 @@ const SignUpPage = () => {
                 </div>
                 <div>
                   <h3 className="font-semibold text-lg">Business User</h3>
-                  <p className="text-gray-500 text-sm">Find influencers and manage campaigns</p>
+                  <p className="text-muted-foreground text-sm">Find influencers and manage campaigns</p>
                 </div>
               </button>
               
               <button
                 onClick={() => handleUserTypeSelect('influencer')}
-                className="flex items-center p-6 bg-white border border-gray-200 rounded-xl hover:border-primary hover:shadow-md transition-all text-left"
+                className="flex items-center p-6 bg-card border border-border rounded-xl hover:border-primary hover:shadow-md transition-all text-left"
                 disabled={isLoading}
               >
                 <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mr-4">
@@ -156,13 +149,13 @@ const SignUpPage = () => {
                 </div>
                 <div>
                   <h3 className="font-semibold text-lg">Influencer</h3>
-                  <p className="text-gray-500 text-sm">Connect with brands and get paid for promotions</p>
+                  <p className="text-muted-foreground text-sm">Connect with brands and get paid for promotions</p>
                 </div>
               </button>
               
               <button
                 onClick={() => handleUserTypeSelect('admin')}
-                className="flex items-center p-6 bg-white border border-gray-200 rounded-xl hover:border-primary hover:shadow-md transition-all text-left"
+                className="flex items-center p-6 bg-card border border-border rounded-xl hover:border-primary hover:shadow-md transition-all text-left"
                 disabled={isLoading}
               >
                 <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mr-4">
@@ -170,12 +163,12 @@ const SignUpPage = () => {
                 </div>
                 <div>
                   <h3 className="font-semibold text-lg">Administrator</h3>
-                  <p className="text-gray-500 text-sm">Manage platform activities and users</p>
+                  <p className="text-muted-foreground text-sm">Manage platform activities and users</p>
                 </div>
               </button>
             </div>
             
-            <p className="mt-8 text-gray-600">
+            <p className="mt-8 text-muted-foreground">
               Already have an account?{' '}
               <Link to="/signin" className="text-primary hover:underline">
                 Sign in
@@ -183,11 +176,11 @@ const SignUpPage = () => {
             </p>
           </div>
         ) : (
-          <Card className="shadow-lg border-0">
+          <Card className="shadow-lg border border-border">
             <CardHeader>
               <button
                 onClick={() => setStep(1)}
-                className="inline-flex items-center text-gray-500 hover:text-gray-700 mb-4"
+                className="inline-flex items-center text-muted-foreground hover:text-foreground mb-4"
                 type="button"
                 disabled={isLoading}
               >
@@ -280,7 +273,7 @@ const SignUpPage = () => {
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading ? "Creating Account..." : "Create Account"}
                 </Button>
-                <p className="mt-4 text-center text-gray-600 text-sm">
+                <p className="mt-4 text-center text-muted-foreground text-sm">
                   By signing up, you agree to our{' '}
                   <a href="#" className="text-primary hover:underline">
                     Terms of Service

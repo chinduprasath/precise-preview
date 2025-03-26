@@ -89,11 +89,11 @@ const SignInPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-12">
+    <div className="min-h-screen flex items-center justify-center bg-background text-foreground px-4 py-12 transition-colors duration-300">
       <div className="max-w-md w-full">
-        <Card className="shadow-lg border-0">
+        <Card className="shadow-lg border border-border">
           <CardHeader>
-            <Link to="/" className="inline-flex items-center text-gray-500 hover:text-gray-700 mb-4">
+            <Link to="/" className="inline-flex items-center text-muted-foreground hover:text-foreground mb-4">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to home
             </Link>
@@ -112,15 +112,15 @@ const SignInPage = () => {
                   onValueChange={(value) => setUserType(value as 'business' | 'influencer' | 'admin')}
                   className="grid grid-cols-3 gap-4"
                 >
-                  <div className="flex items-center space-x-2 border rounded-md p-3 hover:bg-gray-50 cursor-pointer">
+                  <div className="flex items-center space-x-2 border border-border rounded-md p-3 hover:bg-accent cursor-pointer">
                     <RadioGroupItem value="business" id="business" />
                     <Label htmlFor="business" className="cursor-pointer">Business</Label>
                   </div>
-                  <div className="flex items-center space-x-2 border rounded-md p-3 hover:bg-gray-50 cursor-pointer">
+                  <div className="flex items-center space-x-2 border border-border rounded-md p-3 hover:bg-accent cursor-pointer">
                     <RadioGroupItem value="influencer" id="influencer" />
                     <Label htmlFor="influencer" className="cursor-pointer">Influencer</Label>
                   </div>
-                  <div className="flex items-center space-x-2 border rounded-md p-3 hover:bg-gray-50 cursor-pointer">
+                  <div className="flex items-center space-x-2 border border-border rounded-md p-3 hover:bg-accent cursor-pointer">
                     <RadioGroupItem value="admin" id="admin" />
                     <Label htmlFor="admin" className="cursor-pointer">Admin</Label>
                   </div>
@@ -137,6 +137,7 @@ const SignInPage = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   disabled={isLoading}
+                  className="bg-background border-input"
                 />
               </div>
               
@@ -155,6 +156,7 @@ const SignInPage = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   disabled={isLoading}
+                  className="bg-background border-input"
                 />
               </div>
               
@@ -172,7 +174,7 @@ const SignInPage = () => {
               
               <div className="relative w-full text-center">
                 <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t border-gray-200" />
+                  <span className="w-full border-t border-border" />
                 </div>
                 <div className="relative flex justify-center">
                   <span className="bg-card px-2 text-xs text-muted-foreground">or continue with</span>
@@ -197,7 +199,7 @@ const SignInPage = () => {
                 </Button>
               </div>
               
-              <p className="mt-2 text-center text-gray-600 text-sm">
+              <p className="mt-2 text-center text-muted-foreground text-sm">
                 Don't have an account?{' '}
                 <Link to="/signup" className="text-primary hover:underline">
                   Sign up
