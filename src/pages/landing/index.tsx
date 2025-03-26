@@ -1,12 +1,14 @@
+
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { LandingHeader } from '@/components/landing/LandingHeader';
-import { PricingCard } from '@/components/landing/PricingCard';
-import { TestimonialCard } from '@/components/landing/TestimonialCard';
-import { AboutSection } from '@/components/landing/AboutSection';
-import { ContactForm } from '@/components/landing/ContactForm';
-import { ArrowRight, CheckCircle, Instagram, Facebook, Twitter, Youtube } from 'lucide-react';
+import LandingHeader from '@/components/landing/LandingHeader';
+import PricingCard from '@/components/landing/PricingCard';
+import TestimonialCard from '@/components/landing/TestimonialCard';
+import AboutSection from '@/components/landing/AboutSection';
+import ContactForm from '@/components/landing/ContactForm';
+import { Input } from '@/components/ui/input';
+import { ArrowRight, CheckCircle, Instagram, Facebook, Twitter, Youtube, User, Users, BarChart2 } from 'lucide-react';
 
 const LandingPage = () => {
   const navigate = useNavigate();

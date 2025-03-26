@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { CheckCircle } from 'lucide-react';
 
 interface PricingCardProps {
@@ -10,7 +11,7 @@ interface PricingCardProps {
   description: string;
   features: string[];
   buttonText: string;
-  buttonVariant: 'default' | 'secondary' | 'outline' | 'destructive' | 'ghost' | 'link';
+  buttonVariant?: 'default' | 'outline' | 'secondary';
   highlighted?: boolean;
 }
 
@@ -21,45 +22,39 @@ const PricingCard = ({
   description,
   features,
   buttonText,
-  buttonVariant,
+  buttonVariant = 'default',
   highlighted = false,
 }: PricingCardProps) => {
   return (
-    <div className={`rounded-xl ${
-      highlighted 
-        ? 'bg-primary text-white shadow-xl scale-105 z-10 border-2 border-primary' 
-        : 'bg-white border border-gray-200'
-    } p-8 flex flex-col h-full transition-all hover:shadow-lg`}>
-      <div className="mb-6">
-        <h3 className={`text-xl font-bold mb-1 ${highlighted ? 'text-white' : 'text-gray-900'}`}>{title}</h3>
-        <div className="flex items-end mb-3">
-          <span className={`text-3xl font-bold ${highlighted ? 'text-white' : 'text-gray-900'}`}>{price}</span>
-          {period && <span className={`ml-1 ${highlighted ? 'text-white/80' : 'text-gray-500'}`}>{period}</span>}
-        </div>
-        <p className={`text-sm ${highlighted ? 'text-white/90' : 'text-gray-600'}`}>{description}</p>
-      </div>
-      
-      <div className="space-y-4 mb-8 flex-grow">
-        {features.map((feature, index) => (
-          <div key={index} className="flex items-start">
-            <CheckCircle className={`h-5 w-5 mr-2 flex-shrink-0 ${highlighted ? 'text-white' : 'text-primary'}`} />
-            <span className={`text-sm ${highlighted ? 'text-white/90' : 'text-gray-600'}`}>{feature}</span>
+    <Card className={`h-full flex flex-col ${highlighted ? 'border-primary shadow-lg scale-105' : ''}`}>
+      <CardHeader className="pb-8">
+        <div className="space-y-1">
+          <h3 className="text-2xl font-bold">{title}</h3>
+          <div className="flex items-baseline text-3xl font-bold">
+            {price}
+            {period && <span className="ml-1 text-base font-normal text-muted-foreground">{period}</span>}
           </div>
-        ))}
-      </div>
-      
-      <Button 
-        variant={highlighted ? 'secondary' : buttonVariant}
-        className={`w-full mt-auto ${
-          highlighted && buttonVariant === 'outline' 
-            ? 'bg-white text-primary hover:bg-white/90 hover:text-primary' 
-            : ''
-        }`}
-      >
-        {buttonText}
-      </Button>
-    </div>
+        </div>
+        <p className="text-sm text-muted-foreground pt-2">{description}</p>
+      </CardHeader>
+      <CardContent className="flex-1">
+        <ul className="space-y-3">
+          {features.map((feature, i) => (
+            <li key={i} className="flex items-start">
+              <CheckCircle className="mr-2 h-5 w-5 text-primary flex-shrink-0" />
+              <span className="text-sm">{feature}</span>
+            </li>
+          ))}
+        </ul>
+      </CardContent>
+      <CardFooter>
+        <Button variant={buttonVariant} className="w-full">
+          {buttonText}
+        </Button>
+      </CardFooter>
+    </Card>
   );
 };
 
 export default PricingCard;
+export { PricingCard }; // Add named export

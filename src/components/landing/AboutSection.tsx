@@ -122,3 +122,4 @@ const AboutSection = ({ id }: AboutSectionProps) => {
 };
 
 export default AboutSection;
+export { AboutSection }; // Add named export to support both import styles

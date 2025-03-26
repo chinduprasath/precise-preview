@@ -1,126 +1,105 @@
 
 import React from 'react';
+import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { 
-  Form, 
-  FormControl, 
-  FormField, 
-  FormItem, 
-  FormLabel, 
-  FormMessage 
-} from '@/components/ui/form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 import { toast } from '@/hooks/use-toast';
 
-const formSchema = z.object({
-  name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
-  email: z.string().email({ message: 'Please enter a valid email address.' }),
-  company: z.string().optional(),
-  message: z.string().min(10, { message: 'Message must be at least 10 characters.' }),
-});
-
-type ContactFormValues = z.infer<typeof formSchema>;
+interface ContactFormValues {
+  name: string;
+  email: string;
+  company: string;
+  message: string;
+}
 
 const ContactForm = () => {
-  const form = useForm<ContactFormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: '',
-      email: '',
-      company: '',
-      message: '',
-    },
-  });
+  const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<ContactFormValues>();
 
-  const onSubmit = (data: ContactFormValues) => {
-    console.log('Form data:', data);
-    // Here you would typically send the data to your backend
-    
-    // Show success message
-    toast({
-      title: "Message sent!",
-      description: "We'll get back to you as soon as possible.",
-    });
-    
-    // Reset form
-    form.reset();
+  const onSubmit = async (data: ContactFormValues) => {
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      console.log('Form submitted:', data);
+      
+      toast({
+        title: "Message sent!",
+        description: "We'll get back to you as soon as possible.",
+      });
+      
+      // Reset form
+      reset();
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      toast({
+        title: "Something went wrong",
+        description: "Your message couldn't be sent. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm p-8">
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Full Name</FormLabel>
-                <FormControl>
-                  <Input placeholder="John Doe" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <div className="space-y-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="space-y-2">
+            <Label htmlFor="name">Name</Label>
+            <Input
+              id="name"
+              placeholder="Your name"
+              {...register('name', { required: 'Name is required' })}
+            />
+            {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
+          </div>
           
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input type="email" placeholder="john@example.com" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="Your email"
+              {...register('email', { 
+                required: 'Email is required',
+                pattern: {
+                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                  message: 'Invalid email address'
+                }
+              })}
+            />
+            {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
+          </div>
+        </div>
+        
+        <div className="space-y-2">
+          <Label htmlFor="company">Company (Optional)</Label>
+          <Input
+            id="company"
+            placeholder="Your company"
+            {...register('company')}
           />
-          
-          <FormField
-            control={form.control}
-            name="company"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Company (Optional)</FormLabel>
-                <FormControl>
-                  <Input placeholder="Your Company" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+        </div>
+        
+        <div className="space-y-2">
+          <Label htmlFor="message">Message</Label>
+          <Textarea
+            id="message"
+            rows={5}
+            placeholder="How can we help you?"
+            {...register('message', { required: 'Message is required' })}
           />
-          
-          <FormField
-            control={form.control}
-            name="message"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Message</FormLabel>
-                <FormControl>
-                  <Textarea 
-                    placeholder="How can we help you?" 
-                    className="min-h-[120px]" 
-                    {...field} 
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          
-          <Button type="submit" className="w-full">
-            Send Message
-          </Button>
-        </form>
-      </Form>
-    </div>
+          {errors.message && <p className="text-sm text-red-500">{errors.message.message}</p>}
+        </div>
+      </div>
+      
+      <Button type="submit" className="w-full" disabled={isSubmitting}>
+        {isSubmitting ? 'Sending...' : 'Send Message'}
+      </Button>
+    </form>
   );
 };
 
 export default ContactForm;
+export { ContactForm }; // Add named export
