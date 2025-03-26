@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { User, Settings, LogOut, ChevronDown, Moon, Sun } from 'lucide-react';
@@ -9,12 +8,10 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { ThemeToggle, ThemeToggleMinimal } from '@/components/ui/theme-toggle';
 import { useTheme } from '@/components/theme-provider';
 import { Button } from '@/components/ui/button';
-
 interface SidebarFooterProps {
   isCollapsed: boolean;
   profilePath: string;
 }
-
 export const SidebarFooter: React.FC<SidebarFooterProps> = ({
   isCollapsed,
   profilePath
@@ -24,7 +21,6 @@ export const SidebarFooter: React.FC<SidebarFooterProps> = ({
     resolvedTheme,
     setTheme
   } = useTheme();
-  
   const handleLogout = async () => {
     try {
       await supabase.auth.signOut();
@@ -36,38 +32,9 @@ export const SidebarFooter: React.FC<SidebarFooterProps> = ({
       toast.error('Failed to log out');
     }
   };
-  
-  return (
-    <>
+  return <>
       <div className="border-t border-border mt-auto">
-        <div className="p-4">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="w-full justify-start gap-2 px-2">
-                <User size={20} className="text-foreground" />
-                {!isCollapsed && <span>Profile</span>}
-                {!isCollapsed && <ChevronDown className="ml-auto h-4 w-4" />}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => navigate(profilePath)}>
-                <User className="mr-2 h-4 w-4" />
-                <span>Profile</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate('/account/settings')}>
-                <Settings className="mr-2 h-4 w-4" />
-                <span>Settings</span>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleLogout}>
-                <LogOut className="mr-2 h-4 w-4" />
-                <span>Logout</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+        
       </div>
       
       <div className={cn("p-4 border-t border-border", isCollapsed && "hidden")}>
@@ -81,8 +48,6 @@ export const SidebarFooter: React.FC<SidebarFooterProps> = ({
             <ThemeToggleMinimal />
           </div>
         </div>}
-    </>
-  );
+    </>;
 };
-
 export default SidebarFooter;
