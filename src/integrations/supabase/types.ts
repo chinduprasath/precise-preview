@@ -207,7 +207,6 @@ export type Database = {
           social_followers: Json | null
           status: string
           updated_at: string | null
-          user_id: string | null
           user_type: Database["public"]["Enums"]["user_role"]
         }
         Insert: {
@@ -221,7 +220,6 @@ export type Database = {
           social_followers?: Json | null
           status?: string
           updated_at?: string | null
-          user_id?: string | null
           user_type: Database["public"]["Enums"]["user_role"]
         }
         Update: {
@@ -235,7 +233,6 @@ export type Database = {
           social_followers?: Json | null
           status?: string
           updated_at?: string | null
-          user_id?: string | null
           user_type?: Database["public"]["Enums"]["user_role"]
         }
         Relationships: []
