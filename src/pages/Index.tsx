@@ -2,20 +2,28 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
+import { supabase } from '@/integrations/supabase/client';
 
 const Index = () => {
   const navigate = useNavigate();
   const userType = localStorage.getItem('userType');
 
   useEffect(() => {
-    // If user is authenticated, redirect to appropriate dashboard
-    if (userType) {
-      navigate(`/dashboard/${userType}`);
-    }
-    // If user is not authenticated, redirect to signin page
-    else {
-      navigate('/signin');
-    }
+    // Check if user is authenticated with Supabase
+    const checkAuth = async () => {
+      const { data } = await supabase.auth.getSession();
+      
+      if (data.session && userType) {
+        // If user is authenticated, redirect to appropriate dashboard
+        navigate(`/dashboard/${userType}`);
+      } else {
+        // If user is not authenticated, redirect to landing page
+        localStorage.removeItem('userType'); // Ensure userType is cleared if no session
+        navigate('/landing');
+      }
+    };
+    
+    checkAuth();
   }, [userType, navigate]);
 
   return (

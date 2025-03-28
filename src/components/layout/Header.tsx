@@ -120,7 +120,7 @@ const Header = () => {
     try {
       await supabase.auth.signOut();
       localStorage.removeItem('userType');
-      navigate('/');
+      navigate('/landing');
       toast.success('Logged out successfully');
     } catch (error) {
       console.error('Error logging out:', error);
