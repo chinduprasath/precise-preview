@@ -1,11 +1,9 @@
 
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Instagram, Facebook, Twitter, Youtube } from 'lucide-react';
 import {
@@ -16,6 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Avatar } from '@/components/ui/avatar';
+import InfluencerCard from '@/components/influencers/InfluencerCard'; 
 
 // Sample data for influencers
 const influencers = [
@@ -143,45 +142,61 @@ const formatNumber = (num: number): string => {
   return num.toString();
 };
 
-const InfluencerCard = ({ influencer }) => {
+const InfluencerCard = ({ influencer, isSelected, onClick }) => {
   return (
-    <Link to={`/influencers/${influencer.id}`} className="block">
-      <div className="flex items-center gap-3 py-3 hover:bg-gray-50 rounded-lg px-2 transition-colors">
-        <Avatar className="h-12 w-12">
-          <img 
-            src={influencer.image} 
-            alt={influencer.name} 
-            className="h-full w-full object-cover"
-          />
-        </Avatar>
-        <div className="flex-1">
-          <h3 className="font-medium">{influencer.name}</h3>
-          <div className="flex flex-wrap gap-x-4 mt-1">
-            <div className="flex items-center gap-1">
-              <Instagram className="h-4 w-4 text-pink-500" />
-              <span className="text-xs font-medium">{formatNumber(influencer.followers.instagram)}</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <Facebook className="h-4 w-4 text-blue-600" />
-              <span className="text-xs font-medium">{formatNumber(influencer.followers.facebook)}</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <Twitter className="h-4 w-4 text-blue-400" />
-              <span className="text-xs font-medium">{formatNumber(influencer.followers.twitter)}</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <Youtube className="h-4 w-4 text-red-600" />
-              <span className="text-xs font-medium">{formatNumber(influencer.followers.youtube)}</span>
-            </div>
+    <div 
+      onClick={onClick} 
+      className={`flex items-center gap-3 py-3 hover:bg-gray-50 rounded-lg px-2 transition-colors cursor-pointer ${isSelected ? 'bg-gray-100' : ''}`}
+    >
+      <Avatar className="h-12 w-12">
+        <img 
+          src={influencer.image} 
+          alt={influencer.name} 
+          className="h-full w-full object-cover"
+        />
+      </Avatar>
+      <div className="flex-1">
+        <h3 className="font-medium">{influencer.name}</h3>
+        <div className="flex flex-wrap gap-x-4 mt-1">
+          <div className="flex items-center gap-1">
+            <Instagram className="h-4 w-4 text-pink-500" />
+            <span className="text-xs font-medium">{formatNumber(influencer.followers.instagram)}</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <Facebook className="h-4 w-4 text-blue-600" />
+            <span className="text-xs font-medium">{formatNumber(influencer.followers.facebook)}</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <Twitter className="h-4 w-4 text-blue-400" />
+            <span className="text-xs font-medium">{formatNumber(influencer.followers.twitter)}</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <Youtube className="h-4 w-4 text-red-600" />
+            <span className="text-xs font-medium">{formatNumber(influencer.followers.youtube)}</span>
           </div>
         </div>
       </div>
-    </Link>
+    </div>
   );
 };
 
 const InfluencerProfile = ({ influencer }) => {
   const [activeTab, setActiveTab] = useState('services');
+  
+  if (!influencer) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full p-8 text-center">
+        <div className="text-gray-400 mb-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="8" r="5" />
+            <path d="M20 21a8 8 0 0 0-16 0" />
+          </svg>
+        </div>
+        <h3 className="text-xl font-medium text-gray-500 mb-1">No Profile Selected</h3>
+        <p className="text-gray-400">Please select an influencer profile to display their data</p>
+      </div>
+    );
+  }
   
   return (
     <div className="p-4">
@@ -390,7 +405,7 @@ const InfluencersPage = () => {
   const [selectedAge, setSelectedAge] = useState('');
   const [selectedInterests, setSelectedInterests] = useState('');
   const [selectedType, setSelectedType] = useState('');
-  const [selectedInfluencer, setSelectedInfluencer] = useState(influencers[0]);
+  const [selectedInfluencer, setSelectedInfluencer] = useState(null);
   
   const filteredInfluencers = influencers.filter(influencer => {
     // Search filter
@@ -404,6 +419,10 @@ const InfluencersPage = () => {
     
     return matchesSearch && matchesCategory;
   });
+
+  const handleInfluencerClick = (influencer) => {
+    setSelectedInfluencer(influencer);
+  };
   
   return (
     <div className="flex h-screen bg-gray-50">
@@ -619,8 +638,12 @@ const InfluencersPage = () => {
                 </div>
                 <div className="max-h-[calc(100vh-200px)] overflow-y-auto">
                   {filteredInfluencers.map((influencer) => (
-                    <div key={influencer.id} onClick={() => setSelectedInfluencer(influencer)}>
-                      <InfluencerCard influencer={influencer} />
+                    <div key={influencer.id}>
+                      <InfluencerCard 
+                        influencer={influencer} 
+                        isSelected={selectedInfluencer && selectedInfluencer.id === influencer.id}
+                        onClick={() => handleInfluencerClick(influencer)} 
+                      />
                     </div>
                   ))}
                 </div>
