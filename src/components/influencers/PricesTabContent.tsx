@@ -55,79 +55,86 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex items-center space-x-3">
-          <div className="w-5 h-5 rounded-full bg-purple-600 flex items-center justify-center text-white text-xs">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg>
-          </div>
-          <span className="font-medium">Platform Based</span>
-        </div>
-        
-        <div className="flex items-center space-x-3">
-          <Select defaultValue="instagram" onValueChange={(value) => setSelectedPlatform(value as SocialPlatform)}>
-            <SelectTrigger className="w-[180px] h-9 text-sm">
-              <SelectValue placeholder="Select Platform" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="instagram">Instagram</SelectItem>
-              <SelectItem value="facebook">Facebook</SelectItem>
-              <SelectItem value="youtube">YouTube</SelectItem>
-              <SelectItem value="tiktok">TikTok</SelectItem>
-            </SelectContent>
-          </Select>
-          
-          <Button 
-            onClick={handleEditPrices}
-            className="bg-blue-500 hover:bg-blue-600"
-          >
-            Edit
-          </Button>
-        </div>
-      </div>
-      
-      <div className="space-y-4">
-        {platformServices.map((service) => (
-          <div key={service.id} className="flex items-center justify-between py-2 border-b">
-            <div className="flex items-center gap-2">
-              <Checkbox id={service.id} defaultChecked />
-              <label htmlFor={service.id} className="text-sm font-medium">
-                {service.name}
-              </label>
-            </div>
-            <div className="text-sm font-semibold">{service.price.replace('$', '₹')}</div>
-          </div>
-        ))}
-      </div>
-      
-      <div className="py-6">
-        <div className="flex items-center space-x-3 mb-6">
-          <div className="w-5 h-5 rounded-full bg-purple-600 flex items-center justify-center text-white text-xs">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg>
-          </div>
-          <span className="font-medium">Combo Package</span>
-        </div>
-        
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8">
+        {/* Left column - Platform Based */}
         <div className="space-y-4">
-          {comboPackages.map((pkg) => (
-            <div key={pkg.id} className="flex items-center justify-between py-2 border-b">
-              <div className="flex items-center gap-2">
-                <Checkbox id={pkg.id} defaultChecked />
-                <div>
-                  <label htmlFor={pkg.id} className="text-sm font-medium block">
-                    {pkg.name}
+          <div className="flex items-center gap-3">
+            <div className="w-6 h-6 rounded-full bg-purple-600 flex items-center justify-center">
+              <div className="w-3 h-3 rounded-full bg-white"></div>
+            </div>
+            <span className="font-medium text-lg">Platform Based</span>
+            
+            <div className="ml-auto">
+              <Select defaultValue="instagram" onValueChange={(value) => setSelectedPlatform(value as SocialPlatform)}>
+                <SelectTrigger className="w-[180px] h-9 text-sm bg-gray-100 border-gray-200">
+                  <SelectValue placeholder="Select Platform" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="instagram">Instagram</SelectItem>
+                  <SelectItem value="facebook">Facebook</SelectItem>
+                  <SelectItem value="youtube">YouTube</SelectItem>
+                  <SelectItem value="tiktok">TikTok</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          
+          <div className="space-y-2 mt-4">
+            {platformServices.map((service) => (
+              <div key={service.id} className="flex items-center justify-between py-2">
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 flex items-center justify-center border border-gray-300 rounded bg-gray-800 text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg>
+                  </div>
+                  <label className="text-base">
+                    {service.name}
                   </label>
-                  <span className="text-xs text-gray-500">{pkg.platforms}</span>
+                </div>
+                <div className="font-medium">{service.price}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        {/* Right column - Combo Package */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-3">
+            <div className="w-6 h-6 rounded-full bg-purple-600 flex items-center justify-center">
+              <div className="w-3 h-3 rounded-full bg-white"></div>
+            </div>
+            <span className="font-medium text-lg">Combo Package</span>
+          </div>
+          
+          <div className="space-y-2 mt-4">
+            {comboPackages.map((pkg) => (
+              <div key={pkg.id} className="flex items-center justify-between py-2">
+                <div className="flex flex-col">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 flex items-center justify-center border border-gray-300 rounded bg-gray-800 text-white">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg>
+                    </div>
+                    <label className="text-base">
+                      {pkg.name}
+                    </label>
+                  </div>
+                  <div className="text-gray-500 text-sm ml-8">{pkg.platforms}</div>
+                </div>
+                <div className="font-medium">
+                  {pkg.id === 'package1' ? (
+                    <div className="text-amber-500">★★★★★</div>
+                  ) : (
+                    pkg.price
+                  )}
                 </div>
               </div>
-              <div className="text-sm font-semibold">{pkg.price.replace('$', '₹')}</div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
       
       <div className="flex justify-center pt-4">
         <Button 
-          className="bg-blue-500 hover:bg-blue-600 text-white px-12"
+          className="bg-blue-500 hover:bg-blue-600 text-white px-12 rounded-md py-2 w-1/3"
           onClick={handleBook}
         >
           Book
