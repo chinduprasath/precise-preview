@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
@@ -142,7 +141,7 @@ const formatNumber = (num: number): string => {
   return num.toString();
 };
 
-const InfluencerCard = ({ influencer, isSelected, onClick }) => {
+const InfluencerListItem = ({ influencer, isSelected, onClick }) => {
   return (
     <div 
       onClick={onClick} 
@@ -639,7 +638,7 @@ const InfluencersPage = () => {
                 <div className="max-h-[calc(100vh-200px)] overflow-y-auto">
                   {filteredInfluencers.map((influencer) => (
                     <div key={influencer.id}>
-                      <InfluencerCard 
+                      <InfluencerListItem 
                         influencer={influencer} 
                         isSelected={selectedInfluencer && selectedInfluencer.id === influencer.id}
                         onClick={() => handleInfluencerClick(influencer)} 
