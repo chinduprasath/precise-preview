@@ -139,6 +139,7 @@ const OnboardPage = () => {
         
       if (error) {
         console.error('Error fetching users:', error);
+        toast.error('Failed to load users: ' + error.message);
         throw error;
       }
       
