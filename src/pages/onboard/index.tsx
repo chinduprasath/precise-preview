@@ -240,6 +240,7 @@ const OnboardPage = () => {
         }
       }
       
+      console.log("Inserting new user into onboarding_users table...");
       // Insert directly into the onboarding_users table
       const { data, error } = await supabase
         .from('onboarding_users')
@@ -255,7 +256,11 @@ const OnboardPage = () => {
         })
         .select();
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error adding user to onboarding_users:', error);
+        toast.error('Failed to add user: ' + error.message);
+        throw error;
+      }
       
       toast.success('User added successfully');
       setNewUserOpen(false);
