@@ -15,6 +15,7 @@ import {
 import { Avatar } from '@/components/ui/avatar';
 import InfluencerCard from '@/components/influencers/InfluencerCard'; 
 import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/components/ui/use-toast';
 
 interface Influencer {
   id: string;
@@ -333,6 +334,7 @@ const InfluencersPage = () => {
   const [selectedInfluencer, setSelectedInfluencer] = useState(null);
   const [influencers, setInfluencers] = useState<Influencer[]>([]);
   const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
   
   useEffect(() => {
     const fetchInfluencers = async () => {
@@ -344,10 +346,39 @@ const InfluencersPage = () => {
           .eq('user_type', 'influencer')
           .order('created_at', { ascending: false });
           
-        if (error) throw error;
+        if (error) {
+          toast({
+            title: "Error fetching influencers",
+            description: error.message,
+            variant: "destructive"
+          });
+          throw error;
+        }
         
         const transformedInfluencers: Influencer[] = data.map(user => {
           const imageId = Math.floor(Math.random() * 100);
+          
+          let transformedFollowers = {
+            instagram: 0,
+            facebook: 0,
+            twitter: 0,
+            youtube: 0
+          };
+          
+          if (user.social_followers && typeof user.social_followers === 'object') {
+            if (user.social_followers.instagram) 
+              transformedFollowers.instagram = Number(user.social_followers.instagram) || 0;
+            if (user.social_followers.facebook) 
+              transformedFollowers.facebook = Number(user.social_followers.facebook) || 0;
+            if (user.social_followers.twitter) 
+              transformedFollowers.twitter = Number(user.social_followers.twitter) || 0;
+            if (user.social_followers.youtube) 
+              transformedFollowers.youtube = Number(user.social_followers.youtube) || 0;
+          }
+          
+          const platforms = Object.keys(transformedFollowers).filter(
+            platform => transformedFollowers[platform] > 0
+          );
           
           return {
             id: user.id,
@@ -355,15 +386,10 @@ const InfluencersPage = () => {
             username: user.email,
             category: user.category || 'Uncategorized',
             bio: 'Influencer profile',
-            followers: user.social_followers || {
-              instagram: 0,
-              facebook: 0,
-              twitter: 0,
-              youtube: 0
-            },
+            followers: transformedFollowers,
             engagementRate: 4.2,
             image: `https://picsum.photos/id/${imageId}/300/300`,
-            platforms: Object.keys(user.social_followers || {})
+            platforms: platforms
           };
         });
         
@@ -376,7 +402,7 @@ const InfluencersPage = () => {
     };
     
     fetchInfluencers();
-  }, []);
+  }, [toast]);
   
   const filteredInfluencers = influencers.filter(influencer => {
     const matchesSearch = searchTerm === '' || 
