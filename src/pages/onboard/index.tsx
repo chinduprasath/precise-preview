@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Layout } from '@/components/layout/Layout';
 import { 
@@ -125,7 +126,7 @@ const OnboardPage = () => {
     checkAdminAccess();
   }, [navigate]);
 
-  // Fetch users data - Now directly from onboarding_users table
+  // Fetch users data directly from onboarding_users table
   const fetchUsers = async () => {
     try {
       setLoading(true);
@@ -136,7 +137,10 @@ const OnboardPage = () => {
         .select('*')
         .order('created_at', { ascending: false });
         
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching users:', error);
+        throw error;
+      }
       
       // Transform the users to match the expected format
       const transformedUsers: OnboardingUser[] = onboardingUsers.map(user => {

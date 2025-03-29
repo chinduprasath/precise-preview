@@ -27,47 +27,32 @@ export const useHeaderData = () => {
           return;
         }
         
+        // Get user information directly from session metadata
+        if (isMounted) {
+          const firstName = session.user?.user_metadata?.first_name || '';
+          const lastName = session.user?.user_metadata?.last_name || '';
+          const fullName = `${firstName} ${lastName}`.trim() || 'User';
+          
+          setUserData({
+            fullName: fullName,
+            email: session.user.email || '',
+            avatarUrl: session.user.user_metadata?.avatar_url || ''
+          });
+        }
+        
+        // Fetch notifications count
         try {
-          const { data: userProfile, error: profileError } = await supabase
-            .from('user_profiles')
-            .select('first_name, last_name, email, profile_image_url')
-            .eq('id', session.user.id)
-            .maybeSingle();
-          
-          if (profileError) {
-            console.error('Error fetching user profile:', profileError);
+          const { count, error: notifError } = await supabase
+            .from('notifications')
+            .select('*', { count: 'exact', head: true })
+            .eq('user_id', session.user.id)
+            .eq('is_read', false);
             
-            if (isMounted) {
-              setUserData({
-                fullName: session.user.user_metadata?.name || 'User',
-                email: session.user.email || '',
-                avatarUrl: session.user.user_metadata?.avatar_url || ''
-              });
-            }
-          } else if (userProfile && isMounted) {
-            setUserData({
-              fullName: `${userProfile.first_name || ''} ${userProfile.last_name || ''}`.trim() || 'User',
-              email: userProfile.email || session.user.email || '',
-              avatarUrl: userProfile.profile_image_url || ''
-            });
+          if (!notifError && count !== null && isMounted) {
+            setNotificationCount(count);
           }
-          
-          // Fetch notifications count
-          try {
-            const { count, error: notifError } = await supabase
-              .from('notifications')
-              .select('*', { count: 'exact', head: true })
-              .eq('user_id', session.user.id)
-              .eq('is_read', false);
-              
-            if (!notifError && count !== null && isMounted) {
-              setNotificationCount(count);
-            }
-          } catch (notifErr) {
-            console.error("Error fetching notifications:", notifErr);
-          }
-        } catch (profileErr) {
-          console.error("Error in profile fetch:", profileErr);
+        } catch (notifErr) {
+          console.error("Error fetching notifications:", notifErr);
         }
       } catch (error) {
         console.error('Error in fetchUserData:', error);

@@ -16,6 +16,16 @@ const Index = () => {
       if (data.session && userType) {
         // If user is authenticated, redirect to appropriate dashboard
         navigate(`/dashboard/${userType}`);
+      } else if (data.session) {
+        // If session exists but no userType, try to get from metadata
+        const userTypeFromMetadata = data.session.user?.user_metadata?.user_type;
+        if (userTypeFromMetadata) {
+          localStorage.setItem('userType', userTypeFromMetadata);
+          navigate(`/dashboard/${userTypeFromMetadata}`);
+        } else {
+          // If still no userType, redirect to landing
+          navigate('/landing');
+        }
       } else {
         // If user is not authenticated, redirect to landing page
         localStorage.removeItem('userType'); // Ensure userType is cleared if no session
