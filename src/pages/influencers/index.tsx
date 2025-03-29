@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
@@ -365,17 +366,30 @@ const InfluencersPage = () => {
             youtube: 0
           };
           
+          // Safe access to social_followers with proper type checking
           if (user.social_followers && typeof user.social_followers === 'object') {
-            if (user.social_followers.instagram) 
-              transformedFollowers.instagram = Number(user.social_followers.instagram) || 0;
-            if (user.social_followers.facebook) 
-              transformedFollowers.facebook = Number(user.social_followers.facebook) || 0;
-            if (user.social_followers.twitter) 
-              transformedFollowers.twitter = Number(user.social_followers.twitter) || 0;
-            if (user.social_followers.youtube) 
-              transformedFollowers.youtube = Number(user.social_followers.youtube) || 0;
+            // Check if it's an object (not an array) and has the properties
+            const socialFollowers = user.social_followers as Record<string, any>;
+            
+            // Safely access each platform's follower count with type conversion
+            if ('instagram' in socialFollowers && socialFollowers.instagram) {
+              transformedFollowers.instagram = Number(socialFollowers.instagram) || 0;
+            }
+            
+            if ('facebook' in socialFollowers && socialFollowers.facebook) {
+              transformedFollowers.facebook = Number(socialFollowers.facebook) || 0;
+            }
+            
+            if ('twitter' in socialFollowers && socialFollowers.twitter) {
+              transformedFollowers.twitter = Number(socialFollowers.twitter) || 0;
+            }
+            
+            if ('youtube' in socialFollowers && socialFollowers.youtube) {
+              transformedFollowers.youtube = Number(socialFollowers.youtube) || 0;
+            }
           }
           
+          // Create platforms array from the platforms that have followers
           const platforms = Object.keys(transformedFollowers).filter(
             platform => transformedFollowers[platform] > 0
           );
