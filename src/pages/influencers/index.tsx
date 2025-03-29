@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
 import { Input } from '@/components/ui/input';
@@ -14,106 +14,24 @@ import {
 } from "@/components/ui/select";
 import { Avatar } from '@/components/ui/avatar';
 import InfluencerCard from '@/components/influencers/InfluencerCard'; 
+import { supabase } from '@/integrations/supabase/client';
 
-// Sample data for influencers
-const influencers = [
-  {
-    id: '1',
-    name: 'Username',
-    username: 'Username@gmail.com',
-    category: 'Fashion & Lifestyle',
-    bio: 'Fashion blogger sharing the latest trends and style tips.',
-    followers: {
-      instagram: 1000000,
-      facebook: 235000,
-      twitter: 98000,
-      youtube: 2000000
-    },
-    engagementRate: 4.2,
-    image: 'https://picsum.photos/id/64/300/300',
-    platforms: ['instagram', 'facebook', 'twitter', 'youtube']
-  },
-  {
-    id: '2',
-    name: 'Username',
-    username: 'Username@gmail.com',
-    category: 'Beauty & Skincare',
-    bio: 'Beauty expert specializing in skincare reviews and tutorials.',
-    followers: {
-      instagram: 1000000,
-      facebook: 235000,
-      twitter: 98000,
-      youtube: 2000000
-    },
-    engagementRate: 3.8,
-    image: 'https://picsum.photos/id/65/300/300',
-    platforms: ['instagram', 'facebook', 'twitter', 'youtube']
-  },
-  {
-    id: '3',
-    name: 'Username',
-    username: 'Username@gmail.com',
-    category: 'Tech & Gaming',
-    bio: 'Tech reviewer covering the latest gadgets and gaming content.',
-    followers: {
-      instagram: 1000000,
-      facebook: 235000,
-      twitter: 98000,
-      youtube: 2000000
-    },
-    engagementRate: 5.1,
-    image: 'https://picsum.photos/id/91/300/300',
-    platforms: ['instagram', 'facebook', 'twitter', 'youtube']
-  },
-  {
-    id: '4',
-    name: 'Username',
-    username: 'Username@gmail.com',
-    category: 'Health & Fitness',
-    bio: 'Fitness coach sharing workout tips and healthy recipes.',
-    followers: {
-      instagram: 1000000,
-      facebook: 235000,
-      twitter: 98000,
-      youtube: 2000000
-    },
-    engagementRate: 4.5,
-    image: 'https://picsum.photos/id/26/300/300',
-    platforms: ['instagram', 'facebook', 'twitter', 'youtube']
-  },
-  {
-    id: '5',
-    name: 'Username',
-    username: 'Username@gmail.com',
-    category: 'Travel',
-    bio: 'Travel enthusiast sharing adventures from around the world.',
-    followers: {
-      instagram: 1000000,
-      facebook: 235000,
-      twitter: 98000,
-      youtube: 2000000
-    },
-    engagementRate: 3.9,
-    image: 'https://picsum.photos/id/177/300/300',
-    platforms: ['instagram', 'facebook', 'twitter', 'youtube']
-  },
-  {
-    id: '6',
-    name: 'Username',
-    username: 'Username@gmail.com',
-    category: 'Food & Cooking',
-    bio: 'Chef sharing delicious recipes and cooking techniques.',
-    followers: {
-      instagram: 1000000,
-      facebook: 235000,
-      twitter: 98000,
-      youtube: 2000000
-    },
-    engagementRate: 4.8,
-    image: 'https://picsum.photos/id/129/300/300',
-    platforms: ['instagram', 'facebook', 'twitter', 'youtube']
-  }
-];
+interface Influencer {
+  id: string;
+  name: string;
+  username: string;
+  category: string;
+  bio: string;
+  followers: {
+    instagram?: number;
+    facebook?: number;
+    twitter?: number;
+    youtube?: number;
+  };
+  engagementRate: number;
+  image: string;
+  platforms: string[];
+}
 
 const categories = [
   "Fashion & Lifestyle",
@@ -157,22 +75,30 @@ const InfluencerListItem = ({ influencer, isSelected, onClick }) => {
       <div className="flex-1">
         <h3 className="font-medium">{influencer.name}</h3>
         <div className="flex flex-wrap gap-x-4 mt-1">
-          <div className="flex items-center gap-1">
-            <Instagram className="h-4 w-4 text-pink-500" />
-            <span className="text-xs font-medium">{formatNumber(influencer.followers.instagram)}</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Facebook className="h-4 w-4 text-blue-600" />
-            <span className="text-xs font-medium">{formatNumber(influencer.followers.facebook)}</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Twitter className="h-4 w-4 text-blue-400" />
-            <span className="text-xs font-medium">{formatNumber(influencer.followers.twitter)}</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Youtube className="h-4 w-4 text-red-600" />
-            <span className="text-xs font-medium">{formatNumber(influencer.followers.youtube)}</span>
-          </div>
+          {influencer.followers.instagram && (
+            <div className="flex items-center gap-1">
+              <Instagram className="h-4 w-4 text-pink-500" />
+              <span className="text-xs font-medium">{formatNumber(influencer.followers.instagram)}</span>
+            </div>
+          )}
+          {influencer.followers.facebook && (
+            <div className="flex items-center gap-1">
+              <Facebook className="h-4 w-4 text-blue-600" />
+              <span className="text-xs font-medium">{formatNumber(influencer.followers.facebook)}</span>
+            </div>
+          )}
+          {influencer.followers.twitter && (
+            <div className="flex items-center gap-1">
+              <Twitter className="h-4 w-4 text-blue-400" />
+              <span className="text-xs font-medium">{formatNumber(influencer.followers.twitter)}</span>
+            </div>
+          )}
+          {influencer.followers.youtube && (
+            <div className="flex items-center gap-1">
+              <Youtube className="h-4 w-4 text-red-600" />
+              <span className="text-xs font-medium">{formatNumber(influencer.followers.youtube)}</span>
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -405,14 +331,58 @@ const InfluencersPage = () => {
   const [selectedInterests, setSelectedInterests] = useState('');
   const [selectedType, setSelectedType] = useState('');
   const [selectedInfluencer, setSelectedInfluencer] = useState(null);
+  const [influencers, setInfluencers] = useState<Influencer[]>([]);
+  const [loading, setLoading] = useState(true);
+  
+  useEffect(() => {
+    const fetchInfluencers = async () => {
+      try {
+        setLoading(true);
+        const { data, error } = await supabase
+          .from('onboarding_users')
+          .select('*')
+          .eq('user_type', 'influencer')
+          .order('created_at', { ascending: false });
+          
+        if (error) throw error;
+        
+        const transformedInfluencers: Influencer[] = data.map(user => {
+          const imageId = Math.floor(Math.random() * 100);
+          
+          return {
+            id: user.id,
+            name: `${user.first_name} ${user.last_name}`,
+            username: user.email,
+            category: user.category || 'Uncategorized',
+            bio: 'Influencer profile',
+            followers: user.social_followers || {
+              instagram: 0,
+              facebook: 0,
+              twitter: 0,
+              youtube: 0
+            },
+            engagementRate: 4.2,
+            image: `https://picsum.photos/id/${imageId}/300/300`,
+            platforms: Object.keys(user.social_followers || {})
+          };
+        });
+        
+        setInfluencers(transformedInfluencers);
+      } catch (error) {
+        console.error('Error fetching influencers:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchInfluencers();
+  }, []);
   
   const filteredInfluencers = influencers.filter(influencer => {
-    // Search filter
     const matchesSearch = searchTerm === '' || 
       influencer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       influencer.category.toLowerCase().includes(searchTerm.toLowerCase());
     
-    // Category filter
     const matchesCategory = selectedCategory === '' || 
       influencer.category === selectedCategory;
     
@@ -430,7 +400,6 @@ const InfluencersPage = () => {
         <Header />
         <main className="flex-1 overflow-auto p-6">
           <div className="flex gap-6">
-            {/* Filters Panel */}
             <div className="w-1/3 bg-white rounded-lg p-4 shadow-sm">
               <h2 className="text-lg font-semibold mb-4">Basic Filter</h2>
               
@@ -628,27 +597,30 @@ const InfluencersPage = () => {
               </div>
             </div>
             
-            {/* Two panel layout */}
             <div className="w-2/3 grid grid-cols-7 gap-4">
-              {/* Left panel - Influencer List */}
               <div className="col-span-3 bg-white rounded-lg shadow-sm">
                 <div className="p-4 border-b">
                   <h2 className="text-lg font-semibold">Influencers</h2>
                 </div>
                 <div className="max-h-[calc(100vh-200px)] overflow-y-auto">
-                  {filteredInfluencers.map((influencer) => (
-                    <div key={influencer.id}>
-                      <InfluencerListItem 
-                        influencer={influencer} 
-                        isSelected={selectedInfluencer && selectedInfluencer.id === influencer.id}
-                        onClick={() => handleInfluencerClick(influencer)} 
-                      />
-                    </div>
-                  ))}
+                  {loading ? (
+                    <div className="p-4 text-center text-gray-500">Loading influencers...</div>
+                  ) : filteredInfluencers.length === 0 ? (
+                    <div className="p-4 text-center text-gray-500">No influencers found</div>
+                  ) : (
+                    filteredInfluencers.map((influencer) => (
+                      <div key={influencer.id}>
+                        <InfluencerListItem 
+                          influencer={influencer} 
+                          isSelected={selectedInfluencer && selectedInfluencer.id === influencer.id}
+                          onClick={() => handleInfluencerClick(influencer)} 
+                        />
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
               
-              {/* Right panel - Profile View */}
               <div className="col-span-4 bg-white rounded-lg shadow-sm">
                 <div className="p-4 border-b">
                   <h2 className="text-lg font-semibold">Profile</h2>
