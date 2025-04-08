@@ -10,6 +10,7 @@ interface RangeSliderProps {
   value: [number, number];
   onChange: (value: [number, number]) => void;
   formatValue?: (value: number) => string;
+  className?: string;
 }
 
 const RangeSlider: React.FC<RangeSliderProps> = ({
@@ -20,22 +21,23 @@ const RangeSlider: React.FC<RangeSliderProps> = ({
   value,
   onChange,
   formatValue = (value) => value.toString(),
+  className
 }) => {
   return (
-    <div className="space-y-2">
+    <div className={`space-y-2 ${className || ''}`}>
       {label && <label className="text-sm font-medium text-gray-700 block">{label}</label>}
       <Slider
         defaultValue={value}
+        value={value}
         max={max}
         min={min}
         step={step}
         onValueChange={(newValue) => onChange(newValue as [number, number])}
-        className="py-2"
+        className="py-4"
       />
       <div className="flex justify-between text-xs text-gray-500 mt-1">
-        <span>{formatValue(min)}</span>
-        <span className="flex-1 text-center">{formatValue(value[0])} - {formatValue(value[1])}</span>
-        <span>{formatValue(max)}</span>
+        <span>{formatValue(value[0])}</span>
+        <span>{formatValue(value[1])}</span>
       </div>
     </div>
   );

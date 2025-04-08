@@ -8,6 +8,7 @@ interface HashtagInputProps {
   tags: string[];
   onChange: (tags: string[]) => void;
   placeholder?: string;
+  onAddHashtag?: (tag: string) => void;
 }
 
 const HashtagInput: React.FC<HashtagInputProps> = ({
@@ -15,14 +16,20 @@ const HashtagInput: React.FC<HashtagInputProps> = ({
   tags,
   onChange,
   placeholder = 'Enter Hashtags',
+  onAddHashtag
 }) => {
   const [inputValue, setInputValue] = useState('');
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && inputValue.trim() !== '') {
       e.preventDefault();
-      if (!tags.includes(inputValue.trim())) {
-        onChange([...tags, inputValue.trim()]);
+      const newTag = inputValue.trim().toLowerCase();
+      
+      if (!tags.includes(newTag)) {
+        onChange([...tags, newTag]);
+        if (onAddHashtag) {
+          onAddHashtag(newTag);
+        }
       }
       setInputValue('');
     }

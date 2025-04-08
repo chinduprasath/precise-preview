@@ -1,11 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Slider } from '@/components/ui/slider';
-import { Instagram, Facebook, Twitter, Youtube } from 'lucide-react';
+import { Instagram, Facebook, Twitter, Youtube, Search } from 'lucide-react';
 import {
   Select,
   SelectContent,
@@ -17,51 +15,29 @@ import { Avatar } from '@/components/ui/avatar';
 import InfluencerCard from '@/components/influencers/InfluencerCard'; 
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
-
-interface Influencer {
-  id: string;
-  name: string;
-  username: string;
-  category: string;
-  bio: string;
-  followers: {
-    instagram?: number;
-    facebook?: number;
-    twitter?: number;
-    youtube?: number;
-  };
-  engagementRate: number;
-  image: string;
-  platforms: string[];
-}
-
-const categories = [
-  "Fashion & Lifestyle",
-  "Beauty & Skincare",
-  "Tech & Gaming",
-  "Health & Fitness",
-  "Travel",
-  "Food & Cooking"
-];
-
-const platforms = [
-  { id: 'instagram', label: 'Instagram' },
-  { id: 'youtube', label: 'YouTube' },
-  { id: 'twitter', label: 'Twitter' },
-  { id: 'facebook', label: 'Facebook' }
-];
+import HashtagInput from '@/components/filters/HashtagInput';
+import RangeSlider from '@/components/filters/RangeSlider';
+import { useLocations } from '@/hooks/useLocations';
+import { useNiches } from '@/hooks/useNiches';
+import { useHashtags } from '@/hooks/useHashtags';
+import { useInfluencers, InfluencerFilters } from '@/hooks/useInfluencers';
+import { Influencer } from '@/types/location';
 
 const formatNumber = (num: number): string => {
   if (num >= 1000000) {
-    return (num / 1000000).toFixed(0) + 'M';
+    return (num / 1000000).toFixed(1) + 'M';
   }
   if (num >= 1000) {
-    return (num / 1000).toFixed(0) + 'K';
+    return (num / 1000).toFixed(1) + 'K';
   }
   return num.toString();
 };
 
-const InfluencerListItem = ({ influencer, isSelected, onClick }) => {
+const InfluencerListItem = ({ influencer, isSelected, onClick }: { 
+  influencer: Influencer; 
+  isSelected: boolean; 
+  onClick: () => void 
+}) => {
   return (
     <div 
       onClick={onClick} 
@@ -69,7 +45,7 @@ const InfluencerListItem = ({ influencer, isSelected, onClick }) => {
     >
       <Avatar className="h-12 w-12">
         <img 
-          src={influencer.image} 
+          src={influencer.image_url || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200'} 
           alt={influencer.name} 
           className="h-full w-full object-cover"
         />
@@ -77,28 +53,28 @@ const InfluencerListItem = ({ influencer, isSelected, onClick }) => {
       <div className="flex-1">
         <h3 className="font-medium">{influencer.name}</h3>
         <div className="flex flex-wrap gap-x-4 mt-1">
-          {influencer.followers.instagram && (
+          {influencer.followers_instagram > 0 && (
             <div className="flex items-center gap-1">
               <Instagram className="h-4 w-4 text-pink-500" />
-              <span className="text-xs font-medium">{formatNumber(influencer.followers.instagram)}</span>
+              <span className="text-xs font-medium">{formatNumber(influencer.followers_instagram)}</span>
             </div>
           )}
-          {influencer.followers.facebook && (
+          {influencer.followers_facebook > 0 && (
             <div className="flex items-center gap-1">
               <Facebook className="h-4 w-4 text-blue-600" />
-              <span className="text-xs font-medium">{formatNumber(influencer.followers.facebook)}</span>
+              <span className="text-xs font-medium">{formatNumber(influencer.followers_facebook)}</span>
             </div>
           )}
-          {influencer.followers.twitter && (
+          {influencer.followers_twitter > 0 && (
             <div className="flex items-center gap-1">
               <Twitter className="h-4 w-4 text-blue-400" />
-              <span className="text-xs font-medium">{formatNumber(influencer.followers.twitter)}</span>
+              <span className="text-xs font-medium">{formatNumber(influencer.followers_twitter)}</span>
             </div>
           )}
-          {influencer.followers.youtube && (
+          {influencer.followers_youtube > 0 && (
             <div className="flex items-center gap-1">
               <Youtube className="h-4 w-4 text-red-600" />
-              <span className="text-xs font-medium">{formatNumber(influencer.followers.youtube)}</span>
+              <span className="text-xs font-medium">{formatNumber(influencer.followers_youtube)}</span>
             </div>
           )}
         </div>
@@ -107,7 +83,7 @@ const InfluencerListItem = ({ influencer, isSelected, onClick }) => {
   );
 };
 
-const InfluencerProfile = ({ influencer }) => {
+const InfluencerProfile = ({ influencer }: { influencer: Influencer | null }) => {
   const [activeTab, setActiveTab] = useState('services');
   
   if (!influencer) {
@@ -130,32 +106,51 @@ const InfluencerProfile = ({ influencer }) => {
       <div className="flex items-start gap-4 mb-6">
         <Avatar className="h-16 w-16">
           <img 
-            src={influencer.image} 
+            src={influencer.image_url || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200'} 
             alt={influencer.name} 
             className="h-full w-full object-cover"
           />
         </Avatar>
         <div>
           <h2 className="text-xl font-semibold">{influencer.name}</h2>
-          <p className="text-sm text-gray-500">{influencer.username}</p>
+          <p className="text-sm text-gray-500">{influencer.username || '@' + influencer.name.toLowerCase().replace(/\s+/g, '')}</p>
+          <p className="text-sm text-gray-600 mt-2">{influencer.bio || 'No bio available'}</p>
           
           <div className="flex gap-6 mt-4">
             <div className="flex flex-col items-center">
               <Instagram className="h-6 w-6 text-pink-500" />
-              <span className="font-medium">{formatNumber(influencer.followers.instagram)}</span>
+              <span className="font-medium">{formatNumber(influencer.followers_instagram)}</span>
             </div>
             <div className="flex flex-col items-center">
               <Facebook className="h-6 w-6 text-blue-600" />
-              <span className="font-medium">{formatNumber(influencer.followers.facebook)}</span>
+              <span className="font-medium">{formatNumber(influencer.followers_facebook)}</span>
             </div>
             <div className="flex flex-col items-center">
               <Youtube className="h-6 w-6 text-red-600" />
-              <span className="font-medium">{formatNumber(influencer.followers.youtube)}</span>
+              <span className="font-medium">{formatNumber(influencer.followers_youtube)}</span>
             </div>
             <div className="flex flex-col items-center">
               <Twitter className="h-6 w-6 text-blue-400" />
-              <span className="font-medium">{formatNumber(influencer.followers.twitter)}</span>
+              <span className="font-medium">{formatNumber(influencer.followers_twitter)}</span>
             </div>
+          </div>
+          
+          <div className="mt-4">
+            {influencer.niche && (
+              <span className="inline-block bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded mr-2">
+                {influencer.niche.name}
+              </span>
+            )}
+            {influencer.state && (
+              <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded mr-2">
+                {influencer.state.name}
+              </span>
+            )}
+            {influencer.city && (
+              <span className="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
+                {influencer.city.name}
+              </span>
+            )}
           </div>
         </div>
       </div>
@@ -215,7 +210,7 @@ const InfluencerProfile = ({ influencer }) => {
   );
 };
 
-const ContentCard = ({ platform, type }) => {
+const ContentCard = ({ platform, type }: { platform: string; type: string }) => {
   return (
     <div className="rounded-lg overflow-hidden shadow-sm border">
       <div className="h-36 bg-gray-200">
@@ -249,7 +244,7 @@ const ContentCard = ({ platform, type }) => {
   );
 };
 
-const PricingCard = ({ platform, type }) => {
+const PricingCard = ({ platform, type }: { platform: string; type: string }) => {
   return (
     <div className="rounded-lg overflow-hidden shadow-sm border">
       <div className="h-36 bg-gray-200">
@@ -283,7 +278,7 @@ const PricingCard = ({ platform, type }) => {
   );
 };
 
-const DataCard = ({ platform, type }) => {
+const DataCard = ({ platform, type }: { platform: string; type: string }) => {
   return (
     <div className="rounded-lg overflow-hidden shadow-sm border">
       <div className="h-36 bg-gray-200">
@@ -319,117 +314,51 @@ const DataCard = ({ platform, type }) => {
 
 const InfluencersPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const [followerRange, setFollowerRange] = useState([0, 1500000]);
-  const [engagementRange, setEngagementRange] = useState([0, 10]);
-  const [selectedPlatform, setSelectedPlatform] = useState('');
-  const [priceRange, setPriceRange] = useState([0, 5000]);
-  const [hashtags, setHashtags] = useState('');
-  const [selectedCountry, setSelectedCountry] = useState('');
-  const [selectedState, setSelectedState] = useState('');
-  const [selectedCity, setSelectedCity] = useState('');
+  const [followerRange, setFollowerRange] = useState<[number, number]>([0, 1500000]);
+  const [engagementRange, setEngagementRange] = useState<[number, number]>([0, 10]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 5000]);
+  const [selectedType, setSelectedType] = useState('');
   const [selectedGender, setSelectedGender] = useState('');
   const [selectedAge, setSelectedAge] = useState('');
   const [selectedInterests, setSelectedInterests] = useState('');
-  const [selectedType, setSelectedType] = useState('');
-  const [selectedInfluencer, setSelectedInfluencer] = useState(null);
-  const [influencers, setInfluencers] = useState<Influencer[]>([]);
-  const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
   
-  useEffect(() => {
-    const fetchInfluencers = async () => {
-      try {
-        setLoading(true);
-        const { data, error } = await supabase
-          .from('onboarding_users')
-          .select('*')
-          .eq('user_type', 'influencer')
-          .order('created_at', { ascending: false });
-          
-        if (error) {
-          toast({
-            title: "Error fetching influencers",
-            description: error.message,
-            variant: "destructive"
-          });
-          throw error;
-        }
-        
-        const transformedInfluencers: Influencer[] = data.map(user => {
-          const imageId = Math.floor(Math.random() * 100);
-          
-          let transformedFollowers = {
-            instagram: 0,
-            facebook: 0,
-            twitter: 0,
-            youtube: 0
-          };
-          
-          // Safe access to social_followers with proper type checking
-          if (user.social_followers && typeof user.social_followers === 'object') {
-            // Check if it's an object (not an array) and has the properties
-            const socialFollowers = user.social_followers as Record<string, any>;
-            
-            // Safely access each platform's follower count with type conversion
-            if ('instagram' in socialFollowers && socialFollowers.instagram) {
-              transformedFollowers.instagram = Number(socialFollowers.instagram) || 0;
-            }
-            
-            if ('facebook' in socialFollowers && socialFollowers.facebook) {
-              transformedFollowers.facebook = Number(socialFollowers.facebook) || 0;
-            }
-            
-            if ('twitter' in socialFollowers && socialFollowers.twitter) {
-              transformedFollowers.twitter = Number(socialFollowers.twitter) || 0;
-            }
-            
-            if ('youtube' in socialFollowers && socialFollowers.youtube) {
-              transformedFollowers.youtube = Number(socialFollowers.youtube) || 0;
-            }
-          }
-          
-          // Create platforms array from the platforms that have followers
-          const platforms = Object.keys(transformedFollowers).filter(
-            platform => transformedFollowers[platform] > 0
-          );
-          
-          return {
-            id: user.id,
-            name: `${user.first_name} ${user.last_name}`,
-            username: user.email,
-            category: user.category || 'Uncategorized',
-            bio: 'Influencer profile',
-            followers: transformedFollowers,
-            engagementRate: 4.2,
-            image: `https://picsum.photos/id/${imageId}/300/300`,
-            platforms: platforms
-          };
-        });
-        
-        setInfluencers(transformedInfluencers);
-      } catch (error) {
-        console.error('Error fetching influencers:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    fetchInfluencers();
-  }, [toast]);
+  const { 
+    countries, 
+    states, 
+    cities, 
+    selectedCountry, 
+    selectedState, 
+    selectedCity, 
+    setSelectedCountry, 
+    setSelectedState, 
+    setSelectedCity 
+  } = useLocations();
+  
+  const { niches, selectedNiche, setSelectedNiche } = useNiches();
+  const { selectedHashtags, setSelectedHashtags, addHashtag } = useHashtags();
+  
+  const filters: InfluencerFilters = {
+    countryId: selectedCountry ? parseInt(selectedCountry) : undefined,
+    stateId: selectedState ? parseInt(selectedState) : undefined,
+    cityId: selectedCity ? parseInt(selectedCity) : undefined,
+    nicheId: selectedNiche ? parseInt(selectedNiche) : undefined,
+    hashtags: selectedHashtags.length > 0 ? selectedHashtags : undefined,
+    followerRange: followerRange,
+    engagementRange: engagementRange
+  };
+  
+  const { influencers, selectedInfluencer, setSelectedInfluencer, loading } = useInfluencers(filters);
   
   const filteredInfluencers = influencers.filter(influencer => {
     const matchesSearch = searchTerm === '' || 
       influencer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      influencer.category.toLowerCase().includes(searchTerm.toLowerCase());
+      (influencer.niche?.name.toLowerCase().includes(searchTerm.toLowerCase()) || false) ||
+      (influencer.bio?.toLowerCase().includes(searchTerm.toLowerCase()) || false);
     
-    const matchesCategory = selectedCategory === '' || 
-      influencer.category === selectedCategory;
-    
-    return matchesSearch && matchesCategory;
+    return matchesSearch;
   });
 
-  const handleInfluencerClick = (influencer) => {
+  const handleInfluencerClick = (influencer: Influencer) => {
     setSelectedInfluencer(influencer);
   };
   
@@ -451,31 +380,37 @@ const InfluencersPage = () => {
                       <SelectValue placeholder="Select Country" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="us">United States</SelectItem>
-                      <SelectItem value="ca">Canada</SelectItem>
-                      <SelectItem value="uk">United Kingdom</SelectItem>
+                      {countries.map(country => (
+                        <SelectItem key={country.id} value={country.id.toString()}>
+                          {country.name}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   
-                  <Select value={selectedState} onValueChange={setSelectedState}>
+                  <Select value={selectedState} onValueChange={setSelectedState} disabled={!selectedCountry}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select State" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="ca">California</SelectItem>
-                      <SelectItem value="ny">New York</SelectItem>
-                      <SelectItem value="tx">Texas</SelectItem>
+                      {states.map(state => (
+                        <SelectItem key={state.id} value={state.id.toString()}>
+                          {state.name}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   
-                  <Select value={selectedCity} onValueChange={setSelectedCity}>
+                  <Select value={selectedCity} onValueChange={setSelectedCity} disabled={!selectedState}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select City" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="la">Los Angeles</SelectItem>
-                      <SelectItem value="sf">San Francisco</SelectItem>
-                      <SelectItem value="sd">San Diego</SelectItem>
+                      {cities.map(city => (
+                        <SelectItem key={city.id} value={city.id.toString()}>
+                          {city.name}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -483,14 +418,14 @@ const InfluencersPage = () => {
               
               <div className="mb-6">
                 <h3 className="font-medium mb-2">Niche</h3>
-                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                <Select value={selectedNiche} onValueChange={setSelectedNiche}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select Niche" />
                   </SelectTrigger>
                   <SelectContent>
-                    {categories.map(category => (
-                      <SelectItem key={category} value={category}>
-                        {category}
+                    {niches.map(niche => (
+                      <SelectItem key={niche.id} value={niche.id.toString()}>
+                        {niche.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -500,48 +435,28 @@ const InfluencersPage = () => {
               <div className="mb-6">
                 <h3 className="font-medium mb-2">Follower Count</h3>
                 <div className="px-2">
-                  <Slider 
+                  <RangeSlider 
+                    label=""
                     value={followerRange} 
                     max={1500000} 
                     step={10000}
-                    onValueChange={setFollowerRange}
+                    onChange={setFollowerRange}
+                    formatValue={(value) => formatNumber(value)}
                   />
-                  <div className="flex justify-between text-xs text-gray-500 mt-1">
-                    <span>0</span>
-                    <span>1.5M</span>
-                  </div>
                 </div>
-              </div>
-              
-              <div className="mb-6">
-                <h3 className="font-medium mb-2">Platform</h3>
-                <Select value={selectedPlatform} onValueChange={setSelectedPlatform}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select Platform" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {platforms.map(platform => (
-                      <SelectItem key={platform.id} value={platform.id}>
-                        {platform.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
               </div>
               
               <div className="mb-6">
                 <h3 className="font-medium mb-2">Engagement Rate</h3>
                 <div className="px-2">
-                  <Slider 
+                  <RangeSlider 
+                    label=""
                     value={engagementRange} 
                     max={10} 
                     step={0.1}
-                    onValueChange={setEngagementRange}
+                    onChange={setEngagementRange}
+                    formatValue={(value) => `${value}%`}
                   />
-                  <div className="flex justify-between text-xs text-gray-500 mt-1">
-                    <span>0%</span>
-                    <span>10%</span>
-                  </div>
                 </div>
               </div>
               
@@ -581,11 +496,12 @@ const InfluencersPage = () => {
               </div>
               
               <div className="mb-6">
-                <h3 className="font-medium mb-2">Hashtags</h3>
-                <Input 
-                  placeholder="Enter hashtags" 
-                  value={hashtags}
-                  onChange={(e) => setHashtags(e.target.value)}
+                <HashtagInput 
+                  label="Hashtags"
+                  tags={selectedHashtags}
+                  onChange={setSelectedHashtags}
+                  placeholder="Enter hashtags"
+                  onAddHashtag={addHashtag}
                 />
               </div>
               
@@ -639,8 +555,17 @@ const InfluencersPage = () => {
             
             <div className="w-2/3 grid grid-cols-7 gap-4">
               <div className="col-span-3 bg-white rounded-lg shadow-sm">
-                <div className="p-4 border-b">
+                <div className="p-4 border-b flex items-center justify-between">
                   <h2 className="text-lg font-semibold">Influencers</h2>
+                  <div className="relative w-1/2">
+                    <Input
+                      placeholder="Search influencers..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-9"
+                    />
+                    <Search className="absolute left-2 top-2.5 h-5 w-5 text-gray-400" />
+                  </div>
                 </div>
                 <div className="max-h-[calc(100vh-200px)] overflow-y-auto">
                   {loading ? (
