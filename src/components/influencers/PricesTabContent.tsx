@@ -129,11 +129,16 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
               filteredServices.map((service) => (
                 <div key={service.id} className="flex items-center justify-between py-2">
                   <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 flex items-center justify-center border border-gray-300 rounded bg-gray-800 text-white">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg>
-                    </div>
-                    <label className="text-base">
+                    <Checkbox 
+                      id={service.id} 
+                      className="rounded-sm border-gray-300 data-[state=checked]:bg-gray-800 data-[state=checked]:text-white"
+                      defaultChecked
+                      disabled
+                    />
+                    <label htmlFor={service.id} className="text-base">
                       {service.service_type.charAt(0).toUpperCase() + service.service_type.slice(1)}
+                      {service.service_type === "story" && " (Image/Video)"}
+                      {service.service_type === "videos" && " (>10m)"}
                     </label>
                   </div>
                   <div className="font-medium">₹{service.price}</div>
@@ -160,18 +165,23 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
                 <div key={pkg.id} className="flex items-center justify-between py-2">
                   <div className="flex flex-col">
                     <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 flex items-center justify-center border border-gray-300 rounded bg-gray-800 text-white">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg>
-                      </div>
-                      <label className="text-base">
+                      <Checkbox 
+                        id={pkg.id} 
+                        className="rounded-sm border-gray-300 data-[state=checked]:bg-gray-800 data-[state=checked]:text-white"
+                        defaultChecked
+                        disabled
+                      />
+                      <label htmlFor={pkg.id} className="text-base">
                         {pkg.name}
                       </label>
                     </div>
-                    <div className="text-gray-500 text-sm ml-8">{pkg.platforms.join(' / ')}</div>
+                    <div className="text-gray-500 text-sm ml-8">
+                      {pkg.platforms.join('/').replace(/,/g, '/')}
+                    </div>
                   </div>
                   <div className="font-medium">
                     {pkg.is_featured ? (
-                      <div className="text-amber-500">★★★★★</div>
+                      <div className="text-amber-500">*****</div>
                     ) : (
                       `₹${pkg.price}`
                     )}
