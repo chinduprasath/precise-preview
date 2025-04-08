@@ -988,6 +988,7 @@ export type Database = {
       }
       service_content_metrics: {
         Row: {
+          bookmarks: number | null
           comments: number | null
           content_id: string
           id: string
@@ -997,6 +998,7 @@ export type Database = {
           views: number | null
         }
         Insert: {
+          bookmarks?: number | null
           comments?: number | null
           content_id: string
           id?: string
@@ -1006,6 +1008,7 @@ export type Database = {
           views?: number | null
         }
         Update: {
+          bookmarks?: number | null
           comments?: number | null
           content_id?: string
           id?: string

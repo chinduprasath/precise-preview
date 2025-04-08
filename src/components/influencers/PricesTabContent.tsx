@@ -61,7 +61,7 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
               id: content.id,
               image_url: content.media_url || 'https://picsum.photos/500/300',
               likes: metricsData?.likes || Math.floor(Math.random() * 500) * 1000,
-              bookmarks: Math.floor(Math.random() * 500) * 1000, // Random data for demo
+              bookmarks: metricsData?.bookmarks || Math.floor(Math.random() * 500) * 1000,
               comments: metricsData?.comments || Math.floor(Math.random() * 20) * 1000,
               price: Math.floor(Math.random() * 10) * 100 + 100 // Random price for demo
             };
