@@ -1,9 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { Heart, CreditCard, MessageSquare } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useServiceContent } from '@/hooks/useServiceContent';
 
 interface PricesTabContentProps {
   influencerId?: string;
@@ -57,11 +57,17 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
               console.error('Error fetching metrics:', metricsError);
             }
 
+            // Handle the case where bookmarks might not exist in the type
+            // but exists in the database
+            const bookmarksCount = (metricsData && 'bookmarks' in metricsData) 
+              ? metricsData.bookmarks 
+              : Math.floor(Math.random() * 500) * 1000;
+
             return {
               id: content.id,
               image_url: content.media_url || 'https://picsum.photos/500/300',
               likes: metricsData?.likes || Math.floor(Math.random() * 500) * 1000,
-              bookmarks: metricsData?.bookmarks || Math.floor(Math.random() * 500) * 1000,
+              bookmarks: bookmarksCount,
               comments: metricsData?.comments || Math.floor(Math.random() * 20) * 1000,
               price: Math.floor(Math.random() * 10) * 100 + 100 // Random price for demo
             };
