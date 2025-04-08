@@ -7,7 +7,8 @@ import { ServiceType, SocialPlatform } from '@/types/request';
 import InfluencerDetails from './InfluencerDetails';
 import ServicesTabContent from './ServicesTabContent';
 import PricesTabContent from './PricesTabContent';
-import { serviceContentData, platformServicesData, comboPackagesData } from './utils/constants';
+import DataTabContent from './DataTabContent';
+import { usePricingData } from '@/hooks/usePricingData';
 
 interface InfluencerProfileProps {
   id: string;
@@ -28,17 +29,6 @@ interface InfluencerProfileProps {
   }) => void;
 }
 
-// Sample pricing data (in a real app, this would come from the backend)
-const samplePricing = [
-  { serviceType: 'post', platform: 'instagram', price: 500 },
-  { serviceType: 'story', platform: 'instagram', price: 300 },
-  { serviceType: 'reel', platform: 'instagram', price: 800 },
-  { serviceType: 'post', platform: 'facebook', price: 400 },
-  { serviceType: 'video', platform: 'youtube', price: 1500 },
-  { serviceType: 'short', platform: 'youtube', price: 700 },
-  { serviceType: 'post', platform: 'twitter', price: 250 },
-];
-
 const InfluencerProfile: React.FC<InfluencerProfileProps> = ({
   id,
   name,
@@ -58,6 +48,8 @@ const InfluencerProfile: React.FC<InfluencerProfileProps> = ({
   const [selectedPackage, setSelectedPackage] = useState('platform');
   const [description, setDescription] = useState('');
 
+  const { platformServices } = usePricingData(id);
+
   useEffect(() => {
     // Simulating data loading
     try {
@@ -74,7 +66,7 @@ const InfluencerProfile: React.FC<InfluencerProfileProps> = ({
   }, [id]);
 
   const getPrice = (serviceType: ServiceType, platform: SocialPlatform): number => {
-    const pricing = samplePricing.find(p => p.serviceType === serviceType && p.platform === platform);
+    const pricing = platformServices.find(p => p.service_type === serviceType && p.platform === platform);
     return pricing ? pricing.price : 0;
   };
 
@@ -140,19 +132,28 @@ const InfluencerProfile: React.FC<InfluencerProfileProps> = ({
                     >
                       Prices
                     </TabsTrigger>
+                    <TabsTrigger 
+                      value="data" 
+                      className="flex-1 py-3 rounded-none data-[state=active]:border-b-2 data-[state=active]:border-purple-600 data-[state=active]:shadow-none"
+                    >
+                      Data
+                    </TabsTrigger>
                   </TabsList>
                 </div>
                 
                 <TabsContent value="services" className="mt-0">
-                  <ServicesTabContent serviceContent={serviceContentData} />
+                  <ServicesTabContent influencerId={id} />
                 </TabsContent>
                 
                 <TabsContent value="prices" className="mt-0">
                   <PricesTabContent 
-                    platformServices={platformServicesData} 
-                    comboPackages={comboPackagesData}
+                    influencerId={id}
                     influencerName={name}
                   />
+                </TabsContent>
+
+                <TabsContent value="data" className="mt-0">
+                  <DataTabContent influencerId={id} />
                 </TabsContent>
               </Tabs>
             </div>

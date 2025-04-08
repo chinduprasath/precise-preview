@@ -1,39 +1,29 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/components/ui/use-toast';
 import { SocialPlatform } from '@/types/request';
-
-interface PlatformService {
-  id: string;
-  name: string;
-  price: string;
-}
-
-interface ComboPackage {
-  id: string;
-  name: string;
-  platforms: string;
-  price: string;
-}
+import { Skeleton } from '@/components/ui/skeleton';
+import { usePricingData, PlatformService, ComboPackage } from '@/hooks/usePricingData';
 
 interface PricesTabContentProps {
-  platformServices: PlatformService[];
-  comboPackages: ComboPackage[];
+  influencerId?: string;
   influencerName: string;
   onEditPrices?: () => void;
 }
 
 const PricesTabContent: React.FC<PricesTabContentProps> = ({
-  platformServices,
-  comboPackages,
+  influencerId,
   influencerName,
   onEditPrices
 }) => {
   const { toast } = useToast();
-  const [selectedPlatform, setSelectedPlatform] = React.useState<SocialPlatform>('instagram');
+  const [selectedPlatform, setSelectedPlatform] = useState<SocialPlatform>('instagram');
+  const [selectedPackage, setSelectedPackage] = useState('platform');
+  
+  const { platformServices, comboPackages, loading, error } = usePricingData(influencerId);
 
   const handleBook = () => {
     toast({
@@ -53,6 +43,55 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
     }
   };
 
+  if (error) {
+    return (
+      <div className="bg-red-50 p-4 rounded-md text-red-600">
+        <p>Error loading pricing: {error}</p>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <Skeleton className="h-6 w-40" />
+              <Skeleton className="h-9 w-40" />
+            </div>
+            {Array(6).fill(0).map((_, index) => (
+              <div key={`service-skeleton-${index}`} className="flex items-center justify-between py-2">
+                <Skeleton className="h-6 w-32" />
+                <Skeleton className="h-6 w-16" />
+              </div>
+            ))}
+          </div>
+          <div className="space-y-4">
+            <Skeleton className="h-6 w-40" />
+            {Array(3).fill(0).map((_, index) => (
+              <div key={`package-skeleton-${index}`} className="flex items-center justify-between py-2">
+                <div>
+                  <Skeleton className="h-6 w-32 mb-1" />
+                  <Skeleton className="h-4 w-24" />
+                </div>
+                <Skeleton className="h-6 w-16" />
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="flex justify-center pt-4">
+          <Skeleton className="h-10 w-1/3" />
+        </div>
+      </div>
+    );
+  }
+
+  // Filter services by selected platform
+  const filteredServices = platformServices.filter(
+    service => service.platform === selectedPlatform
+  );
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8">
@@ -65,7 +104,10 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
             <span className="font-medium text-lg">Platform Based</span>
             
             <div className="ml-auto">
-              <Select defaultValue="instagram" onValueChange={(value) => setSelectedPlatform(value as SocialPlatform)}>
+              <Select 
+                defaultValue={selectedPlatform} 
+                onValueChange={(value) => setSelectedPlatform(value as SocialPlatform)}
+              >
                 <SelectTrigger className="w-[180px] h-9 text-sm bg-gray-100 border-gray-200">
                   <SelectValue placeholder="Select Platform" />
                 </SelectTrigger>
@@ -74,25 +116,30 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
                   <SelectItem value="facebook">Facebook</SelectItem>
                   <SelectItem value="youtube">YouTube</SelectItem>
                   <SelectItem value="tiktok">TikTok</SelectItem>
+                  <SelectItem value="twitter">Twitter</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
           
           <div className="space-y-2 mt-4">
-            {platformServices.map((service) => (
-              <div key={service.id} className="flex items-center justify-between py-2">
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 flex items-center justify-center border border-gray-300 rounded bg-gray-800 text-white">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg>
+            {filteredServices.length === 0 ? (
+              <p className="text-gray-500 py-2">No services available for this platform</p>
+            ) : (
+              filteredServices.map((service) => (
+                <div key={service.id} className="flex items-center justify-between py-2">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 flex items-center justify-center border border-gray-300 rounded bg-gray-800 text-white">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg>
+                    </div>
+                    <label className="text-base">
+                      {service.service_type.charAt(0).toUpperCase() + service.service_type.slice(1)}
+                    </label>
                   </div>
-                  <label className="text-base">
-                    {service.name}
-                  </label>
+                  <div className="font-medium">₹{service.price}</div>
                 </div>
-                <div className="font-medium">{service.price}</div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
         
@@ -106,28 +153,32 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
           </div>
           
           <div className="space-y-2 mt-4">
-            {comboPackages.map((pkg) => (
-              <div key={pkg.id} className="flex items-center justify-between py-2">
-                <div className="flex flex-col">
-                  <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 flex items-center justify-center border border-gray-300 rounded bg-gray-800 text-white">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg>
+            {comboPackages.length === 0 ? (
+              <p className="text-gray-500 py-2">No packages available</p>
+            ) : (
+              comboPackages.map((pkg) => (
+                <div key={pkg.id} className="flex items-center justify-between py-2">
+                  <div className="flex flex-col">
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 flex items-center justify-center border border-gray-300 rounded bg-gray-800 text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-check"><path d="M20 6 9 17l-5-5"/></svg>
+                      </div>
+                      <label className="text-base">
+                        {pkg.name}
+                      </label>
                     </div>
-                    <label className="text-base">
-                      {pkg.name}
-                    </label>
+                    <div className="text-gray-500 text-sm ml-8">{pkg.platforms.join(' / ')}</div>
                   </div>
-                  <div className="text-gray-500 text-sm ml-8">{pkg.platforms}</div>
+                  <div className="font-medium">
+                    {pkg.is_featured ? (
+                      <div className="text-amber-500">★★★★★</div>
+                    ) : (
+                      `₹${pkg.price}`
+                    )}
+                  </div>
                 </div>
-                <div className="font-medium">
-                  {pkg.id === 'package1' ? (
-                    <div className="text-amber-500">★★★★★</div>
-                  ) : (
-                    pkg.price
-                  )}
-                </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
       </div>

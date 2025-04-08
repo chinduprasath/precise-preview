@@ -121,6 +121,48 @@ export type Database = {
         }
         Relationships: []
       }
+      influencer_analytics: {
+        Row: {
+          avg_comments: number | null
+          avg_likes: number | null
+          avg_shares: number | null
+          avg_views: number | null
+          created_at: string | null
+          engagement_rate: number | null
+          fake_followers_percent: number | null
+          id: string
+          influencer_id: string
+          total_campaigns: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          avg_comments?: number | null
+          avg_likes?: number | null
+          avg_shares?: number | null
+          avg_views?: number | null
+          created_at?: string | null
+          engagement_rate?: number | null
+          fake_followers_percent?: number | null
+          id?: string
+          influencer_id: string
+          total_campaigns?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          avg_comments?: number | null
+          avg_likes?: number | null
+          avg_shares?: number | null
+          avg_views?: number | null
+          created_at?: string | null
+          engagement_rate?: number | null
+          fake_followers_percent?: number | null
+          id?: string
+          influencer_id?: string
+          total_campaigns?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       influencer_hashtags: {
         Row: {
           hashtag_id: number
@@ -150,6 +192,123 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      influencer_monthly_analytics: {
+        Row: {
+          comments: number | null
+          created_at: string | null
+          earnings: number | null
+          engagement_rate: number | null
+          id: string
+          influencer_id: string
+          likes: number | null
+          month: number
+          orders: number | null
+          shares: number | null
+          views: number | null
+          year: number
+        }
+        Insert: {
+          comments?: number | null
+          created_at?: string | null
+          earnings?: number | null
+          engagement_rate?: number | null
+          id?: string
+          influencer_id: string
+          likes?: number | null
+          month: number
+          orders?: number | null
+          shares?: number | null
+          views?: number | null
+          year: number
+        }
+        Update: {
+          comments?: number | null
+          created_at?: string | null
+          earnings?: number | null
+          engagement_rate?: number | null
+          id?: string
+          influencer_id?: string
+          likes?: number | null
+          month?: number
+          orders?: number | null
+          shares?: number | null
+          views?: number | null
+          year?: number
+        }
+        Relationships: []
+      }
+      influencer_packages: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          influencer_id: string
+          is_active: boolean | null
+          is_featured: boolean | null
+          name: string
+          platforms: string[] | null
+          price: number
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          influencer_id: string
+          is_active?: boolean | null
+          is_featured?: boolean | null
+          name: string
+          platforms?: string[] | null
+          price?: number
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          influencer_id?: string
+          is_active?: boolean | null
+          is_featured?: boolean | null
+          name?: string
+          platforms?: string[] | null
+          price?: number
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      influencer_pricing: {
+        Row: {
+          created_at: string | null
+          id: string
+          influencer_id: string
+          is_active: boolean | null
+          platform: string
+          price: number
+          service_type: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          influencer_id: string
+          is_active?: boolean | null
+          platform: string
+          price?: number
+          service_type: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          influencer_id?: string
+          is_active?: boolean | null
+          platform?: string
+          price?: number
+          service_type?: string
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       influencer_profiles: {
         Row: {

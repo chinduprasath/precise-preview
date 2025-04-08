@@ -6,10 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Share, MessageSquare } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
-import { serviceContentData, platformServicesData, comboPackagesData } from '@/components/influencers/utils/constants';
 import InfluencerDetails from '@/components/influencers/InfluencerDetails';
 import ServicesTabContent from '@/components/influencers/ServicesTabContent';
 import PricesTabContent from '@/components/influencers/PricesTabContent';
+import DataTabContent from '@/components/influencers/DataTabContent';
 
 const InfluencerProfile = () => {
   const navigate = useNavigate();
@@ -125,6 +125,9 @@ const InfluencerProfile = () => {
                         <TabsTrigger value="prices" className="flex-1 py-3 rounded-none data-[state=active]:border-b-2 data-[state=active]:border-purple-600 data-[state=active]:shadow-none">
                           Prices
                         </TabsTrigger>
+                        <TabsTrigger value="data" className="flex-1 py-3 rounded-none data-[state=active]:border-b-2 data-[state=active]:border-purple-600 data-[state=active]:shadow-none">
+                          Data
+                        </TabsTrigger>
                       </TabsList>
                     </div>
                     
@@ -133,7 +136,14 @@ const InfluencerProfile = () => {
                     </TabsContent>
                     
                     <TabsContent value="prices" className="mt-0">
-                      <PricesTabContent platformServices={platformServicesData} comboPackages={comboPackagesData} influencerName={user?.email?.split('@')[0] || 'Username'} />
+                      <PricesTabContent 
+                        influencerId={influencerId} 
+                        influencerName={user?.email?.split('@')[0] || 'Username'} 
+                      />
+                    </TabsContent>
+
+                    <TabsContent value="data" className="mt-0">
+                      <DataTabContent influencerId={influencerId} />
                     </TabsContent>
                   </Tabs>
                 </div>
