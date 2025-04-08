@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '@/components/layout/Sidebar';
@@ -14,6 +15,7 @@ const InfluencerProfile = () => {
   const navigate = useNavigate();
   const [user, setUser] = React.useState<any>(null);
   const [loading, setLoading] = React.useState(true);
+  const [influencerId, setInfluencerId] = React.useState<string | undefined>(undefined);
 
   React.useEffect(() => {
     const checkUser = async () => {
@@ -27,6 +29,41 @@ const InfluencerProfile = () => {
         localStorage.setItem('userType', 'influencer');
       }
       setUser(data.session.user);
+      
+      // Get or create an influencer ID
+      try {
+        const { data: influencerData, error } = await supabase
+          .from('influencers')
+          .select('id')
+          .eq('name', data.session.user.email?.split('@')[0] || 'Username')
+          .maybeSingle();
+          
+        if (influencerData) {
+          setInfluencerId(influencerData.id);
+        } else {
+          // Create a new influencer record if one doesn't exist
+          const { data: newInfluencer, error: createError } = await supabase
+            .from('influencers')
+            .insert({
+              name: data.session.user.email?.split('@')[0] || 'Username',
+              username: data.session.user.email?.split('@')[0] || 'username',
+              image_url: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80'
+            })
+            .select('id')
+            .single();
+            
+          if (newInfluencer) {
+            setInfluencerId(newInfluencer.id);
+          }
+          
+          if (createError) {
+            console.error('Error creating influencer record:', createError);
+          }
+        }
+      } catch (err) {
+        console.error('Error getting/creating influencer record:', err);
+      }
+      
       setLoading(false);
     };
 
@@ -71,7 +108,7 @@ const InfluencerProfile = () => {
               <p className="text-gray-600">{user?.email || 'username@gmail.com'}</p>
               <div className="mt-6 flex flex-col md:flex-row gap-6">
                 <div className="md:w-1/3 flex-shrink-0">
-                  <InfluencerDetails id="user123" name={user?.email?.split('@')[0] || 'Username'} profileImage="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" followers={{
+                  <InfluencerDetails id={influencerId || 'user123'} name={user?.email?.split('@')[0] || 'Username'} profileImage="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" followers={{
                   instagram: 1000000,
                   facebook: 235000,
                   twitter: 98000,
@@ -92,7 +129,7 @@ const InfluencerProfile = () => {
                     </div>
                     
                     <TabsContent value="services" className="mt-0">
-                      <ServicesTabContent serviceContent={serviceContentData} />
+                      <ServicesTabContent influencerId={influencerId} />
                     </TabsContent>
                     
                     <TabsContent value="prices" className="mt-0">

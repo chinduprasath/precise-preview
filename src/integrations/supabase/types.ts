@@ -797,6 +797,74 @@ export type Database = {
           },
         ]
       }
+      service_content: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          influencer_id: string
+          media_type: string
+          media_url: string
+          title: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          influencer_id: string
+          media_type: string
+          media_url: string
+          title?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          influencer_id?: string
+          media_type?: string
+          media_url?: string
+          title?: string | null
+        }
+        Relationships: []
+      }
+      service_content_metrics: {
+        Row: {
+          comments: number | null
+          content_id: string
+          id: string
+          likes: number | null
+          shares: number | null
+          updated_at: string | null
+          views: number | null
+        }
+        Insert: {
+          comments?: number | null
+          content_id: string
+          id?: string
+          likes?: number | null
+          shares?: number | null
+          updated_at?: string | null
+          views?: number | null
+        }
+        Update: {
+          comments?: number | null
+          content_id?: string
+          id?: string
+          likes?: number | null
+          shares?: number | null
+          updated_at?: string | null
+          views?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_service_content"
+            columns: ["content_id"]
+            isOneToOne: false
+            referencedRelation: "service_content"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       services: {
         Row: {
           add_ons: Json | null

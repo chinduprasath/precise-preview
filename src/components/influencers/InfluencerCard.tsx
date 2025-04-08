@@ -9,6 +9,7 @@ interface SocialStats {
 }
 
 interface InfluencerCardProps {
+  id?: string;
   name: string;
   avatar: string;
   location?: {
@@ -21,10 +22,10 @@ interface InfluencerCardProps {
 
 const formatNumber = (num: number): string => {
   if (num >= 1000000) {
-    return (num / 1000000).toFixed(0) + 'M';
+    return (num / 1000000).toFixed(1) + 'M';
   }
   if (num >= 1000) {
-    return (num / 1000).toFixed(0) + 'K';
+    return (num / 1000).toFixed(1) + 'K';
   }
   return num.toString();
 };
@@ -62,6 +63,7 @@ const SocialIcon: React.FC<{ platform: string; count: number }> = ({ platform, c
 };
 
 const InfluencerCard: React.FC<InfluencerCardProps> = ({
+  id,
   name,
   avatar,
   location,
@@ -72,6 +74,7 @@ const InfluencerCard: React.FC<InfluencerCardProps> = ({
     <div 
       className="p-3 border rounded-lg hover:shadow-md transition-all duration-300 cursor-pointer bg-white" 
       onClick={onClick}
+      data-influencer-id={id}
     >
       <div className="flex items-center gap-3">
         <Avatar className="h-10 w-10 border">
