@@ -18,12 +18,16 @@ export function useInfluencers(filters: InfluencerFilters = {}) {
   const [influencers, setInfluencers] = useState<Influencer[]>([]);
   const [selectedInfluencer, setSelectedInfluencer] = useState<Influencer | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [isInitialLoad, setIsInitialLoad] = useState<boolean>(true);
   const { toast } = useToast();
 
   useEffect(() => {
     async function fetchInfluencers() {
       try {
-        setLoading(true);
+        // Only show loading indicator on initial load
+        if (isInitialLoad) {
+          setLoading(true);
+        }
         
         let query = supabase
           .from('influencers')
@@ -118,6 +122,7 @@ export function useInfluencers(filters: InfluencerFilters = {}) {
         });
       } finally {
         setLoading(false);
+        setIsInitialLoad(false);
       }
     }
 
@@ -128,6 +133,7 @@ export function useInfluencers(filters: InfluencerFilters = {}) {
     influencers,
     selectedInfluencer,
     setSelectedInfluencer,
-    loading
+    loading,
+    isInitialLoad
   };
 }

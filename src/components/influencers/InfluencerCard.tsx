@@ -11,6 +11,10 @@ interface SocialStats {
 interface InfluencerCardProps {
   name: string;
   avatar: string;
+  location?: {
+    state?: string;
+    city?: string;
+  };
   socialStats: SocialStats[];
   onClick?: () => void;
 }
@@ -60,6 +64,7 @@ const SocialIcon: React.FC<{ platform: string; count: number }> = ({ platform, c
 const InfluencerCard: React.FC<InfluencerCardProps> = ({
   name,
   avatar,
+  location,
   socialStats,
   onClick,
 }) => {
@@ -74,6 +79,11 @@ const InfluencerCard: React.FC<InfluencerCardProps> = ({
         </Avatar>
         <div>
           <h3 className="font-medium text-gray-900">{name}</h3>
+          {location && location.city && location.state && (
+            <div className="text-xs text-gray-500 mt-0.5">
+              {location.city}, {location.state}
+            </div>
+          )}
           <div className="flex items-center gap-3 mt-1">
             {socialStats.map((stat, index) => (
               <SocialIcon key={index} platform={stat.platform} count={stat.count} />

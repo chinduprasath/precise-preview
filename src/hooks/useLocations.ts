@@ -14,6 +14,7 @@ export function useLocations() {
   const [loading, setLoading] = useState<boolean>(true);
   const { toast } = useToast();
 
+  // Fetch all countries on initial load
   useEffect(() => {
     async function fetchCountries() {
       try {
@@ -51,6 +52,7 @@ export function useLocations() {
     fetchCountries();
   }, [toast]);
 
+  // Fetch states when country changes
   useEffect(() => {
     async function fetchStates() {
       if (!selectedCountry) return;
@@ -85,6 +87,7 @@ export function useLocations() {
     fetchStates();
   }, [selectedCountry, toast]);
 
+  // Fetch cities when state changes
   useEffect(() => {
     async function fetchCities() {
       if (!selectedState) return;

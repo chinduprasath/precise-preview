@@ -22,6 +22,7 @@ import { useNiches } from '@/hooks/useNiches';
 import { useHashtags } from '@/hooks/useHashtags';
 import { useInfluencers, InfluencerFilters } from '@/hooks/useInfluencers';
 import { Influencer } from '@/types/location';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const formatNumber = (num: number): string => {
   if (num >= 1000000) {
@@ -79,6 +80,25 @@ const InfluencerListItem = ({ influencer, isSelected, onClick }: {
           )}
         </div>
       </div>
+    </div>
+  );
+};
+
+const InfluencerListSkeleton = () => {
+  return (
+    <div className="space-y-3 px-2">
+      {[1, 2, 3, 4, 5].map((i) => (
+        <div key={i} className="flex items-center gap-3 py-3">
+          <Skeleton className="h-12 w-12 rounded-full" />
+          <div className="flex-1">
+            <Skeleton className="h-4 w-32 mb-2" />
+            <div className="flex gap-2">
+              <Skeleton className="h-3 w-16" />
+              <Skeleton className="h-3 w-16" />
+            </div>
+          </div>
+        </div>
+      ))}
     </div>
   );
 };
@@ -331,11 +351,12 @@ const InfluencersPage = () => {
     selectedCity, 
     setSelectedCountry, 
     setSelectedState, 
-    setSelectedCity 
+    setSelectedCity,
+    loading: loadingLocations
   } = useLocations();
   
-  const { niches, selectedNiche, setSelectedNiche } = useNiches();
-  const { selectedHashtags, setSelectedHashtags, addHashtag } = useHashtags();
+  const { niches, selectedNiche, setSelectedNiche, loading: loadingNiches } = useNiches();
+  const { selectedHashtags, setSelectedHashtags, addHashtag, loading: loadingHashtags } = useHashtags();
   
   const filters: InfluencerFilters = {
     countryId: selectedCountry ? parseInt(selectedCountry) : undefined,
@@ -347,7 +368,7 @@ const InfluencersPage = () => {
     engagementRange: engagementRange
   };
   
-  const { influencers, selectedInfluencer, setSelectedInfluencer, loading } = useInfluencers(filters);
+  const { influencers, selectedInfluencer, setSelectedInfluencer, loading, isInitialLoad } = useInfluencers(filters);
   
   const filteredInfluencers = influencers.filter(influencer => {
     const matchesSearch = searchTerm === '' || 
@@ -380,37 +401,49 @@ const InfluencersPage = () => {
                       <SelectValue placeholder="Select Country" />
                     </SelectTrigger>
                     <SelectContent>
-                      {countries.map(country => (
-                        <SelectItem key={country.id} value={country.id.toString()}>
-                          {country.name}
-                        </SelectItem>
-                      ))}
+                      {loadingLocations ? (
+                        <SelectItem value="loading" disabled>Loading...</SelectItem>
+                      ) : (
+                        countries.map(country => (
+                          <SelectItem key={country.id} value={country.id.toString()}>
+                            {country.name}
+                          </SelectItem>
+                        ))
+                      )}
                     </SelectContent>
                   </Select>
                   
-                  <Select value={selectedState} onValueChange={setSelectedState} disabled={!selectedCountry}>
+                  <Select value={selectedState} onValueChange={setSelectedState} disabled={!selectedCountry || loadingLocations}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select State" />
                     </SelectTrigger>
                     <SelectContent>
-                      {states.map(state => (
-                        <SelectItem key={state.id} value={state.id.toString()}>
-                          {state.name}
-                        </SelectItem>
-                      ))}
+                      {loadingLocations ? (
+                        <SelectItem value="loading" disabled>Loading...</SelectItem>
+                      ) : (
+                        states.map(state => (
+                          <SelectItem key={state.id} value={state.id.toString()}>
+                            {state.name}
+                          </SelectItem>
+                        ))
+                      )}
                     </SelectContent>
                   </Select>
                   
-                  <Select value={selectedCity} onValueChange={setSelectedCity} disabled={!selectedState}>
+                  <Select value={selectedCity} onValueChange={setSelectedCity} disabled={!selectedState || loadingLocations}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select City" />
                     </SelectTrigger>
                     <SelectContent>
-                      {cities.map(city => (
-                        <SelectItem key={city.id} value={city.id.toString()}>
-                          {city.name}
-                        </SelectItem>
-                      ))}
+                      {loadingLocations ? (
+                        <SelectItem value="loading" disabled>Loading...</SelectItem>
+                      ) : (
+                        cities.map(city => (
+                          <SelectItem key={city.id} value={city.id.toString()}>
+                            {city.name}
+                          </SelectItem>
+                        ))
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
@@ -423,11 +456,15 @@ const InfluencersPage = () => {
                     <SelectValue placeholder="Select Niche" />
                   </SelectTrigger>
                   <SelectContent>
-                    {niches.map(niche => (
-                      <SelectItem key={niche.id} value={niche.id.toString()}>
-                        {niche.name}
-                      </SelectItem>
-                    ))}
+                    {loadingNiches ? (
+                      <SelectItem value="loading" disabled>Loading...</SelectItem>
+                    ) : (
+                      niches.map(niche => (
+                        <SelectItem key={niche.id} value={niche.id.toString()}>
+                          {niche.name}
+                        </SelectItem>
+                      ))
+                    )}
                   </SelectContent>
                 </Select>
               </div>
@@ -443,6 +480,7 @@ const InfluencersPage = () => {
                     step={10000}
                     onChange={setFollowerRange}
                     formatValue={(value) => formatNumber(value)}
+                    direction="rtl"
                   />
                 </div>
               </div>
@@ -458,6 +496,7 @@ const InfluencersPage = () => {
                     step={0.1}
                     onChange={setEngagementRange}
                     formatValue={(value) => `${value}%`}
+                    direction="rtl"
                   />
                 </div>
               </div>
@@ -570,10 +609,21 @@ const InfluencersPage = () => {
                   </div>
                 </div>
                 <div className="max-h-[calc(100vh-200px)] overflow-y-auto">
-                  {loading ? (
-                    <div className="p-4 text-center text-gray-500">Loading influencers...</div>
+                  {isInitialLoad ? (
+                    <InfluencerListSkeleton />
+                  ) : loading && !isInitialLoad ? (
+                    <div className="flex items-center justify-center py-8">
+                      <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-solid border-primary border-r-transparent"></div>
+                      <span className="ml-2 text-gray-500">Filtering...</span>
+                    </div>
                   ) : filteredInfluencers.length === 0 ? (
-                    <div className="p-4 text-center text-gray-500">No influencers found</div>
+                    <div className="p-8 text-center text-gray-500">
+                      <div className="mb-2">
+                        <Search className="h-12 w-12 mx-auto text-gray-300" />
+                      </div>
+                      <h3 className="text-lg font-medium mb-1">No influencers found</h3>
+                      <p className="text-sm">Try adjusting your filters to see more results</p>
+                    </div>
                   ) : (
                     filteredInfluencers.map((influencer) => (
                       <div key={influencer.id}>
