@@ -41,20 +41,18 @@ export const useHeaderData = () => {
         }
         
         // Fetch notifications count
-        if (session.user && session.user.id && isMounted) {
-          try {
-            const { count, error: notifError } = await supabase
-              .from('notifications')
-              .select('*', { count: 'exact', head: true })
-              .eq('user_id', session.user.id)
-              .eq('is_read', false);
-              
-            if (!notifError && count !== null && isMounted) {
-              setNotificationCount(count);
-            }
-          } catch (notifErr) {
-            console.error("Error fetching notifications:", notifErr);
+        try {
+          const { count, error: notifError } = await supabase
+            .from('notifications')
+            .select('*', { count: 'exact', head: true })
+            .eq('user_id', session.user.id)
+            .eq('is_read', false);
+            
+          if (!notifError && count !== null && isMounted) {
+            setNotificationCount(count);
           }
+        } catch (notifErr) {
+          console.error("Error fetching notifications:", notifErr);
         }
       } catch (error) {
         console.error('Error in fetchUserData:', error);
