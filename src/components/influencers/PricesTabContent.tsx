@@ -1,17 +1,23 @@
 
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
+import React, { useState, useEffect } from 'react';
 import { useToast } from '@/components/ui/use-toast';
-import { SocialPlatform } from '@/types/request';
+import { supabase } from '@/integrations/supabase/client';
+import { Heart, CreditCard, MessageSquare } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { usePricingData, PlatformService, ComboPackage } from '@/hooks/usePricingData';
 
 interface PricesTabContentProps {
   influencerId?: string;
   influencerName: string;
   onEditPrices?: () => void;
+}
+
+interface ContentItem {
+  id: string;
+  image_url: string;
+  likes: number;
+  bookmarks: number;
+  comments: number;
+  price: number;
 }
 
 const PricesTabContent: React.FC<PricesTabContentProps> = ({
@@ -20,187 +26,149 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
   onEditPrices
 }) => {
   const { toast } = useToast();
-  const [selectedPlatform, setSelectedPlatform] = useState<SocialPlatform>('instagram');
-  const [selectedPackage, setSelectedPackage] = useState('platform');
-  
-  const { platformServices, comboPackages, loading, error } = usePricingData(influencerId);
+  const [contentItems, setContentItems] = useState<ContentItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleBook = () => {
-    toast({
-      title: "Service booked",
-      description: `Your service request has been sent to ${influencerName}`,
-    });
-  };
+  useEffect(() => {
+    async function fetchContentItems() {
+      if (!influencerId) return;
+      
+      setLoading(true);
+      try {
+        // Fetch content items from service_content table
+        const { data: serviceContentData, error: serviceContentError } = await supabase
+          .from('service_content')
+          .select('*')
+          .eq('influencer_id', influencerId);
+        
+        if (serviceContentError) throw serviceContentError;
 
-  const handleEditPrices = () => {
-    if (onEditPrices) {
-      onEditPrices();
-    } else {
-      toast({
-        title: "Edit mode",
-        description: "Editing prices functionality would be implemented here",
-      });
+        if (serviceContentData) {
+          // For each content item, fetch its metrics
+          const contentWithMetrics = await Promise.all(serviceContentData.map(async (content) => {
+            const { data: metricsData, error: metricsError } = await supabase
+              .from('service_content_metrics')
+              .select('*')
+              .eq('content_id', content.id)
+              .single();
+            
+            if (metricsError && metricsError.code !== 'PGRST116') {
+              console.error('Error fetching metrics:', metricsError);
+            }
+
+            return {
+              id: content.id,
+              image_url: content.media_url || 'https://picsum.photos/500/300',
+              likes: metricsData?.likes || Math.floor(Math.random() * 500) * 1000,
+              bookmarks: Math.floor(Math.random() * 500) * 1000, // Random data for demo
+              comments: metricsData?.comments || Math.floor(Math.random() * 20) * 1000,
+              price: Math.floor(Math.random() * 10) * 100 + 100 // Random price for demo
+            };
+          }));
+
+          // If no content items are found, create sample data
+          if (contentWithMetrics.length === 0) {
+            const sampleContent = Array(4).fill(0).map((_, index) => ({
+              id: `sample-${index}`,
+              image_url: `https://picsum.photos/id/${index + 30}/500/300`,
+              likes: Math.floor(Math.random() * 500) * 1000,
+              bookmarks: Math.floor(Math.random() * 500) * 1000,
+              comments: Math.floor(Math.random() * 20) * 1000,
+              price: Math.floor(Math.random() * 10) * 100 + 100
+            }));
+            setContentItems(sampleContent);
+          } else {
+            setContentItems(contentWithMetrics);
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching content items:', err);
+        setError('Failed to load content items');
+      } finally {
+        setLoading(false);
+      }
     }
+
+    fetchContentItems();
+  }, [influencerId]);
+
+  const formatNumber = (num: number): string => {
+    if (num >= 1000000) {
+      return (num / 1000000).toFixed(1) + 'M';
+    }
+    if (num >= 1000) {
+      return (num / 1000).toFixed(0) + 'K';
+    }
+    return num.toString();
   };
 
   if (error) {
     return (
       <div className="bg-red-50 p-4 rounded-md text-red-600">
-        <p>Error loading pricing: {error}</p>
+        <p>{error}</p>
       </div>
     );
   }
 
   if (loading) {
     return (
-      <div className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <Skeleton className="h-6 w-40" />
-              <Skeleton className="h-9 w-40" />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {Array(4).fill(0).map((_, index) => (
+          <div key={`skeleton-${index}`} className="rounded-lg overflow-hidden border border-gray-200">
+            <Skeleton className="h-52 w-full" />
+            <div className="p-3">
+              <div className="flex justify-between mb-2">
+                <Skeleton className="h-6 w-24" />
+                <Skeleton className="h-6 w-24" />
+              </div>
+              <Skeleton className="h-6 w-full" />
             </div>
-            {Array(6).fill(0).map((_, index) => (
-              <div key={`service-skeleton-${index}`} className="flex items-center justify-between py-2">
-                <Skeleton className="h-6 w-32" />
-                <Skeleton className="h-6 w-16" />
-              </div>
-            ))}
           </div>
-          <div className="space-y-4">
-            <Skeleton className="h-6 w-40" />
-            {Array(3).fill(0).map((_, index) => (
-              <div key={`package-skeleton-${index}`} className="flex items-center justify-between py-2">
-                <div>
-                  <Skeleton className="h-6 w-32 mb-1" />
-                  <Skeleton className="h-4 w-24" />
-                </div>
-                <Skeleton className="h-6 w-16" />
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="flex justify-center pt-4">
-          <Skeleton className="h-10 w-1/3" />
-        </div>
+        ))}
       </div>
     );
   }
 
-  // Filter services by selected platform
-  const filteredServices = platformServices.filter(
-    service => service.platform === selectedPlatform
-  );
-
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8">
-        {/* Left column - Platform Based */}
-        <div className="space-y-4">
-          <div className="flex items-center gap-3">
-            <div className="w-6 h-6 rounded-full bg-purple-600 flex items-center justify-center">
-              <div className="w-3 h-3 rounded-full bg-white"></div>
-            </div>
-            <span className="font-medium text-lg">Platform Based</span>
-            
-            <div className="ml-auto">
-              <Select 
-                defaultValue={selectedPlatform} 
-                onValueChange={(value) => setSelectedPlatform(value as SocialPlatform)}
-              >
-                <SelectTrigger className="w-[180px] h-9 text-sm bg-gray-100 border-gray-200">
-                  <SelectValue placeholder="Select Platform" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="instagram">Instagram</SelectItem>
-                  <SelectItem value="facebook">Facebook</SelectItem>
-                  <SelectItem value="youtube">YouTube</SelectItem>
-                  <SelectItem value="tiktok">TikTok</SelectItem>
-                  <SelectItem value="twitter">Twitter</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {contentItems.map((item) => (
+        <div key={item.id} className="rounded-lg overflow-hidden border border-gray-200">
+          <div className="relative h-52 bg-gray-100">
+            <img 
+              src={item.image_url} 
+              alt="Content" 
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.src = 'https://picsum.photos/500/300';
+              }}
+            />
           </div>
-          
-          <div className="space-y-2 mt-4">
-            {filteredServices.length === 0 ? (
-              <p className="text-gray-500 py-2">No services available for this platform</p>
-            ) : (
-              filteredServices.map((service) => (
-                <div key={service.id} className="flex items-center justify-between py-2">
-                  <div className="flex items-center gap-2">
-                    <Checkbox 
-                      id={service.id} 
-                      className="rounded-sm border-gray-300 data-[state=checked]:bg-gray-800 data-[state=checked]:text-white"
-                      defaultChecked
-                      disabled
-                    />
-                    <label htmlFor={service.id} className="text-base">
-                      {service.service_type.charAt(0).toUpperCase() + service.service_type.slice(1)}
-                      {service.service_type === "story" && " (Image/Video)"}
-                      {service.service_type === "videos" && " (>10m)"}
-                    </label>
-                  </div>
-                  <div className="font-medium">₹{service.price}</div>
-                </div>
-              ))
-            )}
+          <div className="p-3">
+            <div className="flex justify-between items-center text-sm mb-2">
+              <div className="flex items-center gap-1">
+                <Heart className="h-4 w-4 text-red-500 fill-red-500" />
+                <span>{formatNumber(item.likes)}</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <span className="text-amber-700">⊕</span>
+                <span>{formatNumber(item.bookmarks)}</span>
+              </div>
+            </div>
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-1">
+                <CreditCard className="h-4 w-4 text-amber-500" />
+                <span className="font-medium">₹{item.price}</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <MessageSquare className="h-4 w-4 text-blue-500" />
+                <span>{formatNumber(item.comments)}</span>
+              </div>
+            </div>
           </div>
         </div>
-        
-        {/* Right column - Combo Package */}
-        <div className="space-y-4">
-          <div className="flex items-center gap-3">
-            <div className="w-6 h-6 rounded-full bg-purple-600 flex items-center justify-center">
-              <div className="w-3 h-3 rounded-full bg-white"></div>
-            </div>
-            <span className="font-medium text-lg">Combo Package</span>
-          </div>
-          
-          <div className="space-y-2 mt-4">
-            {comboPackages.length === 0 ? (
-              <p className="text-gray-500 py-2">No packages available</p>
-            ) : (
-              comboPackages.map((pkg) => (
-                <div key={pkg.id} className="flex items-center justify-between py-2">
-                  <div className="flex flex-col">
-                    <div className="flex items-center gap-2">
-                      <Checkbox 
-                        id={pkg.id} 
-                        className="rounded-sm border-gray-300 data-[state=checked]:bg-gray-800 data-[state=checked]:text-white"
-                        defaultChecked
-                        disabled
-                      />
-                      <label htmlFor={pkg.id} className="text-base">
-                        {pkg.name}
-                      </label>
-                    </div>
-                    <div className="text-gray-500 text-sm ml-8">
-                      {pkg.platforms.join('/').replace(/,/g, '/')}
-                    </div>
-                  </div>
-                  <div className="font-medium">
-                    {pkg.is_featured ? (
-                      <div className="text-amber-500">*****</div>
-                    ) : (
-                      `₹${pkg.price}`
-                    )}
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-      </div>
-      
-      <div className="flex justify-center pt-4">
-        <Button 
-          className="bg-blue-500 hover:bg-blue-600 text-white px-12 rounded-md py-2 w-1/3"
-          onClick={handleBook}
-        >
-          Book
-        </Button>
-      </div>
+      ))}
     </div>
   );
 };
