@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Influencer } from '@/types/location';
+import { Influencer, Hashtag } from '@/types/location';
 import { useToast } from '@/components/ui/use-toast';
 
 export interface InfluencerFilters {
@@ -68,7 +68,7 @@ export function useInfluencers(filters: InfluencerFilters = {}) {
           throw error;
         }
         
-        let influencersList = data || [];
+        let influencersList = data as Influencer[];
         
         // If hashtag filter is applied, fetch influencer hashtags and filter
         if (filters.hashtags && filters.hashtags.length > 0) {
@@ -76,22 +76,28 @@ export function useInfluencers(filters: InfluencerFilters = {}) {
             influencersList.map(async (influencer) => {
               const { data: hashtagData } = await supabase
                 .from('influencer_hashtags')
-                .select('hashtag_id, hashtags(name)')
+                .select(`
+                  hashtag_id,
+                  hashtags:hashtags(id, name)
+                `)
                 .eq('influencer_id', influencer.id);
                 
+              // Cast to ensure type safety
+              const hashtags = hashtagData ? hashtagData.map(h => ({
+                id: h.hashtag_id,
+                name: h.hashtags?.name
+              })) as Hashtag[] : [];
+              
               return {
                 ...influencer,
-                hashtags: hashtagData?.map(h => ({
-                  id: h.hashtag_id,
-                  name: h.hashtags.name
-                })) || []
+                hashtags
               };
             })
           );
           
           // Filter influencers with matching hashtags
           influencersList = hashtagsData.filter(influencer => 
-            influencer.hashtags.some(tag => 
+            influencer.hashtags && influencer.hashtags.some(tag => 
               filters.hashtags?.includes(tag.name)
             )
           );

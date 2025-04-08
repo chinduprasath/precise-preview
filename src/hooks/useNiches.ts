@@ -23,7 +23,7 @@ export function useNiches() {
           throw error;
         }
         
-        setNiches(data || []);
+        setNiches(data as Niche[]);
       } catch (error) {
         console.error('Error fetching niches:', error);
         toast({

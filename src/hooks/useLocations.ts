@@ -27,7 +27,7 @@ export function useLocations() {
           throw error;
         }
         
-        setCountries(data || []);
+        setCountries(data as Country[]);
         
         // Auto-select India since it's the only country option as per requirements
         if (data && data.length > 0) {
@@ -67,7 +67,7 @@ export function useLocations() {
           throw error;
         }
         
-        setStates(data || []);
+        setStates(data as State[]);
         setSelectedState('');
         setCities([]);
       } catch (error) {
@@ -101,7 +101,7 @@ export function useLocations() {
           throw error;
         }
         
-        setCities(data || []);
+        setCities(data as City[]);
         setSelectedCity('');
       } catch (error) {
         console.error('Error fetching cities:', error);

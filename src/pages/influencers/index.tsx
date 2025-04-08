@@ -437,6 +437,7 @@ const InfluencersPage = () => {
                 <div className="px-2">
                   <RangeSlider 
                     label=""
+                    min={0}
                     value={followerRange} 
                     max={1500000} 
                     step={10000}
@@ -451,6 +452,7 @@ const InfluencersPage = () => {
                 <div className="px-2">
                   <RangeSlider 
                     label=""
+                    min={0}
                     value={engagementRange} 
                     max={10} 
                     step={0.1}

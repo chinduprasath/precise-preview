@@ -23,7 +23,7 @@ export function useHashtags() {
           throw error;
         }
         
-        setHashtags(data || []);
+        setHashtags(data as Hashtag[]);
       } catch (error) {
         console.error('Error fetching hashtags:', error);
         toast({
@@ -61,10 +61,12 @@ export function useHashtags() {
           throw error;
         }
         
-        hashtagId = data.id;
+        // Cast to ensure type safety
+        const newHashtag = data as Hashtag;
+        hashtagId = newHashtag.id;
         
         // Update local hashtags state
-        setHashtags([...hashtags, data]);
+        setHashtags([...hashtags, newHashtag]);
       }
       
       // Add to selected hashtags if not already selected
