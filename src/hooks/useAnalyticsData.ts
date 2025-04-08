@@ -67,8 +67,42 @@ export function useAnalyticsData(influencerId?: string) {
         if (monthlyError) throw monthlyError;
 
         if (isMounted) {
-          setAnalytics(analyticsData || null);
-          setMonthlyData(monthlyAnalyticsData || []);
+          if (analyticsData) {
+            // Type casting for analytics data
+            const typedAnalytics: InfluencerAnalytics = {
+              id: analyticsData.id,
+              influencer_id: analyticsData.influencer_id,
+              total_campaigns: analyticsData.total_campaigns || 0,
+              avg_likes: analyticsData.avg_likes || 0,
+              avg_comments: analyticsData.avg_comments || 0,
+              avg_shares: analyticsData.avg_shares || 0,
+              avg_views: analyticsData.avg_views || 0,
+              engagement_rate: analyticsData.engagement_rate || 0,
+              fake_followers_percent: analyticsData.fake_followers_percent || 0
+            };
+            setAnalytics(typedAnalytics);
+          } else {
+            setAnalytics(null);
+          }
+
+          // Type casting for monthly analytics data
+          const typedMonthlyData: MonthlyAnalytics[] = monthlyAnalyticsData 
+            ? monthlyAnalyticsData.map(item => ({
+                id: item.id,
+                influencer_id: item.influencer_id,
+                month: item.month,
+                year: item.year,
+                likes: item.likes || 0,
+                comments: item.comments || 0,
+                shares: item.shares || 0,
+                views: item.views || 0,
+                orders: item.orders || 0,
+                engagement_rate: item.engagement_rate || 0,
+                earnings: item.earnings || 0
+              }))
+            : [];
+          
+          setMonthlyData(typedMonthlyData);
           setError(null);
         }
       } catch (err) {

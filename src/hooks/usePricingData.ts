@@ -58,8 +58,29 @@ export function usePricingData(influencerId?: string) {
         if (packageError) throw packageError;
 
         if (isMounted) {
-          setPlatformServices(serviceData || []);
-          setComboPackages(packageData || []);
+          // Cast the data to the appropriate type
+          const typedServiceData = serviceData?.map(item => ({
+            id: item.id,
+            influencer_id: item.influencer_id,
+            platform: item.platform,
+            service_type: item.service_type,
+            price: item.price,
+            is_active: item.is_active
+          })) as PlatformService[] || [];
+          
+          const typedPackageData = packageData?.map(item => ({
+            id: item.id,
+            influencer_id: item.influencer_id,
+            name: item.name,
+            description: item.description,
+            platforms: item.platforms || [],
+            price: item.price,
+            is_featured: item.is_featured,
+            is_active: item.is_active
+          })) as ComboPackage[] || [];
+          
+          setPlatformServices(typedServiceData);
+          setComboPackages(typedPackageData);
           setError(null);
         }
       } catch (err) {

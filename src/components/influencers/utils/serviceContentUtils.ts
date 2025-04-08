@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 export interface ServiceContentItem {
   id: string;
   influencer_id: string;
-  media_type: 'image' | 'video';
+  media_type: 'image' | 'video';  // Restrict to these specific types
   media_url: string;
   title: string | null;
   description: string | null;
@@ -60,15 +60,19 @@ export const fetchServiceContent = async (influencerId?: string): Promise<Servic
           console.error('Error fetching metrics for content:', metricsError);
         }
 
+        // Ensure media_type is either 'image' or 'video'
+        const mediaType = content.media_type === 'video' ? 'video' : 'image';
+
         return {
           ...content,
+          media_type: mediaType as 'image' | 'video',
           metrics: metricsData || {
             likes: Math.floor(Math.random() * 1000),
             views: Math.floor(Math.random() * 5000),
             comments: Math.floor(Math.random() * 200),
             shares: Math.floor(Math.random() * 100)
           }
-        };
+        } as ServiceContentItem;
       })
     );
 
@@ -97,7 +101,7 @@ const getSampleServiceContent = (): ServiceContentItem[] => {
     return {
       id,
       influencer_id: 'sample-influencer',
-      media_type: 'image',
+      media_type: 'image' as 'image', // Explicitly cast to the allowed type
       media_url: url,
       title: null,
       description: null,
