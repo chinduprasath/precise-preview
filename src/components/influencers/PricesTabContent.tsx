@@ -1,9 +1,11 @@
+
 import React, { useState, useEffect } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { Heart, CreditCard, MessageSquare } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useServiceContent } from '@/hooks/useServiceContent';
+import { useTheme } from '@/components/theme-provider';
 
 interface PricesTabContentProps {
   influencerId?: string;
@@ -26,6 +28,7 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
   onEditPrices
 }) => {
   const { toast } = useToast();
+  const { resolvedTheme } = useTheme();
   const [contentItems, setContentItems] = useState<ContentItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -111,7 +114,7 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
 
   if (error) {
     return (
-      <div className="bg-red-50 p-4 rounded-md text-red-600">
+      <div className="bg-red-50 dark:bg-red-900/20 p-4 rounded-md text-red-600 dark:text-red-400">
         <p>{error}</p>
       </div>
     );
@@ -121,7 +124,7 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {Array(4).fill(0).map((_, index) => (
-          <div key={`skeleton-${index}`} className="rounded-lg overflow-hidden border border-gray-200">
+          <div key={`skeleton-${index}`} className="rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
             <Skeleton className="h-52 w-full" />
             <div className="p-3">
               <div className="flex justify-between mb-2">
@@ -139,8 +142,8 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       {contentItems.map((item) => (
-        <div key={item.id} className="rounded-lg overflow-hidden border border-gray-200">
-          <div className="relative h-52 bg-gray-100">
+        <div key={item.id} className="rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+          <div className="relative h-52 bg-gray-100 dark:bg-gray-800">
             <img 
               src={item.image_url} 
               alt="Content" 
@@ -158,7 +161,7 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
                 <span>{formatNumber(item.likes)}</span>
               </div>
               <div className="flex items-center gap-1">
-                <span className="text-amber-700">⊕</span>
+                <span className="text-amber-700 dark:text-amber-500">⊕</span>
                 <span>{formatNumber(item.bookmarks)}</span>
               </div>
             </div>

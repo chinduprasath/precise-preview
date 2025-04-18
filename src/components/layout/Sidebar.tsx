@@ -8,10 +8,12 @@ import NavItem from './sidebar/NavItem';
 import SidebarHeader from './sidebar/SidebarHeader';
 import SidebarFooter from './sidebar/SidebarFooter';
 import { createNavigationItems, isActiveLink } from './sidebar/navigationUtils';
+import { useTheme } from '@/components/theme-provider';
 
 const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { resolvedTheme } = useTheme();
   const currentPath = location.pathname;
   const [userType, setUserType] = useState<string>(() => {
     // Initialize from localStorage on mount to prevent hydration issues
@@ -76,8 +78,9 @@ const Sidebar = () => {
 
   return (
     <aside className={cn(
-      "flex flex-col border-r bg-white transition-all duration-300 h-screen", 
-      isCollapsed ? "w-16" : "w-60"
+      "flex flex-col border-r border-border transition-all duration-300 h-screen", 
+      isCollapsed ? "w-16" : "w-60",
+      resolvedTheme === "dark" ? "bg-gray-900 text-gray-100" : "bg-white text-gray-800"
     )}>
       <SidebarHeader 
         isCollapsed={isCollapsed} 

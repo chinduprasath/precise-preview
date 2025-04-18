@@ -2,12 +2,15 @@
 import React from 'react';
 import Sidebar from './Sidebar';
 import Header from './Header';
+import { useTheme } from '@/components/theme-provider';
 
 interface LayoutProps {
   children: React.ReactNode;
 }
 
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
+  const { resolvedTheme } = useTheme();
+  
   return (
     <div className="flex h-screen bg-background text-foreground transition-colors duration-300">
       <Sidebar />

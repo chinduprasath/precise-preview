@@ -18,40 +18,44 @@ export const SidebarFooter: React.FC<SidebarFooterProps> = ({
   profilePath
 }) => {
   const {
-    resolvedTheme,
-    setTheme
+    setTheme,
+    resolvedTheme
   } = useTheme();
 
-  return <>
-      <div className={cn("p-4 border-t border-border", isCollapsed && "hidden")}>
-        <div className="flex items-center justify-center gap-2">
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="flex-1"
-            onClick={() => setTheme('light')}
-          >
-            <Sun className="h-4 w-4 mr-1" />
-            Light
-          </Button>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="flex-1"
-            onClick={() => setTheme('dark')}
-          >
-            <Moon className="h-4 w-4 mr-1" />
-            Dark
-          </Button>
-        </div>
-      </div>
-      
-      {isCollapsed && <div className="p-3 border-t border-border">
+  return (
+    <div className="border-t border-border">
+      {isCollapsed ? (
+        <div className="p-3">
           <div className="flex items-center justify-center">
             <ThemeToggleMinimal />
           </div>
-        </div>}
-    </>;
+        </div>
+      ) : (
+        <div className="p-4">
+          <div className="flex items-center justify-center gap-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="flex-1"
+              onClick={() => setTheme('light')}
+            >
+              <Sun className="h-4 w-4 mr-1" />
+              Light
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="flex-1"
+              onClick={() => setTheme('dark')}
+            >
+              <Moon className="h-4 w-4 mr-1" />
+              Dark
+            </Button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default SidebarFooter;

@@ -8,7 +8,7 @@ const HeroSection = () => {
   const navigate = useNavigate();
 
   return (
-    <section className="px-4 py-20 md:py-32 bg-gradient-to-r from-primary-foreground to-background">
+    <section className="px-4 py-20 md:py-32 bg-gradient-to-r from-primary-foreground to-background dark:from-gray-900 dark:to-background">
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <div className="space-y-6">
@@ -26,18 +26,18 @@ const HeroSection = () => {
             </div>
           </div>
           <div className="relative">
-            <div className="aspect-video bg-primary/10 rounded-xl overflow-hidden flex items-center justify-center">
+            <div className="aspect-video bg-primary/10 dark:bg-primary/5 rounded-xl overflow-hidden flex items-center justify-center">
               <img 
-                src="/placeholder.svg" 
-                alt="Platform preview" 
-                className="object-cover"
+                src="/lovable-uploads/c0bda87f-d7db-4b96-86cc-3cafeb4f6b93.png" 
+                alt="Influencer marketing" 
+                className="object-cover w-full h-full"
               />
             </div>
             <div className="absolute -bottom-6 -right-6 bg-card p-4 rounded-lg shadow-lg border border-border">
               <div className="flex items-center gap-4">
                 <div className="flex -space-x-2">
                   {[1, 2, 3].map((i) => (
-                    <div key={i} className="w-10 h-10 rounded-full bg-primary/10 border-2 border-background flex items-center justify-center">
+                    <div key={i} className="w-10 h-10 rounded-full bg-primary/10 dark:bg-primary/20 border-2 border-background dark:border-gray-800 flex items-center justify-center">
                       <User className="w-5 h-5 text-primary" />
                     </div>
                   ))}
