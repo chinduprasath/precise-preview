@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '@/components/layout/Sidebar';
@@ -179,8 +180,8 @@ const InfluencerProfile = () => {
                     className="rounded-full w-full h-full object-cover"
                   />
                 </div>
-                <h2 className="text-xl font-semibold">{user?.email?.split('@')[0] || 'Username'}</h2>
-                <p className="text-gray-500 text-sm">{user?.email}</p>
+                <h2 className="text-xl font-semibold">Username</h2>
+                <p className="text-gray-500 text-sm">Username@gmail.com</p>
               </div>
 
               {/* Social Media Stats */}
