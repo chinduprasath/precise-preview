@@ -161,12 +161,7 @@ const InfluencerProfile = ({
         
         {activeTab === 'prices'}
         
-        {activeTab === 'data' && <div className="grid grid-cols-2 gap-4">
-            <DataCard platform="instagram" type="post" />
-            <DataCard platform="facebook" type="post" />
-            <DataCard platform="youtube" type="video" />
-            <DataCard platform="twitter" type="post" />
-          </div>}
+        {activeTab === 'data'}
       </div>
     </div>;
 };
