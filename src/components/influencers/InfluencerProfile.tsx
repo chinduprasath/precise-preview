@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { ServiceType, SocialPlatform } from '@/types/request';
 import InfluencerDetails from './InfluencerDetails';
 import ServicesTabContent from './ServicesTabContent';
@@ -106,6 +106,7 @@ const InfluencerProfile: React.FC<InfluencerProfileProps> = ({
                 id={id}
                 name={name}
                 profileImage={profileImage}
+                email="Username@gmail.com"
                 followers={{
                   instagram: 1000000,
                   facebook: 235000,

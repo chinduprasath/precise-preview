@@ -25,9 +25,25 @@ const InfluencerDetails: React.FC<InfluencerDetailsProps> = ({
   email,
   followers
 }) => {
-  return <div className="w-full">
+  return (
+    <div className="w-full">
       {/* Profile Info */}
-      
+      <div className="flex items-center gap-4 mb-6">
+        <div className="relative">
+          <img 
+            src={profileImage} 
+            alt={name} 
+            className="w-14 h-14 rounded-full object-cover"
+          />
+        </div>
+        <div className="flex-1">
+          <h3 className="font-semibold text-lg">{name}</h3>
+          {email && <p className="text-sm text-gray-500">{email}</p>}
+        </div>
+        <button className="text-gray-500 hover:text-gray-700 transition-colors">
+          <Share2 className="w-5 h-5" />
+        </button>
+      </div>
 
       {/* Social Platforms */}
       <div className="flex justify-between mb-6 mx-[30px]">
@@ -134,7 +150,8 @@ const InfluencerDetails: React.FC<InfluencerDetailsProps> = ({
           </div>
         </div>
       </div>
-    </div>;
+    </div>
+  );
 };
 
 export default InfluencerDetails;
