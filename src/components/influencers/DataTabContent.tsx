@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card } from '@/components/ui/card';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, AreaChart, Area, ResponsiveContainer } from 'recharts';
+import { StatsCard } from '../ui/stats-card';
 
 interface DataTabContentProps {
   influencerId?: string;
@@ -46,14 +47,32 @@ const engagementData = [
 const DataTabContent: React.FC<DataTabContentProps> = ({ influencerId }) => {
   return (
     <div className="space-y-6">
-      {/* Metrics Grid */}
-      <div className="grid grid-cols-3 gap-4">
-        <MetricCard value={90} label="Total Campaigns" />
-        <MetricCard value={90} label="Avg Likes" />
-        <MetricCard value={90} label="Engagement" />
-        <MetricCard value={90} label="Avg Comments" />
-        <MetricCard value={90} label="Avg Shares" />
-        <MetricCard value={90} label="Fake Followers" />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatsCard
+          title="Total Followers"
+          value="125.7K"
+          graphData={[45, 52, 49, 60, 55, 58, 62]}
+          color="#4F46E5"
+        />
+        <StatsCard
+          title="Engagement Rate"
+          value="4.2"
+          unit="%"
+          graphData={[3.8, 4.1, 3.9, 4.2, 4.0, 4.3, 4.2]}
+          color="#10B981"
+        />
+        <StatsCard
+          title="Avg. Likes"
+          value="2.8K"
+          graphData={[2100, 2400, 2300, 2800, 2600, 2750, 2800]}
+          color="#F59E0B"
+        />
+        <StatsCard
+          title="Avg. Comments"
+          value="342"
+          graphData={[280, 320, 290, 342, 310, 330, 342]}
+          color="#EC4899"
+        />
       </div>
 
       {/* Price Range Chart */}
