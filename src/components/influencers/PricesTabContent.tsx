@@ -1,9 +1,7 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useToast } from '@/components/ui/use-toast';
 
 interface PricesTabContentProps {
@@ -46,9 +44,7 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
   influencerName,
 }) => {
   const { toast } = useToast();
-  const [platform, setPlatform] = useState('instagram');
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
-  const [pricingType, setPricingType] = useState('platform');
 
   const handleCheckboxChange = (itemId: string) => {
     setSelectedItems(prev => {
@@ -76,85 +72,74 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
   };
 
   return (
-    <div className="space-y-6">
-      <RadioGroup
-        value={pricingType}
-        onValueChange={setPricingType}
-        className="grid grid-cols-2 gap-4"
-      >
-        <div className={`p-4 rounded-lg border ${pricingType === 'platform' ? 'border-primary bg-accent/50' : 'border-border'}`}>
-          <div className="flex items-center space-x-2">
-            <RadioGroupItem value="platform" id="platform" />
-            <label htmlFor="platform" className="text-lg font-medium">Platform Based</label>
+    <div className="space-y-6 p-4">
+      <div className="grid grid-cols-2 gap-8">
+        {/* Platform Based Section */}
+        <div>
+          <div className="flex items-center gap-2 mb-4">
+            <div className="h-4 w-4 rounded-full bg-purple-600" />
+            <h2 className="text-lg font-medium">Platform Based</h2>
           </div>
-          {pricingType === 'platform' && (
-            <div className="mt-4 space-y-4">
-              <Select value={platform} onValueChange={setPlatform}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select Platform" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="instagram">Instagram</SelectItem>
-                  <SelectItem value="facebook">Facebook</SelectItem>
-                  <SelectItem value="youtube">YouTube</SelectItem>
-                  <SelectItem value="tiktok">TikTok</SelectItem>
-                </SelectContent>
-              </Select>
-              <div className="space-y-2">
-                {platformServices.map((service) => (
-                  <div key={service.id} className="flex items-center justify-between py-2">
-                    <div className="flex items-center space-x-2">
-                      <Checkbox 
-                        id={service.id}
-                        checked={selectedItems.includes(service.id)}
-                        onCheckedChange={() => handleCheckboxChange(service.id)}
-                      />
-                      <label htmlFor={service.id} className="text-sm font-medium">
-                        {service.name}
-                      </label>
-                    </div>
-                    <span className="font-medium">{service.price}</span>
-                  </div>
-                ))}
+          <Select defaultValue="platform">
+            <SelectTrigger className="mb-4">
+              <SelectValue placeholder="Select Platform" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="platform">Select Platform</SelectItem>
+            </SelectContent>
+          </Select>
+          <div className="space-y-3">
+            {platformServices.map((service) => (
+              <div key={service.id} className="flex items-center justify-between py-1">
+                <div className="flex items-center gap-2">
+                  <Checkbox 
+                    id={service.id}
+                    checked={selectedItems.includes(service.id)}
+                    onCheckedChange={() => handleCheckboxChange(service.id)}
+                  />
+                  <label htmlFor={service.id} className="text-sm">
+                    {service.name}
+                  </label>
+                </div>
+                <span className="text-sm">{service.price}</span>
               </div>
-            </div>
-          )}
+            ))}
+          </div>
         </div>
 
-        <div className={`p-4 rounded-lg border ${pricingType === 'combo' ? 'border-primary bg-accent/50' : 'border-border'}`}>
-          <div className="flex items-center space-x-2">
-            <RadioGroupItem value="combo" id="combo" />
-            <label htmlFor="combo" className="text-lg font-medium">Combo Package</label>
+        {/* Combo Package Section */}
+        <div>
+          <div className="flex items-center gap-2 mb-4">
+            <div className="h-4 w-4 rounded-full bg-purple-600" />
+            <h2 className="text-lg font-medium">Combo Package</h2>
           </div>
-          {pricingType === 'combo' && (
-            <div className="mt-4 space-y-2">
-              {comboPackages.map((pkg) => (
-                <div key={pkg.id} className="flex items-center justify-between py-2">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id={pkg.id}
-                      checked={selectedItems.includes(pkg.id)}
-                      onCheckedChange={() => handleCheckboxChange(pkg.id)}
-                    />
-                    <div>
-                      <label htmlFor={pkg.id} className="text-sm font-medium block">
-                        {pkg.name}
-                      </label>
-                      <span className="text-xs text-muted-foreground">{pkg.platforms}</span>
-                    </div>
+          <div className="space-y-3">
+            {comboPackages.map((pkg) => (
+              <div key={pkg.id} className="flex items-center justify-between py-1">
+                <div className="flex items-center gap-2">
+                  <Checkbox 
+                    id={pkg.id}
+                    checked={selectedItems.includes(pkg.id)}
+                    onCheckedChange={() => handleCheckboxChange(pkg.id)}
+                  />
+                  <div>
+                    <label htmlFor={pkg.id} className="text-sm block">
+                      {pkg.name}
+                    </label>
+                    <span className="text-xs text-gray-500">{pkg.platforms}</span>
                   </div>
-                  <span className="font-medium">{pkg.price}</span>
                 </div>
-              ))}
-            </div>
-          )}
+                <span className="text-sm">{pkg.price}</span>
+              </div>
+            ))}
+          </div>
         </div>
-      </RadioGroup>
+      </div>
 
       <div className="flex justify-center mt-6">
         <Button 
-          className="w-32 bg-blue-500 hover:bg-blue-600"
           onClick={handleBook}
+          className="px-12 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md"
         >
           Book
         </Button>

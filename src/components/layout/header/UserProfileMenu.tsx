@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { ChevronDown, Settings, User, FileSpreadsheet, LogOut, BadgeIndianRupee } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
@@ -66,7 +65,7 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = ({ userData }) => {
         <DropdownMenuSeparator />
         <DropdownMenuItem className="cursor-pointer flex items-center gap-2">
           <User className="h-4 w-4" />
-          <Link to="/account/business" className="w-full">Profile</Link>
+          <Link to={`/account/${localStorage.getItem('userType') || 'business'}`} className="w-full">Profile</Link>
         </DropdownMenuItem>
         <DropdownMenuItem className="cursor-pointer flex items-center gap-2">
           <Settings className="h-4 w-4" />

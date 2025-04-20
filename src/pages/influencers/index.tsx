@@ -23,6 +23,8 @@ import { useHashtags } from '@/hooks/useHashtags';
 import { useInfluencers, InfluencerFilters } from '@/hooks/useInfluencers';
 import { Influencer } from '@/types/location';
 import { Skeleton } from '@/components/ui/skeleton';
+import PricesTabContent from '@/components/influencers/PricesTabContent';
+import DataTabContent from '@/components/influencers/DataTabContent';
 
 const formatNumber = (num: number): string => {
   if (num >= 1000000) {
@@ -209,21 +211,14 @@ const InfluencerProfile = ({ influencer }: { influencer: Influencer | null }) =>
         )}
         
         {activeTab === 'prices' && (
-          <div className="grid grid-cols-2 gap-4">
-            <PricingCard platform="instagram" type="post" />
-            <PricingCard platform="instagram" type="story" />
-            <PricingCard platform="facebook" type="post" />
-            <PricingCard platform="youtube" type="video" />
-          </div>
+          <PricesTabContent 
+            influencerId={influencer.id}
+            influencerName={influencer.name}
+          />
         )}
         
         {activeTab === 'data' && (
-          <div className="grid grid-cols-2 gap-4">
-            <DataCard platform="instagram" type="post" />
-            <DataCard platform="facebook" type="post" />
-            <DataCard platform="youtube" type="video" />
-            <DataCard platform="twitter" type="post" />
-          </div>
+          <DataTabContent influencerId={influencer.id} />
         )}
       </div>
     </div>

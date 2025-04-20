@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '@/components/layout/Sidebar';
@@ -24,10 +23,12 @@ const BusinessProfile = () => {
         return;
       }
       
-      // Make sure we're setting the userType in localStorage
+      // Check user type and redirect if not a business user
       const currentUserType = localStorage.getItem('userType');
       if (!currentUserType || currentUserType !== 'business') {
-        localStorage.setItem('userType', 'business');
+        // Redirect to the appropriate profile page based on user type
+        navigate(`/account/${currentUserType || 'influencer'}`);
+        return;
       }
       
       setUser(data.session.user);
