@@ -77,7 +77,10 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = ({ userData }) => {
         </DropdownMenuItem>
         <DropdownMenuItem className="cursor-pointer flex items-center gap-2">
           <BadgeIndianRupee className="h-4 w-4" />
-          <Link to="/payments" className="w-full">Payments</Link>
+          <Link to={`/payments${
+            localStorage.getItem('userType') === 'business' ? '-business' : 
+            localStorage.getItem('userType') === 'influencer' ? '-influencer' : ''
+          }`} className="w-full">Payments</Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem className="cursor-pointer flex items-center gap-2" onClick={handleLogout}>

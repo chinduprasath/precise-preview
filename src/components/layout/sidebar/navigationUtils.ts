@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { 
   LayoutDashboard, 
@@ -9,7 +8,8 @@ import {
   FileSpreadsheet, 
   FileText, 
   ShoppingCart,
-  UserPlus 
+  UserPlus,
+  Wallet
 } from 'lucide-react';
 
 export interface NavItem {
@@ -21,7 +21,23 @@ export interface NavItem {
 export const createNavigationItems = (userType: string): NavItem[] => {
   const dashboardPath = `/dashboard/${userType}`;
   
-  // Create an array to hold navigation items common to all user types
+  // Create navigation items based on user type
+  if (userType === 'admin') {
+    return [
+      {
+        icon: React.createElement(LayoutDashboard, { className: "w-full h-full" }),
+        label: "Dashboard",
+        href: dashboardPath
+      },
+      {
+        icon: React.createElement(UserPlus, { className: "w-full h-full" }),
+        label: "Onboard",
+        href: "/onboard"
+      }
+    ];
+  }
+  
+  // For non-admin users, return the common navigation items
   const commonNavItems = [
     {
       icon: React.createElement(LayoutDashboard, { className: "w-full h-full" }),
@@ -59,28 +75,22 @@ export const createNavigationItems = (userType: string): NavItem[] => {
       href: "/orders"
     },
     {
+      icon: React.createElement(Wallet, { className: "w-full h-full" }),
+      label: "Payments",
+      href: userType === 'business' ? '/payments-business' : 
+            userType === 'influencer' ? '/payments-influencer' : '/payments'
+    },
+    {
       icon: React.createElement(FileSpreadsheet, { className: "w-full h-full" }),
       label: "Billing",
       href: "/billing"
     }
   ];
   
-  // Create a new array to hold all navigation items
   let navItems = [...commonNavItems];
-  
-  // Add Onboard menu item only for admin users
-  if (userType === 'admin') {
-    // Insert after Dashboard (at position 1)
-    navItems.splice(1, 0, {
-      icon: React.createElement(UserPlus, { className: "w-full h-full" }),
-      label: "Onboard",
-      href: "/onboard"
-    });
-  }
   
   // Add Requests link only for influencers
   if (userType === 'influencer') {
-    // Find the index of Orders to insert Requests right before it
     const ordersIndex = navItems.findIndex(item => item.label === "Orders");
     if (ordersIndex !== -1) {
       navItems.splice(ordersIndex, 0, {
