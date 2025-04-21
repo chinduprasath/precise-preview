@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -84,6 +83,7 @@ function App() {
                 {/* Account routes */}
                 <Route path="/account/business" element={<BusinessProfile />} />
                 <Route path="/account/influencer" element={<InfluencerProfile />} />
+                <Route path="/account/influencerprofile" element={<Navigate to="/account/influencer" replace />} />
                 <Route path="/account/settings" element={<SettingsPage />} />
                 <Route path="/billing" element={<BillingPage />} />
                 <Route path="/onboard" element={<OnboardPage />} />

@@ -353,6 +353,38 @@ const InfluencersPage = () => {
   const { niches, selectedNiche, setSelectedNiche, loading: loadingNiches } = useNiches();
   const { selectedHashtags, setSelectedHashtags, addHashtag, loading: loadingHashtags } = useHashtags();
   
+  const [basicFilters, setBasicFilters] = useState({
+    countryId: '',
+    stateId: '',
+    cityId: '',
+    niche: '',
+    minFollowers: 0,
+    maxFollowers: 1500000,
+    minEngagement: 0,
+    maxEngagement: 10,
+    minPrice: 0,
+    maxPrice: 5000,
+  });
+
+  const resetFilters = () => {
+    setBasicFilters({
+      countryId: '',
+      stateId: '',
+      cityId: '',
+      niche: '',
+      minFollowers: 0,
+      maxFollowers: 1500000,
+      minEngagement: 0,
+      maxEngagement: 10,
+      minPrice: 0,
+      maxPrice: 5000,
+    });
+    if (setSelectedCountry) setSelectedCountry('');
+    if (setSelectedState) setSelectedState('');
+    if (setSelectedCity) setSelectedCity('');
+    if (setSelectedNiche) setSelectedNiche('');
+  };
+
   const filters: InfluencerFilters = {
     countryId: selectedCountry ? parseInt(selectedCountry) : undefined,
     stateId: selectedState ? parseInt(selectedState) : undefined,
@@ -386,7 +418,17 @@ const InfluencersPage = () => {
         <main className="flex-1 overflow-auto p-6">
           <div className="flex gap-6">
             <div className="w-1/3 bg-white rounded-lg p-4 shadow-sm">
-              <h2 className="text-lg font-semibold mb-4">Basic Filter</h2>
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-lg font-semibold">Basic Filter</h2>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={resetFilters}
+                  className="text-sm"
+                >
+                  Reset Filters
+                </Button>
+              </div>
               
               <div className="mb-6">
                 <h3 className="font-medium mb-2">Location</h3>
