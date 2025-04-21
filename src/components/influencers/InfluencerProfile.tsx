@@ -150,7 +150,7 @@ const InfluencerProfile = () => {
                       <LineChart
                         data={stat.data}
                         color={stat.color}
-                      />
+              />
                     </div>
                   </div>
                 ))}
