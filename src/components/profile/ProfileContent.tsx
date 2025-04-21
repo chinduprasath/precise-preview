@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
@@ -6,6 +5,7 @@ import { Heart, Eye, MessageSquare, Share2, DollarSign, CheckCircle2 } from 'luc
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useNavigate } from 'react-router-dom';
 
 interface ContentStat {
   likes: number;
@@ -118,8 +118,8 @@ const ProfileContent: React.FC = () => {
   const [activeTab, setActiveTab] = useState('services');
   const [platform, setPlatform] = useState('instagram');
   const [selectedPackage, setSelectedPackage] = useState('platform');
+  const navigate = useNavigate();
 
-  // Mock data
   const serviceContent: ContentItem[] = [
     {
       id: '1',
@@ -143,7 +143,6 @@ const ProfileContent: React.FC = () => {
     },
   ];
   
-  // Platform-based services
   const platformServices = [
     { id: 'post', name: 'Post Image', price: '499₹' },
     { id: 'reel', name: 'Reel', price: '499₹' },
@@ -153,7 +152,6 @@ const ProfileContent: React.FC = () => {
     { id: 'polls', name: 'Polls', price: '499₹' },
   ];
   
-  // Combo packages
   const comboPackages = [
     { 
       id: 'package1', 
@@ -180,6 +178,7 @@ const ProfileContent: React.FC = () => {
 
   const handleBook = () => {
     console.log('Booking service for package:', selectedPackage);
+    navigate('/orders/place');
   };
 
   return (

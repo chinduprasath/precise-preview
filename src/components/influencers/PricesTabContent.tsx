@@ -5,6 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useToast } from '@/hooks/use-toast';
 import { usePricingData } from '@/hooks/usePricingData';
+import { useNavigate } from 'react-router-dom';
 
 interface PricesTabContentProps {
   influencerId?: string;
@@ -46,6 +47,7 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
   influencerName,
 }) => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
   const handleCheckboxChange = (itemId: string) => {
@@ -67,9 +69,12 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
       return;
     }
 
-    toast({
-      title: "Booking initiated",
-      description: `Selected ${selectedItems.length} items for booking with ${influencerName}`,
+    navigate('/orders/place', { 
+      state: { 
+        influencerId, 
+        influencerName, 
+        selectedItems 
+      } 
     });
   };
 

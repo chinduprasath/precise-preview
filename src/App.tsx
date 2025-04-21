@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -12,6 +13,7 @@ import ChatsPage from "./pages/chats";
 import ReachPage from "./pages/reach";
 import ServicesPage from "./pages/services";
 import OrdersPage from "./pages/orders";
+import PlaceOrderPage from "./pages/orders/place";
 import RequestsPage from "./pages/requests";
 import ReportsPage from "./pages/reports";
 import LandingPage from "./pages/landing";
@@ -71,6 +73,7 @@ function App() {
                 <Route path="/reach" element={<ReachPage />} />
                 <Route path="/services" element={<ServicesPage />} />
                 <Route path="/orders" element={<OrdersPage />} />
+                <Route path="/orders/place" element={<PlaceOrderPage />} />
                 <Route path="/requests" element={<RequestsPage />} />
                 <Route path="/reports" element={<ReportsPage />} />
                 <Route path="/notifications" element={<NotificationsPage />} />
