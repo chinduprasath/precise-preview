@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { 
   LayoutDashboard, 
@@ -11,7 +10,8 @@ import {
   ShoppingCart,
   UserPlus,
   Wallet,
-  Activity
+  Activity,
+  Shield
 } from 'lucide-react';
 
 export interface NavItem {
@@ -35,6 +35,11 @@ export const createNavigationItems = (userType: string): NavItem[] => {
         icon: React.createElement(Activity, { className: "w-full h-full" }),
         label: "Analytics",
         href: "/dashboard/admin/analytics"
+      },
+      {
+        icon: React.createElement(Shield, { className: "w-full h-full" }),
+        label: "Team Management",
+        href: "/dashboard/admin/team"
       },
       {
         icon: React.createElement(UserPlus, { className: "w-full h-full" }),
