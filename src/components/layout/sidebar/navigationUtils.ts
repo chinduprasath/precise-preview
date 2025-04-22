@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { 
   LayoutDashboard, 
@@ -11,7 +12,8 @@ import {
   UserPlus,
   Wallet,
   Activity,
-  Shield
+  Shield,
+  Settings
 } from 'lucide-react';
 
 export interface NavItem {
@@ -40,6 +42,11 @@ export const createNavigationItems = (userType: string): NavItem[] => {
         icon: React.createElement(Shield, { className: "w-full h-full" }),
         label: "Team Management",
         href: "/dashboard/admin/team"
+      },
+      {
+        icon: React.createElement(Settings, { className: "w-full h-full" }),
+        label: "Site Settings",
+        href: "/dashboard/admin/settings"
       },
       {
         icon: React.createElement(UserPlus, { className: "w-full h-full" }),

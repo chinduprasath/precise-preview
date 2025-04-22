@@ -33,12 +33,13 @@ export const NavItem: React.FC<NavItemProps> = memo(({
       className={cn(
         "flex items-center gap-3 rounded-lg text-sm font-medium transition-all duration-300 group", 
         isCollapsed ? "justify-center px-2 py-3" : "px-3 py-3", 
-        isActive ? "bg-primary text-white" : "text-gray-700 hover:bg-secondary"
+        isActive ? "bg-primary text-white" : "text-gray-700 hover:bg-secondary hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
       )}
+      aria-current={isActive ? 'page' : undefined}
     >
       <div className={cn(
         "w-5 h-5 transition-transform duration-300 group-hover:scale-110", 
-        isActive ? "text-white" : "text-gray-700"
+        isActive ? "text-white" : "text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white"
       )}>
         {icon}
       </div>
