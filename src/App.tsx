@@ -31,6 +31,7 @@ import { BillingPage } from "./pages/billing";
 import OnboardPage from "./pages/onboard";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import AnalyticsPage from "./pages/dashboard/admin/analytics";
+import TeamManagementPage from "./pages/dashboard/admin/team";
 
 function App() {
   // Create a new QueryClient instance with proper error handling
@@ -82,6 +83,7 @@ function App() {
                 {/* Dashboard routes */}
                 <Route path="/dashboard/admin" element={<AdminDashboard />} />
                 <Route path="/dashboard/admin/analytics" element={<AnalyticsPage />} />
+                <Route path="/dashboard/admin/team" element={<TeamManagementPage />} />
                 <Route path="/dashboard/influencer" element={<InfluencerDashboard />} />
                 <Route path="/dashboard/business" element={<BusinessDashboard />} />
                 
