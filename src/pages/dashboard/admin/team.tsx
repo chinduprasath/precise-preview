@@ -71,6 +71,8 @@ import {
   ShieldCheck 
 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 // Define the TeamMember type with specific status values
 type TeamMember = {
@@ -89,6 +91,16 @@ type Role = {
   description: string;
   permissions: string[];
 };
+
+// Define the form schema
+const formSchema = z.object({
+  name: z.string().min(2, { message: "Name must be at least 2 characters." }),
+  email: z.string().email({ message: "Please enter a valid email address." }),
+  role: z.string().min(1, { message: "Please select a role." }),
+  status: z.enum(["active", "inactive"]).default("active")
+});
+
+type FormValues = z.infer<typeof formSchema>;
 
 const TeamManagementPage = () => {
   const navigate = useNavigate();
@@ -179,6 +191,17 @@ const TeamManagementPage = () => {
   // Add member dialog state
   const [addMemberOpen, setAddMemberOpen] = useState(false);
   
+  // Form definition
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      role: "",
+      status: "active"
+    }
+  });
+  
   // Apply filters
   const filteredMembers = teamMembers.filter(member => {
     const matchesSearch = 
@@ -208,18 +231,19 @@ const TeamManagementPage = () => {
   };
 
   // Handle add member
-  const handleAddMember = (data: any) => {
+  const onSubmit = (data: FormValues) => {
     const newMember: TeamMember = {
       id: (teamMembers.length + 1).toString(),
       name: data.name,
       email: data.email,
       role: data.role,
-      status: "active",
+      status: data.status,
       dateAdded: new Date().toISOString().split('T')[0]
     };
     
     setTeamMembers([...teamMembers, newMember]);
     setAddMemberOpen(false);
+    form.reset();
   };
 
   // Handle refresh
@@ -480,7 +504,7 @@ const TeamManagementPage = () => {
         </main>
       </div>
       
-      {/* Add Member Dialog */}
+      {/* Add Member Dialog - Properly implemented with react-hook-form */}
       <Dialog open={addMemberOpen} onOpenChange={setAddMemberOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
@@ -490,79 +514,116 @@ const TeamManagementPage = () => {
             </DialogDescription>
           </DialogHeader>
           
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <FormLabel className="text-right" htmlFor="name">
-                Full Name
-              </FormLabel>
-              <Input
-                id="name"
-                placeholder="John Doe"
-                className="col-span-3"
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Full Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="John Doe" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <FormLabel className="text-right" htmlFor="email">
-                Email
-              </FormLabel>
-              <Input
-                id="email"
-                placeholder="john.doe@example.com"
-                type="email"
-                className="col-span-3"
+              
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input placeholder="john.doe@example.com" type="email" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <FormLabel className="text-right" htmlFor="role">
-                Role
-              </FormLabel>
-              <Select>
-                <SelectTrigger id="role" className="col-span-3">
-                  <SelectValue placeholder="Select a role" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Available Roles</SelectLabel>
-                    {roles.map(role => (
-                      <SelectItem key={role.id} value={role.name}>
-                        {role.name}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <div className="text-right">Status</div>
-              <div className="col-span-3 flex items-center space-x-4">
-                <div className="flex items-center space-x-2">
-                  <input type="radio" id="active" name="status" value="active" defaultChecked />
-                  <label htmlFor="active">Active</label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <input type="radio" id="inactive" name="status" value="inactive" />
-                  <label htmlFor="inactive">Inactive</label>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setAddMemberOpen(false)}>
-              Cancel
-            </Button>
-            <Button type="submit" onClick={() => {
-              const formData = {
-                name: (document.getElementById('name') as HTMLInputElement).value,
-                email: (document.getElementById('email') as HTMLInputElement).value,
-                role: (document.querySelector('[id="role"] [data-value]') as HTMLElement)?.getAttribute('data-value') || 'Support',
-              };
-              handleAddMember(formData);
-            }}>
-              <UserPlus className="mr-2 h-4 w-4" />
-              Add Member
-            </Button>
-          </DialogFooter>
+              
+              <FormField
+                control={form.control}
+                name="role"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Role</FormLabel>
+                    <Select 
+                      onValueChange={field.onChange} 
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a role" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectLabel>Available Roles</SelectLabel>
+                          {roles.map(role => (
+                            <SelectItem key={role.id} value={role.name}>
+                              {role.name}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="status"
+                render={({ field }) => (
+                  <FormItem className="space-y-3">
+                    <FormLabel>Status</FormLabel>
+                    <div className="flex items-center space-x-4">
+                      <div className="flex items-center space-x-2">
+                        <input 
+                          type="radio" 
+                          id="active" 
+                          value="active" 
+                          checked={field.value === "active"}
+                          onChange={() => field.onChange("active")}
+                          className="rounded-full"
+                        />
+                        <label htmlFor="active">Active</label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <input 
+                          type="radio" 
+                          id="inactive" 
+                          value="inactive" 
+                          checked={field.value === "inactive"}
+                          onChange={() => field.onChange("inactive")}
+                          className="rounded-full"
+                        />
+                        <label htmlFor="inactive">Inactive</label>
+                      </div>
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <DialogFooter className="mt-6">
+                <Button variant="outline" type="button" onClick={() => {
+                  setAddMemberOpen(false);
+                  form.reset();
+                }}>
+                  Cancel
+                </Button>
+                <Button type="submit">
+                  <UserPlus className="mr-2 h-4 w-4" />
+                  Add Member
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
         </DialogContent>
       </Dialog>
     </div>
