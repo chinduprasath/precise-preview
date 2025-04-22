@@ -13,7 +13,9 @@ import {
   Wallet,
   Activity,
   Shield,
-  Settings
+  Settings,
+  Building,
+  User
 } from 'lucide-react';
 
 export interface NavItem {
@@ -37,6 +39,16 @@ export const createNavigationItems = (userType: string): NavItem[] => {
         icon: React.createElement(Activity, { className: "w-full h-full" }),
         label: "Analytics",
         href: "/dashboard/admin/analytics"
+      },
+      {
+        icon: React.createElement(Building, { className: "w-full h-full" }),
+        label: "Business Users",
+        href: "/dashboard/admin/business-users"
+      },
+      {
+        icon: React.createElement(User, { className: "w-full h-full" }),
+        label: "Influencers",
+        href: "/dashboard/admin/influencers"
       },
       {
         icon: React.createElement(Shield, { className: "w-full h-full" }),

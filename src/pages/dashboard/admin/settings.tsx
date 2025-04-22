@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -14,6 +13,7 @@ import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import MaintenanceSettings from '@/components/maintenance/MaintenanceSettings';
 import { 
   Palette, Upload, Globe, Shield, Phone, 
   Mail, ToggleRight, DollarSign, FileText, 
@@ -102,11 +102,6 @@ const globalFormSchema = z.object({
 
 const SiteSettingsPage = () => {
   const [activeTab, setActiveTab] = useState("branding");
-  const [maintenanceMode, setMaintenanceMode] = useState(false);
-  const [maintenanceMessage, setMaintenanceMessage] = useState(
-    "Our site is currently undergoing scheduled maintenance. We'll be back shortly!"
-  );
-  const [whitelistedIPs, setWhitelistedIPs] = useState("");
   const [subscriptionPlans, setSubscriptionPlans] = useState(samplePlans);
   
   // Branding form
@@ -172,11 +167,6 @@ const SiteSettingsPage = () => {
     toast.success("Global settings updated successfully!");
   };
 
-  const handleMaintenanceModeToggle = () => {
-    setMaintenanceMode(!maintenanceMode);
-    toast.success(`Maintenance mode ${!maintenanceMode ? 'enabled' : 'disabled'}`);
-  };
-
   const handleResetToDefaults = () => {
     // Reset settings to default values
     brandingForm.reset({
@@ -204,10 +194,6 @@ const SiteSettingsPage = () => {
       defaultLanguage: "en",
       defaultTimezone: "UTC",
     });
-    
-    setMaintenanceMode(false);
-    setMaintenanceMessage("Our site is currently undergoing scheduled maintenance. We'll be back shortly!");
-    setWhitelistedIPs("");
     
     toast.success("All settings have been reset to defaults");
   };
@@ -518,63 +504,13 @@ const SiteSettingsPage = () => {
 
           {/* Maintenance Tab */}
           <TabsContent value="maintenance" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Maintenance Mode</CardTitle>
-                <CardDescription>
-                  Put your site in maintenance mode while you make updates.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 gap-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-lg font-medium">Maintenance Mode</h3>
-                      <p className="text-sm text-muted-foreground">
-                        When enabled, all users will see a maintenance page instead of the site.
-                      </p>
-                    </div>
-                    <Switch
-                      checked={maintenanceMode}
-                      onCheckedChange={handleMaintenanceModeToggle}
-                    />
-                  </div>
-                  
-                  <Separator />
-                  
-                  <div className="space-y-4">
-                    <Label htmlFor="maintenance-message">Maintenance Message</Label>
-                    <Textarea
-                      id="maintenance-message"
-                      value={maintenanceMessage}
-                      onChange={(e) => setMaintenanceMessage(e.target.value)}
-                      rows={5}
-                      className="w-full"
-                    />
-                    <FormDescription>
-                      This message will be displayed to users during maintenance mode.
-                    </FormDescription>
-                  </div>
-                  
-                  <div className="space-y-4">
-                    <Label htmlFor="whitelisted-ips">Whitelisted IP Addresses</Label>
-                    <Textarea
-                      id="whitelisted-ips"
-                      value={whitelistedIPs}
-                      onChange={(e) => setWhitelistedIPs(e.target.value)}
-                      rows={3}
-                      placeholder="192.168.1.1, 10.0.0.1"
-                      className="w-full"
-                    />
-                    <FormDescription>
-                      Enter IP addresses that can access the site during maintenance mode. Separate with commas.
-                    </FormDescription>
-                  </div>
-                  
-                  <Button>Save Maintenance Settings</Button>
-                </div>
-              </CardContent>
-            </Card>
+            <MaintenanceSettings 
+              initialMaintenanceMode={false}
+              initialMaintenanceMessage="Our site is currently undergoing scheduled maintenance. We'll be back shortly!"
+              initialWhitelistedIPs=""
+              lastModifiedBy="Admin User"
+              lastModifiedAt={new Date().toLocaleString()}
+            />
           </TabsContent>
 
           {/* Subscription Tab */}
