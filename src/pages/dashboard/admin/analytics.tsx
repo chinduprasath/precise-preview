@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '@/components/layout/Sidebar';
@@ -755,3 +756,41 @@ const AnalyticsPage = () => {
                   </Card>
 
                   <Card className="col-span-1 lg:col-span-2">
+                    <CardHeader>
+                      <CardTitle>Recent Team Activity</CardTitle>
+                      <CardDescription>Latest actions performed by team members</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>User</TableHead>
+                            <TableHead>Role</TableHead>
+                            <TableHead>Action</TableHead>
+                            <TableHead>Time</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {teamStats.recentActivity.map((activity) => (
+                            <TableRow key={activity.id}>
+                              <TableCell className="font-medium">{activity.user}</TableCell>
+                              <TableCell>{activity.role}</TableCell>
+                              <TableCell>{activity.action}</TableCell>
+                              <TableCell>{activity.timestamp}</TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </CardContent>
+                  </Card>
+                </div>
+              </TabsContent>
+            </Tabs>
+          </div>
+        </main>
+      </div>
+    </div>
+  );
+};
+
+export default AnalyticsPage;
