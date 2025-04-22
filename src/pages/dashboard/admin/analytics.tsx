@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '@/components/layout/Sidebar';
@@ -7,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { BarChart, Calendar, Download, Filter, Users, FileText, ShoppingCart, RefreshCcw } from 'lucide-react';
+import { Calendar, Download, Filter, Users, FileText, ShoppingCart, RefreshCcw } from 'lucide-react';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import {
   ResponsiveContainer,
@@ -368,7 +367,7 @@ const AnalyticsPage = () => {
                     <CardContent>
                       <div className="h-60">
                         <ResponsiveContainer width="100%" height="100%">
-                          <BarChart data={[
+                          <RechartsBarChart data={[
                             { month: 'Aug', retention: 78 },
                             { month: 'Sep', retention: 82 },
                             { month: 'Oct', retention: 85 },
@@ -380,7 +379,7 @@ const AnalyticsPage = () => {
                             <YAxis />
                             <Tooltip />
                             <Bar dataKey="retention" fill="#9b87f5" name="Retention Rate %" />
-                          </BarChart>
+                          </RechartsBarChart>
                         </ResponsiveContainer>
                       </div>
                     </CardContent>
@@ -437,13 +436,13 @@ const AnalyticsPage = () => {
                     <CardContent>
                       <div className="h-60">
                         <ResponsiveContainer width="100%" height="100%">
-                          <BarChart data={orderStats.orderTrendData}>
+                          <RechartsBarChart data={orderStats.orderTrendData}>
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="month" />
                             <YAxis />
                             <Tooltip />
                             <Bar dataKey="orders" fill="#9b87f5" name="Orders" />
-                          </BarChart>
+                          </RechartsBarChart>
                         </ResponsiveContainer>
                       </div>
                     </CardContent>
@@ -554,7 +553,7 @@ const AnalyticsPage = () => {
                         
                         <div className="h-60 bg-white rounded-lg border p-4">
                           <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={serviceStats.graphicDesigners.projectsData}>
+                            <RechartsBarChart data={serviceStats.graphicDesigners.projectsData}>
                               <CartesianGrid strokeDasharray="3 3" />
                               <XAxis dataKey="month" />
                               <YAxis />
@@ -562,7 +561,7 @@ const AnalyticsPage = () => {
                               <Legend />
                               <Bar dataKey="logoDesigns" fill="#9b87f5" name="Logo Designs" />
                               <Bar dataKey="posterBanners" fill="#7E69AB" name="Poster/Banner" />
-                            </BarChart>
+                            </RechartsBarChart>
                           </ResponsiveContainer>
                         </div>
                       </div>
@@ -756,70 +755,3 @@ const AnalyticsPage = () => {
                   </Card>
 
                   <Card className="col-span-1 lg:col-span-2">
-                    <CardHeader>
-                      <CardTitle>Recent Team Activity</CardTitle>
-                      <CardDescription>Latest actions performed by team members</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>Team Member</TableHead>
-                            <TableHead>Role</TableHead>
-                            <TableHead>Action</TableHead>
-                            <TableHead>Time</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {teamStats.recentActivity.map((activity) => (
-                            <TableRow key={activity.id}>
-                              <TableCell className="font-medium">{activity.user}</TableCell>
-                              <TableCell>{activity.role}</TableCell>
-                              <TableCell>{activity.action}</TableCell>
-                              <TableCell>{activity.timestamp}</TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </CardContent>
-                  </Card>
-                </div>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Team Performance</CardTitle>
-                    <CardDescription>Key performance indicators by role</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="h-80">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={[
-                          { role: 'Super Admin', efficiency: 92, tasks: 124 },
-                          { role: 'Operations', efficiency: 88, tasks: 356 },
-                          { role: 'Support', efficiency: 85, tasks: 478 },
-                          { role: 'Moderator', efficiency: 82, tasks: 267 },
-                          { role: 'Finance', efficiency: 90, tasks: 198 }
-                        ]}>
-                          <CartesianGrid strokeDasharray="3 3" />
-                          <XAxis dataKey="role" />
-                          <YAxis yAxisId="left" orientation="left" stroke="#9b87f5" />
-                          <YAxis yAxisId="right" orientation="right" stroke="#7E69AB" />
-                          <Tooltip />
-                          <Legend />
-                          <Bar yAxisId="left" dataKey="efficiency" name="Efficiency %" fill="#9b87f5" />
-                          <Bar yAxisId="right" dataKey="tasks" name="Total Tasks Completed" fill="#7E69AB" />
-                        </BarChart>
-                      </ResponsiveContainer>
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-            </Tabs>
-          </div>
-        </main>
-      </div>
-    </div>
-  );
-};
-
-export default AnalyticsPage;
