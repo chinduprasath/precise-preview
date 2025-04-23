@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
@@ -10,7 +9,6 @@ import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
 import { Offer, UserPromotion } from '@/types/offer';
 
-// Mock data - would be fetched from API in a real scenario
 const mockCurrentOffer: Offer = {
   id: '1',
   title: 'Summer Campaign 2025',
@@ -74,7 +72,6 @@ const OffersPage = () => {
       description: "Your unique promotional URL has been created. Copy and use it in your post.",
     });
     
-    // In a real app, this would call an API to generate and save the URL
     const newPromotion: UserPromotion = {
       id: (activePromotions.length + 1).toString(),
       offerId: mockCurrentOffer.id,
@@ -161,7 +158,6 @@ const OffersPage = () => {
     return Math.min(100, Math.max(0, (elapsed / total) * 100));
   };
 
-  // Helper function to safely click an element by selector
   const safeClickElement = (selector: string) => {
     const element = document.querySelector(selector);
     if (element instanceof HTMLElement) {
@@ -317,29 +313,6 @@ const OffersPage = () => {
                         </div>
                         
                         <div>
-                          <div className="grid grid-cols-5 gap-2 mb-3">
-                            <div className="bg-blue-50 p-2 rounded text-center">
-                              <p className="text-xs text-gray-500">Views</p>
-                              <p className="font-semibold">{promo.engagement.views}</p>
-                            </div>
-                            <div className="bg-red-50 p-2 rounded text-center">
-                              <p className="text-xs text-gray-500">Likes</p>
-                              <p className="font-semibold">{promo.engagement.likes}</p>
-                            </div>
-                            <div className="bg-green-50 p-2 rounded text-center">
-                              <p className="text-xs text-gray-500">Shares</p>
-                              <p className="font-semibold">{promo.engagement.shares}</p>
-                            </div>
-                            <div className="bg-yellow-50 p-2 rounded text-center">
-                              <p className="text-xs text-gray-500">Comments</p>
-                              <p className="font-semibold">{promo.engagement.comments}</p>
-                            </div>
-                            <div className="bg-purple-50 p-2 rounded text-center">
-                              <p className="text-xs text-gray-500">Clicks</p>
-                              <p className="font-semibold">{promo.engagement.clicks}</p>
-                            </div>
-                          </div>
-                          
                           <div className="flex justify-between items-center">
                             <div>
                               <p className="text-sm text-gray-500">Reward:</p>

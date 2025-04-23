@@ -45,17 +45,20 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { UserPromotion } from '@/types/offer';
 
 // Mock data for the marketing dashboard
-const mockPromotionData = [
+const mockPromotionData: UserPromotion[] = [
   {
     id: '1',
     userName: 'John Business',
     userType: 'business',
     userProfilePic: 'https://i.pravatar.cc/150?img=1',
     platform: 'Instagram',
+    offerId: '1',
     generatedUrl: 'https://inf.co/promo/u123/summer25',
     postTime: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
+    expiryTime: new Date(Date.now() + 12 * 60 * 60 * 1000).toISOString(),
     timeRemaining: '12h remaining',
     status: 'Live',
     engagement: {
@@ -73,8 +76,10 @@ const mockPromotionData = [
     userType: 'influencer',
     userProfilePic: 'https://i.pravatar.cc/150?img=5',
     platform: 'YouTube',
+    offerId: '1',
     generatedUrl: 'https://inf.co/promo/u456/summer25',
     postTime: new Date(Date.now() - 20 * 60 * 60 * 1000).toISOString(),
+    expiryTime: new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString(),
     timeRemaining: '4h remaining',
     status: 'Live',
     engagement: {
@@ -92,8 +97,10 @@ const mockPromotionData = [
     userType: 'business',
     userProfilePic: 'https://i.pravatar.cc/150?img=3',
     platform: 'Facebook',
+    offerId: '1',
     generatedUrl: 'https://inf.co/promo/u789/summer25',
     postTime: new Date(Date.now() - 30 * 60 * 60 * 1000).toISOString(),
+    expiryTime: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
     timeRemaining: '0h remaining',
     status: 'Expired',
     engagement: {
@@ -111,8 +118,10 @@ const mockPromotionData = [
     userType: 'influencer',
     userProfilePic: 'https://i.pravatar.cc/150?img=9',
     platform: 'Instagram',
+    offerId: '1',
     generatedUrl: 'https://inf.co/promo/u321/summer25',
     postTime: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
+    expiryTime: new Date(Date.now() + 19 * 60 * 60 * 1000).toISOString(),
     timeRemaining: '19h remaining',
     status: 'Live',
     engagement: {
@@ -130,8 +139,10 @@ const mockPromotionData = [
     userType: 'business',
     userProfilePic: 'https://i.pravatar.cc/150?img=7',
     platform: 'Twitter',
+    offerId: '1',
     generatedUrl: 'https://inf.co/promo/u654/summer25',
     postTime: new Date(Date.now() - 25 * 60 * 60 * 1000).toISOString(),
+    expiryTime: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
     timeRemaining: '0h remaining',
     status: 'Removed',
     engagement: {
@@ -164,7 +175,7 @@ const MarketingDashboard = () => {
     rewardStatus: ''
   });
   
-  const [promotions, setPromotions] = useState(mockPromotionData);
+  const [promotions, setPromotions] = useState<UserPromotion[]>(mockPromotionData);
   
   // Handler to refresh data - simulated
   const refreshData = () => {
@@ -179,7 +190,7 @@ const MarketingDashboard = () => {
   // Filter the promotions based on search and filters
   const filteredPromotions = promotions.filter(promo => {
     // Search filter
-    if (filters.search && !promo.userName.toLowerCase().includes(filters.search.toLowerCase())) {
+    if (filters.search && !promo.userName?.toLowerCase().includes(filters.search.toLowerCase())) {
       return false;
     }
     
@@ -200,7 +211,7 @@ const MarketingDashboard = () => {
     
     // Date range filter - would be implemented in a real app
     if (filters.dateRange.from && filters.dateRange.to) {
-      const postDate = new Date(promo.postTime);
+      const postDate = new Date(promo.postTime || '');
       if (postDate < filters.dateRange.from || postDate > filters.dateRange.to) {
         return false;
       }
@@ -489,7 +500,11 @@ const MarketingDashboard = () => {
                         </a>
                       </TableCell>
                       <TableCell>
-                        {new Date(promo.postTime).toLocaleDateString()} {new Date(promo.postTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        {promo.postTime && (
+                          <>
+                            {new Date(promo.postTime).toLocaleDateString()} {new Date(promo.postTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </>
+                        )}
                       </TableCell>
                       <TableCell>
                         {promo.timeRemaining}
