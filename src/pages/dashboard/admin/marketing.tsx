@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { 
   Link, 
@@ -406,7 +405,7 @@ const MarketingDashboard = () => {
                     <SelectValue placeholder="Platform" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Platforms</SelectItem>
+                    <SelectItem value="all">All Platforms</SelectItem>
                     <SelectItem value="Instagram">Instagram</SelectItem>
                     <SelectItem value="Facebook">Facebook</SelectItem>
                     <SelectItem value="YouTube">YouTube</SelectItem>
@@ -422,7 +421,7 @@ const MarketingDashboard = () => {
                     <SelectValue placeholder="User Type" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Users</SelectItem>
+                    <SelectItem value="all">All Users</SelectItem>
                     <SelectItem value="business">Business</SelectItem>
                     <SelectItem value="influencer">Influencer</SelectItem>
                   </SelectContent>
@@ -436,7 +435,7 @@ const MarketingDashboard = () => {
                     <SelectValue placeholder="Reward Status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Status</SelectItem>
+                    <SelectItem value="all">All Status</SelectItem>
                     <SelectItem value="Given">Reward Given</SelectItem>
                     <SelectItem value="Pending">Reward Pending</SelectItem>
                   </SelectContent>
