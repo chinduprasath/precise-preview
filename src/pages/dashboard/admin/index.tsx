@@ -1,10 +1,11 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Plus, Edit, Trash2, Search } from 'lucide-react';
+import { Plus, Edit, Trash2, Search, Users, UserPlus } from 'lucide-react';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
 import { Input } from '@/components/ui/input';
+import { Link } from 'react-router-dom';
 
 const AdminDashboard = () => {
   return (
@@ -15,10 +16,21 @@ const AdminDashboard = () => {
         <main className="flex-1 overflow-auto p-6">
           <div className="max-w-7xl mx-auto">
             <div className="flex justify-between items-center mb-6">
-              <h1 className="text-2xl font-bold">Influencer Management</h1>
-              <Button>
-                <Plus className="mr-2 h-4 w-4" /> Add Influencer
-              </Button>
+              <h1 className="text-2xl font-bold">Admin Dashboard</h1>
+              <div className="flex gap-2">
+                <Button asChild>
+                  <Link to="/dashboard/admin/business-users">
+                    <Users className="mr-2 h-4 w-4" />
+                    Manage Business Users
+                  </Link>
+                </Button>
+                <Button asChild>
+                  <Link to="/dashboard/admin/influencers">
+                    <UserPlus className="mr-2 h-4 w-4" />
+                    Manage Influencers
+                  </Link>
+                </Button>
+              </div>
             </div>
             
             <div className="bg-white rounded-lg shadow-sm p-6 mb-6">

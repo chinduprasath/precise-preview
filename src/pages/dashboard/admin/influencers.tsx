@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Layout } from '@/components/layout/Layout';
 import UserFilters, { UserFilters as UserFiltersType } from '@/components/user-management/UserFilters';
@@ -12,18 +13,19 @@ const SAMPLE_TAGS: UserTag[] = [
   { id: 'verified', name: 'Verified' },
   { id: 'sponsored', name: 'Sponsored' },
   { id: 'top-rated', name: 'Top Rated' },
-  { id: 'rising-star', name: 'Rising Star' },
-  { id: 'exclusive', name: 'Exclusive' },
+  { id: 'premium', name: 'Premium' },
+  { id: 'trending', name: 'Trending' },
 ];
 
 const SAMPLE_CATEGORIES = [
   { id: 'fashion', name: 'Fashion' },
   { id: 'beauty', name: 'Beauty' },
   { id: 'tech', name: 'Technology' },
-  { id: 'gaming', name: 'Gaming' },
-  { id: 'travel', name: 'Travel' },
   { id: 'food', name: 'Food & Cooking' },
-  { id: 'fitness', name: 'Fitness & Health' },
+  { id: 'travel', name: 'Travel' },
+  { id: 'fitness', name: 'Fitness' },
+  { id: 'gaming', name: 'Gaming' },
+  { id: 'lifestyle', name: 'Lifestyle' },
 ];
 
 const SAMPLE_PLATFORMS = [
@@ -32,63 +34,63 @@ const SAMPLE_PLATFORMS = [
   { id: 'tiktok', name: 'TikTok' },
   { id: 'twitter', name: 'Twitter' },
   { id: 'facebook', name: 'Facebook' },
-  { id: 'linkedin', name: 'LinkedIn' },
+  { id: 'twitch', name: 'Twitch' },
 ];
 
 const SAMPLE_USERS: User[] = [
   {
     id: '1',
     name: 'Emma Johnson',
-    username: 'emmastyle',
+    username: 'emmaj',
     email: 'emma@influencer.com',
-    joinedDate: '2023-02-15',
+    joinedDate: '2023-02-10',
     status: 'active',
     profileImage: '',
     tags: [SAMPLE_TAGS[0], SAMPLE_TAGS[2]],
   },
   {
     id: '2',
-    name: 'Alex Rodriguez',
-    username: 'alex_tech',
-    email: 'alex@techreview.com',
-    joinedDate: '2023-04-10',
+    name: 'Jack Wilson',
+    username: 'jackw',
+    email: 'jack@influencer.com',
+    joinedDate: '2023-04-15',
     status: 'active',
     profileImage: '',
-    tags: [SAMPLE_TAGS[1], SAMPLE_TAGS[3]],
+    tags: [SAMPLE_TAGS[1], SAMPLE_TAGS[4]],
   },
   {
     id: '3',
     name: 'Sophia Chen',
-    username: 'sophiabeauty',
-    email: 'sophia@beautyworld.com',
-    joinedDate: '2023-03-05',
+    username: 'sophiac',
+    email: 'sophia@influencer.com',
+    joinedDate: '2023-06-22',
     status: 'inactive',
     profileImage: '',
-    tags: [SAMPLE_TAGS[2]],
+    tags: [SAMPLE_TAGS[3]],
   },
   {
     id: '4',
-    name: 'James Wilson',
-    username: 'jamesgaming',
-    email: 'james@gamingworld.com',
-    joinedDate: '2023-01-20',
+    name: 'Logan Martinez',
+    username: 'loganm',
+    email: 'logan@influencer.com',
+    joinedDate: '2023-08-30',
     status: 'blocked',
     profileImage: '',
     tags: [],
   },
   {
     id: '5',
-    name: 'Olivia Smith',
-    username: 'oliviatravel',
-    email: 'olivia@travelblog.com',
-    joinedDate: '2023-06-12',
+    name: 'Olivia Taylor',
+    username: 'oliviat',
+    email: 'olivia@influencer.com',
+    joinedDate: '2023-11-12',
     status: 'active',
     profileImage: '',
-    tags: [SAMPLE_TAGS[0], SAMPLE_TAGS[4]],
+    tags: [SAMPLE_TAGS[0], SAMPLE_TAGS[1], SAMPLE_TAGS[4]],
   },
 ];
 
-const InfluencersPage = () => {
+const InfluencersManagementPage = () => {
   const [users, setUsers] = useState<User[]>(SAMPLE_USERS);
   const [filteredUsers, setFilteredUsers] = useState<User[]>(SAMPLE_USERS);
   const [searchQuery, setSearchQuery] = useState('');
@@ -224,7 +226,7 @@ const InfluencersPage = () => {
 
   const logUserAction = (action: string, userId: string, additionalData?: any) => {
     // In a real implementation, this would log to the database
-    console.log(`Admin action: ${action} on user ${userId}`, {
+    console.log(`Admin action: ${action} on influencer ${userId}`, {
       timestamp: new Date().toISOString(),
       adminName: 'Current Admin', // This would be the actual admin name
       additionalData
@@ -236,7 +238,7 @@ const InfluencersPage = () => {
       <div className="container mx-auto py-6">
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h1 className="text-3xl font-bold">Influencers Management</h1>
+            <h1 className="text-3xl font-bold">Influencer Management</h1>
             <p className="text-muted-foreground">
               Manage and monitor influencers on the platform
             </p>
@@ -287,4 +289,4 @@ const InfluencersPage = () => {
   );
 };
 
-export default InfluencersPage;
+export default InfluencersManagementPage;
