@@ -13,9 +13,9 @@ export interface Offer {
 
 export interface UserPromotion {
   id: string;
-  userId: string;
-  userName: string;
-  userType: 'business' | 'influencer';
+  userId?: string;
+  userName?: string;
+  userType?: 'business' | 'influencer';
   userProfilePic?: string;
   offerId: string;
   generatedUrl: string;
@@ -32,5 +32,5 @@ export interface UserPromotion {
     clicks: number;
   };
   rewardStatus: 'Given' | 'Pending';
-  rewardType: 'Free Subscription' | 'Commission-Free Withdrawal';
+  rewardType?: 'Free Subscription' | 'Commission-Free Withdrawal';
 }

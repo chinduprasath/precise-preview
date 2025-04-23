@@ -8,9 +8,10 @@ import { Badge } from '@/components/ui/badge';
 import { Gift, Clock, Check, X, Hourglass, Copy, Share2, Instagram, Facebook, Youtube } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Progress } from '@/components/ui/progress';
+import { Offer, UserPromotion } from '@/types/offer';
 
 // Mock data - would be fetched from API in a real scenario
-const mockCurrentOffer = {
+const mockCurrentOffer: Offer = {
   id: '1',
   title: 'Summer Campaign 2025',
   description: 'Promote our new summer collection with exclusive discounts for your followers.',
@@ -21,7 +22,7 @@ const mockCurrentOffer = {
   isActive: true
 };
 
-const mockUserPromotions = [
+const mockUserPromotions: UserPromotion[] = [
   {
     id: '1',
     offerId: '1',
@@ -38,7 +39,7 @@ const mockUserPromotions = [
       comments: 8,
       clicks: 23
     },
-    rewardStatus: 'Pending'
+    rewardStatus: 'Given'
   },
   {
     id: '2',
@@ -63,7 +64,7 @@ const mockUserPromotions = [
 const OffersPage = () => {
   const { toast } = useToast();
   const [userType] = useState(() => localStorage.getItem('userType') || 'business');
-  const [activePromotions, setActivePromotions] = useState(mockUserPromotions);
+  const [activePromotions, setActivePromotions] = useState<UserPromotion[]>(mockUserPromotions);
   
   const generateUniqueUrl = () => {
     const newUrl = `https://inf.co/promo/u${Math.floor(Math.random() * 1000)}/${mockCurrentOffer.title.toLowerCase().replace(/\s+/g, '')}`;
@@ -74,12 +75,15 @@ const OffersPage = () => {
     });
     
     // In a real app, this would call an API to generate and save the URL
-    const newPromotion = {
+    const newPromotion: UserPromotion = {
       id: (activePromotions.length + 1).toString(),
       offerId: mockCurrentOffer.id,
       generatedUrl: newUrl,
       platform: 'Instagram',
       status: 'Pending',
+      postTime: new Date().toISOString(),
+      expiryTime: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+      timeRemaining: '24h remaining',
       engagement: {
         views: 0,
         likes: 0,
@@ -155,6 +159,14 @@ const OffersPage = () => {
     const elapsed = now.getTime() - postTime.getTime();
     
     return Math.min(100, Math.max(0, (elapsed / total) * 100));
+  };
+
+  // Helper function to safely click an element by selector
+  const safeClickElement = (selector: string) => {
+    const element = document.querySelector(selector);
+    if (element instanceof HTMLElement) {
+      element.click();
+    }
   };
 
   return (
@@ -355,7 +367,7 @@ const OffersPage = () => {
                     <p className="text-gray-500 text-center max-w-md mb-6">
                       You haven't created any promotional links yet. Generate a unique URL from the Current Offer tab to get started.
                     </p>
-                    <Button onClick={() => document.querySelector('[data-value="current"]')?.click()}>
+                    <Button onClick={() => safeClickElement('[data-value="current"]')}>
                       View Current Offer
                     </Button>
                   </CardContent>
@@ -447,7 +459,7 @@ const OffersPage = () => {
                 </div>
               </CardContent>
               <CardFooter>
-                <Button onClick={() => document.querySelector('[data-value="current"]')?.click()} className="w-full">
+                <Button onClick={() => safeClickElement('[data-value="current"]')} className="w-full">
                   View Current Promotion
                 </Button>
               </CardFooter>
