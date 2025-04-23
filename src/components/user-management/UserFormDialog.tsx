@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -42,8 +41,8 @@ const UserFormDialog: React.FC<UserFormDialogProps> = ({
   editing = false,
   initialData = {}
 }) => {
-  // Base schema for both user types
-  const baseSchema = z.object({
+  // Create base schema fields separately
+  const baseSchemaFields = {
     fullName: z.string().min(2, "Full name must be at least 2 characters"),
     username: z.string().min(3, "Username must be at least 3 characters"),
     email: z.string().email("Please enter a valid email"),
@@ -53,29 +52,38 @@ const UserFormDialog: React.FC<UserFormDialogProps> = ({
     accountStatus: z.string(),
     tags: z.array(z.string()),
     notes: z.string().optional(),
-  }).refine(data => {
+  };
+
+  // Create a base schema without refine
+  const baseSchema = z.object(baseSchemaFields);
+  
+  // Password matching validation
+  const passwordValidation = (data: any) => {
     if (!editing && data.password !== data.confirmPassword) {
       return false;
     }
     return true;
-  }, {
+  };
+
+  // Business specific schema
+  const businessSchema = z.object({
+    ...baseSchemaFields,
+    companyName: z.string().min(2, "Company name must be at least 2 characters"),
+  }).refine(passwordValidation, {
     message: "Passwords do not match",
     path: ["confirmPassword"],
   });
 
-  // Business specific schema
-  const businessSchema = z.object({
-    ...baseSchema._def.shape,
-    companyName: z.string().min(2, "Company name must be at least 2 characters"),
-  });
-
   // Influencer specific schema
   const influencerSchema = z.object({
-    ...baseSchema._def.shape,
+    ...baseSchemaFields,
     categories: z.array(z.string()),
     platforms: z.array(z.string()),
     socialLinks: z.record(z.string(), z.string().url("Please enter a valid URL").optional()).optional(),
     followerCount: z.number().positive("Follower count must be a positive number").optional(),
+  }).refine(passwordValidation, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
   });
 
   // Choose schema based on userType
