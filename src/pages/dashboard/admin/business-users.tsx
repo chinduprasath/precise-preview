@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Layout } from '@/components/layout/Layout';
 import UserFilters, { UserFilters as UserFiltersType } from '@/components/user-management/UserFilters';
@@ -75,7 +74,7 @@ const BusinessUsersPage = () => {
   const [filteredUsers, setFilteredUsers] = useState<User[]>(SAMPLE_USERS);
   const [searchQuery, setSearchQuery] = useState('');
   const [currentFilters, setCurrentFilters] = useState<UserFiltersType>({
-    dateRange: {},
+    dateRange: undefined,
     status: 'all',
     tags: [],
   });
@@ -119,12 +118,12 @@ const BusinessUsersPage = () => {
     }
     
     // Apply date range filter
-    if (filters.dateRange.from) {
+    if (filters.dateRange?.from) {
       const fromDate = new Date(filters.dateRange.from);
       result = result.filter(user => new Date(user.joinedDate) >= fromDate);
     }
     
-    if (filters.dateRange.to) {
+    if (filters.dateRange?.to) {
       const toDate = new Date(filters.dateRange.to);
       toDate.setHours(23, 59, 59, 999); // End of day
       result = result.filter(user => new Date(user.joinedDate) <= toDate);
@@ -147,7 +146,7 @@ const BusinessUsersPage = () => {
 
   const handleBlockUser = (userId: string, duration: string, reason?: string) => {
     const updatedUsers = users.map(user => 
-      user.id === userId ? { ...user, status: 'blocked' } : user
+      user.id === userId ? { ...user, status: 'blocked' as const } : user
     );
     setUsers(updatedUsers);
     applyFilters(searchQuery, currentFilters);
@@ -173,7 +172,7 @@ const BusinessUsersPage = () => {
               name: data.fullName,
               username: data.username,
               email: data.email,
-              status: data.accountStatus,
+              status: data.accountStatus as 'active' | 'inactive' | 'blocked',
               tags: SAMPLE_TAGS.filter(tag => data.tags.includes(tag.id)),
             } 
           : user

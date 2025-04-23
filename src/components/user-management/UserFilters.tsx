@@ -16,6 +16,7 @@ import { Search, Calendar as CalendarIcon, X } from 'lucide-react';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
 import { UserTag } from './UserTable';
+import { DateRange } from 'react-day-picker';
 
 interface UserFiltersProps {
   onSearch: (query: string) => void;
@@ -24,10 +25,7 @@ interface UserFiltersProps {
 }
 
 export interface UserFilters {
-  dateRange: {
-    from?: Date;
-    to?: Date;
-  };
+  dateRange: DateRange | undefined;
   status: string;
   tags: string[];
 }
@@ -35,15 +33,12 @@ export interface UserFilters {
 const UserFilters: React.FC<UserFiltersProps> = ({ onSearch, onFilterChange, availableTags }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filters, setFilters] = useState<UserFilters>({
-    dateRange: {},
+    dateRange: undefined,
     status: 'all',
     tags: [],
   });
   
-  const [date, setDate] = useState<{
-    from?: Date;
-    to?: Date;
-  }>({});
+  const [date, setDate] = useState<DateRange | undefined>(undefined);
 
   const handleSearch = () => {
     onSearch(searchQuery);
@@ -71,7 +66,7 @@ const UserFilters: React.FC<UserFiltersProps> = ({ onSearch, onFilterChange, ava
     onFilterChange(updatedFilters);
   };
 
-  const handleDateChange = (range: { from?: Date; to?: Date }) => {
+  const handleDateChange = (range: DateRange | undefined) => {
     setDate(range);
     const updatedFilters = {
       ...filters,
@@ -84,14 +79,14 @@ const UserFilters: React.FC<UserFiltersProps> = ({ onSearch, onFilterChange, ava
   const handleClearFilters = () => {
     setSearchQuery('');
     setFilters({
-      dateRange: {},
+      dateRange: undefined,
       status: 'all',
       tags: [],
     });
-    setDate({});
+    setDate(undefined);
     onSearch('');
     onFilterChange({
-      dateRange: {},
+      dateRange: undefined,
       status: 'all',
       tags: [],
     });
@@ -120,7 +115,7 @@ const UserFilters: React.FC<UserFiltersProps> = ({ onSearch, onFilterChange, ava
           <PopoverTrigger asChild>
             <Button variant="outline" className="min-w-[240px] justify-start text-left font-normal">
               <CalendarIcon className="mr-2 h-4 w-4" />
-              {date.from ? (
+              {date?.from ? (
                 date.to ? (
                   <>
                     {format(date.from, "LLL dd, y")} - {format(date.to, "LLL dd, y")}
@@ -137,7 +132,7 @@ const UserFilters: React.FC<UserFiltersProps> = ({ onSearch, onFilterChange, ava
             <Calendar
               initialFocus
               mode="range"
-              defaultMonth={date.from}
+              defaultMonth={date?.from}
               selected={date}
               onSelect={handleDateChange}
               numberOfMonths={2}
@@ -160,7 +155,7 @@ const UserFilters: React.FC<UserFiltersProps> = ({ onSearch, onFilterChange, ava
           </SelectContent>
         </Select>
         
-        {(filters.status !== 'all' || filters.tags.length > 0 || date.from) && (
+        {(filters.status !== 'all' || filters.tags.length > 0 || date?.from) && (
           <Button variant="ghost" onClick={handleClearFilters} size="sm">
             <X className="mr-2 h-4 w-4" />
             Clear Filters
@@ -184,7 +179,7 @@ const UserFilters: React.FC<UserFiltersProps> = ({ onSearch, onFilterChange, ava
         </div>
       </div>
       
-      {(filters.status !== 'all' || filters.tags.length > 0 || date.from) && (
+      {(filters.status !== 'all' || filters.tags.length > 0 || date?.from) && (
         <div className="flex flex-wrap gap-2">
           <Label className="mr-2">Active Filters:</Label>
           {filters.status !== 'all' && (
@@ -196,13 +191,13 @@ const UserFilters: React.FC<UserFiltersProps> = ({ onSearch, onFilterChange, ava
               />
             </Badge>
           )}
-          {date.from && (
+          {date?.from && (
             <Badge variant="secondary" className="flex items-center gap-1">
               Date: {format(date.from, "LLL dd, y")} 
               {date.to && ` - ${format(date.to, "LLL dd, y")}`}
               <X 
                 className="h-3 w-3 ml-1 cursor-pointer" 
-                onClick={() => handleDateChange({})} 
+                onClick={() => handleDateChange(undefined)} 
               />
             </Badge>
           )}

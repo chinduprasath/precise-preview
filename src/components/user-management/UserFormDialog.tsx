@@ -64,12 +64,14 @@ const UserFormDialog: React.FC<UserFormDialogProps> = ({
   });
 
   // Business specific schema
-  const businessSchema = baseSchema.extend({
+  const businessSchema = z.object({
+    ...baseSchema.shape,
     companyName: z.string().min(2, "Company name must be at least 2 characters"),
   });
 
   // Influencer specific schema
-  const influencerSchema = baseSchema.extend({
+  const influencerSchema = z.object({
+    ...baseSchema.shape,
     categories: z.array(z.string()),
     platforms: z.array(z.string()),
     socialLinks: z.record(z.string(), z.string().url("Please enter a valid URL").optional()).optional(),

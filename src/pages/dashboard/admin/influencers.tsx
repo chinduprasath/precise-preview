@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Layout } from '@/components/layout/Layout';
 import UserFilters, { UserFilters as UserFiltersType } from '@/components/user-management/UserFilters';
@@ -13,8 +12,8 @@ const SAMPLE_TAGS: UserTag[] = [
   { id: 'verified', name: 'Verified' },
   { id: 'sponsored', name: 'Sponsored' },
   { id: 'top-rated', name: 'Top Rated' },
-  { id: 'trending', name: 'Trending' },
-  { id: 'featured', name: 'Featured' },
+  { id: 'rising-star', name: 'Rising Star' },
+  { id: 'exclusive', name: 'Exclusive' },
 ];
 
 const SAMPLE_CATEGORIES = [
@@ -22,72 +21,70 @@ const SAMPLE_CATEGORIES = [
   { id: 'beauty', name: 'Beauty' },
   { id: 'tech', name: 'Technology' },
   { id: 'gaming', name: 'Gaming' },
-  { id: 'fitness', name: 'Fitness' },
-  { id: 'lifestyle', name: 'Lifestyle' },
-  { id: 'food', name: 'Food & Cooking' },
   { id: 'travel', name: 'Travel' },
+  { id: 'food', name: 'Food & Cooking' },
+  { id: 'fitness', name: 'Fitness & Health' },
 ];
 
 const SAMPLE_PLATFORMS = [
   { id: 'instagram', name: 'Instagram' },
   { id: 'youtube', name: 'YouTube' },
   { id: 'tiktok', name: 'TikTok' },
-  { id: 'twitter', name: 'Twitter/X' },
+  { id: 'twitter', name: 'Twitter' },
   { id: 'facebook', name: 'Facebook' },
   { id: 'linkedin', name: 'LinkedIn' },
-  { id: 'twitch', name: 'Twitch' },
 ];
 
 const SAMPLE_USERS: User[] = [
   {
     id: '1',
-    name: 'Priya Sharma',
-    username: 'priyastylist',
-    email: 'priya@example.com',
-    joinedDate: '2023-02-12',
+    name: 'Emma Johnson',
+    username: 'emmastyle',
+    email: 'emma@influencer.com',
+    joinedDate: '2023-02-15',
     status: 'active',
     profileImage: '',
     tags: [SAMPLE_TAGS[0], SAMPLE_TAGS[2]],
   },
   {
     id: '2',
-    name: 'Alex Chen',
-    username: 'alexfitness',
-    email: 'alex@example.com',
-    joinedDate: '2023-03-05',
+    name: 'Alex Rodriguez',
+    username: 'alex_tech',
+    email: 'alex@techreview.com',
+    joinedDate: '2023-04-10',
     status: 'active',
     profileImage: '',
     tags: [SAMPLE_TAGS[1], SAMPLE_TAGS[3]],
   },
   {
     id: '3',
-    name: 'Jordan Williams',
-    username: 'jordantech',
-    email: 'jordan@example.com',
-    joinedDate: '2023-04-20',
+    name: 'Sophia Chen',
+    username: 'sophiabeauty',
+    email: 'sophia@beautyworld.com',
+    joinedDate: '2023-03-05',
     status: 'inactive',
     profileImage: '',
-    tags: [SAMPLE_TAGS[4]],
+    tags: [SAMPLE_TAGS[2]],
   },
   {
     id: '4',
-    name: 'Maya Johnson',
-    username: 'mayatravels',
-    email: 'maya@example.com',
-    joinedDate: '2023-06-15',
+    name: 'James Wilson',
+    username: 'jamesgaming',
+    email: 'james@gamingworld.com',
+    joinedDate: '2023-01-20',
     status: 'blocked',
     profileImage: '',
     tags: [],
   },
   {
     id: '5',
-    name: 'Ravi Patel',
-    username: 'ravicooks',
-    email: 'ravi@example.com',
-    joinedDate: '2023-08-25',
+    name: 'Olivia Smith',
+    username: 'oliviatravel',
+    email: 'olivia@travelblog.com',
+    joinedDate: '2023-06-12',
     status: 'active',
     profileImage: '',
-    tags: [SAMPLE_TAGS[0], SAMPLE_TAGS[3], SAMPLE_TAGS[4]],
+    tags: [SAMPLE_TAGS[0], SAMPLE_TAGS[4]],
   },
 ];
 
@@ -96,7 +93,7 @@ const InfluencersPage = () => {
   const [filteredUsers, setFilteredUsers] = useState<User[]>(SAMPLE_USERS);
   const [searchQuery, setSearchQuery] = useState('');
   const [currentFilters, setCurrentFilters] = useState<UserFiltersType>({
-    dateRange: {},
+    dateRange: undefined,
     status: 'all',
     tags: [],
   });
@@ -140,12 +137,12 @@ const InfluencersPage = () => {
     }
     
     // Apply date range filter
-    if (filters.dateRange.from) {
+    if (filters.dateRange?.from) {
       const fromDate = new Date(filters.dateRange.from);
       result = result.filter(user => new Date(user.joinedDate) >= fromDate);
     }
     
-    if (filters.dateRange.to) {
+    if (filters.dateRange?.to) {
       const toDate = new Date(filters.dateRange.to);
       toDate.setHours(23, 59, 59, 999); // End of day
       result = result.filter(user => new Date(user.joinedDate) <= toDate);
@@ -168,7 +165,7 @@ const InfluencersPage = () => {
 
   const handleBlockUser = (userId: string, duration: string, reason?: string) => {
     const updatedUsers = users.map(user => 
-      user.id === userId ? { ...user, status: 'blocked' } : user
+      user.id === userId ? { ...user, status: 'blocked' as const } : user
     );
     setUsers(updatedUsers);
     applyFilters(searchQuery, currentFilters);
@@ -194,7 +191,7 @@ const InfluencersPage = () => {
               name: data.fullName,
               username: data.username,
               email: data.email,
-              status: data.accountStatus,
+              status: data.accountStatus as 'active' | 'inactive' | 'blocked',
               tags: SAMPLE_TAGS.filter(tag => data.tags.includes(tag.id)),
             } 
           : user
