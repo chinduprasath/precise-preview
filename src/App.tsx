@@ -35,6 +35,8 @@ import TeamManagementPage from "./pages/dashboard/admin/team";
 import SiteSettingsPage from "./pages/dashboard/admin/settings";
 import BusinessUsersPage from "./pages/dashboard/admin/business-users";
 import InfluencersManagementPage from "./pages/dashboard/admin/influencers";
+import OffersPage from "./pages/offers";
+import MarketingDashboard from "./pages/dashboard/admin/marketing";
 
 function App() {
   // Create a new QueryClient instance with proper error handling
@@ -82,6 +84,7 @@ function App() {
                 <Route path="/requests" element={<RequestsPage />} />
                 <Route path="/reports" element={<ReportsPage />} />
                 <Route path="/notifications" element={<NotificationsPage />} />
+                <Route path="/offers" element={<OffersPage />} />
                 
                 {/* Dashboard routes */}
                 <Route path="/dashboard/admin" element={<AdminDashboard />} />
@@ -90,6 +93,7 @@ function App() {
                 <Route path="/dashboard/admin/settings" element={<SiteSettingsPage />} />
                 <Route path="/dashboard/admin/business-users" element={<BusinessUsersPage />} />
                 <Route path="/dashboard/admin/influencers" element={<InfluencersManagementPage />} />
+                <Route path="/dashboard/admin/marketing" element={<MarketingDashboard />} />
                 <Route path="/dashboard/influencer" element={<InfluencerDashboard />} />
                 <Route path="/dashboard/business" element={<BusinessDashboard />} />
                 

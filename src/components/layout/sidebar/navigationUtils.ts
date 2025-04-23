@@ -15,7 +15,8 @@ import {
   Shield,
   Settings,
   Building,
-  User
+  User,
+  Gift
 } from 'lucide-react';
 
 export interface NavItem {
@@ -49,6 +50,11 @@ export const createNavigationItems = (userType: string): NavItem[] => {
         icon: React.createElement(User, { className: "w-full h-full" }),
         label: "Influencers",
         href: "/dashboard/admin/influencers"
+      },
+      {
+        icon: React.createElement(Gift, { className: "w-full h-full" }),
+        label: "Marketing",
+        href: "/dashboard/admin/marketing"
       },
       {
         icon: React.createElement(Shield, { className: "w-full h-full" }),
@@ -104,6 +110,11 @@ export const createNavigationItems = (userType: string): NavItem[] => {
       icon: React.createElement(ShoppingCart, { className: "w-full h-full" }),
       label: "Orders",
       href: "/orders"
+    },
+    {
+      icon: React.createElement(Gift, { className: "w-full h-full" }),
+      label: "Offers",
+      href: "/offers"
     },
     {
       icon: React.createElement(Wallet, { className: "w-full h-full" }),
