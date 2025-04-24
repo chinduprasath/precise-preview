@@ -106,6 +106,42 @@ export type Database = {
         }
         Relationships: []
       }
+      global_notifications: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          id: string
+          message: string
+          scheduled_for: string | null
+          sent_at: string | null
+          status: string | null
+          title: string
+          user_type: string
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          message: string
+          scheduled_for?: string | null
+          sent_at?: string | null
+          status?: string | null
+          title: string
+          user_type: string
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          message?: string
+          scheduled_for?: string | null
+          sent_at?: string | null
+          status?: string | null
+          title?: string
+          user_type?: string
+        }
+        Relationships: []
+      }
       hashtags: {
         Row: {
           id: number
@@ -485,6 +521,33 @@ export type Database = {
           login_type?: string
           user_agent?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      maintenance_settings: {
+        Row: {
+          id: string
+          is_enabled: boolean | null
+          last_modified_at: string | null
+          last_modified_by: string | null
+          message: string | null
+          whitelisted_ips: string[] | null
+        }
+        Insert: {
+          id?: string
+          is_enabled?: boolean | null
+          last_modified_at?: string | null
+          last_modified_by?: string | null
+          message?: string | null
+          whitelisted_ips?: string[] | null
+        }
+        Update: {
+          id?: string
+          is_enabled?: boolean | null
+          last_modified_at?: string | null
+          last_modified_by?: string | null
+          message?: string | null
+          whitelisted_ips?: string[] | null
         }
         Relationships: []
       }

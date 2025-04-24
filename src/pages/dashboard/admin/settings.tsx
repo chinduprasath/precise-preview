@@ -18,8 +18,9 @@ import {
   Palette, Upload, Globe, Shield, Phone, 
   Mail, ToggleRight, DollarSign, FileText, 
   Settings, RotateCcw, Facebook, Twitter, 
-  Linkedin, Instagram, Image
+  Linkedin, Instagram, Image, Bell
 } from "lucide-react";
+import GlobalNotificationsTab from "@/components/admin/GlobalNotificationsTab";
 
 // Sample data for subscription plans
 const samplePlans = [
@@ -213,7 +214,7 @@ const SiteSettingsPage = () => {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid grid-cols-5 mb-8">
+          <TabsList className="grid grid-cols-6 mb-8">
             <TabsTrigger value="branding">
               <FileText className="mr-2 h-4 w-4" />
               Branding
@@ -225,6 +226,10 @@ const SiteSettingsPage = () => {
             <TabsTrigger value="maintenance">
               <ToggleRight className="mr-2 h-4 w-4" />
               Maintenance
+            </TabsTrigger>
+            <TabsTrigger value="notifications">
+              <Bell className="mr-2 h-4 w-4" />
+              Notifications
             </TabsTrigger>
             <TabsTrigger value="subscription">
               <DollarSign className="mr-2 h-4 w-4" />
@@ -511,6 +516,11 @@ const SiteSettingsPage = () => {
               lastModifiedBy="Admin User"
               lastModifiedAt={new Date().toLocaleString()}
             />
+          </TabsContent>
+
+          {/* Notifications Tab */}
+          <TabsContent value="notifications" className="space-y-6">
+            <GlobalNotificationsTab />
           </TabsContent>
 
           {/* Subscription Tab */}

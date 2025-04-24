@@ -1,57 +1,97 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { FormDescription } from "@/components/ui/form";
 import { toast } from "sonner";
-import { ToggleRight, User, Clock } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { User, Clock } from "lucide-react";
 
-interface MaintenanceSettingsProps {
-  initialMaintenanceMode: boolean;
-  initialMaintenanceMessage: string;
-  initialWhitelistedIPs: string;
-  lastModifiedBy?: string;
-  lastModifiedAt?: string;
-}
-
-const MaintenanceSettings: React.FC<MaintenanceSettingsProps> = ({
-  initialMaintenanceMode = false,
-  initialMaintenanceMessage = "Our site is currently undergoing scheduled maintenance. We'll be back shortly!",
-  initialWhitelistedIPs = "",
-  lastModifiedBy = "Admin User",
-  lastModifiedAt = new Date().toLocaleString(),
-}) => {
-  const [maintenanceMode, setMaintenanceMode] = useState(initialMaintenanceMode);
-  const [maintenanceMessage, setMaintenanceMessage] = useState(initialMaintenanceMessage);
-  const [whitelistedIPs, setWhitelistedIPs] = useState(initialWhitelistedIPs);
+export default function MaintenanceSettings() {
+  const [maintenanceMode, setMaintenanceMode] = useState(false);
+  const [maintenanceMessage, setMaintenanceMessage] = useState(
+    "Our site is currently undergoing scheduled maintenance. We'll be back shortly!"
+  );
+  const [whitelistedIPs, setWhitelistedIPs] = useState("");
+  const [lastModifiedBy, setLastModifiedBy] = useState("");
+  const [lastModifiedAt, setLastModifiedAt] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 
-  const handleMaintenanceModeToggle = () => {
-    setMaintenanceMode(!maintenanceMode);
-  };
+  useEffect(() => {
+    fetchMaintenanceSettings();
+  }, []);
 
-  const handleSaveSettings = () => {
-    setIsSaving(true);
-    // Simulate API call
-    setTimeout(() => {
-      setIsSaving(false);
-      toast.success(`Maintenance mode settings ${maintenanceMode ? 'enabled' : 'disabled'} successfully`);
-      // In a real implementation, you would save to database here
-    }, 800);
+  const fetchMaintenanceSettings = async () => {
+    const { data, error } = await supabase
+      .from('maintenance_settings')
+      .select('*, user_profiles(first_name, last_name)')
+      .single();
+
+    if (error) {
+      toast.error('Failed to fetch maintenance settings');
+      return;
+    }
+
+    if (data) {
+      setMaintenanceMode(data.is_enabled);
+      setMaintenanceMessage(data.message);
+      setWhitelistedIPs(data.whitelisted_ips?.join('\n') || '');
+      setLastModifiedBy(
+        data.user_profiles 
+          ? `${data.user_profiles.first_name} ${data.user_profiles.last_name}`
+          : 'Unknown'
+      );
+      setLastModifiedAt(new Date(data.last_modified_at).toLocaleString());
+    }
   };
 
   const validateIPAddresses = (ipString: string): boolean => {
     if (!ipString.trim()) return true;
     
-    const ips = ipString.split(',').map(ip => ip.trim());
+    const ips = ipString.split('\n').map(ip => ip.trim()).filter(Boolean);
     const ipRegex = /^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
     
     return ips.every(ip => ipRegex.test(ip));
+  };
+
+  const handleMaintenanceModeToggle = async () => {
+    setMaintenanceMode(!maintenanceMode);
+  };
+
+  const handleSaveSettings = async () => {
+    if (!validateIPAddresses(whitelistedIPs)) {
+      toast.error('Please enter valid IP addresses');
+      return;
+    }
+
+    setIsSaving(true);
+
+    try {
+      const { error } = await supabase
+        .from('maintenance_settings')
+        .update({
+          is_enabled: maintenanceMode,
+          message: maintenanceMessage,
+          whitelisted_ips: whitelistedIPs.split('\n').map(ip => ip.trim()).filter(Boolean),
+          last_modified_by: (await supabase.auth.getUser()).data.user?.id,
+          last_modified_at: new Date().toISOString()
+        })
+        .eq('id', (await supabase.from('maintenance_settings').select('id').single()).data?.id);
+
+      if (error) throw error;
+
+      toast.success(`Maintenance mode ${maintenanceMode ? 'enabled' : 'disabled'} successfully`);
+      fetchMaintenanceSettings();
+    } catch (error) {
+      console.error('Error saving maintenance settings:', error);
+      toast.error('Failed to save maintenance settings');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -101,16 +141,16 @@ const MaintenanceSettings: React.FC<MaintenanceSettingsProps> = ({
               value={whitelistedIPs}
               onChange={(e) => setWhitelistedIPs(e.target.value)}
               rows={3}
-              placeholder="192.168.1.1, 10.0.0.1"
+              placeholder="Enter IP addresses (one per line)"
               className={`w-full ${!validateIPAddresses(whitelistedIPs) ? 'border-red-500' : ''}`}
             />
             {!validateIPAddresses(whitelistedIPs) && (
               <p className="text-sm text-red-500">
-                Please enter valid IP addresses separated by commas.
+                Please enter valid IP addresses (one per line)
               </p>
             )}
             <FormDescription>
-              Enter IP addresses that can access the site during maintenance mode. Separate with commas.
+              Enter IP addresses that can access the site during maintenance mode (one per line).
             </FormDescription>
           </div>
           
@@ -141,6 +181,4 @@ const MaintenanceSettings: React.FC<MaintenanceSettingsProps> = ({
       </CardContent>
     </Card>
   );
-};
-
-export default MaintenanceSettings;
+}
