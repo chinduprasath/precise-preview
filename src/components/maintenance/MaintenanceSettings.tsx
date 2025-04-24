@@ -28,7 +28,7 @@ export default function MaintenanceSettings() {
   const fetchMaintenanceSettings = async () => {
     const { data, error } = await supabase
       .from('maintenance_settings')
-      .select('*, user_profiles(first_name, last_name)')
+      .select('*')
       .single();
 
     if (error) {
@@ -40,12 +40,25 @@ export default function MaintenanceSettings() {
       setMaintenanceMode(data.is_enabled);
       setMaintenanceMessage(data.message);
       setWhitelistedIPs(data.whitelisted_ips?.join('\n') || '');
-      setLastModifiedBy(
-        data.user_profiles 
-          ? `${data.user_profiles.first_name} ${data.user_profiles.last_name}`
-          : 'Unknown'
-      );
-      setLastModifiedAt(new Date(data.last_modified_at).toLocaleString());
+      
+      // Fetch the user who last modified the settings
+      if (data.last_modified_by) {
+        const { data: userData, error: userError } = await supabase
+          .from('user_profiles')
+          .select('first_name, last_name')
+          .eq('id', data.last_modified_by)
+          .single();
+          
+        if (!userError && userData) {
+          setLastModifiedBy(`${userData.first_name} ${userData.last_name}`);
+        } else {
+          setLastModifiedBy('Unknown');
+        }
+      } else {
+        setLastModifiedBy('Unknown');
+      }
+      
+      setLastModifiedAt(data.last_modified_at ? new Date(data.last_modified_at).toLocaleString() : '');
     }
   };
 

@@ -509,13 +509,7 @@ const SiteSettingsPage = () => {
 
           {/* Maintenance Tab */}
           <TabsContent value="maintenance" className="space-y-6">
-            <MaintenanceSettings 
-              initialMaintenanceMode={false}
-              initialMaintenanceMessage="Our site is currently undergoing scheduled maintenance. We'll be back shortly!"
-              initialWhitelistedIPs=""
-              lastModifiedBy="Admin User"
-              lastModifiedAt={new Date().toLocaleString()}
-            />
+            <MaintenanceSettings />
           </TabsContent>
 
           {/* Notifications Tab */}
