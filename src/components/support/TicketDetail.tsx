@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -135,14 +134,14 @@ const TicketDetail: React.FC<TicketDetailProps> = ({
                 <p className="text-sm font-medium">Assigned To</p>
                 {onAssigneeChange ? (
                   <Select
-                    defaultValue={ticket.assignedTo || ""}
+                    defaultValue={ticket.assignedTo || "unassigned"}
                     onValueChange={(value) => onAssigneeChange(ticket.id, value)}
                   >
                     <SelectTrigger className="w-32 h-8">
                       <SelectValue placeholder="Unassigned" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Unassigned</SelectItem>
+                      <SelectItem value="unassigned">Unassigned</SelectItem>
                       {teamMembers.map((member) => (
                         <SelectItem key={member.id} value={member.id}>
                           {member.name}

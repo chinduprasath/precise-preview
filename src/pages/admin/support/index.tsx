@@ -12,10 +12,11 @@ import {
 } from "@/components/ui/card";
 import TicketTable from "@/components/support/TicketTable";
 import TicketDetail from "@/components/support/TicketDetail";
-import { Ticket, TicketStatus, TicketPriority, UserType } from "@/types/ticket";
+import CreateTicketDialog from "@/components/support/CreateTicketDialog";
+import { Ticket, TicketStatus, TicketPriority, UserType, TicketCategory } from "@/types/ticket";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { FileSpreadsheet } from "lucide-react";
+import { FileSpreadsheet, Plus, Ticket as TicketIcon } from "lucide-react";
 
 // Mock team members - in a real app, fetch from the database
 const teamMembers = [
@@ -24,10 +25,19 @@ const teamMembers = [
   { id: "team3", name: "Mike Thompson" },
 ];
 
+// Mock users - in a real app, fetch from the database
+const mockUsers = [
+  { id: "user1", name: "John Doe", type: "business" as UserType },
+  { id: "user2", name: "Jane Smith", type: "influencer" as UserType },
+  { id: "user3", name: "Robert Brown", type: "business" as UserType },
+  { id: "user4", name: "Emily Clark", type: "influencer" as UserType },
+];
+
 const AdminSupportPage = () => {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isCreateTicketOpen, setIsCreateTicketOpen] = useState(false);
   
   // In a real app, fetch tickets from the database
   useEffect(() => {
@@ -254,7 +264,7 @@ const AdminSupportPage = () => {
         if (ticket.id === ticketId) {
           return {
             ...ticket,
-            assignedTo: assigneeId || undefined,
+            assignedTo: assigneeId !== "unassigned" ? assigneeId : undefined,
             lastUpdated: new Date().toISOString(),
           };
         }
@@ -268,7 +278,7 @@ const AdminSupportPage = () => {
         if (prev) {
           return {
             ...prev,
-            assignedTo: assigneeId || undefined,
+            assignedTo: assigneeId !== "unassigned" ? assigneeId : undefined,
             lastUpdated: new Date().toISOString(),
           };
         }
@@ -276,7 +286,7 @@ const AdminSupportPage = () => {
       });
     }
     
-    const assigneeName = assigneeId
+    const assigneeName = assigneeId !== "unassigned"
       ? teamMembers.find((m) => m.id === assigneeId)?.name || "Unknown"
       : "Unassigned";
     
@@ -321,6 +331,72 @@ const AdminSupportPage = () => {
     });
   };
   
+  const handleCreateTicket = async (
+    userId: string,
+    userName: string,
+    userType: UserType,
+    subject: string,
+    category: TicketCategory,
+    priority: TicketPriority,
+    message: string,
+    attachments: File[]
+  ) => {
+    try {
+      // In a real app, upload attachments to storage and save ticket to database
+      
+      const ticketId = `T${Math.floor(1000 + Math.random() * 9000)}`;
+      
+      // Create a new ticket
+      const newTicket: Ticket = {
+        id: ticketId,
+        userId,
+        userName,
+        userType,
+        subject,
+        category,
+        priority,
+        status: "New",
+        createdAt: new Date().toISOString(),
+        lastUpdated: new Date().toISOString(),
+        messages: [
+          {
+            id: `m${Math.random().toString(36).substring(7)}`,
+            ticketId,
+            userId,
+            userName,
+            userType,
+            message,
+            createdAt: new Date().toISOString(),
+            isInternal: false,
+            attachments: attachments.length
+              ? attachments.map((file) => ({
+                  name: file.name,
+                  url: URL.createObjectURL(file),
+                  type: file.type,
+                }))
+              : undefined,
+          },
+        ],
+      };
+      
+      // Add the new ticket to the state
+      setTickets((prevTickets) => [newTicket, ...prevTickets]);
+      
+      toast({
+        title: "Ticket created",
+        description: "Support ticket has been created successfully",
+      });
+    } catch (error) {
+      console.error("Error creating ticket:", error);
+      toast({
+        title: "Error",
+        description: "Failed to create support ticket",
+        variant: "destructive",
+      });
+      throw error;
+    }
+  };
+  
   const exportToCSV = () => {
     // Create CSV content from tickets
     const headers = [
@@ -343,7 +419,7 @@ const AdminSupportPage = () => {
       ticket.subject,
       ticket.status,
       ticket.priority,
-      ticket.assignedTo
+      ticket.assignedTo !== undefined
         ? teamMembers.find((m) => m.id === ticket.assignedTo)?.name || "Unknown"
         : "Unassigned",
       new Date(ticket.lastUpdated).toLocaleString(),
@@ -381,6 +457,10 @@ const AdminSupportPage = () => {
           </div>
           
           <div className="flex items-center gap-2">
+            <Button onClick={() => setIsCreateTicketOpen(true)}>
+              <Plus className="mr-2 h-4 w-4" />
+              Create Ticket
+            </Button>
             <Button variant="outline" onClick={exportToCSV}>
               <FileSpreadsheet className="mr-2 h-4 w-4" />
               Export to CSV
@@ -511,6 +591,13 @@ const AdminSupportPage = () => {
           onStatusChange={handleStatusChange}
           onAssigneeChange={handleAssigneeChange}
           teamMembers={teamMembers}
+        />
+        
+        <CreateTicketDialog
+          open={isCreateTicketOpen}
+          onOpenChange={setIsCreateTicketOpen}
+          onSubmit={handleCreateTicket}
+          users={mockUsers}
         />
       </div>
     </Layout>
