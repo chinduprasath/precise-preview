@@ -1270,12 +1270,216 @@ export type Database = {
         }
         Relationships: []
       }
+      wallet_settings: {
+        Row: {
+          created_at: string
+          id: string
+          immediate_withdrawal_charge: number
+          is_enabled: boolean
+          last_modified_at: string
+          last_modified_by: string | null
+          max_withdrawal_amount: number
+          min_withdrawal_amount: number
+          one_day_withdrawal_charge: number
+          payment_gateway_settings: Json
+          three_day_withdrawal_charge: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          immediate_withdrawal_charge?: number
+          is_enabled?: boolean
+          last_modified_at?: string
+          last_modified_by?: string | null
+          max_withdrawal_amount?: number
+          min_withdrawal_amount?: number
+          one_day_withdrawal_charge?: number
+          payment_gateway_settings?: Json
+          three_day_withdrawal_charge?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          immediate_withdrawal_charge?: number
+          is_enabled?: boolean
+          last_modified_at?: string
+          last_modified_by?: string | null
+          max_withdrawal_amount?: number
+          min_withdrawal_amount?: number
+          one_day_withdrawal_charge?: number
+          payment_gateway_settings?: Json
+          three_day_withdrawal_charge?: number
+        }
+        Relationships: []
+      }
+      wallet_transactions: {
+        Row: {
+          amount: number
+          balance_after: number
+          created_at: string
+          description: string
+          id: string
+          metadata: Json
+          reference_id: string | null
+          transaction_type: Database["public"]["Enums"]["wallet_transaction_type"]
+          user_id: string
+          wallet_id: string
+        }
+        Insert: {
+          amount: number
+          balance_after: number
+          created_at?: string
+          description: string
+          id?: string
+          metadata?: Json
+          reference_id?: string | null
+          transaction_type: Database["public"]["Enums"]["wallet_transaction_type"]
+          user_id: string
+          wallet_id: string
+        }
+        Update: {
+          amount?: number
+          balance_after?: number
+          created_at?: string
+          description?: string
+          id?: string
+          metadata?: Json
+          reference_id?: string | null
+          transaction_type?: Database["public"]["Enums"]["wallet_transaction_type"]
+          user_id?: string
+          wallet_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wallet_transactions_wallet_id_fkey"
+            columns: ["wallet_id"]
+            isOneToOne: false
+            referencedRelation: "wallets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wallet_withdrawals: {
+        Row: {
+          amount: number
+          amount_after_charge: number
+          created_at: string
+          expected_arrival: string
+          id: string
+          payment_details: Json
+          payment_method: string
+          processed_at: string | null
+          service_charge: number
+          status: Database["public"]["Enums"]["wallet_withdrawal_status"]
+          updated_at: string
+          user_id: string
+          wallet_id: string
+          withdrawal_speed: Database["public"]["Enums"]["withdrawal_speed"]
+        }
+        Insert: {
+          amount: number
+          amount_after_charge: number
+          created_at?: string
+          expected_arrival: string
+          id?: string
+          payment_details?: Json
+          payment_method: string
+          processed_at?: string | null
+          service_charge: number
+          status?: Database["public"]["Enums"]["wallet_withdrawal_status"]
+          updated_at?: string
+          user_id: string
+          wallet_id: string
+          withdrawal_speed: Database["public"]["Enums"]["withdrawal_speed"]
+        }
+        Update: {
+          amount?: number
+          amount_after_charge?: number
+          created_at?: string
+          expected_arrival?: string
+          id?: string
+          payment_details?: Json
+          payment_method?: string
+          processed_at?: string | null
+          service_charge?: number
+          status?: Database["public"]["Enums"]["wallet_withdrawal_status"]
+          updated_at?: string
+          user_id?: string
+          wallet_id?: string
+          withdrawal_speed?: Database["public"]["Enums"]["withdrawal_speed"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wallet_withdrawals_wallet_id_fkey"
+            columns: ["wallet_id"]
+            isOneToOne: false
+            referencedRelation: "wallets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wallets: {
+        Row: {
+          created_at: string
+          currency: Database["public"]["Enums"]["currency"]
+          current_balance: number
+          id: string
+          is_active: boolean
+          total_earned: number
+          total_withdrawn: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          currency?: Database["public"]["Enums"]["currency"]
+          current_balance?: number
+          id?: string
+          is_active?: boolean
+          total_earned?: number
+          total_withdrawn?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          currency?: Database["public"]["Enums"]["currency"]
+          current_balance?: number
+          id?: string
+          is_active?: boolean
+          total_earned?: number
+          total_withdrawn?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      process_wallet_transaction: {
+        Args: {
+          p_user_id: string
+          p_amount: number
+          p_transaction_type: Database["public"]["Enums"]["wallet_transaction_type"]
+          p_reference_id: string
+          p_description: string
+          p_metadata?: Json
+        }
+        Returns: string
+      }
+      request_wallet_withdrawal: {
+        Args: {
+          p_user_id: string
+          p_amount: number
+          p_withdrawal_speed: Database["public"]["Enums"]["withdrawal_speed"]
+          p_payment_method: string
+          p_payment_details: Json
+        }
+        Returns: string
+      }
     }
     Enums: {
       currency: "INR" | "USD" | "EUR" | "GBP"
@@ -1295,6 +1499,20 @@ export type Database = {
         | "youtube"
         | "tiktok"
       user_role: "admin" | "business" | "influencer"
+      wallet_transaction_type:
+        | "deposit"
+        | "withdrawal"
+        | "order_payment"
+        | "order_earning"
+        | "refund"
+        | "adjustment"
+      wallet_withdrawal_status:
+        | "pending"
+        | "processing"
+        | "completed"
+        | "failed"
+        | "cancelled"
+      withdrawal_speed: "immediate" | "one_day" | "three_days"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1429,6 +1647,22 @@ export const Constants = {
         "tiktok",
       ],
       user_role: ["admin", "business", "influencer"],
+      wallet_transaction_type: [
+        "deposit",
+        "withdrawal",
+        "order_payment",
+        "order_earning",
+        "refund",
+        "adjustment",
+      ],
+      wallet_withdrawal_status: [
+        "pending",
+        "processing",
+        "completed",
+        "failed",
+        "cancelled",
+      ],
+      withdrawal_speed: ["immediate", "one_day", "three_days"],
     },
   },
 } as const
