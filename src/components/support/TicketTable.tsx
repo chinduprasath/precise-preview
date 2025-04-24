@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import {
   Table,
@@ -192,14 +191,14 @@ const TicketTable: React.FC<TicketTableProps> = ({
                     <TableCell>
                       {onAssigneeChange ? (
                         <Select
-                          defaultValue={ticket.assignedTo || ""}
+                          defaultValue={ticket.assignedTo || "unassigned"}
                           onValueChange={(value) => onAssigneeChange(ticket.id, value)}
                         >
                           <SelectTrigger className="w-32">
                             <SelectValue placeholder="Unassigned" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="">Unassigned</SelectItem>
+                            <SelectItem value="unassigned">Unassigned</SelectItem>
                             {teamMembers.map((member) => (
                               <SelectItem key={member.id} value={member.id}>
                                 {member.name}
