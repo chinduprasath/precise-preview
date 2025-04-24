@@ -12,7 +12,7 @@ import {
 import TicketTable from "@/components/support/TicketTable";
 import TicketDetail from "@/components/support/TicketDetail";
 import CreateTicketForm from "@/components/support/CreateTicketForm";
-import { Ticket, TicketCategory, TicketPriority } from "@/types/ticket";
+import { Ticket, TicketCategory, TicketPriority, UserType } from "@/types/ticket";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -20,11 +20,11 @@ const SupportPage = () => {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
   const [loading, setLoading] = useState(true);
-  const [userType, setUserType] = useState<"business" | "influencer">("business");
+  const [userType, setUserType] = useState<UserType>("business");
   
   useEffect(() => {
     // Get user type from localStorage
-    const storedUserType = localStorage.getItem("userType") as "business" | "influencer" | null;
+    const storedUserType = localStorage.getItem("userType") as UserType | null;
     if (storedUserType && (storedUserType === "business" || storedUserType === "influencer")) {
       setUserType(storedUserType);
     }
@@ -177,7 +177,7 @@ const SupportPage = () => {
         ticketId,
         userId: "user1",
         userName: "Current User",
-        userType: userType,
+        userType,
         message,
         createdAt: new Date().toISOString(),
         isInternal: false, // Users can't create internal notes
@@ -249,7 +249,7 @@ const SupportPage = () => {
         id: `T${Math.floor(1000 + Math.random() * 9000)}`,
         userId: "user1",
         userName: "Current User",
-        userType: userType,
+        userType,
         subject,
         category,
         priority,
@@ -262,7 +262,7 @@ const SupportPage = () => {
             ticketId: `T${Math.floor(1000 + Math.random() * 9000)}`,
             userId: "user1",
             userName: "Current User",
-            userType: userType,
+            userType,
             message,
             createdAt: new Date().toISOString(),
             isInternal: false,

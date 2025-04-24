@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/card";
 import TicketTable from "@/components/support/TicketTable";
 import TicketDetail from "@/components/support/TicketDetail";
-import { Ticket, TicketStatus, TicketPriority } from "@/types/ticket";
+import { Ticket, TicketStatus, TicketPriority, UserType } from "@/types/ticket";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { FileSpreadsheet } from "lucide-react";
@@ -149,13 +149,13 @@ const AdminSupportPage = () => {
     try {
       // In a real app, upload attachments to storage and save message to database
       
-      // Example only: Create a new message object
+      // Example only: Create a new message object with correct UserType
       const newMessage = {
         id: `m${Math.random().toString(36).substring(7)}`,
         ticketId,
         userId: "admin1",
         userName: "Admin User",
-        userType: "admin",
+        userType: "admin" as UserType,  // Explicitly cast to UserType
         message,
         createdAt: new Date().toISOString(),
         isInternal,
@@ -168,7 +168,7 @@ const AdminSupportPage = () => {
           : undefined,
       };
       
-      // Update the ticket in state
+      // Update the ticket in state with proper typing
       setTickets((prevTickets) =>
         prevTickets.map((ticket) => {
           if (ticket.id === ticketId) {
