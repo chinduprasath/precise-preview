@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -6,7 +5,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { FormDescription } from "@/components/ui/form";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { User, Clock } from "lucide-react";
@@ -142,9 +140,9 @@ export default function MaintenanceSettings() {
               className="w-full"
               placeholder="Enter the message to display during maintenance"
             />
-            <FormDescription>
+            <p className="text-sm text-muted-foreground">
               This message will be displayed to users during maintenance mode.
-            </FormDescription>
+            </p>
           </div>
           
           <div className="space-y-4">
@@ -162,9 +160,9 @@ export default function MaintenanceSettings() {
                 Please enter valid IP addresses (one per line)
               </p>
             )}
-            <FormDescription>
+            <p className="text-sm text-muted-foreground">
               Enter IP addresses that can access the site during maintenance mode (one per line).
-            </FormDescription>
+            </p>
           </div>
           
           {(lastModifiedBy || lastModifiedAt) && (

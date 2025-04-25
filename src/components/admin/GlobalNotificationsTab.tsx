@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -21,10 +20,12 @@ interface NotificationHistory {
   created_at: string;
 }
 
+type UserType = 'all' | 'business' | 'influencer';
+
 export default function GlobalNotificationsTab() {
   const [title, setTitle] = useState('');
   const [message, setMessage] = useState('');
-  const [userType, setUserType] = useState('all');
+  const [userType, setUserType] = useState<UserType>('all');
   const [schedule, setSchedule] = useState<string>('');
   const [notificationHistory, setNotificationHistory] = useState<NotificationHistory[]>([]);
   const [isSending, setIsSending] = useState(false);
@@ -118,7 +119,14 @@ export default function GlobalNotificationsTab() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="userType">User Type</Label>
-                <Select value={userType} onValueChange={setUserType}>
+                <Select 
+                  value={userType} 
+                  onValueChange={(value) => {
+                    if (value === 'all' || value === 'business' || value === 'influencer') {
+                      setUserType(value);
+                    }
+                  }}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select user type" />
                   </SelectTrigger>
