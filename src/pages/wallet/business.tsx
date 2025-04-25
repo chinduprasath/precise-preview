@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { ArrowUp, ArrowDown, Clock, Filter, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -7,8 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { formatCurrency, formatDate, getStatusColor, getTimeDifference } from "@/lib/wallet-utils";
 import { toast } from "@/components/ui/use-toast";
-import BusinessSidebar from "@/components/layout/BusinessSidebar";
-import BusinessTopbar from "@/components/layout/BusinessTopbar";
+import Sidebar from "@/components/layout/Sidebar";
+import Header from "@/components/layout/Header";
 import { supabase } from "@/integrations/supabase/client";
 
 type Transaction = {
@@ -157,9 +156,9 @@ const BusinessWalletPage = () => {
 
   return (
     <div className="flex h-screen bg-gray-50">
-      <BusinessSidebar />
+      <Sidebar />
       <div className="flex-1 flex flex-col">
-        <BusinessTopbar />
+        <Header />
         <main className="flex-1 overflow-auto p-6">
           <div className="max-w-6xl mx-auto">
             <div className="flex justify-between items-center mb-6">
@@ -314,7 +313,6 @@ const BusinessWalletPage = () => {
                 </TabsContent>
 
                 {/* Add similar content for other tabs */}
-                
               </Tabs>
             </div>
           </div>
