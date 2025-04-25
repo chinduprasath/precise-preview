@@ -59,3 +59,31 @@ export const getTimeDifference = (date: string | Date) => {
     return `${diffInDays} day${diffInDays !== 1 ? 's' : ''} ago`;
   }
 };
+
+export const getTransactionColor = (type: string) => {
+  switch (type) {
+    case 'deposit':
+    case 'order_earning':
+    case 'refund':
+      return 'text-green-600';
+    case 'withdrawal':
+    case 'order_payment':
+      return 'text-red-600';
+    default:
+      return 'text-gray-600';
+  }
+};
+
+export const getTransactionIcon = (type: string) => {
+  switch (type) {
+    case 'deposit':
+    case 'order_earning':
+    case 'refund':
+      return 'arrow-up';
+    case 'withdrawal':
+    case 'order_payment':
+      return 'arrow-down';
+    default:
+      return 'clock';
+  }
+};

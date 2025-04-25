@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { ArrowUp, ArrowDown, Search, Filter, Clock, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -11,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { formatCurrency, formatDate, getTimeDifference } from "@/lib/wallet-utils";
+import { formatCurrency, formatDate, getStatusColor, getTimeDifference } from "@/lib/wallet-utils";
 import Sidebar from "@/components/layout/Sidebar";
 import Header from "@/components/layout/Header";
 import { supabase } from "@/integrations/supabase/client";
@@ -21,7 +20,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 type Transaction = {
   id: string;
   amount: number;
-  transaction_type: string;
+  transaction_type: "deposit" | "withdrawal" | "order_payment" | "order_earning" | "refund" | "adjustment";
   description: string;
   created_at: string;
   balance_after: number;
@@ -78,12 +77,20 @@ const AdminWalletTransactionsPage = () => {
     try {
       let query = supabase
         .from('wallet_transactions')
-        .select('*, profiles:user_id(*)', { count: 'exact' })
+        .select(`
+          *,
+          profiles:user_id(
+            first_name,
+            last_name,
+            email,
+            role
+          )
+        `, { count: 'exact' })
         .order('created_at', { ascending: false })
         .range((page - 1) * pageSize, page * pageSize - 1);
 
       if (transactionType !== "all") {
-        query = query.eq('transaction_type', transactionType);
+        query = query.eq('transaction_type', transactionType as any);
       }
 
       // Search implementation
@@ -96,10 +103,26 @@ const AdminWalletTransactionsPage = () => {
       if (error) throw error;
 
       if (data) {
+        // Check if profiles exist for each transaction and handle errors
+        const processedData = data.map(transaction => {
+          // Handle possible error state from Supabase join
+          if (transaction.profiles && typeof transaction.profiles === 'object' && !('error' in transaction.profiles)) {
+            return transaction as Transaction;
+          } else {
+            // If profiles is an error or undefined, set it to null
+            return {
+              ...transaction,
+              profiles: null
+            } as Transaction;
+          }
+        });
+
         // Filter by user role if needed
-        let filteredData = data;
+        let filteredData = processedData;
         if (userRole !== "all") {
-          filteredData = data.filter(t => t.profiles?.role === userRole);
+          filteredData = processedData.filter(t => 
+            t.profiles && t.profiles.role === userRole
+          );
         }
 
         setTransactions(filteredData);
@@ -121,7 +144,15 @@ const AdminWalletTransactionsPage = () => {
     try {
       let query = supabase
         .from('wallet_withdrawals')
-        .select('*, profiles:user_id(*)')
+        .select(`
+          *,
+          profiles:user_id(
+            first_name,
+            last_name,
+            email,
+            role
+          )
+        `)
         .order('created_at', { ascending: false })
         .limit(50);
 
@@ -135,7 +166,18 @@ const AdminWalletTransactionsPage = () => {
       if (error) throw error;
 
       if (data) {
-        setWithdrawals(data);
+        // Process data to handle potential errors from the join
+        const processedData = data.map(withdrawal => {
+          if (withdrawal.profiles && typeof withdrawal.profiles === 'object' && !('error' in withdrawal.profiles)) {
+            return withdrawal as Withdrawal;
+          } else {
+            return {
+              ...withdrawal,
+              profiles: null
+            } as Withdrawal;
+          }
+        });
+        setWithdrawals(processedData);
       }
     } catch (error) {
       console.error('Error fetching withdrawals:', error);
@@ -215,24 +257,6 @@ const AdminWalletTransactionsPage = () => {
         return 'text-red-600';
       default:
         return 'text-gray-600';
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
-      case 'pending':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'completed':
-      case 'approved':
-      case 'success':
-        return 'bg-green-100 text-green-800';
-      case 'failed':
-      case 'rejected':
-        return 'bg-red-100 text-red-800';
-      case 'processing':
-        return 'bg-blue-100 text-blue-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
     }
   };
 

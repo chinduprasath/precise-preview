@@ -1,6 +1,7 @@
 
 import React from 'react';
-import { formatCurrency, formatDate, getTransactionColor, getTransactionIcon } from '@/lib/wallet-utils';
+import { formatCurrency, formatDate, getStatusColor, getTimeDifference } from '@/lib/wallet-utils';
+import { ArrowDown, ArrowUp, Clock } from 'lucide-react';
 
 type Transaction = {
   id: string;
@@ -41,6 +42,34 @@ const WalletTransactionLogs = ({ transactions, isLoading }: WalletTransactionLog
       </div>
     );
   }
+
+  const getTransactionIcon = (type: string) => {
+    switch (type) {
+      case 'deposit':
+      case 'order_earning':
+      case 'refund':
+        return <ArrowUp className="w-5 h-5 text-green-500" />;
+      case 'withdrawal':
+      case 'order_payment':
+        return <ArrowDown className="w-5 h-5 text-red-500" />;
+      default:
+        return <Clock className="w-5 h-5 text-gray-500" />;
+    }
+  };
+
+  const getTransactionColor = (type: string) => {
+    switch (type) {
+      case 'deposit':
+      case 'order_earning':
+      case 'refund':
+        return 'text-green-600';
+      case 'withdrawal':
+      case 'order_payment':
+        return 'text-red-600';
+      default:
+        return 'text-gray-600';
+    }
+  };
 
   return (
     <div className="overflow-x-auto">

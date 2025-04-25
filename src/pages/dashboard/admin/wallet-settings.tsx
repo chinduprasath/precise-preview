@@ -16,8 +16,29 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs";
 
+// Define the wallet settings type with the correct structure
+interface WalletSettings {
+  is_enabled: boolean;
+  immediate_withdrawal_charge: number;
+  one_day_withdrawal_charge: number;
+  three_day_withdrawal_charge: number;
+  min_withdrawal_amount: number;
+  max_withdrawal_amount: number;
+  payment_gateway_settings: {
+    razorpay: {
+      key_id: string;
+      enabled: boolean;
+    };
+    stripe: {
+      publishable_key: string;
+      enabled: boolean;
+    };
+  };
+  id?: string;
+}
+
 const AdminWalletSettingsPage = () => {
-  const [settings, setSettings] = useState({
+  const [settings, setSettings] = useState<WalletSettings>({
     is_enabled: true,
     immediate_withdrawal_charge: 2.0,
     one_day_withdrawal_charge: 1.5,
@@ -53,7 +74,24 @@ const AdminWalletSettingsPage = () => {
       if (error) throw error;
 
       if (data) {
-        setSettings(data);
+        // Transform the data to match our expected type
+        const transformedSettings: WalletSettings = {
+          is_enabled: data.is_enabled,
+          immediate_withdrawal_charge: data.immediate_withdrawal_charge,
+          one_day_withdrawal_charge: data.one_day_withdrawal_charge,
+          three_day_withdrawal_charge: data.three_day_withdrawal_charge,
+          min_withdrawal_amount: data.min_withdrawal_amount,
+          max_withdrawal_amount: data.max_withdrawal_amount,
+          payment_gateway_settings: typeof data.payment_gateway_settings === 'string' 
+            ? JSON.parse(data.payment_gateway_settings)
+            : data.payment_gateway_settings || {
+                razorpay: { key_id: '', enabled: false },
+                stripe: { publishable_key: '', enabled: false }
+              },
+          id: data.id
+        };
+        
+        setSettings(transformedSettings);
       }
     } catch (error) {
       console.error('Error fetching wallet settings:', error);
@@ -72,7 +110,15 @@ const AdminWalletSettingsPage = () => {
     try {
       const { error } = await supabase
         .from('wallet_settings')
-        .update(settings)
+        .update({
+          is_enabled: settings.is_enabled,
+          immediate_withdrawal_charge: settings.immediate_withdrawal_charge,
+          one_day_withdrawal_charge: settings.one_day_withdrawal_charge,
+          three_day_withdrawal_charge: settings.three_day_withdrawal_charge,
+          min_withdrawal_amount: settings.min_withdrawal_amount,
+          max_withdrawal_amount: settings.max_withdrawal_amount,
+          payment_gateway_settings: settings.payment_gateway_settings
+        })
         .eq('id', settings.id);
 
       if (error) throw error;
@@ -93,7 +139,7 @@ const AdminWalletSettingsPage = () => {
     }
   };
 
-  const handleChange = (field: string, value: any) => {
+  const handleChange = (field: keyof WalletSettings, value: any) => {
     setSettings(prev => ({
       ...prev,
       [field]: value
@@ -101,22 +147,24 @@ const AdminWalletSettingsPage = () => {
   };
 
   const handleNestedChange = (parent: string, field: string, value: any) => {
-    setSettings(prev => ({
-      ...prev,
-      [parent]: {
-        ...prev[parent as keyof typeof prev],
-        [field]: value
-      }
-    }));
+    if (parent in settings) {
+      setSettings(prev => ({
+        ...prev,
+        [parent]: {
+          ...(prev[parent as keyof typeof prev] as any),
+          [field]: value
+        }
+      }));
+    }
   };
 
-  const handlePaymentGatewayChange = (gateway: string, field: string, value: any) => {
+  const handlePaymentGatewayChange = (gateway: 'razorpay' | 'stripe', field: string, value: any) => {
     setSettings(prev => ({
       ...prev,
       payment_gateway_settings: {
         ...prev.payment_gateway_settings,
         [gateway]: {
-          ...prev.payment_gateway_settings[gateway as keyof typeof prev.payment_gateway_settings],
+          ...prev.payment_gateway_settings[gateway],
           [field]: value
         }
       }
@@ -262,7 +310,7 @@ const AdminWalletSettingsPage = () => {
                         <p className="text-sm text-gray-500">Toggle to enable or disable Razorpay integration</p>
                       </div>
                       <Switch 
-                        checked={settings.payment_gateway_settings.razorpay.enabled}
+                        checked={settings.payment_gateway_settings?.razorpay?.enabled || false}
                         onCheckedChange={(checked) => handlePaymentGatewayChange('razorpay', 'enabled', checked)}
                       />
                     </div>
@@ -271,9 +319,9 @@ const AdminWalletSettingsPage = () => {
                       <Label htmlFor="razorpay_key">Razorpay Key ID</Label>
                       <Input 
                         id="razorpay_key"
-                        value={settings.payment_gateway_settings.razorpay.key_id}
+                        value={settings.payment_gateway_settings?.razorpay?.key_id || ''}
                         onChange={(e) => handlePaymentGatewayChange('razorpay', 'key_id', e.target.value)}
-                        disabled={!settings.payment_gateway_settings.razorpay.enabled}
+                        disabled={!settings.payment_gateway_settings?.razorpay?.enabled}
                       />
                     </div>
                     
@@ -292,7 +340,7 @@ const AdminWalletSettingsPage = () => {
                         <p className="text-sm text-gray-500">Toggle to enable or disable Stripe integration</p>
                       </div>
                       <Switch 
-                        checked={settings.payment_gateway_settings.stripe.enabled}
+                        checked={settings.payment_gateway_settings?.stripe?.enabled || false}
                         onCheckedChange={(checked) => handlePaymentGatewayChange('stripe', 'enabled', checked)}
                       />
                     </div>
@@ -301,9 +349,9 @@ const AdminWalletSettingsPage = () => {
                       <Label htmlFor="stripe_key">Stripe Publishable Key</Label>
                       <Input 
                         id="stripe_key"
-                        value={settings.payment_gateway_settings.stripe.publishable_key}
+                        value={settings.payment_gateway_settings?.stripe?.publishable_key || ''}
                         onChange={(e) => handlePaymentGatewayChange('stripe', 'publishable_key', e.target.value)}
-                        disabled={!settings.payment_gateway_settings.stripe.enabled}
+                        disabled={!settings.payment_gateway_settings?.stripe?.enabled}
                       />
                     </div>
                     
