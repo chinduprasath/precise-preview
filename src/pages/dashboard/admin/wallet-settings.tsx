@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Sidebar from "@/components/layout/Sidebar";
 import Header from "@/components/layout/Header";
-import { toast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Tabs,
@@ -58,6 +58,7 @@ const AdminWalletSettingsPage = () => {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     fetchWalletSettings();
@@ -144,18 +145,6 @@ const AdminWalletSettingsPage = () => {
       ...prev,
       [field]: value
     }));
-  };
-
-  const handleNestedChange = (parent: string, field: string, value: any) => {
-    if (parent in settings) {
-      setSettings(prev => ({
-        ...prev,
-        [parent]: {
-          ...(prev[parent as keyof typeof prev] as any),
-          [field]: value
-        }
-      }));
-    }
   };
 
   const handlePaymentGatewayChange = (gateway: 'razorpay' | 'stripe', field: string, value: any) => {

@@ -65,9 +65,9 @@ const AdminWalletTransactionsPage = () => {
           
           if (transaction.profiles && 
               typeof transaction.profiles === 'object' && 
-              transaction.profiles !== null &&
-              !('error' in transaction.profiles)) {
+              transaction.profiles !== null) {
             
+            // Safe type checking for profiles object
             const profiles = transaction.profiles as Record<string, unknown>;
             if (profiles && 
                 'first_name' in profiles && 
@@ -141,9 +141,9 @@ const AdminWalletTransactionsPage = () => {
           
           if (withdrawal.profiles && 
               typeof withdrawal.profiles === 'object' && 
-              withdrawal.profiles !== null &&
-              !('error' in withdrawal.profiles)) {
+              withdrawal.profiles !== null) {
             
+            // Safe type checking for profiles object
             const profiles = withdrawal.profiles as Record<string, unknown>;
             if (profiles && 
                 'first_name' in profiles && 

@@ -1,5 +1,6 @@
 
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+// supabase/functions/add-funds/index.ts
+import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
@@ -16,8 +17,8 @@ serve(async (req) => {
   try {
     // Get the request body
     const { amount } = await req.json();
-    
-    // Validate amount
+
+    // Validate required fields
     if (!amount || typeof amount !== 'number' || amount <= 0) {
       return new Response(
         JSON.stringify({ error: "Invalid amount" }),
@@ -26,13 +27,19 @@ serve(async (req) => {
     }
 
     // Get auth user from request
-    const authHeader = req.headers.get("Authorization")!;
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: "Authorization header is missing" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Create Supabase client
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_ANON_KEY") ?? "",
-      {
-        global: { headers: { Authorization: authHeader } },
-      }
+      { global: { headers: { Authorization: authHeader } } }
     );
 
     // Get the user from the auth header
@@ -45,43 +52,37 @@ serve(async (req) => {
       );
     }
 
-    // Create Supabase admin client with service role key to bypass RLS
-    const adminSupabase = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
-    );
+    // In production, you would integrate with a payment gateway here
+    // For this implementation, we'll simulate a successful payment and add funds directly
 
-    // Generate a unique reference ID for this transaction
-    const referenceId = crypto.randomUUID();
+    // Generate a UUID for the transaction
+    const reference_id = crypto.randomUUID();
 
-    // Use the process_wallet_transaction function to add funds
-    const { data, error } = await adminSupabase.rpc('process_wallet_transaction', {
+    // Add funds to the user's wallet using the SQL function
+    const { data, error } = await supabase.rpc('process_wallet_transaction', {
       p_user_id: user.id,
       p_amount: amount,
       p_transaction_type: 'deposit',
-      p_reference_id: referenceId,
-      p_description: 'Funds added to wallet',
-      p_metadata: { source: 'manual_add', added_at: new Date().toISOString() }
+      p_reference_id: reference_id,
+      p_description: `Added ₹${amount} to wallet via online payment`,
+      p_metadata: { payment_method: 'online', timestamp: new Date().toISOString() }
     });
 
     if (error) {
-      console.error("Transaction error:", error);
       return new Response(
         JSON.stringify({ error: error.message }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    // Return success response
     return new Response(
       JSON.stringify({ 
         success: true, 
-        message: "Funds added successfully",
-        transaction_id: data 
+        message: `Successfully added ₹${amount} to your wallet`,
+        transaction_id: data
       }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
-
   } catch (error) {
     console.error("Unexpected error:", error);
     return new Response(

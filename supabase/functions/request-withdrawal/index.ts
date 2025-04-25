@@ -1,5 +1,6 @@
 
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+// supabase/functions/request-withdrawal/index.ts
+import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
@@ -16,11 +17,11 @@ serve(async (req) => {
   try {
     // Get the request body
     const { amount, withdrawal_speed, payment_method, payment_details } = await req.json();
-    
+
     // Validate required fields
     if (!amount || typeof amount !== 'number' || amount <= 0) {
       return new Response(
-        JSON.stringify({ error: "Invalid amount" }),
+        JSON.stringify({ error: "Invalid withdrawal amount" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -40,13 +41,19 @@ serve(async (req) => {
     }
 
     // Get auth user from request
-    const authHeader = req.headers.get("Authorization")!;
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: "Authorization header is missing" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Create Supabase client
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_ANON_KEY") ?? "",
-      {
-        global: { headers: { Authorization: authHeader } },
-      }
+      { global: { headers: { Authorization: authHeader } } }
     );
 
     // Get the user from the auth header
@@ -59,39 +66,30 @@ serve(async (req) => {
       );
     }
 
-    // Create Supabase admin client with service role key to bypass RLS
-    const adminSupabase = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
-    );
-
-    // Use the request_wallet_withdrawal function
-    const { data, error } = await adminSupabase.rpc('request_wallet_withdrawal', {
+    // Process the withdrawal using the SQL function
+    const { data, error } = await supabase.rpc('request_wallet_withdrawal', {
       p_user_id: user.id,
       p_amount: amount,
       p_withdrawal_speed: withdrawal_speed,
       p_payment_method: payment_method,
-      p_payment_details: payment_details || {}
+      p_payment_details: payment_details
     });
 
     if (error) {
-      console.error("Withdrawal request error:", error);
       return new Response(
         JSON.stringify({ error: error.message }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    // Return success response
     return new Response(
       JSON.stringify({ 
         success: true, 
-        message: "Withdrawal requested successfully",
-        withdrawal_id: data 
+        message: "Withdrawal request submitted successfully",
+        withdrawal_id: data
       }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
-
   } catch (error) {
     console.error("Unexpected error:", error);
     return new Response(
