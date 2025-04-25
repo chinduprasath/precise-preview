@@ -1,57 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { ArrowUp, ArrowDown, Search, Filter, Clock, Download } from "lucide-react";
+import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { formatCurrency, formatDate, getStatusColor, getTimeDifference, getTransactionColor, getTransactionIcon } from "@/lib/wallet-utils";
-import Sidebar from "@/components/layout/Sidebar";
-import Header from "@/components/layout/Header";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 import WalletTransactionLogs from "@/components/admin/WalletTransactionLogs";
-
-type ProfileData = {
-  first_name: string;
-  last_name: string;
-  email: string;
-  role: string;
-};
-
-type Transaction = {
-  id: string;
-  amount: number;
-  transaction_type: "deposit" | "withdrawal" | "order_payment" | "order_earning" | "refund" | "adjustment";
-  description: string;
-  created_at: string;
-  balance_after: number;
-  metadata: any;
-  user_id: string;
-  wallet_id: string;
-  profiles?: ProfileData | null;
-};
-
-type Withdrawal = {
-  id: string;
-  amount: number;
-  service_charge: number;
-  amount_after_charge: number;
-  withdrawal_speed: string;
-  expected_arrival: string;
-  created_at: string;
-  status: string;
-  payment_method: string;
-  payment_details: any;
-  user_id: string;
-  profiles?: ProfileData | null;
-};
+import Layout from "@/components/layout/Layout";
+import TransactionFilters from "@/components/admin/wallet/TransactionFilters";
+import TransactionPagination from "@/components/admin/wallet/TransactionPagination";
+import WithdrawalList from "@/components/admin/wallet/WithdrawalList";
+import type { Transaction, Withdrawal } from "@/types/wallet";
 
 const AdminWalletTransactionsPage = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -285,211 +244,62 @@ const AdminWalletTransactionsPage = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      <Sidebar />
-      <div className="flex-1 flex flex-col">
-        <Header />
-        <main className="flex-1 overflow-auto p-6">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex justify-between items-center mb-6">
-              <h1 className="text-2xl font-bold">Wallet Transactions</h1>
-              <Button variant="outline" onClick={exportToCSV}>
-                <Download className="w-4 h-4 mr-2" />
-                Export CSV
-              </Button>
-            </div>
+    <Layout>
+      <div className="max-w-7xl mx-auto">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold">Wallet Transactions</h1>
+          <Button variant="outline" onClick={exportToCSV}>
+            <Download className="w-4 h-4 mr-2" />
+            Export CSV
+          </Button>
+        </div>
 
-            <Tabs defaultValue="transactions">
-              <TabsList className="mb-6">
-                <TabsTrigger value="transactions">Transactions</TabsTrigger>
-                <TabsTrigger value="withdrawals">Withdrawal Requests</TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="transactions">
-                <Card className="p-4 mb-6">
-                  <div className="flex flex-col md:flex-row gap-4">
-                    <div className="flex-1">
-                      <div className="relative">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                        <Input
-                          placeholder="Search transactions..."
-                          className="pl-9"
-                          value={searchQuery}
-                          onChange={(e) => setSearchQuery(e.target.value)}
-                        />
-                      </div>
-                    </div>
-                    <div className="flex gap-2">
-                      <Select value={transactionType} onValueChange={setTransactionType}>
-                        <SelectTrigger className="w-[180px]">
-                          <SelectValue placeholder="Transaction Type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">All Types</SelectItem>
-                          <SelectItem value="deposit">Deposits</SelectItem>
-                          <SelectItem value="withdrawal">Withdrawals</SelectItem>
-                          <SelectItem value="order_payment">Order Payments</SelectItem>
-                          <SelectItem value="order_earning">Order Earnings</SelectItem>
-                          <SelectItem value="refund">Refunds</SelectItem>
-                          <SelectItem value="adjustment">Adjustments</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <Select value={userRole} onValueChange={setUserRole}>
-                        <SelectTrigger className="w-[180px]">
-                          <SelectValue placeholder="User Type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">All Users</SelectItem>
-                          <SelectItem value="business">Business Users</SelectItem>
-                          <SelectItem value="influencer">Influencers</SelectItem>
-                          <SelectItem value="admin">Admins</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                </Card>
+        <Tabs defaultValue="transactions">
+          <TabsList className="mb-6">
+            <TabsTrigger value="transactions">Transactions</TabsTrigger>
+            <TabsTrigger value="withdrawals">Withdrawal Requests</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="transactions">
+            <Card className="p-4 mb-6">
+              <TransactionFilters
+                searchQuery={searchQuery}
+                transactionType={transactionType}
+                userRole={userRole}
+                onSearchChange={setSearchQuery}
+                onTransactionTypeChange={setTransactionType}
+                onUserRoleChange={setUserRole}
+              />
+            </Card>
 
-                <Card className="overflow-hidden">
-                  <WalletTransactionLogs 
-                    transactions={transactions} 
-                    isLoading={isLoading} 
-                  />
+            <Card className="overflow-hidden">
+              <WalletTransactionLogs 
+                transactions={transactions} 
+                isLoading={isLoading} 
+              />
 
-                  <div className="flex items-center justify-between px-6 py-3 bg-gray-50">
-                    <div className="text-sm text-gray-500">
-                      Showing {Math.min((page - 1) * pageSize + 1, totalCount)} to {Math.min(page * pageSize, totalCount)} of {totalCount} transactions
-                    </div>
-                    <div className="flex space-x-2">
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        onClick={() => setPage(page - 1)}
-                        disabled={page === 1}
-                      >
-                        Previous
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        onClick={() => setPage(page + 1)}
-                        disabled={page * pageSize >= totalCount}
-                      >
-                        Next
-                      </Button>
-                    </div>
-                  </div>
-                </Card>
-              </TabsContent>
+              <TransactionPagination 
+                page={page}
+                pageSize={pageSize}
+                totalCount={totalCount}
+                onPageChange={setPage}
+              />
+            </Card>
+          </TabsContent>
 
-              <TabsContent value="withdrawals">
-                <Card className="overflow-hidden">
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead>
-                        <tr className="bg-gray-50 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          <th className="px-6 py-3 text-left">User</th>
-                          <th className="px-6 py-3 text-left">Date</th>
-                          <th className="px-6 py-3 text-left">Speed</th>
-                          <th className="px-6 py-3 text-left">Status</th>
-                          <th className="px-6 py-3 text-right">Amount</th>
-                          <th className="px-6 py-3 text-right">After Fees</th>
-                          <th className="px-6 py-3 text-right">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-200 bg-white">
-                        {isLoading ? (
-                          <tr>
-                            <td colSpan={7} className="px-6 py-4 text-center">
-                              <div className="flex justify-center">
-                                <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-primary"></div>
-                              </div>
-                            </td>
-                          </tr>
-                        ) : withdrawals.length === 0 ? (
-                          <tr>
-                            <td colSpan={7} className="px-6 py-4 text-center text-gray-500">
-                              No withdrawal requests found.
-                            </td>
-                          </tr>
-                        ) : (
-                          withdrawals.map((withdrawal) => (
-                            <tr key={withdrawal.id} className="hover:bg-gray-50">
-                              <td className="px-6 py-4">
-                                {withdrawal.profiles && withdrawal.profiles.first_name ? (
-                                  <div>
-                                    <p className="font-medium">
-                                      {withdrawal.profiles.first_name} {withdrawal.profiles.last_name}
-                                    </p>
-                                    <p className="text-xs text-gray-500">{withdrawal.profiles.email}</p>
-                                  </div>
-                                ) : (
-                                  <p className="text-gray-500">User not found</p>
-                                )}
-                              </td>
-                              <td className="px-6 py-4">
-                                <p>{formatDate(withdrawal.created_at)}</p>
-                                <p className="text-xs text-gray-500">{getTimeDifference(withdrawal.created_at)}</p>
-                              </td>
-                              <td className="px-6 py-4">
-                                {withdrawal.withdrawal_speed === 'immediate' ? 'Immediate' : 
-                                 withdrawal.withdrawal_speed === 'one_day' ? 'Within 1 day' : 
-                                 'Within 3 days'}
-                              </td>
-                              <td className="px-6 py-4">
-                                <span className={`text-xs px-2 py-1 rounded-full ${getStatusColor(withdrawal.status)}`}>
-                                  {withdrawal.status.charAt(0).toUpperCase() + withdrawal.status.slice(1)}
-                                </span>
-                              </td>
-                              <td className="px-6 py-4 text-right font-bold text-red-600">
-                                -{formatCurrency(withdrawal.amount)}
-                              </td>
-                              <td className="px-6 py-4 text-right">
-                                {formatCurrency(withdrawal.amount_after_charge)}
-                                <p className="text-xs text-gray-500">
-                                  Fee: {formatCurrency(withdrawal.service_charge)}
-                                </p>
-                              </td>
-                              <td className="px-6 py-4 text-right">
-                                {withdrawal.status === 'pending' && (
-                                  <div className="flex justify-end gap-2">
-                                    <Button 
-                                      size="sm" 
-                                      variant="outline" 
-                                      onClick={() => approveWithdrawal(withdrawal.id)}
-                                    >
-                                      Approve
-                                    </Button>
-                                    <Button 
-                                      size="sm" 
-                                      variant="destructive" 
-                                      onClick={() => rejectWithdrawal(withdrawal.id)}
-                                    >
-                                      Reject
-                                    </Button>
-                                  </div>
-                                )}
-                                {withdrawal.status !== 'pending' && (
-                                  <span className="text-xs text-gray-500">
-                                    {withdrawal.status === 'approved' ? 'Approved' : 
-                                     withdrawal.status === 'rejected' ? 'Rejected' : 
-                                     withdrawal.status === 'completed' ? 'Completed' : 
-                                     withdrawal.status}
-                                  </span>
-                                )}
-                              </td>
-                            </tr>
-                          ))
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-                </Card>
-              </TabsContent>
-            </Tabs>
-          </div>
-        </main>
+          <TabsContent value="withdrawals">
+            <Card className="overflow-hidden">
+              <WithdrawalList 
+                withdrawals={withdrawals}
+                isLoading={isLoading}
+                onApprove={approveWithdrawal}
+                onReject={rejectWithdrawal}
+              />
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
-    </div>
+    </Layout>
   );
 };
 
