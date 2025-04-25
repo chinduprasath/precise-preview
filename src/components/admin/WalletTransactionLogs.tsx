@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { formatCurrency, formatDate, getStatusColor, getTimeDifference, getTransactionColor, getTransactionIcon } from '@/lib/wallet-utils';
+import { formatCurrency, formatDate } from '@/lib/wallet-utils';
 import { ArrowDown, ArrowUp, Clock } from 'lucide-react';
 
 type ProfileData = {

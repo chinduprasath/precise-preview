@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { ArrowUp, ArrowDown, Search, Filter, Clock, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -88,7 +89,7 @@ const AdminWalletTransactionsPage = () => {
         .range((page - 1) * pageSize, page * pageSize - 1);
 
       if (transactionType !== "all") {
-        query = query.eq('transaction_type', transactionType as any);
+        query = query.eq('transaction_type', transactionType);
       }
 
       // Search implementation
