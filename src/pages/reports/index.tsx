@@ -1,7 +1,6 @@
-
 import React from 'react';
 import Sidebar from '@/components/layout/Sidebar';
-import Header from '@/components/layout/Header';
+import ConditionalHeader from '@/components/layout/ConditionalHeader';
 import ReportCard from '@/components/reports/ReportCard';
 import { reportData } from '@/data/reports';
 
@@ -10,7 +9,7 @@ const ReportsPage = () => {
     <div className="flex h-screen bg-gray-50">
       <Sidebar />
       <div className="flex-1 flex flex-col">
-        <Header />
+        <ConditionalHeader />
         <main className="flex-1 overflow-auto p-6">
           <div className="max-w-4xl mx-auto">
             <h1 className="text-2xl font-bold mb-6">Reports</h1>

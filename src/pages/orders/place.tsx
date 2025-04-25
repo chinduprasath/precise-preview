@@ -1,8 +1,7 @@
-
 import React, { useState, useMemo } from "react";
 import { Instagram, Facebook, Youtube, Twitter, Paperclip, Check } from "lucide-react";
 import BusinessSidebar from "@/components/layout/BusinessSidebar";
-import BusinessTopbar from "@/components/layout/BusinessTopbar";
+import Header from "@/components/layout/Header";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -101,7 +100,7 @@ export default function PlaceOrderPage() {
     <div className="min-h-screen flex bg-[#F1F0FB]">
       <BusinessSidebar />
       <div className="flex flex-col flex-1 min-h-screen">
-        <BusinessTopbar />
+        <Header />
         <form
           onSubmit={handleSendRequest}
           className="flex-1 flex justify-center px-1 py-10 md:py-16"

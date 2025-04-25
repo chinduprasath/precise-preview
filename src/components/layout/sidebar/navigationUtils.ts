@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { 
   LayoutDashboard, 
@@ -9,7 +8,6 @@ import {
   FileSpreadsheet, 
   FileText, 
   ShoppingCart,
-  UserPlus,
   Wallet,
   Activity,
   Shield,
@@ -38,11 +36,6 @@ export const createNavigationItems = (userType: string): NavItem[] => {
         href: dashboardPath
       },
       {
-        icon: React.createElement(Activity, { className: "w-full h-full" }),
-        label: "Analytics",
-        href: "/dashboard/admin/analytics"
-      },
-      {
         icon: React.createElement(Building, { className: "w-full h-full" }),
         label: "Business Users",
         href: "/dashboard/admin/business-users"
@@ -51,6 +44,21 @@ export const createNavigationItems = (userType: string): NavItem[] => {
         icon: React.createElement(User, { className: "w-full h-full" }),
         label: "Influencers",
         href: "/dashboard/admin/influencers"
+      },
+      {
+        icon: React.createElement(Activity, { className: "w-full h-full" }),
+        label: "Analytics",
+        href: "/dashboard/admin/analytics"
+      },
+      {
+        icon: React.createElement(Shield, { className: "w-full h-full" }),
+        label: "Team Management",
+        href: "/dashboard/admin/team"
+      },
+      {
+        icon: React.createElement(LifeBuoy, { className: "w-full h-full" }),
+        label: "Support",
+        href: "/admin/support"
       },
       {
         icon: React.createElement(Gift, { className: "w-full h-full" }),
@@ -63,29 +71,9 @@ export const createNavigationItems = (userType: string): NavItem[] => {
         href: "/dashboard/admin/wallet-settings"
       },
       {
-        icon: React.createElement(FileSpreadsheet, { className: "w-full h-full" }),
-        label: "Wallet Transactions",
-        href: "/dashboard/admin/wallet-transactions"
-      },
-      {
-        icon: React.createElement(LifeBuoy, { className: "w-full h-full" }),
-        label: "Support",
-        href: "/admin/support"
-      },
-      {
-        icon: React.createElement(Shield, { className: "w-full h-full" }),
-        label: "Team Management",
-        href: "/dashboard/admin/team"
-      },
-      {
         icon: React.createElement(Settings, { className: "w-full h-full" }),
         label: "Site Settings",
         href: "/dashboard/admin/settings"
-      },
-      {
-        icon: React.createElement(UserPlus, { className: "w-full h-full" }),
-        label: "Onboard",
-        href: "/onboard"
       }
     ];
   }
@@ -126,43 +114,11 @@ export const createNavigationItems = (userType: string): NavItem[] => {
       icon: React.createElement(ShoppingCart, { className: "w-full h-full" }),
       label: "Orders",
       href: "/orders"
-    },
-    {
-      icon: React.createElement(Gift, { className: "w-full h-full" }),
-      label: "Offers",
-      href: "/offers"
-    },
-    {
-      icon: React.createElement(LifeBuoy, { className: "w-full h-full" }),
-      label: "Support",
-      href: "/support"
-    },
-    {
-      icon: React.createElement(Wallet, { className: "w-full h-full" }),
-      label: "Wallet",
-      href: `/wallet/${userType}`
-    },
-    {
-      icon: React.createElement(FileSpreadsheet, { className: "w-full h-full" }),
-      label: "Billing",
-      href: "/billing"
     }
   ];
   
   let navItems = [...commonNavItems];
   
-  // Add Requests link only for influencers
-  if (userType === 'influencer') {
-    const ordersIndex = navItems.findIndex(item => item.label === "Orders");
-    if (ordersIndex !== -1) {
-      navItems.splice(ordersIndex, 0, {
-        icon: React.createElement(FileText, { className: "w-full h-full" }),
-        label: "Requests",
-        href: "/requests"
-      });
-    }
-  }
-
   return navItems;
 };
 

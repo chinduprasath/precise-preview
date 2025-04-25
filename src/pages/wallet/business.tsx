@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { formatCurrency, formatDate, getStatusColor, getTimeDifference } from "@/lib/wallet-utils";
 import { toast } from "@/components/ui/use-toast";
 import Sidebar from "@/components/layout/Sidebar";
-import Header from "@/components/layout/Header";
+import ConditionalHeader from "@/components/layout/ConditionalHeader";
 import { supabase } from "@/integrations/supabase/client";
 
 type Transaction = {
@@ -158,7 +158,7 @@ const BusinessWalletPage = () => {
     <div className="flex h-screen bg-gray-50">
       <Sidebar />
       <div className="flex-1 flex flex-col">
-        <Header />
+        <ConditionalHeader />
         <main className="flex-1 overflow-auto p-6">
           <div className="max-w-6xl mx-auto">
             <div className="flex justify-between items-center mb-6">

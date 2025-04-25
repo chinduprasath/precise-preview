@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { 
@@ -6,7 +5,7 @@ import {
   TrendingUp, Filter, CalendarDays
 } from 'lucide-react';
 import Sidebar from '@/components/layout/Sidebar';
-import Header from '@/components/layout/Header';
+import ConditionalHeader from '@/components/layout/ConditionalHeader';
 import ServiceRequests from '@/components/dashboard/ServiceRequests';
 import { InfluencerRequest, RequestStatus } from '@/types/request';
 import { useToast } from '@/components/ui/use-toast';
@@ -302,7 +301,7 @@ const BusinessDashboard = () => {
     <div className="flex h-screen bg-gray-50">
       <Sidebar />
       <div className="flex-1 flex flex-col">
-        <Header />
+        <ConditionalHeader />
         <main className="flex-1 overflow-auto p-6">
           <div className="max-w-7xl mx-auto">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">

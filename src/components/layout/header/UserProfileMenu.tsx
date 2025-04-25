@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChevronDown, Settings, User, FileSpreadsheet, LogOut, BadgeIndianRupee } from 'lucide-react';
+import { ChevronDown, Settings, User, FileSpreadsheet, LogOut, BadgeIndianRupee, HelpCircle } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import {
   DropdownMenu,
@@ -81,6 +81,10 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = ({ userData }) => {
             localStorage.getItem('userType') === 'business' ? '-business' : 
             localStorage.getItem('userType') === 'influencer' ? '-influencer' : ''
           }`} className="w-full">Payments</Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem className="cursor-pointer flex items-center gap-2">
+          <HelpCircle className="h-4 w-4" />
+          <Link to="/support" className="w-full">Support</Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem className="cursor-pointer flex items-center gap-2" onClick={handleLogout}>
