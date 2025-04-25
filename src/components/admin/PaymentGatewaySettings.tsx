@@ -57,10 +57,19 @@ export const PaymentGatewaySettings = () => {
   const onSubmit = async (data: PaymentGatewayConfig) => {
     setIsLoading(true);
     try {
+      // Convert the PaymentGatewayConfig to a plain object that's compatible with Json type
+      const paymentSettings: Record<string, any> = {
+        isEnabled: data.isEnabled,
+        apiKey: data.apiKey,
+        secretKey: data.secretKey,
+        webhookSecret: data.webhookSecret,
+        testMode: data.testMode
+      };
+
       const { error } = await supabase
         .from('wallet_settings')
         .update({
-          payment_gateway_settings: data,
+          payment_gateway_settings: paymentSettings,
           last_modified_at: new Date().toISOString(),
         })
         .eq('id', 1);
