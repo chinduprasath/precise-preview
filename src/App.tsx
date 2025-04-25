@@ -39,6 +39,10 @@ import OffersPage from "./pages/offers";
 import MarketingDashboard from "./pages/dashboard/admin/marketing";
 import AdminSupportPage from "./pages/admin/support";
 import SupportPage from "./pages/support";
+import BusinessWalletPage from "./pages/wallet/business";
+import InfluencerWalletPage from "./pages/wallet/influencer";
+import AdminWalletSettingsPage from "./pages/dashboard/admin/wallet-settings";
+import AdminWalletTransactionsPage from "./pages/dashboard/admin/wallet-transactions";
 
 function App() {
   // Create a new QueryClient instance with proper error handling
@@ -89,6 +93,10 @@ function App() {
                 <Route path="/offers" element={<OffersPage />} />
                 <Route path="/support" element={<SupportPage />} />
                 
+                {/* Wallet routes */}
+                <Route path="/wallet/business" element={<BusinessWalletPage />} />
+                <Route path="/wallet/influencer" element={<InfluencerWalletPage />} />
+                
                 {/* Dashboard routes */}
                 <Route path="/dashboard/admin" element={<AdminDashboard />} />
                 <Route path="/dashboard/admin/analytics" element={<AnalyticsPage />} />
@@ -97,6 +105,8 @@ function App() {
                 <Route path="/dashboard/admin/business-users" element={<BusinessUsersPage />} />
                 <Route path="/dashboard/admin/influencers" element={<InfluencersManagementPage />} />
                 <Route path="/dashboard/admin/marketing" element={<MarketingDashboard />} />
+                <Route path="/dashboard/admin/wallet-settings" element={<AdminWalletSettingsPage />} />
+                <Route path="/dashboard/admin/wallet-transactions" element={<AdminWalletTransactionsPage />} />
                 <Route path="/admin/support" element={<AdminSupportPage />} />
                 <Route path="/dashboard/influencer" element={<InfluencerDashboard />} />
                 <Route path="/dashboard/business" element={<BusinessDashboard />} />

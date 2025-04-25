@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Plus, Edit, Trash2, Search, Users, UserPlus, Gift } from 'lucide-react';
+import { Plus, Edit, Trash2, Search, Users, UserPlus, Gift, Wallet } from 'lucide-react';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
 import { Input } from '@/components/ui/input';
@@ -34,6 +34,12 @@ const AdminDashboard = () => {
                   <Link to="/dashboard/admin/marketing">
                     <Gift className="mr-2 h-4 w-4" />
                     Marketing
+                  </Link>
+                </Button>
+                <Button asChild>
+                  <Link to="/dashboard/admin/wallet-settings">
+                    <Wallet className="mr-2 h-4 w-4" />
+                    Wallet Settings
                   </Link>
                 </Button>
               </div>
@@ -147,34 +153,30 @@ const AdminDashboard = () => {
               </div>
               
               <div className="bg-white rounded-lg shadow-sm p-6">
-                <h2 className="text-lg font-semibold mb-4">Platform Health</h2>
+                <h2 className="text-lg font-semibold mb-4 flex items-center justify-between">
+                  <span>Wallet Activity</span>
+                  <Button variant="ghost" size="sm" asChild>
+                    <Link to="/dashboard/admin/wallet-transactions">
+                      View All
+                    </Link>
+                  </Button>
+                </h2>
                 <div className="space-y-4">
                   <div>
-                    <div className="flex justify-between mb-1">
-                      <p className="text-sm">System Uptime</p>
-                      <p className="text-sm font-medium">99.9%</p>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div className="bg-green-500 h-2 rounded-full" style={{ width: '99.9%' }}></div>
-                    </div>
+                    <p className="text-sm text-gray-500">Total Transactions</p>
+                    <p className="text-2xl font-bold">2,143</p>
                   </div>
                   <div>
-                    <div className="flex justify-between mb-1">
-                      <p className="text-sm">API Performance</p>
-                      <p className="text-sm font-medium">95%</p>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div className="bg-green-500 h-2 rounded-full" style={{ width: '95%' }}></div>
-                    </div>
+                    <p className="text-sm text-gray-500">Pending Withdrawals</p>
+                    <p className="text-2xl font-bold">12</p>
                   </div>
                   <div>
-                    <div className="flex justify-between mb-1">
-                      <p className="text-sm">User Satisfaction</p>
-                      <p className="text-sm font-medium">92%</p>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div className="bg-green-500 h-2 rounded-full" style={{ width: '92%' }}></div>
-                    </div>
+                    <Button variant="outline" className="w-full" asChild>
+                      <Link to="/dashboard/admin/wallet-transactions">
+                        <Wallet className="mr-2 h-4 w-4" />
+                        Manage Transactions
+                      </Link>
+                    </Button>
                   </div>
                 </div>
               </div>

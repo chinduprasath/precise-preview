@@ -58,6 +58,16 @@ export const createNavigationItems = (userType: string): NavItem[] => {
         href: "/dashboard/admin/marketing"
       },
       {
+        icon: React.createElement(Wallet, { className: "w-full h-full" }),
+        label: "Wallet Settings",
+        href: "/dashboard/admin/wallet-settings"
+      },
+      {
+        icon: React.createElement(FileSpreadsheet, { className: "w-full h-full" }),
+        label: "Wallet Transactions",
+        href: "/dashboard/admin/wallet-transactions"
+      },
+      {
         icon: React.createElement(LifeBuoy, { className: "w-full h-full" }),
         label: "Support",
         href: "/admin/support"
@@ -129,9 +139,8 @@ export const createNavigationItems = (userType: string): NavItem[] => {
     },
     {
       icon: React.createElement(Wallet, { className: "w-full h-full" }),
-      label: "Payments",
-      href: userType === 'business' ? '/payments-business' : 
-            userType === 'influencer' ? '/payments-influencer' : '/payments'
+      label: "Wallet",
+      href: `/wallet/${userType}`
     },
     {
       icon: React.createElement(FileSpreadsheet, { className: "w-full h-full" }),

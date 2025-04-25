@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Bell, LogOut, User } from "lucide-react";
+import { Bell, LogOut, User, Wallet } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const BusinessTopbar = () => {
@@ -13,10 +13,22 @@ const BusinessTopbar = () => {
     navigate("/landing");
   };
 
+  const navigateToWallet = () => {
+    const userType = localStorage.getItem("userType") || "business";
+    navigate(`/wallet/${userType}`);
+  };
+
   return (
     <header className="h-16 w-full flex items-center justify-between border-b border-gray-200 px-6 bg-white z-10">
       <div className="text-lg font-semibold text-[#1A1F2C]">Place Order</div>
       <div className="flex items-center gap-4">
+        <button 
+          className="relative cursor-pointer"
+          onClick={navigateToWallet}
+          title="Wallet"
+        >
+          <Wallet className="w-5 h-5 text-[#9b87f5]" />
+        </button>
         <button className="relative">
           <Bell className="w-5 h-5 text-[#9b87f5]" />
           <span className="absolute top-0 right-0 w-2 h-2 bg-[#9b87f5] rounded-full"></span>
