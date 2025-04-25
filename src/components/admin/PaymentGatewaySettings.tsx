@@ -70,7 +70,7 @@ export const PaymentGatewaySettings = () => {
         .from('wallet_settings')
         .update({
           payment_gateway_settings: paymentSettings,
-          last_modified_at: new Date().toISOString(),
+          last_modified_at: new Date().toISOString(), // Convert Date to ISO string
         })
         .eq('id', 1);
 

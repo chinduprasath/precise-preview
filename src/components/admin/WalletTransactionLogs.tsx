@@ -54,11 +54,20 @@ export const WalletTransactionLogs = () => {
 
       if (error) throw error;
       
-      // Handle the response data with proper type casting
-      return (data as any[]).map(transaction => ({
-        ...transaction,
-        profiles: transaction.profiles as Profile | null
-      })) as Transaction[];
+      // Handle the response data with proper type handling
+      return (data || []).map(transaction => {
+        // Check if profiles is an error object or null
+        const profileData = transaction.profiles && 
+          typeof transaction.profiles === 'object' && 
+          !('error' in transaction.profiles)
+            ? transaction.profiles as Profile
+            : null;
+            
+        return {
+          ...transaction,
+          profiles: profileData
+        } as Transaction;
+      });
     },
   });
 

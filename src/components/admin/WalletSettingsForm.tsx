@@ -68,7 +68,7 @@ export const WalletSettingsForm = () => {
           three_day_withdrawal_charge: parseFloat(data.threeDayCharge),
           min_withdrawal_amount: parseFloat(data.minWithdrawal),
           max_withdrawal_amount: parseFloat(data.maxWithdrawal),
-          last_modified_at: new Date().toISOString(),
+          last_modified_at: new Date().toISOString(), // Convert Date to ISO string
         })
         .eq('id', 1);
 
