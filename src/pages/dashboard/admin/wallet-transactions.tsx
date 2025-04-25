@@ -111,14 +111,21 @@ const AdminWalletTransactionsPage = () => {
           // Check if profiles is a valid object and not an error
           if (transaction.profiles && 
               typeof transaction.profiles === 'object' && 
-              !('error' in transaction.profiles) &&
-              'first_name' in transaction.profiles) {
-            profileData = {
-              first_name: transaction.profiles.first_name as string,
-              last_name: transaction.profiles.last_name as string,
-              email: transaction.profiles.email as string,
-              role: transaction.profiles.role as string
-            };
+              !('error' in transaction.profiles)) {
+            
+            // Check if all required properties exist in profiles
+            const profiles = transaction.profiles as any;
+            if ('first_name' in profiles && 
+                'last_name' in profiles && 
+                'email' in profiles && 
+                'role' in profiles) {
+              profileData = {
+                first_name: profiles.first_name as string,
+                last_name: profiles.last_name as string,
+                email: profiles.email as string,
+                role: profiles.role as string
+              };
+            }
           }
 
           return {
@@ -184,14 +191,21 @@ const AdminWalletTransactionsPage = () => {
           // Check if profiles is a valid object and not an error
           if (withdrawal.profiles && 
               typeof withdrawal.profiles === 'object' && 
-              !('error' in withdrawal.profiles) &&
-              'first_name' in withdrawal.profiles) {
-            profileData = {
-              first_name: withdrawal.profiles.first_name as string,
-              last_name: withdrawal.profiles.last_name as string,
-              email: withdrawal.profiles.email as string,
-              role: withdrawal.profiles.role as string
-            };
+              !('error' in withdrawal.profiles)) {
+            
+            // Check if all required properties exist in profiles
+            const profiles = withdrawal.profiles as any;
+            if ('first_name' in profiles && 
+                'last_name' in profiles && 
+                'email' in profiles && 
+                'role' in profiles) {
+              profileData = {
+                first_name: profiles.first_name as string,
+                last_name: profiles.last_name as string,
+                email: profiles.email as string,
+                role: profiles.role as string
+              };
+            }
           }
           
           return {
