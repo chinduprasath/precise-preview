@@ -23,7 +23,7 @@ const BusinessTopbar = () => {
 
   return (
     <header className="h-16 w-full flex items-center justify-between border-b border-gray-200 px-6 bg-white z-10">
-      <div className="text-lg font-semibold text-[#1A1F2C]">Place Order</div>
+      <div className="text-lg font-semibold text-[#1A1F2C]">Business Dashboard</div>
       <div className="flex items-center gap-4">
         <button 
           className="relative cursor-pointer p-2 rounded-full hover:bg-gray-100 transition-colors duration-200"
