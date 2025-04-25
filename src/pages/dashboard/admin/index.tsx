@@ -1,6 +1,7 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Plus, Edit, Trash2, Search, Users, UserPlus, Gift, Wallet } from 'lucide-react';
+import { Plus, Edit, Trash2, Search, Users, UserPlus, Gift } from 'lucide-react';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
 import { Input } from '@/components/ui/input';
@@ -33,12 +34,6 @@ const AdminDashboard = () => {
                   <Link to="/dashboard/admin/marketing">
                     <Gift className="mr-2 h-4 w-4" />
                     Marketing
-                  </Link>
-                </Button>
-                <Button asChild>
-                  <Link to="/dashboard/admin/wallet-settings">
-                    <Wallet className="mr-2 h-4 w-4" />
-                    Wallet Settings
                   </Link>
                 </Button>
               </div>

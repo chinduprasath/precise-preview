@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -38,7 +39,6 @@ import OffersPage from "./pages/offers";
 import MarketingDashboard from "./pages/dashboard/admin/marketing";
 import AdminSupportPage from "./pages/admin/support";
 import SupportPage from "./pages/support";
-import WalletSettingsPage from "./pages/dashboard/admin/wallet-settings";
 
 function App() {
   // Create a new QueryClient instance with proper error handling
@@ -91,7 +91,6 @@ function App() {
                 
                 {/* Dashboard routes */}
                 <Route path="/dashboard/admin" element={<AdminDashboard />} />
-                <Route path="/dashboard/admin/wallet-settings" element={<WalletSettingsPage />} />
                 <Route path="/dashboard/admin/analytics" element={<AnalyticsPage />} />
                 <Route path="/dashboard/admin/team" element={<TeamManagementPage />} />
                 <Route path="/dashboard/admin/settings" element={<SiteSettingsPage />} />
