@@ -14,6 +14,28 @@ import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
 
+type TransactionType = 'deposit' | 'withdrawal' | 'order_payment' | 'order_earning' | 'refund';
+
+interface Profile {
+  first_name: string;
+  last_name: string;
+  email: string;
+}
+
+interface Transaction {
+  id: string;
+  created_at: string;
+  user_id: string;
+  wallet_id: string;
+  amount: number;
+  balance_after: number;
+  transaction_type: TransactionType;
+  reference_id: string | null;
+  description: string;
+  metadata: Record<string, any>;
+  profiles?: Profile | null;
+}
+
 export const WalletTransactionLogs = () => {
   const { data: transactions, isLoading } = useQuery({
     queryKey: ['wallet-transactions'],
@@ -22,7 +44,7 @@ export const WalletTransactionLogs = () => {
         .from('wallet_transactions')
         .select(`
           *,
-          profiles:user_id (
+          profiles:user_id(
             first_name,
             last_name,
             email
@@ -31,7 +53,7 @@ export const WalletTransactionLogs = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data;
+      return data as Transaction[];
     },
   });
 
@@ -71,9 +93,15 @@ export const WalletTransactionLogs = () => {
                   {format(new Date(transaction.created_at), 'PPp')}
                 </TableCell>
                 <TableCell>
-                  {transaction.profiles?.first_name} {transaction.profiles?.last_name}
-                  <br />
-                  <span className="text-xs text-gray-500">{transaction.profiles?.email}</span>
+                  {transaction.profiles ? (
+                    <>
+                      {transaction.profiles.first_name} {transaction.profiles.last_name}
+                      <br />
+                      <span className="text-xs text-gray-500">{transaction.profiles.email}</span>
+                    </>
+                  ) : (
+                    <span className="text-xs text-gray-500">User not found</span>
+                  )}
                 </TableCell>
                 <TableCell>
                   <Badge variant={getTransactionBadgeVariant(transaction.transaction_type)}>
@@ -96,7 +124,7 @@ export const WalletTransactionLogs = () => {
   );
 };
 
-const getTransactionBadgeVariant = (type: string) => {
+const getTransactionBadgeVariant = (type: TransactionType) => {
   switch (type) {
     case 'deposit':
       return 'default';
@@ -105,9 +133,9 @@ const getTransactionBadgeVariant = (type: string) => {
     case 'order_payment':
       return 'destructive';
     case 'order_earning':
-      return 'default'; // Changed from 'success'
+      return 'default';
     case 'refund':
-      return 'secondary'; // Changed from 'warning'
+      return 'secondary';
     default:
       return 'outline';
   }

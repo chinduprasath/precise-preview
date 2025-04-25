@@ -18,7 +18,15 @@ interface PaymentGatewayConfig {
 }
 
 export const PaymentGatewaySettings = () => {
-  const { register, handleSubmit, setValue, watch } = useForm<PaymentGatewayConfig>();
+  const { register, handleSubmit, setValue, watch } = useForm<PaymentGatewayConfig>({
+    defaultValues: {
+      isEnabled: false,
+      apiKey: '',
+      secretKey: '',
+      webhookSecret: '',
+      testMode: false
+    }
+  });
   const [isLoading, setIsLoading] = React.useState(false);
 
   React.useEffect(() => {

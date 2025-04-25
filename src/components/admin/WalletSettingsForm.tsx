@@ -19,7 +19,16 @@ interface WalletSettingsFormData {
 }
 
 export const WalletSettingsForm = () => {
-  const { register, handleSubmit, setValue, watch } = useForm<WalletSettingsFormData>();
+  const { register, handleSubmit, setValue, watch } = useForm<WalletSettingsFormData>({
+    defaultValues: {
+      isEnabled: false,
+      immediateCharge: '0',
+      oneDayCharge: '0',
+      threeDayCharge: '0',
+      minWithdrawal: '0',
+      maxWithdrawal: '0',
+    }
+  });
   const [isLoading, setIsLoading] = React.useState(false);
 
   React.useEffect(() => {
