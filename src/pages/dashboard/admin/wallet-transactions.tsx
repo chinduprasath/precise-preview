@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -10,7 +11,7 @@ import Layout from "@/components/layout/Layout";
 import TransactionFilters from "@/components/admin/wallet/TransactionFilters";
 import TransactionPagination from "@/components/admin/wallet/TransactionPagination";
 import WithdrawalList from "@/components/admin/wallet/WithdrawalList";
-import type { Transaction, Withdrawal } from "@/types/wallet";
+import type { Transaction, Withdrawal, ProfileData } from "@/types/wallet";
 
 const AdminWalletTransactionsPage = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -67,7 +68,8 @@ const AdminWalletTransactionsPage = () => {
               !('error' in transaction.profiles)) {
             
             const profiles = transaction.profiles as Record<string, unknown>;
-            if ('first_name' in profiles && 
+            if (profiles && 
+                'first_name' in profiles && 
                 'last_name' in profiles && 
                 'email' in profiles && 
                 'role' in profiles) {
@@ -141,7 +143,8 @@ const AdminWalletTransactionsPage = () => {
               !('error' in withdrawal.profiles)) {
             
             const profiles = withdrawal.profiles as Record<string, unknown>;
-            if ('first_name' in profiles && 
+            if (profiles && 
+                'first_name' in profiles && 
                 'last_name' in profiles && 
                 'email' in profiles && 
                 'role' in profiles) {
