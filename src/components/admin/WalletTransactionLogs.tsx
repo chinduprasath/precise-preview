@@ -1,7 +1,14 @@
 
 import React from 'react';
-import { formatCurrency, formatDate, getStatusColor, getTimeDifference } from '@/lib/wallet-utils';
+import { formatCurrency, formatDate, getStatusColor, getTimeDifference, getTransactionColor, getTransactionIcon } from '@/lib/wallet-utils';
 import { ArrowDown, ArrowUp, Clock } from 'lucide-react';
+
+type ProfileData = {
+  first_name: string;
+  last_name: string;
+  email: string;
+  role: string;
+};
 
 type Transaction = {
   id: string;
@@ -13,12 +20,7 @@ type Transaction = {
   metadata: any;
   user_id: string;
   wallet_id: string;
-  profiles?: {
-    first_name: string;
-    last_name: string;
-    email: string;
-    role: string;
-  } | null;
+  profiles?: ProfileData | null;
 };
 
 interface WalletTransactionLogsProps {

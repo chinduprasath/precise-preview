@@ -10,12 +10,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { formatCurrency, formatDate, getStatusColor, getTimeDifference } from "@/lib/wallet-utils";
+import { formatCurrency, formatDate, getStatusColor, getTimeDifference, getTransactionColor, getTransactionIcon } from "@/lib/wallet-utils";
 import Sidebar from "@/components/layout/Sidebar";
 import Header from "@/components/layout/Header";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import WalletTransactionLogs from "@/components/admin/WalletTransactionLogs";
+
+type ProfileData = {
+  first_name: string;
+  last_name: string;
+  email: string;
+  role: string;
+};
 
 type Transaction = {
   id: string;
@@ -27,12 +35,7 @@ type Transaction = {
   metadata: any;
   user_id: string;
   wallet_id: string;
-  profiles?: {
-    first_name: string;
-    last_name: string;
-    email: string;
-    role: string;
-  } | null;
+  profiles?: ProfileData | null;
 };
 
 type Withdrawal = {
@@ -47,12 +50,7 @@ type Withdrawal = {
   payment_method: string;
   payment_details: any;
   user_id: string;
-  profiles?: {
-    first_name: string;
-    last_name: string;
-    email: string;
-    role: string;
-  } | null;
+  profiles?: ProfileData | null;
 };
 
 const AdminWalletTransactionsPage = () => {
@@ -103,18 +101,28 @@ const AdminWalletTransactionsPage = () => {
       if (error) throw error;
 
       if (data) {
-        // Check if profiles exist for each transaction and handle errors
-        const processedData = data.map(transaction => {
-          // Handle possible error state from Supabase join
-          if (transaction.profiles && typeof transaction.profiles === 'object' && !('error' in transaction.profiles)) {
-            return transaction as Transaction;
-          } else {
-            // If profiles is an error or undefined, set it to null
-            return {
-              ...transaction,
-              profiles: null
-            } as Transaction;
+        // Process the data to safely handle profiles that might be in different formats
+        const processedData: Transaction[] = data.map(transaction => {
+          // Check if profiles exists and is not an error object
+          let profileData = null;
+          
+          // Check if profiles is a valid object and not an error
+          if (transaction.profiles && 
+              typeof transaction.profiles === 'object' && 
+              !('error' in transaction.profiles) &&
+              transaction.profiles.first_name) {
+            profileData = {
+              first_name: transaction.profiles.first_name,
+              last_name: transaction.profiles.last_name,
+              email: transaction.profiles.email,
+              role: transaction.profiles.role
+            };
           }
+
+          return {
+            ...transaction,
+            profiles: profileData
+          } as Transaction;
         });
 
         // Filter by user role if needed
@@ -166,17 +174,30 @@ const AdminWalletTransactionsPage = () => {
       if (error) throw error;
 
       if (data) {
-        // Process data to handle potential errors from the join
-        const processedData = data.map(withdrawal => {
-          if (withdrawal.profiles && typeof withdrawal.profiles === 'object' && !('error' in withdrawal.profiles)) {
-            return withdrawal as Withdrawal;
-          } else {
-            return {
-              ...withdrawal,
-              profiles: null
-            } as Withdrawal;
+        // Process the data to safely handle profiles that might be in different formats
+        const processedData: Withdrawal[] = data.map(withdrawal => {
+          // Check if profiles exists and is not an error object
+          let profileData = null;
+          
+          // Check if profiles is a valid object and not an error
+          if (withdrawal.profiles && 
+              typeof withdrawal.profiles === 'object' && 
+              !('error' in withdrawal.profiles) &&
+              withdrawal.profiles.first_name) {
+            profileData = {
+              first_name: withdrawal.profiles.first_name,
+              last_name: withdrawal.profiles.last_name,
+              email: withdrawal.profiles.email,
+              role: withdrawal.profiles.role
+            };
           }
+          
+          return {
+            ...withdrawal,
+            profiles: profileData
+          } as Withdrawal;
         });
+        
         setWithdrawals(processedData);
       }
     } catch (error) {
@@ -229,34 +250,6 @@ const AdminWalletTransactionsPage = () => {
         description: "Failed to reject withdrawal.",
         variant: "destructive",
       });
-    }
-  };
-
-  const getTransactionIcon = (type: string) => {
-    switch (type) {
-      case 'deposit':
-      case 'order_earning':
-      case 'refund':
-        return <ArrowUp className="w-5 h-5 text-green-500" />;
-      case 'withdrawal':
-      case 'order_payment':
-        return <ArrowDown className="w-5 h-5 text-red-500" />;
-      default:
-        return <Clock className="w-5 h-5 text-gray-500" />;
-    }
-  };
-
-  const getTransactionColor = (type: string) => {
-    switch (type) {
-      case 'deposit':
-      case 'order_earning':
-      case 'refund':
-        return 'text-green-600';
-      case 'withdrawal':
-      case 'order_payment':
-        return 'text-red-600';
-      default:
-        return 'text-gray-600';
     }
   };
 
@@ -360,91 +353,10 @@ const AdminWalletTransactionsPage = () => {
 
                 {/* Transactions Table */}
                 <Card className="overflow-hidden">
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead>
-                        <tr className="bg-gray-50 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          <th className="px-6 py-3 text-left">Transaction</th>
-                          <th className="px-6 py-3 text-left">User</th>
-                          <th className="px-6 py-3 text-left">Type</th>
-                          <th className="px-6 py-3 text-left">Date</th>
-                          <th className="px-6 py-3 text-right">Amount</th>
-                          <th className="px-6 py-3 text-right">Balance</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-200 bg-white">
-                        {isLoading ? (
-                          <tr>
-                            <td colSpan={6} className="px-6 py-4 text-center">
-                              <div className="flex justify-center">
-                                <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-primary"></div>
-                              </div>
-                            </td>
-                          </tr>
-                        ) : transactions.length === 0 ? (
-                          <tr>
-                            <td colSpan={6} className="px-6 py-4 text-center text-gray-500">
-                              No transactions found.
-                            </td>
-                          </tr>
-                        ) : (
-                          transactions.map((transaction) => (
-                            <tr key={transaction.id} className="hover:bg-gray-50">
-                              <td className="px-6 py-4">
-                                <div className="flex items-center">
-                                  <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center mr-3">
-                                    {getTransactionIcon(transaction.transaction_type)}
-                                  </div>
-                                  <div className="max-w-xs">
-                                    <p className="font-medium truncate" title={transaction.description}>
-                                      {transaction.description}
-                                    </p>
-                                    <p className="text-xs text-gray-500">
-                                      ID: {transaction.id.slice(0, 8)}...
-                                    </p>
-                                  </div>
-                                </div>
-                              </td>
-                              <td className="px-6 py-4">
-                                {transaction.profiles ? (
-                                  <div>
-                                    <p className="font-medium">
-                                      {transaction.profiles.first_name} {transaction.profiles.last_name}
-                                    </p>
-                                    <p className="text-xs text-gray-500">{transaction.profiles.email}</p>
-                                    <span className="text-xs px-2 py-0.5 bg-gray-100 rounded-full">
-                                      {transaction.profiles.role}
-                                    </span>
-                                  </div>
-                                ) : (
-                                  <p className="text-gray-500">User not found</p>
-                                )}
-                              </td>
-                              <td className="px-6 py-4">
-                                <span className="text-xs px-2 py-1 rounded-full bg-gray-100">
-                                  {transaction.transaction_type.replace('_', ' ')}
-                                </span>
-                              </td>
-                              <td className="px-6 py-4">
-                                <p>{formatDate(transaction.created_at)}</p>
-                                <p className="text-xs text-gray-500">{getTimeDifference(transaction.created_at)}</p>
-                              </td>
-                              <td className={`px-6 py-4 text-right font-bold ${getTransactionColor(transaction.transaction_type)}`}>
-                                {transaction.transaction_type === 'deposit' || 
-                                  transaction.transaction_type === 'refund' || 
-                                  transaction.transaction_type === 'order_earning' 
-                                  ? '+' : '-'}
-                                {formatCurrency(transaction.amount)}
-                              </td>
-                              <td className="px-6 py-4 text-right">
-                                {formatCurrency(transaction.balance_after)}
-                              </td>
-                            </tr>
-                          ))
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
+                  <WalletTransactionLogs 
+                    transactions={transactions} 
+                    isLoading={isLoading} 
+                  />
 
                   {/* Pagination */}
                   <div className="flex items-center justify-between px-6 py-3 bg-gray-50">
