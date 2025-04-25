@@ -70,7 +70,7 @@ export const WalletSettingsForm = () => {
           max_withdrawal_amount: parseFloat(data.maxWithdrawal),
           last_modified_at: new Date().toISOString(), // Convert Date to ISO string
         })
-        .eq('id', 1);
+        .eq('id', '1'); // Convert the number to string for type compatibility
 
       if (error) throw error;
       toast.success('Wallet settings updated successfully');

@@ -72,7 +72,7 @@ export const PaymentGatewaySettings = () => {
           payment_gateway_settings: paymentSettings,
           last_modified_at: new Date().toISOString(), // Convert Date to ISO string
         })
-        .eq('id', 1);
+        .eq('id', '1'); // Convert the number to string for type compatibility
 
       if (error) throw error;
       toast.success('Payment gateway settings updated successfully');
