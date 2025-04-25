@@ -415,7 +415,7 @@ const AdminWalletTransactionsPage = () => {
                           withdrawals.map((withdrawal) => (
                             <tr key={withdrawal.id} className="hover:bg-gray-50">
                               <td className="px-6 py-4">
-                                {withdrawal.profiles ? (
+                                {withdrawal.profiles && withdrawal.profiles.first_name ? (
                                   <div>
                                     <p className="font-medium">
                                       {withdrawal.profiles.first_name} {withdrawal.profiles.last_name}

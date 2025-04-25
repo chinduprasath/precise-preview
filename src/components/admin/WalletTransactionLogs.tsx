@@ -97,7 +97,7 @@ const WalletTransactionLogs = ({ transactions, isLoading }: WalletTransactionLog
                 </div>
               </td>
               <td className="px-6 py-4">
-                {transaction.profiles ? (
+                {transaction.profiles && transaction.profiles.first_name ? (
                   <div>
                     <p className="font-medium">
                       {transaction.profiles.first_name} {transaction.profiles.last_name}
