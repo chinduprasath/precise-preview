@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { 
   LayoutDashboard, 
@@ -15,6 +16,8 @@ import {
   Building,
   User,
   LifeBuoy,
+  Gift,
+  Wallet
 } from 'lucide-react';
 
 export interface NavItem {
