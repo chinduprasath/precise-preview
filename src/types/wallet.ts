@@ -1,4 +1,3 @@
-
 export type ProfileData = {
   first_name: string;
   last_name: string;
@@ -33,4 +32,3 @@ export type Withdrawal = {
   user_id: string;
   profiles?: ProfileData | null;
 };
-

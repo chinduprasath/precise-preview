@@ -43,4 +43,3 @@ const TransactionPagination: React.FC<TransactionPaginationProps> = ({
 };
 
 export default TransactionPagination;
-

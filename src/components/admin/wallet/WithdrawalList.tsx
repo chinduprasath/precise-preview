@@ -122,4 +122,3 @@ const WithdrawalList: React.FC<WithdrawalListProps> = ({
 };
 
 export default WithdrawalList;
-

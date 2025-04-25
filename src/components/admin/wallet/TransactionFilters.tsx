@@ -72,4 +72,3 @@ const TransactionFilters: React.FC<TransactionFiltersProps> = ({
 };
 
 export default TransactionFilters;
-
