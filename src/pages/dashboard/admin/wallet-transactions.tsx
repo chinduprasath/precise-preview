@@ -65,6 +65,7 @@ const AdminWalletTransactionsPage = () => {
           
           if (transaction.profiles && 
               typeof transaction.profiles === 'object' && 
+              transaction.profiles !== null &&
               !('error' in transaction.profiles)) {
             
             const profiles = transaction.profiles as Record<string, unknown>;
@@ -140,6 +141,7 @@ const AdminWalletTransactionsPage = () => {
           
           if (withdrawal.profiles && 
               typeof withdrawal.profiles === 'object' && 
+              withdrawal.profiles !== null &&
               !('error' in withdrawal.profiles)) {
             
             const profiles = withdrawal.profiles as Record<string, unknown>;
