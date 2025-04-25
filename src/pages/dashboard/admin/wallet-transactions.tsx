@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { ArrowUp, ArrowDown, Search, Filter, Clock, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -89,11 +88,9 @@ const AdminWalletTransactionsPage = () => {
         .range((page - 1) * pageSize, page * pageSize - 1);
 
       if (transactionType !== "all") {
-        // Cast transactionType to the specific union type
         query = query.eq('transaction_type', transactionType as "deposit" | "withdrawal" | "order_payment" | "order_earning" | "refund" | "adjustment");
       }
 
-      // Search implementation
       if (searchQuery) {
         query = query.textSearch('description', searchQuery);
       }
@@ -103,18 +100,14 @@ const AdminWalletTransactionsPage = () => {
       if (error) throw error;
 
       if (data) {
-        // Process the data to safely handle profiles that might be in different formats
         const processedData: Transaction[] = data.map(transaction => {
-          // Check if profiles exists and is not an error object
           let profileData: ProfileData | null = null;
           
-          // Check if profiles is a valid object and not an error
           if (transaction.profiles && 
               typeof transaction.profiles === 'object' && 
               !('error' in transaction.profiles)) {
             
-            // Check if all required properties exist in profiles
-            const profiles = transaction.profiles as any;
+            const profiles = transaction.profiles as Record<string, unknown>;
             if ('first_name' in profiles && 
                 'last_name' in profiles && 
                 'email' in profiles && 
@@ -134,7 +127,6 @@ const AdminWalletTransactionsPage = () => {
           } as Transaction;
         });
 
-        // Filter by user role if needed
         let filteredData = processedData;
         if (userRole !== "all") {
           filteredData = processedData.filter(t => 
@@ -174,7 +166,6 @@ const AdminWalletTransactionsPage = () => {
         .limit(50);
 
       if (userRole !== "all" && userRole === "influencer") {
-        // Only fetch withdrawals for influencers if filtering by role
         query = query.eq('profiles.role', 'influencer');
       }
 
@@ -183,18 +174,14 @@ const AdminWalletTransactionsPage = () => {
       if (error) throw error;
 
       if (data) {
-        // Process the data to safely handle profiles that might be in different formats
         const processedData: Withdrawal[] = data.map(withdrawal => {
-          // Check if profiles exists and is not an error object
           let profileData: ProfileData | null = null;
           
-          // Check if profiles is a valid object and not an error
           if (withdrawal.profiles && 
               typeof withdrawal.profiles === 'object' && 
               !('error' in withdrawal.profiles)) {
             
-            // Check if all required properties exist in profiles
-            const profiles = withdrawal.profiles as any;
+            const profiles = withdrawal.profiles as Record<string, unknown>;
             if ('first_name' in profiles && 
                 'last_name' in profiles && 
                 'email' in profiles && 
@@ -272,24 +259,20 @@ const AdminWalletTransactionsPage = () => {
   const exportToCSV = () => {
     if (transactions.length === 0) return;
 
-    // Format transactions for CSV
     const csvContent = [
-      // CSV Header
       ["ID", "Date", "User", "Role", "Type", "Description", "Amount", "Balance After"].join(","),
-      // CSV Data
       ...transactions.map(t => [
         t.id,
         new Date(t.created_at).toISOString(),
         t.profiles ? `${t.profiles.first_name} ${t.profiles.last_name}` : 'Unknown',
         t.profiles?.role || 'Unknown',
         t.transaction_type,
-        `"${t.description.replace(/"/g, '""')}"`, // Escape quotes in description
+        `"${t.description.replace(/"/g, '""')}"`,
         t.amount,
         t.balance_after
-      ].join(","))
+      ]).join(",")
     ].join("\n");
 
-    // Create and download file
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
@@ -323,7 +306,6 @@ const AdminWalletTransactionsPage = () => {
               </TabsList>
               
               <TabsContent value="transactions">
-                {/* Filters */}
                 <Card className="p-4 mb-6">
                   <div className="flex flex-col md:flex-row gap-4">
                     <div className="flex-1">
@@ -367,14 +349,12 @@ const AdminWalletTransactionsPage = () => {
                   </div>
                 </Card>
 
-                {/* Transactions Table */}
                 <Card className="overflow-hidden">
                   <WalletTransactionLogs 
                     transactions={transactions} 
                     isLoading={isLoading} 
                   />
 
-                  {/* Pagination */}
                   <div className="flex items-center justify-between px-6 py-3 bg-gray-50">
                     <div className="text-sm text-gray-500">
                       Showing {Math.min((page - 1) * pageSize + 1, totalCount)} to {Math.min(page * pageSize, totalCount)} of {totalCount} transactions
@@ -402,7 +382,6 @@ const AdminWalletTransactionsPage = () => {
               </TabsContent>
 
               <TabsContent value="withdrawals">
-                {/* Withdrawal Requests */}
                 <Card className="overflow-hidden">
                   <div className="overflow-x-auto">
                     <table className="w-full">
