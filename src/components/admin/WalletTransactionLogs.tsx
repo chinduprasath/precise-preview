@@ -22,7 +22,7 @@ export const WalletTransactionLogs = () => {
         .from('wallet_transactions')
         .select(`
           *,
-          user_profiles:user_id (
+          profiles:user_id (
             first_name,
             last_name,
             email
@@ -71,9 +71,9 @@ export const WalletTransactionLogs = () => {
                   {format(new Date(transaction.created_at), 'PPp')}
                 </TableCell>
                 <TableCell>
-                  {transaction.user_profiles?.first_name} {transaction.user_profiles?.last_name}
+                  {transaction.profiles?.first_name} {transaction.profiles?.last_name}
                   <br />
-                  <span className="text-xs text-gray-500">{transaction.user_profiles?.email}</span>
+                  <span className="text-xs text-gray-500">{transaction.profiles?.email}</span>
                 </TableCell>
                 <TableCell>
                   <Badge variant={getTransactionBadgeVariant(transaction.transaction_type)}>
@@ -105,9 +105,9 @@ const getTransactionBadgeVariant = (type: string) => {
     case 'order_payment':
       return 'destructive';
     case 'order_earning':
-      return 'success';
+      return 'default'; // Changed from 'success'
     case 'refund':
-      return 'warning';
+      return 'secondary'; // Changed from 'warning'
     default:
       return 'outline';
   }

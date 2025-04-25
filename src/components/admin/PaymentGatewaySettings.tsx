@@ -34,12 +34,12 @@ export const PaymentGatewaySettings = () => {
       }
 
       if (data?.payment_gateway_settings) {
-        const settings = data.payment_gateway_settings;
-        setValue('isEnabled', settings.isEnabled);
-        setValue('apiKey', settings.apiKey);
-        setValue('secretKey', settings.secretKey);
-        setValue('webhookSecret', settings.webhookSecret);
-        setValue('testMode', settings.testMode);
+        const settings = data.payment_gateway_settings as any;
+        setValue('isEnabled', Boolean(settings.isEnabled));
+        setValue('apiKey', String(settings.apiKey || ''));
+        setValue('secretKey', String(settings.secretKey || ''));
+        setValue('webhookSecret', String(settings.webhookSecret || ''));
+        setValue('testMode', Boolean(settings.testMode));
       }
     };
 
@@ -52,7 +52,13 @@ export const PaymentGatewaySettings = () => {
       const { error } = await supabase
         .from('wallet_settings')
         .update({
-          payment_gateway_settings: data,
+          payment_gateway_settings: {
+            isEnabled: data.isEnabled,
+            apiKey: data.apiKey,
+            secretKey: data.secretKey,
+            webhookSecret: data.webhookSecret,
+            testMode: data.testMode
+          },
           last_modified_at: new Date().toISOString(),
         })
         .eq('id', 1);

@@ -11,11 +11,11 @@ import { supabase } from '@/integrations/supabase/client';
 
 interface WalletSettingsFormData {
   isEnabled: boolean;
-  immediateCharge: number;
-  oneDayCharge: number;
-  threeDayCharge: number;
-  minWithdrawal: number;
-  maxWithdrawal: number;
+  immediateCharge: string;
+  oneDayCharge: string;
+  threeDayCharge: string;
+  minWithdrawal: string;
+  maxWithdrawal: string;
 }
 
 export const WalletSettingsForm = () => {
@@ -36,11 +36,11 @@ export const WalletSettingsForm = () => {
 
       if (data) {
         setValue('isEnabled', data.is_enabled);
-        setValue('immediateCharge', data.immediate_withdrawal_charge);
-        setValue('oneDayCharge', data.one_day_withdrawal_charge);
-        setValue('threeDayCharge', data.three_day_withdrawal_charge);
-        setValue('minWithdrawal', data.min_withdrawal_amount);
-        setValue('maxWithdrawal', data.max_withdrawal_amount);
+        setValue('immediateCharge', data.immediate_withdrawal_charge.toString());
+        setValue('oneDayCharge', data.one_day_withdrawal_charge.toString());
+        setValue('threeDayCharge', data.three_day_withdrawal_charge.toString());
+        setValue('minWithdrawal', data.min_withdrawal_amount.toString());
+        setValue('maxWithdrawal', data.max_withdrawal_amount.toString());
       }
     };
 
@@ -54,11 +54,11 @@ export const WalletSettingsForm = () => {
         .from('wallet_settings')
         .update({
           is_enabled: data.isEnabled,
-          immediate_withdrawal_charge: data.immediateCharge,
-          one_day_withdrawal_charge: data.oneDayCharge,
-          three_day_withdrawal_charge: data.threeDayCharge,
-          min_withdrawal_amount: data.minWithdrawal,
-          max_withdrawal_amount: data.maxWithdrawal,
+          immediate_withdrawal_charge: parseFloat(data.immediateCharge),
+          one_day_withdrawal_charge: parseFloat(data.oneDayCharge),
+          three_day_withdrawal_charge: parseFloat(data.threeDayCharge),
+          min_withdrawal_amount: parseFloat(data.minWithdrawal),
+          max_withdrawal_amount: parseFloat(data.maxWithdrawal),
           last_modified_at: new Date().toISOString(),
         })
         .eq('id', 1);
