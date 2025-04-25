@@ -89,7 +89,8 @@ const AdminWalletTransactionsPage = () => {
         .range((page - 1) * pageSize, page * pageSize - 1);
 
       if (transactionType !== "all") {
-        query = query.eq('transaction_type', transactionType);
+        // Cast transactionType to the specific union type
+        query = query.eq('transaction_type', transactionType as "deposit" | "withdrawal" | "order_payment" | "order_earning" | "refund" | "adjustment");
       }
 
       // Search implementation
@@ -105,18 +106,18 @@ const AdminWalletTransactionsPage = () => {
         // Process the data to safely handle profiles that might be in different formats
         const processedData: Transaction[] = data.map(transaction => {
           // Check if profiles exists and is not an error object
-          let profileData = null;
+          let profileData: ProfileData | null = null;
           
           // Check if profiles is a valid object and not an error
           if (transaction.profiles && 
               typeof transaction.profiles === 'object' && 
               !('error' in transaction.profiles) &&
-              transaction.profiles.first_name) {
+              'first_name' in transaction.profiles) {
             profileData = {
-              first_name: transaction.profiles.first_name,
-              last_name: transaction.profiles.last_name,
-              email: transaction.profiles.email,
-              role: transaction.profiles.role
+              first_name: transaction.profiles.first_name as string,
+              last_name: transaction.profiles.last_name as string,
+              email: transaction.profiles.email as string,
+              role: transaction.profiles.role as string
             };
           }
 
@@ -178,18 +179,18 @@ const AdminWalletTransactionsPage = () => {
         // Process the data to safely handle profiles that might be in different formats
         const processedData: Withdrawal[] = data.map(withdrawal => {
           // Check if profiles exists and is not an error object
-          let profileData = null;
+          let profileData: ProfileData | null = null;
           
           // Check if profiles is a valid object and not an error
           if (withdrawal.profiles && 
               typeof withdrawal.profiles === 'object' && 
               !('error' in withdrawal.profiles) &&
-              withdrawal.profiles.first_name) {
+              'first_name' in withdrawal.profiles) {
             profileData = {
-              first_name: withdrawal.profiles.first_name,
-              last_name: withdrawal.profiles.last_name,
-              email: withdrawal.profiles.email,
-              role: withdrawal.profiles.role
+              first_name: withdrawal.profiles.first_name as string,
+              last_name: withdrawal.profiles.last_name as string,
+              email: withdrawal.profiles.email as string,
+              role: withdrawal.profiles.role as string
             };
           }
           
