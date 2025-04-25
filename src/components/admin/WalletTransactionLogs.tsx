@@ -14,7 +14,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
 
-type TransactionType = 'deposit' | 'withdrawal' | 'order_payment' | 'order_earning' | 'refund';
+type TransactionType = 'deposit' | 'withdrawal' | 'order_payment' | 'order_earning' | 'refund' | 'adjustment';
 
 interface Profile {
   first_name: string;
@@ -33,7 +33,7 @@ interface Transaction {
   reference_id: string | null;
   description: string;
   metadata: Record<string, any>;
-  profiles?: Profile | null;
+  profiles: Profile | null;
 }
 
 export const WalletTransactionLogs = () => {
@@ -44,7 +44,7 @@ export const WalletTransactionLogs = () => {
         .from('wallet_transactions')
         .select(`
           *,
-          profiles:user_id(
+          profiles:user_profiles(
             first_name,
             last_name,
             email
@@ -53,7 +53,12 @@ export const WalletTransactionLogs = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data as Transaction[];
+      
+      // Handle the response data with proper type casting
+      return (data as any[]).map(transaction => ({
+        ...transaction,
+        profiles: transaction.profiles as Profile | null
+      })) as Transaction[];
     },
   });
 
@@ -136,6 +141,8 @@ const getTransactionBadgeVariant = (type: TransactionType) => {
       return 'default';
     case 'refund':
       return 'secondary';
+    case 'adjustment':
+      return 'outline';
     default:
       return 'outline';
   }
