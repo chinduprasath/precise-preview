@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Bell, LogOut, User, Wallet } from "lucide-react";
+import { Bell, LogOut, User, Wallet, Gift } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const BusinessTopbar = () => {
@@ -14,8 +14,11 @@ const BusinessTopbar = () => {
   };
 
   const navigateToWallet = () => {
-    const userType = localStorage.getItem("userType") || "business";
-    navigate(`/wallet/${userType}`);
+    navigate("/wallet/business");
+  };
+
+  const navigateToOffers = () => {
+    navigate("/offers");
   };
 
   return (
@@ -23,15 +26,22 @@ const BusinessTopbar = () => {
       <div className="text-lg font-semibold text-[#1A1F2C]">Place Order</div>
       <div className="flex items-center gap-4">
         <button 
-          className="relative cursor-pointer"
+          className="relative cursor-pointer p-2 rounded-full hover:bg-gray-100 transition-colors duration-200"
+          onClick={navigateToOffers}
+          title="Offers"
+        >
+          <Gift className="w-5 h-5 text-[#9b87f5]" />
+        </button>
+        <button 
+          className="relative cursor-pointer p-2 rounded-full hover:bg-gray-100 transition-colors duration-200"
           onClick={navigateToWallet}
           title="Wallet"
         >
           <Wallet className="w-5 h-5 text-[#9b87f5]" />
         </button>
-        <button className="relative">
+        <button className="relative p-2 rounded-full hover:bg-gray-100 transition-colors duration-200">
           <Bell className="w-5 h-5 text-[#9b87f5]" />
-          <span className="absolute top-0 right-0 w-2 h-2 bg-[#9b87f5] rounded-full"></span>
+          <span className="absolute top-1 right-1 w-2 h-2 bg-[#9b87f5] rounded-full"></span>
         </button>
         <div className="flex items-center gap-2">
           {user.avatar

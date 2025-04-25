@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { 
   LayoutDashboard, 
@@ -10,13 +9,11 @@ import {
   FileText, 
   ShoppingCart,
   UserPlus,
-  Wallet,
   Activity,
   Shield,
   Settings,
   Building,
   User,
-  Gift,
   LifeBuoy,
 } from 'lucide-react';
 
@@ -29,7 +26,6 @@ export interface NavItem {
 export const createNavigationItems = (userType: string): NavItem[] => {
   const dashboardPath = `/dashboard/${userType}`;
   
-  // Create navigation items based on user type
   if (userType === 'admin') {
     return [
       {
@@ -90,7 +86,6 @@ export const createNavigationItems = (userType: string): NavItem[] => {
     ];
   }
   
-  // For non-admin users, return the common navigation items
   const commonNavItems = [
     {
       icon: React.createElement(LayoutDashboard, { className: "w-full h-full" }),
@@ -128,19 +123,9 @@ export const createNavigationItems = (userType: string): NavItem[] => {
       href: "/orders"
     },
     {
-      icon: React.createElement(Gift, { className: "w-full h-full" }),
-      label: "Offers",
-      href: "/offers"
-    },
-    {
       icon: React.createElement(LifeBuoy, { className: "w-full h-full" }),
       label: "Support",
       href: "/support"
-    },
-    {
-      icon: React.createElement(Wallet, { className: "w-full h-full" }),
-      label: "Wallet",
-      href: `/wallet/${userType}`
     },
     {
       icon: React.createElement(FileSpreadsheet, { className: "w-full h-full" }),
@@ -151,7 +136,6 @@ export const createNavigationItems = (userType: string): NavItem[] => {
   
   let navItems = [...commonNavItems];
   
-  // Add Requests link only for influencers
   if (userType === 'influencer') {
     const ordersIndex = navItems.findIndex(item => item.label === "Orders");
     if (ordersIndex !== -1) {
@@ -166,20 +150,15 @@ export const createNavigationItems = (userType: string): NavItem[] => {
   return navItems;
 };
 
-// Helper to determine if a navigation item is active
 export const isActiveLink = (currentPath: string, href: string, dashboardPath: string): boolean => {
-  // Check exact match first
   if (currentPath === href) {
     return true;
   }
   
-  // Special handling for dashboard path
   if (href === dashboardPath && (currentPath === '/' || currentPath === dashboardPath)) {
     return true;
   }
   
-  // For other paths, check if current path starts with the href
-  // But make sure it's not just a partial string match (e.g., "/on" matching "/onboard")
   if (href !== '/' && href !== dashboardPath) {
     return currentPath.startsWith(href + '/') || currentPath === href;
   }
