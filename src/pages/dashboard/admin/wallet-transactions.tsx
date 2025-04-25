@@ -264,7 +264,7 @@ const AdminWalletTransactionsPage = () => {
       ...transactions.map(t => [
         t.id,
         new Date(t.created_at).toISOString(),
-        t.profiles ? `${t.profiles.first_name} ${t.profiles.last_name}` : 'Unknown',
+        t.profiles && t.profiles.first_name ? `${t.profiles.first_name} ${t.profiles.last_name}` : 'Unknown',
         t.profiles?.role || 'Unknown',
         t.transaction_type,
         `"${t.description.replace(/"/g, '""')}"`,
