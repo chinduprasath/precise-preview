@@ -1,10 +1,11 @@
 
 import React from "react";
 import { Bell, LogOut, User, Wallet, Gift } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const BusinessTopbar = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   // Dummy user data
   const user = { name: "John Business", avatar: "" };
 
@@ -20,10 +21,20 @@ const BusinessTopbar = () => {
   const navigateToOffers = () => {
     navigate("/offers");
   };
+  
+  // Determine page title based on current path
+  const getPageTitle = () => {
+    if (location.pathname.includes('/orders/place')) return 'Place Order';
+    if (location.pathname.includes('/wallet')) return 'Wallet';
+    if (location.pathname.includes('/offers')) return 'Offers';
+    if (location.pathname.includes('/orders')) return 'Orders';
+    if (location.pathname.includes('/dashboard/business')) return 'Dashboard';
+    return 'Business Portal';
+  };
 
   return (
     <header className="h-16 w-full flex items-center justify-between border-b border-gray-200 px-6 bg-white z-10">
-      <div className="text-lg font-semibold text-[#1A1F2C]">Place Order</div>
+      <div className="text-lg font-semibold text-[#1A1F2C]">{getPageTitle()}</div>
       <div className="flex items-center gap-4">
         <button 
           className="relative cursor-pointer"
@@ -61,4 +72,3 @@ const BusinessTopbar = () => {
 };
 
 export default BusinessTopbar;
-
