@@ -4,12 +4,13 @@ import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
 import InfluencerProfile from '@/components/influencers/InfluencerProfile';
 import { supabase } from '@/integrations/supabase/client';
+import { Influencer } from '@/types/location';
 
 const InfluencerProfilePage = () => {
   const navigate = useNavigate();
   const [user, setUser] = React.useState<any>(null);
   const [loading, setLoading] = React.useState(true);
-  const [influencer, setInfluencer] = React.useState<any>(null);
+  const [influencer, setInfluencer] = React.useState<Influencer | null>(null);
 
   React.useEffect(() => {
     const checkUser = async () => {
@@ -30,15 +31,24 @@ const InfluencerProfilePage = () => {
 
       setUser(session.user);
       
-      // Fetch influencer data
-      const { data: influencerData } = await supabase
-        .from('influencers')
-        .select('*')
-        .eq('user_id', session.user.id)
-        .single();
-        
-      setInfluencer(influencerData);
-      setLoading(false);
+      try {
+        // Fetch influencer data using explicitly typed response
+        const { data: influencerData, error } = await supabase
+          .from('influencers')
+          .select('*, country:countries(*), state:states(*), city:cities(*), niche:niches(*)')
+          .eq('user_id', session.user.id)
+          .single();
+          
+        if (error) {
+          console.error('Error fetching influencer data:', error);
+        } else {
+          setInfluencer(influencerData as Influencer);
+        }
+      } catch (error) {
+        console.error('Exception fetching influencer data:', error);
+      } finally {
+        setLoading(false);
+      }
     };
 
     checkUser();
