@@ -213,7 +213,7 @@ const InfluencerProfile = ({ influencer }: { influencer: Influencer | null }) =>
         {activeTab === 'prices' && (
           <PricesTabContent 
             influencerId={influencer.id}
-            influencerName={influencer.name}
+            influencer={influencer}
           />
         )}
         

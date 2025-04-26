@@ -34,7 +34,7 @@ const InfluencerProfilePage = () => {
       
       try {
         // Get basic influencer data
-        const { data: influencerData, error: influencerError } = await supabase
+        const { data, error: influencerError } = await supabase
           .from('influencers')
           .select('*')
           .eq('user_id', session.user.id)
@@ -51,86 +51,83 @@ const InfluencerProfilePage = () => {
           return;
         }
         
-        if (!influencerData) {
+        if (!data) {
           console.error('No influencer data found');
           setLoading(false);
           return;
         }
         
-        // Start with a simplified influencer object
-        let fullInfluencer: Partial<Influencer> = {
-          id: influencerData.id,
-          name: influencerData.name,
-          username: influencerData.username,
-          bio: influencerData.bio,
-          country_id: influencerData.country_id,
-          state_id: influencerData.state_id,
-          city_id: influencerData.city_id,
-          niche_id: influencerData.niche_id,
-          followers_instagram: influencerData.followers_instagram,
-          followers_facebook: influencerData.followers_facebook,
-          followers_twitter: influencerData.followers_twitter,
-          followers_youtube: influencerData.followers_youtube,
-          engagement_rate: influencerData.engagement_rate,
-          image_url: influencerData.image_url,
-          created_at: influencerData.created_at,
-          updated_at: influencerData.updated_at
+        // Create a simpler influencer object without complex type inference
+        const baseInfluencer: Partial<Influencer> = {
+          id: data.id,
+          name: data.name,
+          username: data.username,
+          bio: data.bio,
+          country_id: data.country_id,
+          state_id: data.state_id,
+          city_id: data.city_id,
+          niche_id: data.niche_id,
+          followers_instagram: data.followers_instagram,
+          followers_facebook: data.followers_facebook,
+          followers_twitter: data.followers_twitter,
+          followers_youtube: data.followers_youtube,
+          engagement_rate: data.engagement_rate,
+          image_url: data.image_url,
+          created_at: data.created_at,
+          updated_at: data.updated_at
         };
         
-        // Fetch country data if available
-        if (fullInfluencer.country_id) {
+        // Fetch related entities one by one to avoid complex type inference
+        if (baseInfluencer.country_id) {
           const { data: countryData } = await supabase
             .from('countries')
             .select('*')
-            .eq('id', fullInfluencer.country_id)
+            .eq('id', baseInfluencer.country_id)
             .single();
             
           if (countryData) {
-            fullInfluencer.country = countryData as Country;
+            baseInfluencer.country = countryData as Country;
           }
         }
         
-        // Fetch state data if available
-        if (fullInfluencer.state_id) {
+        if (baseInfluencer.state_id) {
           const { data: stateData } = await supabase
             .from('states')
             .select('*')
-            .eq('id', fullInfluencer.state_id)
+            .eq('id', baseInfluencer.state_id)
             .single();
             
           if (stateData) {
-            fullInfluencer.state = stateData as State;
+            baseInfluencer.state = stateData as State;
           }
         }
         
-        // Fetch city data if available
-        if (fullInfluencer.city_id) {
+        if (baseInfluencer.city_id) {
           const { data: cityData } = await supabase
             .from('cities')
             .select('*')
-            .eq('id', fullInfluencer.city_id)
+            .eq('id', baseInfluencer.city_id)
             .single();
             
           if (cityData) {
-            fullInfluencer.city = cityData as City;
+            baseInfluencer.city = cityData as City;
           }
         }
         
-        // Fetch niche data if available
-        if (fullInfluencer.niche_id) {
+        if (baseInfluencer.niche_id) {
           const { data: nicheData } = await supabase
             .from('niches')
             .select('*')
-            .eq('id', fullInfluencer.niche_id)
+            .eq('id', baseInfluencer.niche_id)
             .single();
             
           if (nicheData) {
-            fullInfluencer.niche = nicheData as Niche;
+            baseInfluencer.niche = nicheData as Niche;
           }
         }
         
-        // Set the influencer state with final cast
-        setInfluencer(fullInfluencer as Influencer);
+        // Use a type assertion to set the influencer state
+        setInfluencer(baseInfluencer as Influencer);
       } catch (error) {
         console.error('Exception fetching influencer data:', error);
         toast({
