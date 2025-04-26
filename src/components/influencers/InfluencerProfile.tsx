@@ -1,11 +1,17 @@
+
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
 import { Instagram, Facebook, Twitter, Youtube } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { formatNumber } from './utils/formatUtils';
+import { Influencer } from '@/types/location';
 
-const InfluencerProfile = ({ influencer }) => {
+interface InfluencerProfileProps {
+  influencer?: Influencer | null;
+}
+
+const InfluencerProfile: React.FC<InfluencerProfileProps> = ({ influencer }) => {
   const [activeTab, setActiveTab] = useState('services');
 
   if (!influencer) {
