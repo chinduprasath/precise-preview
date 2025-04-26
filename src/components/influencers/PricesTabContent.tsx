@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -5,11 +6,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useToast } from '@/hooks/use-toast';
 import { usePricingData } from '@/hooks/usePricingData';
-import { useNavigate } from 'react-router-dom';
+import OrderForm from '@/components/orders/OrderForm';
+import { Influencer } from '@/types/location';
 
 interface PricesTabContentProps {
   influencerId?: string;
-  influencerName: string;
+  influencer: Influencer;
 }
 
 const platformServices = [
@@ -44,10 +46,9 @@ const comboPackages = [
 
 const PricesTabContent: React.FC<PricesTabContentProps> = ({
   influencerId,
-  influencerName,
+  influencer,
 }) => {
-  const { toast } = useToast();
-  const navigate = useNavigate();
+  const [showOrderForm, setShowOrderForm] = useState(false);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
   const handleCheckboxChange = (itemId: string) => {
@@ -59,24 +60,14 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
     });
   };
 
-  const handleBook = () => {
-    if (selectedItems.length === 0) {
-      toast({
-        title: "No items selected",
-        description: "Please select at least one service or package",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    navigate('/orders/place', { 
-      state: { 
-        influencerId, 
-        influencerName, 
-        selectedItems 
-      } 
-    });
-  };
+  if (showOrderForm) {
+    return (
+      <OrderForm 
+        influencer={influencer}
+        onCancel={() => setShowOrderForm(false)}
+      />
+    );
+  }
 
   return (
     <div className="space-y-6 p-4">
@@ -145,7 +136,7 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
 
       <div className="flex justify-center mt-6">
         <Button 
-          onClick={handleBook}
+          onClick={() => setShowOrderForm(true)}
           className="px-12 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md"
         >
           Book

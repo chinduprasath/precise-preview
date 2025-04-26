@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Avatar } from '@/components/ui/avatar';
 import { Instagram, Facebook, Youtube, Twitter } from 'lucide-react';
@@ -144,7 +143,7 @@ const InfluencerProfile: React.FC<InfluencerProfileProps> = ({ influencer }) => 
         {activeTab === 'prices' && (
           <PricesTabContent 
             influencerId={influencer.id}
-            influencerName={influencer.name}
+            influencer={influencer}
           />
         )}
         
