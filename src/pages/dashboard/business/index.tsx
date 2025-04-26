@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { 
@@ -298,7 +299,7 @@ const BusinessDashboard = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-background">
       <Sidebar />
       <div className="flex-1 flex flex-col">
         <ConditionalHeader />
@@ -306,8 +307,8 @@ const BusinessDashboard = () => {
           <div className="max-w-7xl mx-auto">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
               <div>
-                <h1 className="text-2xl font-bold">Business Dashboard</h1>
-                <p className="text-gray-500">Manage your influencer marketing campaigns</p>
+                <h1 className="text-2xl font-bold text-foreground">Business Dashboard</h1>
+                <p className="text-muted-foreground">Manage your influencer marketing campaigns</p>
               </div>
               <Button className="md:w-auto w-full" onClick={() => navigate('/influencers')}>
                 <Plus className="mr-2 h-4 w-4" /> Find Influencers
@@ -315,42 +316,42 @@ const BusinessDashboard = () => {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-              <div className="bg-white rounded-lg shadow-sm p-6">
+              <div className="bg-card text-card-foreground rounded-lg shadow-sm border border-border p-6">
                 <div className="flex items-center">
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mr-4">
                     <Users className="h-6 w-6 text-primary" />
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500">Active Requests</p>
-                    <p className="text-2xl font-bold">
+                    <p className="text-sm text-muted-foreground">Active Requests</p>
+                    <p className="text-2xl font-bold text-foreground">
                       {isLoading ? '...' : activeRequests}
                     </p>
                   </div>
                 </div>
               </div>
               
-              <div className="bg-white rounded-lg shadow-sm p-6">
+              <div className="bg-card text-card-foreground rounded-lg shadow-sm border border-border p-6">
                 <div className="flex items-center">
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mr-4">
                     <BarChart2 className="h-6 w-6 text-primary" />
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500">Completed Campaigns</p>
-                    <p className="text-2xl font-bold">
+                    <p className="text-sm text-muted-foreground">Completed Campaigns</p>
+                    <p className="text-2xl font-bold text-foreground">
                       {isLoading ? '...' : completedCampaigns}
                     </p>
                   </div>
                 </div>
               </div>
               
-              <div className="bg-white rounded-lg shadow-sm p-6">
+              <div className="bg-card text-card-foreground rounded-lg shadow-sm border border-border p-6">
                 <div className="flex items-center">
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mr-4">
                     <TrendingUp className="h-6 w-6 text-primary" />
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500">Total Reach</p>
-                    <p className="text-2xl font-bold">
+                    <p className="text-sm text-muted-foreground">Total Reach</p>
+                    <p className="text-2xl font-bold text-foreground">
                       {isLoading ? '...' : totalReach > 0 
                         ? totalReach > 1000000 
                           ? `${(totalReach / 1000000).toFixed(1)}M` 
@@ -363,14 +364,14 @@ const BusinessDashboard = () => {
                 </div>
               </div>
               
-              <div className="bg-white rounded-lg shadow-sm p-6">
+              <div className="bg-card text-card-foreground rounded-lg shadow-sm border border-border p-6">
                 <div className="flex items-center">
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mr-4">
                     <BadgeIndianRupee className="h-6 w-6 text-primary" />
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500">Total Spent</p>
-                    <p className="text-2xl font-bold">
+                    <p className="text-sm text-muted-foreground">Total Spent</p>
+                    <p className="text-2xl font-bold text-foreground">
                       {isLoading ? '...' : `₹${totalSpent.toLocaleString('en-IN')}`}
                     </p>
                   </div>
@@ -379,9 +380,9 @@ const BusinessDashboard = () => {
             </div>
             
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-              <div className="lg:col-span-2 bg-white rounded-lg shadow-sm p-6">
+              <div className="lg:col-span-2 bg-card text-card-foreground rounded-lg shadow-sm border border-border p-6">
                 <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-lg font-semibold">Service Requests</h2>
+                  <h2 className="text-lg font-semibold text-foreground">Service Requests</h2>
                   <Button variant="outline" size="sm" onClick={() => navigate('/orders')}>
                     View All Orders
                   </Button>
@@ -399,9 +400,9 @@ const BusinessDashboard = () => {
                 )}
               </div>
               
-              <div className="bg-white rounded-lg shadow-sm p-6">
+              <div className="bg-card text-card-foreground rounded-lg shadow-sm border border-border p-6">
                 <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-lg font-semibold">Campaign Calendar</h2>
+                  <h2 className="text-lg font-semibold text-foreground">Campaign Calendar</h2>
                   <Button variant="ghost" size="sm">
                     <CalendarDays className="h-4 w-4" />
                   </Button>
@@ -424,12 +425,12 @@ const BusinessDashboard = () => {
                           </span>
                         </div>
                         <div>
-                          <p className="font-medium">
+                          <p className="font-medium text-foreground">
                             {request.serviceType.charAt(0).toUpperCase() + request.serviceType.slice(1)} with {request.influencerName}
                           </p>
-                          <div className="flex items-center text-xs text-gray-500">
+                          <div className="flex items-center text-xs text-muted-foreground">
                             <span>Platform: {request.platform.charAt(0).toUpperCase() + request.platform.slice(1)}</span>
-                            <span className="ml-2 px-2 py-0.5 rounded-full bg-green-100 text-green-800">
+                            <span className="ml-2 px-2 py-0.5 rounded-full bg-primary/10 text-primary">
                               {request.status.charAt(0).toUpperCase() + request.status.slice(1)}
                             </span>
                           </div>
@@ -438,7 +439,7 @@ const BusinessDashboard = () => {
                     ))}
                     
                     {requests.filter(req => req.status === 'paid' || req.status === 'completed').length === 0 && (
-                      <div className="text-center py-6 text-gray-500">
+                      <div className="text-center py-6 text-muted-foreground">
                         No active campaigns yet
                       </div>
                     )}
@@ -452,22 +453,24 @@ const BusinessDashboard = () => {
             </div>
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <h2 className="text-lg font-semibold mb-6">Campaign Performance</h2>
+              <div className="bg-card text-card-foreground rounded-lg shadow-sm border border-border p-6">
+                <h2 className="text-lg font-semibold mb-6 text-foreground">Campaign Performance</h2>
                 <div className="space-y-6">
                   {[1, 2].map((i) => (
-                    <div key={i} className="border-b pb-4 last:border-0 last:pb-0">
+                    <div key={i} className="border-b border-border pb-4 last:border-0 last:pb-0">
                       <div className="flex justify-between items-start mb-2">
-                        <h3 className="font-medium">{
+                        <h3 className="font-medium text-foreground">{
                           i === 1 ? 'Spring Collection Campaign' : 'Product Launch'
                         }</h3>
                         <span className={`px-2 py-1 rounded-full text-xs ${
-                          i === 1 ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
+                          i === 1 
+                            ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-300' 
+                            : 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300'
                         }`}>
                           {i === 1 ? 'Completed' : 'In Progress'}
                         </span>
                       </div>
-                      <p className="text-sm text-gray-600 mb-4">{
+                      <p className="text-sm text-muted-foreground mb-4">{
                         i === 1 
                           ? 'Campaign with 5 fashion influencers to promote spring collection.' 
                           : 'Product launch campaign with tech influencers.'
@@ -475,20 +478,20 @@ const BusinessDashboard = () => {
                       
                       <div className="grid grid-cols-2 gap-4 mb-4">
                         <div>
-                          <p className="text-xs text-gray-500">Engagement</p>
-                          <p className="font-semibold">{i === 1 ? '4.5%' : '3.8%'}</p>
+                          <p className="text-xs text-muted-foreground">Engagement</p>
+                          <p className="font-semibold text-foreground">{i === 1 ? '4.5%' : '3.8%'}</p>
                         </div>
                         <div>
-                          <p className="text-xs text-gray-500">Impressions</p>
-                          <p className="font-semibold">{i === 1 ? '1.2M' : '780K'}</p>
+                          <p className="text-xs text-muted-foreground">Impressions</p>
+                          <p className="font-semibold text-foreground">{i === 1 ? '1.2M' : '780K'}</p>
                         </div>
                         <div>
-                          <p className="text-xs text-gray-500">Clicks</p>
-                          <p className="font-semibold">{i === 1 ? '24K' : '15K'}</p>
+                          <p className="text-xs text-muted-foreground">Clicks</p>
+                          <p className="font-semibold text-foreground">{i === 1 ? '24K' : '15K'}</p>
                         </div>
                         <div>
-                          <p className="text-xs text-gray-500">Conversions</p>
-                          <p className="font-semibold">{i === 1 ? '2.3K' : '1.1K'}</p>
+                          <p className="text-xs text-muted-foreground">Conversions</p>
+                          <p className="font-semibold text-foreground">{i === 1 ? '2.3K' : '1.1K'}</p>
                         </div>
                       </div>
                       
@@ -498,43 +501,43 @@ const BusinessDashboard = () => {
                 </div>
               </div>
               
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <h2 className="text-lg font-semibold mb-4">Budget Overview</h2>
+              <div className="bg-card text-card-foreground rounded-lg shadow-sm border border-border p-6">
+                <h2 className="text-lg font-semibold mb-4 text-foreground">Budget Overview</h2>
                 <div className="space-y-4">
                   <div>
                     <div className="flex justify-between mb-1">
-                      <p className="text-sm">Spring Collection Campaign</p>
-                      <p className="text-sm font-medium">₹5,000 / ₹5,000</p>
+                      <p className="text-sm text-foreground">Spring Collection Campaign</p>
+                      <p className="text-sm font-medium text-foreground">₹5,000 / ₹5,000</p>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div className="bg-green-500 h-2 rounded-full" style={{ width: '100%' }}></div>
+                    <div className="w-full bg-secondary rounded-full h-2">
+                      <div className="bg-emerald-500 h-2 rounded-full" style={{ width: '100%' }}></div>
                     </div>
                   </div>
                   <div>
                     <div className="flex justify-between mb-1">
-                      <p className="text-sm">Product Launch</p>
-                      <p className="text-sm font-medium">₹7,200 / ₹10,000</p>
+                      <p className="text-sm text-foreground">Product Launch</p>
+                      <p className="text-sm font-medium text-foreground">₹7,200 / ₹10,000</p>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div className="w-full bg-secondary rounded-full h-2">
                       <div className="bg-primary h-2 rounded-full" style={{ width: '72%' }}></div>
                     </div>
                   </div>
                   <div>
                     <div className="flex justify-between mb-1">
-                      <p className="text-sm">Summer Campaign (Planned)</p>
-                      <p className="text-sm font-medium">₹0 / ₹8,000</p>
+                      <p className="text-sm text-foreground">Summer Campaign (Planned)</p>
+                      <p className="text-sm font-medium text-foreground">₹0 / ₹8,000</p>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div className="bg-gray-400 h-2 rounded-full" style={{ width: '0%' }}></div>
+                    <div className="w-full bg-secondary rounded-full h-2">
+                      <div className="bg-muted h-2 rounded-full" style={{ width: '0%' }}></div>
                     </div>
                   </div>
                   
-                  <div className="mt-6 pt-6 border-t">
+                  <div className="mt-6 pt-6 border-t border-border">
                     <div className="flex justify-between mb-2">
-                      <p className="font-medium">Total Budget</p>
-                      <p className="font-medium">₹23,000</p>
+                      <p className="font-medium text-foreground">Total Budget</p>
+                      <p className="font-medium text-foreground">₹23,000</p>
                     </div>
-                    <div className="flex justify-between text-sm text-gray-500">
+                    <div className="flex justify-between text-sm text-muted-foreground">
                       <p>Used</p>
                       <p>₹12,200 (53.0%)</p>
                     </div>
