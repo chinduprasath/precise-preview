@@ -5,9 +5,10 @@ import Layout from '@/components/layout/Layout';
 import InfluencerProfile from '@/components/influencers/InfluencerProfile';
 import { supabase } from '@/integrations/supabase/client';
 import { Influencer, Country, State, City, Niche } from '@/types/location';
+import { toast } from '@/components/ui/use-toast';
 
-// We'll define a simpler type for raw database data to avoid deep type inference issues
-type RawInfluencerData = {
+// Define simplified interface for database data
+interface RawInfluencerData {
   id: string;
   name: string;
   username: string | null;
@@ -24,7 +25,7 @@ type RawInfluencerData = {
   image_url: string | null;
   created_at: string;
   updated_at: string;
-};
+}
 
 const InfluencerProfilePage = () => {
   const navigate = useNavigate();
@@ -52,36 +53,42 @@ const InfluencerProfilePage = () => {
       setUser(session.user);
       
       try {
-        // Completely avoid TypeScript inference by using Record<string, any> for the response
-        const response = await supabase
+        // Use explicit typing and avoid inference issues
+        const { data, error } = await supabase
           .from('influencers')
           .select('*')
           .eq('user_id', session.user.id)
           .single();
           
-        const { data, error } = response as { data: Record<string, any> | null, error: any };
-        
         if (error) {
           console.error('Error fetching influencer data:', error);
+          toast({
+            title: "Error",
+            description: "Could not load your profile data",
+            variant: "destructive"
+          });
         } else if (data) {
-          // Create influencer object with explicit typing to avoid type inference issues
+          // Cast data to our simplified type
+          const rawData = data as unknown as RawInfluencerData;
+          
+          // Create influencer object with explicit properties
           const fullInfluencer: Influencer = {
-            id: data.id,
-            name: data.name,
-            username: data.username,
-            bio: data.bio,
-            country_id: data.country_id,
-            state_id: data.state_id,
-            city_id: data.city_id,
-            niche_id: data.niche_id,
-            followers_instagram: data.followers_instagram,
-            followers_facebook: data.followers_facebook,
-            followers_twitter: data.followers_twitter,
-            followers_youtube: data.followers_youtube,
-            engagement_rate: data.engagement_rate,
-            image_url: data.image_url,
-            created_at: data.created_at,
-            updated_at: data.updated_at,
+            id: rawData.id,
+            name: rawData.name,
+            username: rawData.username,
+            bio: rawData.bio,
+            country_id: rawData.country_id,
+            state_id: rawData.state_id,
+            city_id: rawData.city_id,
+            niche_id: rawData.niche_id,
+            followers_instagram: rawData.followers_instagram,
+            followers_facebook: rawData.followers_facebook,
+            followers_twitter: rawData.followers_twitter,
+            followers_youtube: rawData.followers_youtube,
+            engagement_rate: rawData.engagement_rate,
+            image_url: rawData.image_url,
+            created_at: rawData.created_at,
+            updated_at: rawData.updated_at,
             country: undefined,
             state: undefined,
             city: undefined,
@@ -89,7 +96,7 @@ const InfluencerProfilePage = () => {
             hashtags: undefined
           };
           
-          // Fetch related entities separately using any to avoid type inference issues
+          // Fetch related entities separately with explicit typing
           
           // Get country data if available
           if (fullInfluencer.country_id) {
@@ -99,9 +106,8 @@ const InfluencerProfilePage = () => {
               .eq('id', fullInfluencer.country_id)
               .single();
               
-            const countryData = countryResponse.data as Country | null;
-            if (countryData) {
-              fullInfluencer.country = countryData;
+            if (countryResponse.data) {
+              fullInfluencer.country = countryResponse.data as Country;
             }
           }
           
@@ -113,9 +119,8 @@ const InfluencerProfilePage = () => {
               .eq('id', fullInfluencer.state_id)
               .single();
               
-            const stateData = stateResponse.data as State | null;
-            if (stateData) {
-              fullInfluencer.state = stateData;
+            if (stateResponse.data) {
+              fullInfluencer.state = stateResponse.data as State;
             }
           }
           
@@ -127,9 +132,8 @@ const InfluencerProfilePage = () => {
               .eq('id', fullInfluencer.city_id)
               .single();
               
-            const cityData = cityResponse.data as City | null;
-            if (cityData) {
-              fullInfluencer.city = cityData;
+            if (cityResponse.data) {
+              fullInfluencer.city = cityResponse.data as City;
             }
           }
           
@@ -141,9 +145,8 @@ const InfluencerProfilePage = () => {
               .eq('id', fullInfluencer.niche_id)
               .single();
               
-            const nicheData = nicheResponse.data as Niche | null;
-            if (nicheData) {
-              fullInfluencer.niche = nicheData;
+            if (nicheResponse.data) {
+              fullInfluencer.niche = nicheResponse.data as Niche;
             }
           }
           
@@ -151,6 +154,11 @@ const InfluencerProfilePage = () => {
         }
       } catch (error) {
         console.error('Exception fetching influencer data:', error);
+        toast({
+          title: "Error",
+          description: "An unexpected error occurred while loading your profile",
+          variant: "destructive"
+        });
       } finally {
         setLoading(false);
       }
