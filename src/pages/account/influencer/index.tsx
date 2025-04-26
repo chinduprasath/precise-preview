@@ -68,11 +68,11 @@ const InfluencerProfilePage = () => {
             variant: "destructive"
           });
         } else if (data) {
-          // Cast data to our simplified type
-          const rawData = data as unknown as RawInfluencerData;
+          // Use explicit type assertion to avoid deep inference
+          const rawData = data as RawInfluencerData;
           
-          // Create influencer object with explicit properties
-          const fullInfluencer: Influencer = {
+          // Create a base influencer object with explicit properties
+          const baseInfluencer: Partial<Influencer> = {
             id: rawData.id,
             name: rawData.name,
             username: rawData.username,
@@ -89,68 +89,64 @@ const InfluencerProfilePage = () => {
             image_url: rawData.image_url,
             created_at: rawData.created_at,
             updated_at: rawData.updated_at,
-            country: undefined,
-            state: undefined,
-            city: undefined,
-            niche: undefined,
-            hashtags: undefined
           };
           
           // Fetch related entities separately with explicit typing
           
           // Get country data if available
-          if (fullInfluencer.country_id) {
-            const countryResponse = await supabase
+          if (baseInfluencer.country_id) {
+            const { data: countryData } = await supabase
               .from('countries')
               .select('*')
-              .eq('id', fullInfluencer.country_id)
+              .eq('id', baseInfluencer.country_id)
               .single();
               
-            if (countryResponse.data) {
-              fullInfluencer.country = countryResponse.data as Country;
+            if (countryData) {
+              baseInfluencer.country = countryData as Country;
             }
           }
           
           // Get state data if available
-          if (fullInfluencer.state_id) {
-            const stateResponse = await supabase
+          if (baseInfluencer.state_id) {
+            const { data: stateData } = await supabase
               .from('states')
               .select('*')
-              .eq('id', fullInfluencer.state_id)
+              .eq('id', baseInfluencer.state_id)
               .single();
               
-            if (stateResponse.data) {
-              fullInfluencer.state = stateResponse.data as State;
+            if (stateData) {
+              baseInfluencer.state = stateData as State;
             }
           }
           
           // Get city data if available
-          if (fullInfluencer.city_id) {
-            const cityResponse = await supabase
+          if (baseInfluencer.city_id) {
+            const { data: cityData } = await supabase
               .from('cities')
               .select('*')
-              .eq('id', fullInfluencer.city_id)
+              .eq('id', baseInfluencer.city_id)
               .single();
               
-            if (cityResponse.data) {
-              fullInfluencer.city = cityResponse.data as City;
+            if (cityData) {
+              baseInfluencer.city = cityData as City;
             }
           }
           
           // Get niche data if available
-          if (fullInfluencer.niche_id) {
-            const nicheResponse = await supabase
+          if (baseInfluencer.niche_id) {
+            const { data: nicheData } = await supabase
               .from('niches')
               .select('*')
-              .eq('id', fullInfluencer.niche_id)
+              .eq('id', baseInfluencer.niche_id)
               .single();
               
-            if (nicheResponse.data) {
-              fullInfluencer.niche = nicheResponse.data as Niche;
+            if (nicheData) {
+              baseInfluencer.niche = nicheData as Niche;
             }
           }
           
-          setInfluencer(fullInfluencer);
+          // Cast the complete object to Influencer type
+          setInfluencer(baseInfluencer as Influencer);
         }
       } catch (error) {
         console.error('Exception fetching influencer data:', error);
