@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
@@ -10,10 +9,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { BarChart, Bar, LineChart, Line, AreaChart, Area, PieChart, Pie, Cell, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
-import { ArrowUp, ArrowDown, BarChart as BarChartIcon, Target, Users, Heart, CircleDollarSign, TrendingUp, Clock } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { ArrowUp, ArrowDown, BarChart as BarChartIcon, Target, Users, Heart, CircleDollarSign } from 'lucide-react';
+import {
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  BarChart as RechartsBarChart,
+  Bar,
+  PieChart,
+  Pie,
+  Cell
+} from 'recharts';
 
-// Mock data for charts
 const mockOrders = [
   { id: '1', name: 'Instagram Campaign - Summer Collection', influencer: 'Christopher Campbell', value: 12500 },
   { id: '2', name: 'TikTok Product Launch - New Tech Gadget', influencer: 'Kelly Sikkema', value: 15800 },
@@ -59,17 +72,17 @@ const demographicData = [
   { name: '55+', value: 3 },
 ];
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
+const COLORS = ['#4361EE', '#7209B7', '#F72585', '#06D6A0', '#FFBE0B'];
 
 const GoalProgressCard = ({ current, goal, title, icon }: { current: number, goal: number, title: string, icon: React.ReactNode }) => {
   const percentage = Math.min(Math.round((current / goal) * 100), 100);
   
   return (
-    <Card>
+    <Card className="border-border bg-card">
       <CardContent className="p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-medium text-gray-700">{title}</h3>
-          <div className="p-2 bg-blue-100 text-blue-600 rounded-full">
+          <h3 className="text-lg font-medium text-foreground">{title}</h3>
+          <div className="p-2 bg-primary/10 text-primary rounded-full">
             {icon}
           </div>
         </div>
@@ -78,7 +91,7 @@ const GoalProgressCard = ({ current, goal, title, icon }: { current: number, goa
           <h2 className="text-3xl font-bold text-primary">
             ${current.toLocaleString()}
           </h2>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-muted-foreground">
             of ${goal.toLocaleString()} Monthly Goal
           </p>
         </div>
@@ -86,13 +99,16 @@ const GoalProgressCard = ({ current, goal, title, icon }: { current: number, goa
         <div className="relative pt-1">
           <div className="flex mb-2 items-center justify-between">
             <div>
-              <span className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-blue-600 bg-blue-200">
+              <span className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full bg-primary/10 text-primary">
                 {percentage}%
               </span>
             </div>
           </div>
-          <div className="overflow-hidden h-2 mb-4 text-xs flex rounded bg-blue-100">
-            <div style={{ width: `${percentage}%` }} className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-600"></div>
+          <div className="overflow-hidden h-2 mb-4 text-xs flex rounded bg-muted">
+            <div 
+              style={{ width: `${percentage}%` }} 
+              className="shadow-none flex flex-col text-center whitespace-nowrap text-primary-foreground justify-center bg-primary"
+            />
           </div>
         </div>
       </CardContent>
@@ -102,17 +118,17 @@ const GoalProgressCard = ({ current, goal, title, icon }: { current: number, goa
 
 const MetricCard = ({ title, value, change, icon }: { title: string, value: string, change: { value: number, isPositive: boolean }, icon: React.ReactNode }) => {
   return (
-    <Card>
+    <Card className="border-border bg-card">
       <CardContent className="p-6">
         <div className="flex items-center justify-between mb-2">
-          <h3 className="text-sm font-medium text-gray-500">{title}</h3>
-          <div className="p-2 bg-blue-100 text-blue-600 rounded-full">
+          <h3 className="text-sm font-medium text-muted-foreground">{title}</h3>
+          <div className="p-2 bg-primary/10 text-primary rounded-full">
             {icon}
           </div>
         </div>
         <div className="flex items-end justify-between">
-          <h2 className="text-2xl font-bold text-gray-800">{value}</h2>
-          <div className={`flex items-center text-sm ${change.isPositive ? 'text-green-600' : 'text-red-600'}`}>
+          <h2 className="text-2xl font-bold text-foreground">{value}</h2>
+          <div className={`flex items-center text-sm ${change.isPositive ? 'text-green-500' : 'text-red-500'}`}>
             {change.isPositive ? <ArrowUp className="w-4 h-4 mr-1" /> : <ArrowDown className="w-4 h-4 mr-1" />}
             {change.value}%
           </div>
@@ -124,17 +140,15 @@ const MetricCard = ({ title, value, change, icon }: { title: string, value: stri
 
 const ReachPage = () => {
   const [selectedOrder, setSelectedOrder] = useState<string>("1");
-  
   const currentOrder = mockOrders.find(order => order.id === selectedOrder) || mockOrders[0];
 
   return (
-    <div className="flex h-screen overflow-hidden bg-gray-50">
+    <div className="flex h-screen bg-background">
       <Sidebar />
-      <main className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col">
         <Header />
-        <div className="flex-1 overflow-auto p-6">
+        <main className="flex-1 overflow-auto p-6">
           <div className="max-w-7xl mx-auto">
-            {/* Order selector */}
             <div className="mb-6 max-w-xs">
               <Select 
                 value={selectedOrder} 
@@ -153,7 +167,6 @@ const ReachPage = () => {
               </Select>
             </div>
             
-            {/* Top row metrics */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
               <GoalProgressCard 
                 current={currentOrder.value} 
@@ -180,74 +193,89 @@ const ReachPage = () => {
                 icon={<Target className="h-5 w-5" />}
               />
             </div>
-            
-            {/* Middle row charts */}
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-              <Card>
+              <Card className="border-border">
                 <CardContent className="p-6">
-                  <h3 className="text-lg font-medium mb-4">Engagement Overview</h3>
+                  <h3 className="text-lg font-medium mb-4 text-foreground">Engagement Overview</h3>
                   <div className="h-80">
                     <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={engagementData}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="day" />
-                        <YAxis />
-                        <Tooltip />
+                      <RechartsBarChart data={engagementData}>
+                        <CartesianGrid strokeDasharray="3 3" className="stroke-border/50" />
+                        <XAxis dataKey="day" stroke="currentColor" />
+                        <YAxis stroke="currentColor" />
+                        <Tooltip 
+                          contentStyle={{ 
+                            backgroundColor: 'hsl(var(--card))',
+                            borderColor: 'hsl(var(--border))',
+                            color: 'hsl(var(--foreground))'
+                          }} 
+                        />
                         <Legend />
-                        <Bar dataKey="likes" fill="#0088FE" name="Likes" />
-                        <Bar dataKey="comments" fill="#00C49F" name="Comments" />
-                        <Bar dataKey="shares" fill="#FFBB28" name="Shares" />
-                      </BarChart>
+                        <Bar dataKey="likes" fill={COLORS[0]} name="Likes" />
+                        <Bar dataKey="comments" fill={COLORS[1]} name="Comments" />
+                        <Bar dataKey="shares" fill={COLORS[2]} name="Shares" />
+                      </RechartsBarChart>
                     </ResponsiveContainer>
                   </div>
                 </CardContent>
               </Card>
-              
-              <Card>
+
+              <Card className="border-border">
                 <CardContent className="p-6">
-                  <h3 className="text-lg font-medium mb-4">Reach & Impressions</h3>
+                  <h3 className="text-lg font-medium mb-4 text-foreground">Reach & Impressions</h3>
                   <div className="h-80">
                     <ResponsiveContainer width="100%" height="100%">
                       <AreaChart data={reachData}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="day" />
-                        <YAxis />
-                        <Tooltip />
+                        <CartesianGrid strokeDasharray="3 3" className="stroke-border/50" />
+                        <XAxis dataKey="day" stroke="currentColor" />
+                        <YAxis stroke="currentColor" />
+                        <Tooltip 
+                          contentStyle={{ 
+                            backgroundColor: 'hsl(var(--card))',
+                            borderColor: 'hsl(var(--border))',
+                            color: 'hsl(var(--foreground))'
+                          }} 
+                        />
                         <Legend />
-                        <Area type="monotone" dataKey="impressions" stroke="#8884d8" fill="#8884d8" name="Impressions" />
-                        <Area type="monotone" dataKey="reach" stroke="#82ca9d" fill="#82ca9d" name="Reach" />
+                        <Area type="monotone" dataKey="impressions" stroke={COLORS[0]} fill={COLORS[0]} name="Impressions" />
+                        <Area type="monotone" dataKey="reach" stroke={COLORS[1]} fill={COLORS[1]} name="Reach" />
                       </AreaChart>
                     </ResponsiveContainer>
                   </div>
                 </CardContent>
               </Card>
             </div>
-            
-            {/* Bottom row charts */}
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <Card>
+              <Card className="border-border">
                 <CardContent className="p-6">
-                  <h3 className="text-lg font-medium mb-4">Clicks & Conversions</h3>
+                  <h3 className="text-lg font-medium mb-4 text-foreground">Clicks & Conversions</h3>
                   <div className="h-80">
                     <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={conversionData}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="day" />
-                        <YAxis yAxisId="left" />
-                        <YAxis yAxisId="right" orientation="right" />
-                        <Tooltip />
+                      <RechartsBarChart data={conversionData}>
+                        <CartesianGrid strokeDasharray="3 3" className="stroke-border/50" />
+                        <XAxis dataKey="day" stroke="currentColor" />
+                        <YAxis stroke="currentColor" />
+                        <Tooltip 
+                          contentStyle={{ 
+                            backgroundColor: 'hsl(var(--card))',
+                            borderColor: 'hsl(var(--border))',
+                            color: 'hsl(var(--foreground))'
+                          }} 
+                        />
                         <Legend />
-                        <Line yAxisId="left" type="monotone" dataKey="clicks" stroke="#0088FE" name="Clicks" />
-                        <Line yAxisId="right" type="monotone" dataKey="conversions" stroke="#00C49F" name="Conversions" />
-                      </LineChart>
+                        <Bar dataKey="clicks" fill={COLORS[0]} name="Clicks" />
+                        <Bar dataKey="conversions" fill={COLORS[1]} name="Conversions" />
+                      </RechartsBarChart>
                     </ResponsiveContainer>
                   </div>
                 </CardContent>
               </Card>
-              
-              <Card>
+
+              <Card className="border-border">
                 <CardContent className="p-6">
-                  <h3 className="text-lg font-medium mb-4">Audience Demographics</h3>
+                  <h3 className="text-lg font-medium mb-4 text-foreground">Audience Demographics</h3>
                   <div className="h-80">
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
@@ -265,65 +293,70 @@ const ReachPage = () => {
                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                           ))}
                         </Pie>
-                        <Tooltip />
-                        <Legend />
+                        <Tooltip 
+                          contentStyle={{ 
+                            backgroundColor: 'hsl(var(--card))',
+                            borderColor: 'hsl(var(--border))',
+                            color: 'hsl(var(--foreground))'
+                          }} 
+                        />
                       </PieChart>
                     </ResponsiveContainer>
                   </div>
                 </CardContent>
               </Card>
-              
-              <Card>
+
+              <Card className="border-border">
                 <CardContent className="p-6">
-                  <h3 className="text-lg font-medium mb-4">Campaign Performance Metrics</h3>
+                  <h3 className="text-lg font-medium mb-4 text-foreground">Campaign Performance Metrics</h3>
                   <div className="space-y-6">
                     <div>
                       <div className="flex justify-between text-sm mb-1">
-                        <span className="font-medium">ROI</span>
-                        <span>245%</span>
+                        <span className="font-medium text-foreground">ROI</span>
+                        <span className="text-foreground">245%</span>
                       </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div className="bg-blue-600 h-2 rounded-full" style={{ width: '85%' }}></div>
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <div className="flex justify-between text-sm mb-1">
-                        <span className="font-medium">CTR</span>
-                        <span>5.2%</span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div className="bg-green-500 h-2 rounded-full" style={{ width: '70%' }}></div>
+                      <div className="w-full bg-muted rounded-full h-2">
+                        <div className="bg-primary h-2 rounded-full" style={{ width: '85%' }}></div>
                       </div>
                     </div>
                     
                     <div>
                       <div className="flex justify-between text-sm mb-1">
-                        <span className="font-medium">Completion Rate</span>
-                        <span>92%</span>
+                        <span className="font-medium text-foreground">CTR</span>
+                        <span className="text-foreground">5.2%</span>
                       </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div className="bg-purple-500 h-2 rounded-full" style={{ width: '92%' }}></div>
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <div className="flex justify-between text-sm mb-1">
-                        <span className="font-medium">Cost per Acquisition</span>
-                        <span>$12.47</span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div className="bg-yellow-500 h-2 rounded-full" style={{ width: '63%' }}></div>
+                      <div className="w-full bg-muted rounded-full h-2">
+                        <div className="bg-[#7209B7] h-2 rounded-full" style={{ width: '70%' }}></div>
                       </div>
                     </div>
                     
                     <div>
                       <div className="flex justify-between text-sm mb-1">
-                        <span className="font-medium">Brand Sentiment</span>
-                        <span>Positive (78%)</span>
+                        <span className="font-medium text-foreground">Completion Rate</span>
+                        <span className="text-foreground">92%</span>
                       </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div className="bg-indigo-500 h-2 rounded-full" style={{ width: '78%' }}></div>
+                      <div className="w-full bg-muted rounded-full h-2">
+                        <div className="bg-[#F72585] h-2 rounded-full" style={{ width: '92%' }}></div>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <div className="flex justify-between text-sm mb-1">
+                        <span className="font-medium text-foreground">Cost per Acquisition</span>
+                        <span className="text-foreground">$12.47</span>
+                      </div>
+                      <div className="w-full bg-muted rounded-full h-2">
+                        <div className="bg-[#06D6A0] h-2 rounded-full" style={{ width: '63%' }}></div>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <div className="flex justify-between text-sm mb-1">
+                        <span className="font-medium text-foreground">Brand Sentiment</span>
+                        <span className="text-foreground">Positive (78%)</span>
+                      </div>
+                      <div className="w-full bg-muted rounded-full h-2">
+                        <div className="bg-[#FFBE0B] h-2 rounded-full" style={{ width: '78%' }}></div>
                       </div>
                     </div>
                   </div>
@@ -331,8 +364,8 @@ const ReachPage = () => {
               </Card>
             </div>
           </div>
-        </div>
-      </main>
+        </main>
+      </div>
     </div>
   );
 };
