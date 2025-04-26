@@ -417,7 +417,7 @@ const InfluencersPage = () => {
         <Header />
         <main className="flex-1 overflow-auto p-6">
           <div className="flex gap-6">
-            <div className="w-1/3 bg-card rounded-lg p-4 shadow-sm border border-border">
+            <div className="w-1/5 bg-card rounded-lg p-4 shadow-sm border border-border">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-lg font-semibold text-foreground">Basic Filter</h2>
                 <Button 
@@ -631,7 +631,7 @@ const InfluencersPage = () => {
               </div>
             </div>
             
-            <div className="w-2/3 grid grid-cols-7 gap-4">
+            <div className="w-4/5 grid grid-cols-7 gap-4">
               <div className="col-span-3 bg-card rounded-lg shadow-sm border border-border">
                 <div className="p-4 border-b border-border flex items-center justify-between">
                   <h2 className="text-lg font-semibold text-foreground">Influencers</h2>
