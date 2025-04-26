@@ -56,78 +56,77 @@ const InfluencerProfilePage = () => {
           setLoading(false);
           return;
         }
-        
-        // Create a simpler influencer object without complex type inference
-        const baseInfluencer: Partial<Influencer> = {
+
+        // Create the influencer object directly with explicit typing
+        const influencerData: Influencer = {
           id: data.id,
           name: data.name,
-          username: data.username,
-          bio: data.bio,
-          country_id: data.country_id,
-          state_id: data.state_id,
-          city_id: data.city_id,
-          niche_id: data.niche_id,
-          followers_instagram: data.followers_instagram,
-          followers_facebook: data.followers_facebook,
-          followers_twitter: data.followers_twitter,
-          followers_youtube: data.followers_youtube,
-          engagement_rate: data.engagement_rate,
-          image_url: data.image_url,
+          username: data.username || null,
+          bio: data.bio || null,
+          country_id: data.country_id || null,
+          state_id: data.state_id || null,
+          city_id: data.city_id || null,
+          niche_id: data.niche_id || null,
+          followers_instagram: data.followers_instagram || 0,
+          followers_facebook: data.followers_facebook || 0,
+          followers_twitter: data.followers_twitter || 0,
+          followers_youtube: data.followers_youtube || 0,
+          engagement_rate: data.engagement_rate || 0,
+          image_url: data.image_url || null,
           created_at: data.created_at,
-          updated_at: data.updated_at
+          updated_at: data.updated_at,
         };
         
-        // Fetch related entities one by one to avoid complex type inference
-        if (baseInfluencer.country_id) {
+        // Fetch related entities separately
+        if (data.country_id) {
           const { data: countryData } = await supabase
             .from('countries')
             .select('*')
-            .eq('id', baseInfluencer.country_id)
+            .eq('id', data.country_id)
             .single();
             
           if (countryData) {
-            baseInfluencer.country = countryData as Country;
+            influencerData.country = countryData as Country;
           }
         }
         
-        if (baseInfluencer.state_id) {
+        if (data.state_id) {
           const { data: stateData } = await supabase
             .from('states')
             .select('*')
-            .eq('id', baseInfluencer.state_id)
+            .eq('id', data.state_id)
             .single();
             
           if (stateData) {
-            baseInfluencer.state = stateData as State;
+            influencerData.state = stateData as State;
           }
         }
         
-        if (baseInfluencer.city_id) {
+        if (data.city_id) {
           const { data: cityData } = await supabase
             .from('cities')
             .select('*')
-            .eq('id', baseInfluencer.city_id)
+            .eq('id', data.city_id)
             .single();
             
           if (cityData) {
-            baseInfluencer.city = cityData as City;
+            influencerData.city = cityData as City;
           }
         }
         
-        if (baseInfluencer.niche_id) {
+        if (data.niche_id) {
           const { data: nicheData } = await supabase
             .from('niches')
             .select('*')
-            .eq('id', baseInfluencer.niche_id)
+            .eq('id', data.niche_id)
             .single();
             
           if (nicheData) {
-            baseInfluencer.niche = nicheData as Niche;
+            influencerData.niche = nicheData as Niche;
           }
         }
         
-        // Use a type assertion to set the influencer state
-        setInfluencer(baseInfluencer as Influencer);
+        setInfluencer(influencerData);
       } catch (error) {
         console.error('Exception fetching influencer data:', error);
         toast({
