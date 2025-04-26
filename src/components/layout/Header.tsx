@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Gift, Wallet } from 'lucide-react';
@@ -6,6 +7,7 @@ import NotificationBell from './header/NotificationBell';
 import UserProfileMenu from './header/UserProfileMenu';
 import { useHeaderData } from '@/hooks/useHeaderData';
 import { useTheme } from '@/components/theme-provider';
+import { cn } from '@/lib/utils';
 
 const Header = () => {
   const { userData, notificationCount } = useHeaderData();
@@ -22,9 +24,10 @@ const Header = () => {
   };
 
   return (
-    <header className={`h-16 border-b border-border px-6 flex items-center justify-between ${
-      resolvedTheme === 'dark' ? 'bg-gray-900' : 'bg-white'
-    }`}>
+    <header className={cn(
+      "h-16 border-b border-border px-6 flex items-center justify-between",
+      resolvedTheme === 'dark' ? 'bg-gray-900' : 'bg-background'
+    )}>
       <SearchBar />
       <div className="flex items-center gap-4">
         {(userType === 'business' || userType === 'influencer') && (
@@ -34,14 +37,14 @@ const Header = () => {
               onClick={navigateToOffers}
               title="Offers"
             >
-              <Gift className="w-5 h-5 text-[#9b87f5]" />
+              <Gift className="w-5 h-5 text-primary" />
             </button>
             <button 
               className="relative cursor-pointer hover:opacity-80 transition-opacity"
               onClick={navigateToWallet}
               title="Wallet"
             >
-              <Wallet className="w-5 h-5 text-[#9b87f5]" />
+              <Wallet className="w-5 h-5 text-primary" />
             </button>
           </>
         )}
