@@ -52,37 +52,36 @@ const InfluencerProfilePage = () => {
       setUser(session.user);
       
       try {
-        // Use a type assertion for the response data to avoid TypeScript depth issues
-        const { data, error } = await supabase
+        // Completely avoid TypeScript inference by using Record<string, any> for the response
+        const response = await supabase
           .from('influencers')
           .select('*')
           .eq('user_id', session.user.id)
-          .single() as { data: unknown, error: any };
+          .single();
           
+        const { data, error } = response as { data: Record<string, any> | null, error: any };
+        
         if (error) {
           console.error('Error fetching influencer data:', error);
         } else if (data) {
-          // Cast data to our simple type to avoid complex type inference
-          const rawData = data as RawInfluencerData;
-          
-          // Manually construct the influencer object with explicit types
+          // Create influencer object with explicit typing to avoid type inference issues
           const fullInfluencer: Influencer = {
-            id: rawData.id,
-            name: rawData.name,
-            username: rawData.username,
-            bio: rawData.bio,
-            country_id: rawData.country_id,
-            state_id: rawData.state_id,
-            city_id: rawData.city_id,
-            niche_id: rawData.niche_id,
-            followers_instagram: rawData.followers_instagram,
-            followers_facebook: rawData.followers_facebook,
-            followers_twitter: rawData.followers_twitter,
-            followers_youtube: rawData.followers_youtube,
-            engagement_rate: rawData.engagement_rate,
-            image_url: rawData.image_url,
-            created_at: rawData.created_at,
-            updated_at: rawData.updated_at,
+            id: data.id,
+            name: data.name,
+            username: data.username,
+            bio: data.bio,
+            country_id: data.country_id,
+            state_id: data.state_id,
+            city_id: data.city_id,
+            niche_id: data.niche_id,
+            followers_instagram: data.followers_instagram,
+            followers_facebook: data.followers_facebook,
+            followers_twitter: data.followers_twitter,
+            followers_youtube: data.followers_youtube,
+            engagement_rate: data.engagement_rate,
+            image_url: data.image_url,
+            created_at: data.created_at,
+            updated_at: data.updated_at,
             country: undefined,
             state: undefined,
             city: undefined,
@@ -90,57 +89,61 @@ const InfluencerProfilePage = () => {
             hashtags: undefined
           };
           
-          // Fetch related entities separately
+          // Fetch related entities separately using any to avoid type inference issues
           
           // Get country data if available
           if (fullInfluencer.country_id) {
-            const { data: countryData } = await supabase
+            const countryResponse = await supabase
               .from('countries')
               .select('*')
               .eq('id', fullInfluencer.country_id)
-              .single() as { data: Country | null, error: any };
-            
+              .single();
+              
+            const countryData = countryResponse.data as Country | null;
             if (countryData) {
-              fullInfluencer.country = countryData as Country;
+              fullInfluencer.country = countryData;
             }
           }
           
           // Get state data if available
           if (fullInfluencer.state_id) {
-            const { data: stateData } = await supabase
+            const stateResponse = await supabase
               .from('states')
               .select('*')
               .eq('id', fullInfluencer.state_id)
-              .single() as { data: State | null, error: any };
+              .single();
               
+            const stateData = stateResponse.data as State | null;
             if (stateData) {
-              fullInfluencer.state = stateData as State;
+              fullInfluencer.state = stateData;
             }
           }
           
           // Get city data if available
           if (fullInfluencer.city_id) {
-            const { data: cityData } = await supabase
+            const cityResponse = await supabase
               .from('cities')
               .select('*')
               .eq('id', fullInfluencer.city_id)
-              .single() as { data: City | null, error: any };
+              .single();
               
+            const cityData = cityResponse.data as City | null;
             if (cityData) {
-              fullInfluencer.city = cityData as City;
+              fullInfluencer.city = cityData;
             }
           }
           
           // Get niche data if available
           if (fullInfluencer.niche_id) {
-            const { data: nicheData } = await supabase
+            const nicheResponse = await supabase
               .from('niches')
               .select('*')
               .eq('id', fullInfluencer.niche_id)
-              .single() as { data: Niche | null, error: any };
+              .single();
               
+            const nicheData = nicheResponse.data as Niche | null;
             if (nicheData) {
-              fullInfluencer.niche = nicheData as Niche;
+              fullInfluencer.niche = nicheData;
             }
           }
           
