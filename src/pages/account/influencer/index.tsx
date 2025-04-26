@@ -52,18 +52,18 @@ const InfluencerProfilePage = () => {
       setUser(session.user);
       
       try {
-        // Explicitly type the response to avoid TypeScript depth issues
+        // Use a type assertion for the response data to avoid TypeScript depth issues
         const { data, error } = await supabase
           .from('influencers')
           .select('*')
           .eq('user_id', session.user.id)
-          .single();
+          .single() as { data: unknown, error: any };
           
         if (error) {
           console.error('Error fetching influencer data:', error);
         } else if (data) {
           // Cast data to our simple type to avoid complex type inference
-          const rawData = data as unknown as RawInfluencerData;
+          const rawData = data as RawInfluencerData;
           
           // Manually construct the influencer object with explicit types
           const fullInfluencer: Influencer = {
@@ -98,7 +98,7 @@ const InfluencerProfilePage = () => {
               .from('countries')
               .select('*')
               .eq('id', fullInfluencer.country_id)
-              .single();
+              .single() as { data: Country | null, error: any };
             
             if (countryData) {
               fullInfluencer.country = countryData as Country;
@@ -111,7 +111,7 @@ const InfluencerProfilePage = () => {
               .from('states')
               .select('*')
               .eq('id', fullInfluencer.state_id)
-              .single();
+              .single() as { data: State | null, error: any };
               
             if (stateData) {
               fullInfluencer.state = stateData as State;
@@ -124,7 +124,7 @@ const InfluencerProfilePage = () => {
               .from('cities')
               .select('*')
               .eq('id', fullInfluencer.city_id)
-              .single();
+              .single() as { data: City | null, error: any };
               
             if (cityData) {
               fullInfluencer.city = cityData as City;
@@ -137,7 +137,7 @@ const InfluencerProfilePage = () => {
               .from('niches')
               .select('*')
               .eq('id', fullInfluencer.niche_id)
-              .single();
+              .single() as { data: Niche | null, error: any };
               
             if (nicheData) {
               fullInfluencer.niche = nicheData as Niche;
