@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Gift, Wallet } from 'lucide-react';
@@ -24,10 +23,7 @@ const Header = () => {
   };
 
   return (
-    <header className={cn(
-      "h-16 border-b border-border px-6 flex items-center justify-between",
-      resolvedTheme === 'dark' ? 'bg-gray-900' : 'bg-background'
-    )}>
+    <header className="h-16 border-b border-border px-6 flex items-center justify-between bg-background">
       <SearchBar />
       <div className="flex items-center gap-4">
         {(userType === 'business' || userType === 'influencer') && (

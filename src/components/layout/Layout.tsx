@@ -1,8 +1,10 @@
+
 import React, { useEffect, useState } from 'react';
 import Sidebar from './Sidebar';
 import ConditionalHeader from './ConditionalHeader';
 import { useTheme } from '@/components/theme-provider';
 import { useLocation } from 'react-router-dom';
+import { cn } from '@/lib/utils';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -18,15 +20,14 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
     setUserType(storedUserType);
   }, []);
 
-  // Check if the current route is a business route
   const isBusinessRoute = userType === 'business';
   
   return (
-    <div className="flex h-screen bg-background text-foreground transition-colors duration-300">
+    <div className="flex h-screen bg-background">
       <Sidebar />
-      <div className="flex flex-col flex-1 overflow-hidden">
+      <div className="flex-1 flex flex-col overflow-hidden bg-background border-l border-border">
         <ConditionalHeader />
-        <main className="flex-1 overflow-y-auto p-4">
+        <main className="flex-1 overflow-y-auto p-4 bg-background">
           {children}
         </main>
       </div>

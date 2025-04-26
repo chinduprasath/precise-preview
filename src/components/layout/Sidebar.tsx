@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useCallback } from 'react';
 import { cn } from '@/lib/utils';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -77,11 +76,7 @@ const Sidebar = () => {
   }, [navigate]);
 
   return (
-    <aside className={cn(
-      "flex flex-col border-r border-border transition-all duration-300 h-screen", 
-      isCollapsed ? "w-16" : "w-60",
-      resolvedTheme === "dark" ? "bg-gray-900 text-gray-100" : "bg-white text-gray-800"
-    )}>
+    <aside className="flex flex-col border-r border-border transition-all duration-300 h-screen bg-background">
       <SidebarHeader 
         isCollapsed={isCollapsed} 
         toggleSidebar={toggleSidebar} 
