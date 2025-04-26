@@ -1,247 +1,297 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
-import { Instagram, Facebook, Youtube, Twitter } from 'lucide-react';
-import { LineChart } from '@/components/ui/line-chart';
-import { supabase } from '@/integrations/supabase/client';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
+import { Instagram, Facebook, Twitter, Youtube } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Check } from 'lucide-react';
+import { formatNumber } from './utils/formatUtils';
 
-const InfluencerProfile = () => {
-  const [user, setUser] = React.useState<any>(null);
-  const [selectedPricing, setSelectedPricing] = React.useState('platform');
+const InfluencerProfile = ({ influencer }) => {
+  const [activeTab, setActiveTab] = useState('services');
 
-  React.useEffect(() => {
-    const getUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        setUser(session.user);
-      }
-    };
-    getUser();
-  }, []);
-
-  const socialStats = [
-    { platform: 'Instagram', icon: <Instagram className="h-5 w-5" />, followers: '1M', color: 'text-pink-500' },
-    { platform: 'Facebook', icon: <Facebook className="h-5 w-5" />, followers: '235K', color: 'text-blue-600' },
-    { platform: 'Youtube', icon: <Youtube className="h-5 w-5" />, followers: '98K', color: 'text-red-600' },
-    { platform: 'Twitter', icon: <Twitter className="h-5 w-5" />, followers: '2M', color: 'text-blue-400' },
-  ];
-
-  const performanceStats = [
-    { label: 'Total Campaigns', value: '90' },
-    { label: 'Avg Likes', value: '90' },
-    { label: 'Engagement', value: '90' },
-    { label: 'Avg Comments', value: '90' },
-    { label: 'Fake Followers', value: '90' },
-  ];
-
-  const networkStats = [
-    { 
-      label: 'Upload', 
-      value: '5.03 mbps',
-      data: [3, 4, 3.5, 5, 4.5, 5.2, 5.03],
-      color: 'rgb(99, 102, 241)'
-    },
-    { 
-      label: 'Download', 
-      value: '14.34 mbps',
-      data: [12, 13, 14, 13.5, 14.5, 14, 14.34],
-      color: 'rgb(59, 130, 246)'
-    },
-    { 
-      label: 'Ping', 
-      value: '10 ms',
-      data: [11, 10, 9, 11, 10, 10, 10],
-      color: 'rgb(34, 197, 94)'
-    },
-  ];
-
-  const contentCards = Array(6).fill({
-    thumbnail: 'https://source.unsplash.com/random/300x200',
-    likes: '200K',
-    views: '500K',
-    shares: '10K',
-  });
-
-  const platformServices = [
-    { name: 'Post Image/Video', price: '499₹' },
-    { name: 'Reel', price: '499₹' },
-    { name: 'Story (Image/Video)', price: '499₹' },
-    { name: 'Short Video (<10m)', price: '499₹' },
-    { name: 'Video (>10m)', price: '499₹' },
-    { name: 'Polls', price: '499₹' },
-  ];
-
-  const comboPackages = [
-    {
-      name: 'Packagename-1',
-      platforms: 'Insta/FB/Youtube',
-      price: '499₹'
-    },
-    {
-      name: 'Packagename-2',
-      platforms: 'Insta/FB/Youtube',
-      price: '499₹'
-    },
-    {
-      name: 'Packagename-3',
-      platforms: 'Insta/FB/Youtube',
-      price: '499₹'
-    }
-  ];
+  if (!influencer) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full p-8 text-center">
+        <div className="text-muted-foreground mb-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="8" r="5" />
+            <path d="M20 21a8 8 0 0 0-16 0" />
+          </svg>
+        </div>
+        <h3 className="text-xl font-medium text-muted-foreground mb-1">No Profile Selected</h3>
+        <p className="text-muted-foreground">Please select an influencer profile to display their data</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      <div className="flex-1 p-6">
-        <div className="grid grid-cols-12 gap-6">
-          {/* Left Panel */}
-          <div className="col-span-3">
-            <Card className="p-6 space-y-6 bg-gray-100">
-              {/* Profile Section */}
-              <div className="text-center">
-                <div className="relative w-16 h-16 mx-auto mb-4">
-                  <img
-                    src={user?.user_metadata?.avatar_url || 'https://via.placeholder.com/64'}
-                    alt="Profile"
-                    className="rounded-full w-full h-full object-cover"
-                  />
-                </div>
-                <h2 className="text-lg font-semibold">{user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Username'}</h2>
-                <p className="text-sm text-gray-500">{user?.email || 'Username@gmail.com'}</p>
-                <button className="mt-2">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                  </svg>
-                </button>
-              </div>
-
-              {/* Social Media Stats */}
-              <div className="grid grid-cols-4 gap-2">
-                {socialStats.map((stat) => (
-                  <div key={stat.platform} className="text-center">
-                    <div className={`${stat.color} mb-1`}>{stat.icon}</div>
-                    <div className="text-sm font-medium">{stat.followers}</div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Performance Stats */}
-              <div className="grid grid-cols-2 gap-4">
-                {performanceStats.map((stat) => (
-                  <div key={stat.label} className="bg-white rounded-lg p-3 text-center">
-                    <div className="text-xl font-semibold">{stat.value}</div>
-                    <div className="text-xs text-gray-500">{stat.label}</div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Network Stats */}
-              <div className="space-y-4">
-                {networkStats.map((stat) => (
-                  <div key={stat.label} className="space-y-2">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-500">{stat.label}</span>
-                      <span className="text-sm font-medium">{stat.value}</span>
-                    </div>
-                    <div className="h-12">
-                      <LineChart
-                        data={stat.data}
-                        color={stat.color}
-              />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </Card>
-            </div>
-
-          {/* Right Section */}
-          <div className="col-span-9">
-            <Card className="p-6">
-              <Tabs defaultValue="services" className="w-full">
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="services">Services</TabsTrigger>
-                  <TabsTrigger value="prices">Prices</TabsTrigger>
-                  </TabsList>
-
-                <TabsContent value="services" className="mt-6">
-                  <div className="grid grid-cols-3 gap-4">
-                    {contentCards.map((card, index) => (
-                      <div key={index} className="rounded-lg overflow-hidden shadow-sm border">
-                        <img src={card.thumbnail} alt="" className="w-full h-40 object-cover" />
-                        <div className="p-3 bg-white">
-                          <div className="flex justify-between text-sm">
-                            <span>❤️ {card.likes}</span>
-                            <span>👁️ {card.views}</span>
-                            <span>↗️ {card.shares}</span>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                </div>
-                </TabsContent>
-                
-                <TabsContent value="prices" className="mt-6">
-                  <div className="space-y-8">
-                    <RadioGroup value={selectedPricing} onValueChange={setSelectedPricing}>
-                      {/* Platform Based Pricing */}
-                      <div className="space-y-4">
-                        <div className="flex items-center gap-2">
-                          <RadioGroupItem value="platform" id="platform" />
-                          <Label htmlFor="platform" className="text-lg font-semibold">Platform Based</Label>
-                          <select className="ml-2 px-3 py-1 border rounded-md">
-                            <option>Select Platform</option>
-                            <option>Instagram</option>
-                            <option>Facebook</option>
-                            <option>Youtube</option>
-                          </select>
-                          <Button variant="outline" className="ml-auto">Edit</Button>
-                        </div>
-                        
-                        <div className="space-y-3 pl-6">
-                          {platformServices.map((service, index) => (
-                            <div key={index} className="flex items-center justify-between">
-                              <div className="flex items-center gap-2">
-                                <Check className="h-4 w-4" />
-                                <span>{service.name}</span>
-                              </div>
-                              <span className="font-medium">{service.price}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Combo Package */}
-                      <div className="space-y-4 mt-6">
-                        <div className="flex items-center gap-2">
-                          <RadioGroupItem value="combo" id="combo" />
-                          <Label htmlFor="combo" className="text-lg font-semibold">Combo Package</Label>
-                        </div>
-                        
-                        <div className="space-y-3 pl-6">
-                          {comboPackages.map((pkg, index) => (
-                            <div key={index} className="flex items-center justify-between">
-                              <div className="flex flex-col">
-                                <span>{pkg.name}</span>
-                                <span className="text-sm text-gray-500">{pkg.platforms}</span>
-                              </div>
-                              <span className="font-medium">{pkg.price}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </RadioGroup>
-                  </div>
-                </TabsContent>
-              </Tabs>
-            </Card>
+    <div className="p-6">
+      {/* Profile Header */}
+      <div className="flex items-start gap-6 mb-8">
+        <div className="w-24 h-24 rounded-full overflow-hidden border border-border">
+          <img 
+            src={influencer.image_url || 'https://via.placeholder.com/96'} 
+            alt={influencer.name}
+            className="w-full h-full object-cover"
+          />
+        </div>
+        <div className="flex-1">
+          <h2 className="text-2xl font-semibold text-foreground mb-1">{influencer.name}</h2>
+          <p className="text-muted-foreground">{influencer.bio || `Professional influencer specializing in ${influencer.niche?.name || 'various niches'}`}</p>
+          
+          {/* Social Stats */}
+          <div className="grid grid-cols-4 gap-4 mt-4">
+            <SocialStat platform="instagram" count={influencer.followers_instagram} />
+            <SocialStat platform="facebook" count={influencer.followers_facebook} />
+            <SocialStat platform="youtube" count={influencer.followers_youtube} />
+            <SocialStat platform="twitter" count={influencer.followers_twitter} />
           </div>
         </div>
       </div>
+
+      {/* Tabs Section */}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <TabsList className="w-full justify-start border-b rounded-none p-0 h-auto">
+          <TabsTrigger 
+            value="services"
+            className="rounded-none border-b-2 border-transparent px-4 py-2 data-[state=active]:border-primary"
+          >
+            Services
+          </TabsTrigger>
+          <TabsTrigger 
+            value="prices"
+            className="rounded-none border-b-2 border-transparent px-4 py-2 data-[state=active]:border-primary"
+          >
+            Prices
+          </TabsTrigger>
+          <TabsTrigger 
+            value="data"
+            className="rounded-none border-b-2 border-transparent px-4 py-2 data-[state=active]:border-primary"
+          >
+            Data
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="services" className="mt-6">
+          <div className="grid grid-cols-2 gap-6">
+            <ServiceCard 
+              title="Instagram Post"
+              image="https://via.placeholder.com/300x200"
+              stats={{ likes: 15000, comments: 280, shares: 120 }}
+            />
+            <ServiceCard 
+              title="Story Highlight"
+              image="https://via.placeholder.com/300x200"
+              stats={{ likes: 12000, comments: 180, shares: 90 }}
+            />
+            <ServiceCard 
+              title="Reel"
+              image="https://via.placeholder.com/300x200"
+              stats={{ likes: 25000, comments: 450, shares: 300 }}
+            />
+            <ServiceCard 
+              title="IGTV"
+              image="https://via.placeholder.com/300x200"
+              stats={{ likes: 18000, comments: 320, shares: 150 }}
+            />
+          </div>
+        </TabsContent>
+
+        <TabsContent value="prices" className="mt-6">
+          <div className="space-y-8">
+            <div className="bg-card rounded-lg border border-border p-4">
+              <h3 className="font-semibold mb-4">Platform Based Pricing</h3>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between py-2 border-b border-border">
+                  <div className="flex items-center gap-2">
+                    <Instagram className="h-4 w-4 text-[#E4405F]" />
+                    <span>Post Image/Video</span>
+                  </div>
+                  <span className="font-medium">499₹</span>
+                </div>
+                <div className="flex items-center justify-between py-2 border-b border-border">
+                  <div className="flex items-center gap-2">
+                    <Instagram className="h-4 w-4 text-[#E4405F]" />
+                    <span>Reel</span>
+                  </div>
+                  <span className="font-medium">499₹</span>
+                </div>
+                <div className="flex items-center justify-between py-2 border-b border-border">
+                  <div className="flex items-center gap-2">
+                    <Instagram className="h-4 w-4 text-[#E4405F]" />
+                    <span>Story (Image/Video)</span>
+                  </div>
+                  <span className="font-medium">499₹</span>
+                </div>
+                <div className="flex items-center justify-between py-2 border-b border-border">
+                  <div className="flex items-center gap-2">
+                    <Youtube className="h-4 w-4 text-[#FF0000]" />
+                    <span>Short Video (&lt;10m)</span>
+                  </div>
+                  <span className="font-medium">499₹</span>
+                </div>
+                <div className="flex items-center justify-between py-2 border-b border-border">
+                  <div className="flex items-center gap-2">
+                    <Youtube className="h-4 w-4 text-[#FF0000]" />
+                    <span>Video (&gt;10m)</span>
+                  </div>
+                  <span className="font-medium">499₹</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-card rounded-lg border border-border p-4">
+              <h3 className="font-semibold mb-4">Combo Packages</h3>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between py-2 border-b border-border">
+                  <div>
+                    <div className="font-medium">Packagename-1</div>
+                    <div className="text-sm text-muted-foreground">Insta/FB/Youtube</div>
+                  </div>
+                  <span className="font-medium">499₹</span>
+                </div>
+                <div className="flex items-center justify-between py-2 border-b border-border">
+                  <div>
+                    <div className="font-medium">Packagename-2</div>
+                    <div className="text-sm text-muted-foreground">Insta/FB/Youtube</div>
+                  </div>
+                  <span className="font-medium">499₹</span>
+                </div>
+                <div className="flex items-center justify-between py-2">
+                  <div>
+                    <div className="font-medium">Packagename-3</div>
+                    <div className="text-sm text-muted-foreground">Insta/FB/Youtube</div>
+                  </div>
+                  <span className="font-medium">499₹</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex justify-center">
+              <Button className="px-8">Book Now</Button>
+            </div>
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="data" className="mt-6">
+          <div className="space-y-6">
+            <div className="grid grid-cols-3 gap-4">
+              <div className="bg-secondary p-4 rounded-md text-center">
+                <div className="text-2xl font-bold">90</div>
+                <div className="text-xs text-muted-foreground">Total Campaigns</div>
+              </div>
+              <div className="bg-secondary p-4 rounded-md text-center">
+                <div className="text-2xl font-bold">90</div>
+                <div className="text-xs text-muted-foreground">Avg Likes</div>
+              </div>
+              <div className="bg-secondary p-4 rounded-md text-center">
+                <div className="text-2xl font-bold">90</div>
+                <div className="text-xs text-muted-foreground">Engagement</div>
+              </div>
+              <div className="bg-secondary p-4 rounded-md text-center">
+                <div className="text-2xl font-bold">90</div>
+                <div className="text-xs text-muted-foreground">Avg Comments</div>
+              </div>
+              <div className="bg-secondary p-4 rounded-md text-center">
+                <div className="text-2xl font-bold">90</div>
+                <div className="text-xs text-muted-foreground">Avg Shares</div>
+              </div>
+              <div className="bg-secondary p-4 rounded-md text-center">
+                <div className="text-2xl font-bold">90</div>
+                <div className="text-xs text-muted-foreground">Fake Followers</div>
+              </div>
+            </div>
+            
+            <div className="bg-card rounded-lg border border-border p-4">
+              <h3 className="font-semibold mb-4">Network Stats</h3>
+              <div className="space-y-6">
+                <div>
+                  <div className="flex justify-between mb-2">
+                    <span className="text-sm">Upload</span>
+                    <span className="text-sm font-medium">5.03 mbps</span>
+                  </div>
+                  <div className="h-12 bg-secondary/50 rounded-md overflow-hidden relative">
+                    <div className="absolute inset-0 flex items-end">
+                      <svg className="w-full h-full" viewBox="0 0 100 25">
+                        <path d="M0,15 Q10,10 20,15 T40,10 T60,20 T80,5 T100,15" fill="none" stroke="rgb(99, 102, 241)" strokeWidth="2"></path>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+                
+                <div>
+                  <div className="flex justify-between mb-2">
+                    <span className="text-sm">Download</span>
+                    <span className="text-sm font-medium">14.34 mbps</span>
+                  </div>
+                  <div className="h-12 bg-secondary/50 rounded-md overflow-hidden relative">
+                    <div className="absolute inset-0 flex items-end">
+                      <svg className="w-full h-full" viewBox="0 0 100 25">
+                        <path d="M0,10 Q10,20 20,5 T40,15 T60,5 T80,20 T100,10" fill="none" stroke="rgb(59, 130, 246)" strokeWidth="2"></path>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+                
+                <div>
+                  <div className="flex justify-between mb-2">
+                    <span className="text-sm">Ping</span>
+                    <span className="text-sm font-medium">10 ms</span>
+                  </div>
+                  <div className="h-12 bg-secondary/50 rounded-md overflow-hidden relative">
+                    <div className="absolute inset-0 flex items-end">
+                      <svg className="w-full h-full" viewBox="0 0 100 25">
+                        <path d="M0,15 Q10,10 20,15 T40,10 T60,15 T80,5 T100,10" fill="none" stroke="rgb(34, 197, 94)" strokeWidth="2"></path>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
+  );
+};
+
+const SocialStat = ({ platform, count }) => {
+  const icons = {
+    instagram: { icon: Instagram, color: 'text-[#E4405F]' },
+    facebook: { icon: Facebook, color: 'text-[#1877F2]' },
+    youtube: { icon: Youtube, color: 'text-[#FF0000]' },
+    twitter: { icon: Twitter, color: 'text-[#1DA1F2]' },
+  };
+
+  const Icon = icons[platform].icon;
+
+  return (
+    <div className="flex items-center gap-2">
+      <div className={`rounded-full p-2 bg-secondary ${icons[platform].color}`}>
+        <Icon className="h-4 w-4" />
+      </div>
+      <div>
+        <div className="font-semibold">{formatNumber(count)}</div>
+        <div className="text-xs text-muted-foreground capitalize">{platform}</div>
+      </div>
+    </div>
+  );
+};
+
+const ServiceCard = ({ title, image, stats }) => {
+  return (
+    <Card className="overflow-hidden">
+      <div className="aspect-video relative">
+        <img src={image} alt={title} className="w-full h-full object-cover" />
+      </div>
+      <div className="p-4">
+        <h3 className="font-medium mb-2">{title}</h3>
+        <div className="flex justify-between text-sm text-muted-foreground">
+          <span>❤️ {formatNumber(stats.likes)}</span>
+          <span>💬 {formatNumber(stats.comments)}</span>
+          <span>🔄 {formatNumber(stats.shares)}</span>
+        </div>
+      </div>
+    </Card>
   );
 };
 
