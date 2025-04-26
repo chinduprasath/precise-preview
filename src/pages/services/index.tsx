@@ -10,23 +10,23 @@ const ServicesPage = () => {
   const [selectedService, setSelectedService] = useState<ServiceType | null>(null);
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-background">
       <Sidebar />
       <div className="flex-1 flex flex-col">
         <Header />
         <main className="flex-1 overflow-auto p-6">
           <div className="max-w-7xl mx-auto">
-            <h1 className="text-2xl font-bold mb-6">Services</h1>
+            <h1 className="text-2xl font-bold mb-6 text-foreground">Services</h1>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-white rounded-lg shadow overflow-hidden">
+              <div className="bg-card rounded-lg shadow overflow-hidden border border-border">
                 <ServiceCategories onSelectService={setSelectedService} selectedService={selectedService} />
               </div>
-              <div className="bg-white rounded-lg shadow">
+              <div className="bg-card rounded-lg shadow border border-border">
                 {selectedService ? (
                   <ServiceForm service={selectedService} />
                 ) : (
                   <div className="p-6 flex items-center justify-center h-full">
-                    <p className="text-gray-500 text-center">
+                    <p className="text-muted-foreground text-center">
                       Select a service from the left to get started
                     </p>
                   </div>
