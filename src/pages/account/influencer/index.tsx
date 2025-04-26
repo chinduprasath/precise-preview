@@ -53,7 +53,7 @@ const InfluencerProfilePage = () => {
       setUser(session.user);
       
       try {
-        // Use explicit typing and avoid inference issues
+        // Use type assertion for the response to avoid inference issues
         const { data, error } = await supabase
           .from('influencers')
           .select('*')
@@ -68,11 +68,12 @@ const InfluencerProfilePage = () => {
             variant: "destructive"
           });
         } else if (data) {
-          // Use explicit type assertion to avoid deep inference
-          const rawData = data as RawInfluencerData;
+          // Use explicit type assertion and avoid deep inference
+          const rawData = data as unknown as RawInfluencerData;
           
           // Create a base influencer object with explicit properties
-          const baseInfluencer: Partial<Influencer> = {
+          // Using type assertion to avoid TypeScript trying to infer complex types
+          const baseInfluencer = {
             id: rawData.id,
             name: rawData.name,
             username: rawData.username,
@@ -89,9 +90,9 @@ const InfluencerProfilePage = () => {
             image_url: rawData.image_url,
             created_at: rawData.created_at,
             updated_at: rawData.updated_at,
-          };
+          } as Partial<Influencer>;
           
-          // Fetch related entities separately with explicit typing
+          // Fetch related entities separately
           
           // Get country data if available
           if (baseInfluencer.country_id) {
@@ -145,8 +146,9 @@ const InfluencerProfilePage = () => {
             }
           }
           
-          // Cast the complete object to Influencer type
-          setInfluencer(baseInfluencer as Influencer);
+          // Cast the final object to Influencer type using an explicit cast
+          // This helps TypeScript avoid deep recursive type analysis
+          setInfluencer(baseInfluencer as unknown as Influencer);
         }
       } catch (error) {
         console.error('Exception fetching influencer data:', error);
