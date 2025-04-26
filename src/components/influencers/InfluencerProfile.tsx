@@ -7,7 +7,7 @@ import DataTabContent from '@/components/influencers/DataTabContent';
 import { Influencer } from '@/types/location';
 
 interface InfluencerProfileProps {
-  influencer: Influencer | null;
+  influencer?: Influencer | null;
 }
 
 const InfluencerProfile: React.FC<InfluencerProfileProps> = ({ influencer }) => {
@@ -32,21 +32,21 @@ const InfluencerProfile: React.FC<InfluencerProfileProps> = ({ influencer }) => 
     <div className="p-6">
       {/* Profile Header */}
       <div className="flex flex-col items-center text-center mb-8">
-        <Avatar className="h-20 w-20 mb-4">
+        <Avatar className="h-24 w-24 mb-4">
           <img 
             src={influencer.image_url || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200'} 
             alt={influencer.name} 
             className="h-full w-full object-cover"
           />
         </Avatar>
-        <h2 className="text-2xl font-semibold text-foreground mb-1">{influencer.name}</h2>
+        <h2 className="text-2xl font-semibold text-foreground mb-2">{influencer.name}</h2>
         <p className="text-sm text-muted-foreground mb-4">
           {influencer.username || '@' + influencer.name.toLowerCase().replace(/\s+/g, '')}
         </p>
-        <p className="text-sm text-foreground max-w-md mb-6">{influencer.bio || 'No bio available'}</p>
+        <p className="text-sm text-foreground max-w-md mb-8">{influencer.bio || 'No bio available'}</p>
         
-        {/* Centered Social Media Stats */}
-        <div className="flex justify-center gap-8 mb-6">
+        {/* Social Media Stats */}
+        <div className="flex justify-center items-center gap-12 mb-8">
           {influencer.followers_instagram > 0 && (
             <div className="flex flex-col items-center">
               <Instagram className="h-6 w-6 text-social-instagram mb-2" />
@@ -129,7 +129,7 @@ const InfluencerProfile: React.FC<InfluencerProfileProps> = ({ influencer }) => 
         </div>
       </div>
 
-      {/* Tab Content with consistent padding and grid layout */}
+      {/* Tab Content */}
       <div className="px-4">
         {activeTab === 'services' && (
           <div className="grid grid-cols-2 gap-6">
@@ -155,7 +155,6 @@ const InfluencerProfile: React.FC<InfluencerProfileProps> = ({ influencer }) => 
   );
 };
 
-// Update ContentCard component for consistent styling
 const ContentCard = ({ platform, type }: { platform: string; type: string }) => {
   return (
     <div className="rounded-lg overflow-hidden shadow-sm border border-border bg-card">

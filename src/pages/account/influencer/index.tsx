@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
@@ -8,6 +9,7 @@ const InfluencerProfilePage = () => {
   const navigate = useNavigate();
   const [user, setUser] = React.useState<any>(null);
   const [loading, setLoading] = React.useState(true);
+  const [influencer, setInfluencer] = React.useState<any>(null);
 
   React.useEffect(() => {
     const checkUser = async () => {
@@ -21,13 +23,21 @@ const InfluencerProfilePage = () => {
       // Get user type from local storage
       const userType = localStorage.getItem('userType');
       
-      // Only redirect if explicitly not an influencer
       if (userType && userType !== 'influencer') {
         navigate('/account/business');
         return;
       }
 
       setUser(session.user);
+      
+      // Fetch influencer data
+      const { data: influencerData } = await supabase
+        .from('influencers')
+        .select('*')
+        .eq('user_id', session.user.id)
+        .single();
+        
+      setInfluencer(influencerData);
       setLoading(false);
     };
 
@@ -46,7 +56,7 @@ const InfluencerProfilePage = () => {
 
   return (
     <Layout>
-      <InfluencerProfile />
+      <InfluencerProfile influencer={influencer} />
     </Layout>
   );
 };

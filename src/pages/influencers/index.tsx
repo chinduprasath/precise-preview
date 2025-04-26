@@ -417,8 +417,8 @@ const InfluencersPage = () => {
         <Header />
         <main className="flex-1 overflow-auto p-6">
           <div className="flex gap-6">
-            <div className="w-1/5 bg-card rounded-lg p-4 shadow-sm border border-border">
-              <div className="flex justify-between items-center mb-4">
+            <div className="w-1/4 bg-card rounded-lg p-6 shadow-sm border border-border">
+              <div className="flex justify-between items-center mb-6">
                 <h2 className="text-lg font-semibold text-foreground">Basic Filter</h2>
                 <Button 
                   variant="outline" 
@@ -430,209 +430,211 @@ const InfluencersPage = () => {
                 </Button>
               </div>
               
-              <div className="mb-6">
-                <h3 className="font-medium mb-2 text-foreground">Location</h3>
-                <div className="grid grid-cols-3 gap-2">
-                  <Select value={selectedCountry} onValueChange={setSelectedCountry}>
+              <div className="space-y-6">
+                <div className="mb-6">
+                  <h3 className="font-medium mb-2 text-foreground">Location</h3>
+                  <div className="grid grid-cols-3 gap-2">
+                    <Select value={selectedCountry} onValueChange={setSelectedCountry}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select Country" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {loadingLocations ? (
+                          <SelectItem value="loading" disabled>Loading...</SelectItem>
+                        ) : (
+                          countries.map(country => (
+                            <SelectItem key={country.id} value={country.id.toString()}>
+                              {country.name}
+                            </SelectItem>
+                          ))
+                        )}
+                      </SelectContent>
+                    </Select>
+                    
+                    <Select value={selectedState} onValueChange={setSelectedState} disabled={!selectedCountry || loadingLocations}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select State" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {loadingLocations ? (
+                          <SelectItem value="loading" disabled>Loading...</SelectItem>
+                        ) : (
+                          states.map(state => (
+                            <SelectItem key={state.id} value={state.id.toString()}>
+                              {state.name}
+                            </SelectItem>
+                          ))
+                        )}
+                      </SelectContent>
+                    </Select>
+                    
+                    <Select value={selectedCity} onValueChange={setSelectedCity} disabled={!selectedState || loadingLocations}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select City" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {loadingLocations ? (
+                          <SelectItem value="loading" disabled>Loading...</SelectItem>
+                        ) : (
+                          cities.map(city => (
+                            <SelectItem key={city.id} value={city.id.toString()}>
+                              {city.name}
+                            </SelectItem>
+                          ))
+                        )}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                
+                <div className="mb-6">
+                  <h3 className="font-medium mb-2 text-foreground">Niche</h3>
+                  <Select value={selectedNiche} onValueChange={setSelectedNiche}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select Country" />
+                      <SelectValue placeholder="Select Niche" />
                     </SelectTrigger>
                     <SelectContent>
-                      {loadingLocations ? (
+                      {loadingNiches ? (
                         <SelectItem value="loading" disabled>Loading...</SelectItem>
                       ) : (
-                        countries.map(country => (
-                          <SelectItem key={country.id} value={country.id.toString()}>
-                            {country.name}
+                        niches.map(niche => (
+                          <SelectItem key={niche.id} value={niche.id.toString()}>
+                            {niche.name}
                           </SelectItem>
                         ))
                       )}
                     </SelectContent>
                   </Select>
-                  
-                  <Select value={selectedState} onValueChange={setSelectedState} disabled={!selectedCountry || loadingLocations}>
+                </div>
+                
+                <div className="mb-6">
+                  <h3 className="font-medium mb-2 text-foreground">Follower Count</h3>
+                  <div className="px-2">
+                    <RangeSlider 
+                      label=""
+                      min={0}
+                      value={followerRange} 
+                      max={1500000} 
+                      step={10000}
+                      onChange={setFollowerRange}
+                      formatValue={(value) => formatNumber(value)}
+                      direction="rtl"
+                    />
+                  </div>
+                </div>
+                
+                <div className="mb-6">
+                  <h3 className="font-medium mb-2 text-foreground">Engagement Rate</h3>
+                  <div className="px-2">
+                    <RangeSlider 
+                      label=""
+                      min={0}
+                      value={engagementRange} 
+                      max={10} 
+                      step={0.1}
+                      onChange={setEngagementRange}
+                      formatValue={(value) => `${value}%`}
+                      direction="rtl"
+                    />
+                  </div>
+                </div>
+                
+                <div className="mb-6">
+                  <h3 className="font-medium mb-2 text-foreground">Price Range</h3>
+                  <div className="flex gap-2">
+                    <Input 
+                      type="number" 
+                      placeholder="Min" 
+                      className="w-1/2"
+                      value={priceRange[0]}
+                      onChange={(e) => setPriceRange([Number(e.target.value), priceRange[1]])}
+                    />
+                    <Input 
+                      type="number" 
+                      placeholder="Max" 
+                      className="w-1/2"
+                      value={priceRange[1]}
+                      onChange={(e) => setPriceRange([priceRange[0], Number(e.target.value)])}
+                    />
+                  </div>
+                </div>
+                
+                <div className="mb-6">
+                  <h3 className="font-medium mb-2 text-foreground">Content Type</h3>
+                  <Select value={selectedType} onValueChange={setSelectedType}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select State" />
+                      <SelectValue placeholder="Select Type" />
                     </SelectTrigger>
                     <SelectContent>
-                      {loadingLocations ? (
-                        <SelectItem value="loading" disabled>Loading...</SelectItem>
-                      ) : (
-                        states.map(state => (
-                          <SelectItem key={state.id} value={state.id.toString()}>
-                            {state.name}
-                          </SelectItem>
-                        ))
-                      )}
+                      <SelectItem value="post">Post</SelectItem>
+                      <SelectItem value="story">Story</SelectItem>
+                      <SelectItem value="reel">Reel</SelectItem>
+                      <SelectItem value="video">Video</SelectItem>
                     </SelectContent>
                   </Select>
-                  
-                  <Select value={selectedCity} onValueChange={setSelectedCity} disabled={!selectedState || loadingLocations}>
+                </div>
+                
+                <div className="mb-6">
+                  <HashtagInput 
+                    label="Hashtags"
+                    tags={selectedHashtags}
+                    onChange={setSelectedHashtags}
+                    placeholder="Enter hashtags"
+                    onAddHashtag={addHashtag}
+                  />
+                </div>
+                
+                <h2 className="text-lg font-semibold mb-4 text-foreground">Audience Demographics</h2>
+                
+                <div className="mb-6">
+                  <h3 className="font-medium mb-2 text-foreground">Age</h3>
+                  <Select value={selectedAge} onValueChange={setSelectedAge}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select City" />
+                      <SelectValue placeholder="Select Age" />
                     </SelectTrigger>
                     <SelectContent>
-                      {loadingLocations ? (
-                        <SelectItem value="loading" disabled>Loading...</SelectItem>
-                      ) : (
-                        cities.map(city => (
-                          <SelectItem key={city.id} value={city.id.toString()}>
-                            {city.name}
-                          </SelectItem>
-                        ))
-                      )}
+                      <SelectItem value="13-17">13-17</SelectItem>
+                      <SelectItem value="18-24">18-24</SelectItem>
+                      <SelectItem value="25-34">25-34</SelectItem>
+                      <SelectItem value="35-44">35-44</SelectItem>
+                      <SelectItem value="45+">45+</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
-              </div>
-              
-              <div className="mb-6">
-                <h3 className="font-medium mb-2 text-foreground">Niche</h3>
-                <Select value={selectedNiche} onValueChange={setSelectedNiche}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select Niche" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {loadingNiches ? (
-                      <SelectItem value="loading" disabled>Loading...</SelectItem>
-                    ) : (
-                      niches.map(niche => (
-                        <SelectItem key={niche.id} value={niche.id.toString()}>
-                          {niche.name}
-                        </SelectItem>
-                      ))
-                    )}
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="mb-6">
-                <h3 className="font-medium mb-2 text-foreground">Follower Count</h3>
-                <div className="px-2">
-                  <RangeSlider 
-                    label=""
-                    min={0}
-                    value={followerRange} 
-                    max={1500000} 
-                    step={10000}
-                    onChange={setFollowerRange}
-                    formatValue={(value) => formatNumber(value)}
-                    direction="rtl"
-                  />
+                
+                <div className="mb-6">
+                  <h3 className="font-medium mb-2 text-foreground">Gender</h3>
+                  <Select value={selectedGender} onValueChange={setSelectedGender}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Gender" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="male">Male</SelectItem>
+                      <SelectItem value="female">Female</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
-              </div>
-              
-              <div className="mb-6">
-                <h3 className="font-medium mb-2 text-foreground">Engagement Rate</h3>
-                <div className="px-2">
-                  <RangeSlider 
-                    label=""
-                    min={0}
-                    value={engagementRange} 
-                    max={10} 
-                    step={0.1}
-                    onChange={setEngagementRange}
-                    formatValue={(value) => `${value}%`}
-                    direction="rtl"
-                  />
+                
+                <div className="mb-6">
+                  <h3 className="font-medium mb-2 text-foreground">Interests</h3>
+                  <Select value={selectedInterests} onValueChange={setSelectedInterests}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Interests" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="fashion">Fashion</SelectItem>
+                      <SelectItem value="beauty">Beauty</SelectItem>
+                      <SelectItem value="tech">Technology</SelectItem>
+                      <SelectItem value="travel">Travel</SelectItem>
+                      <SelectItem value="food">Food</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
-              </div>
-              
-              <div className="mb-6">
-                <h3 className="font-medium mb-2 text-foreground">Price Range</h3>
-                <div className="flex gap-2">
-                  <Input 
-                    type="number" 
-                    placeholder="Min" 
-                    className="w-1/2"
-                    value={priceRange[0]}
-                    onChange={(e) => setPriceRange([Number(e.target.value), priceRange[1]])}
-                  />
-                  <Input 
-                    type="number" 
-                    placeholder="Max" 
-                    className="w-1/2"
-                    value={priceRange[1]}
-                    onChange={(e) => setPriceRange([priceRange[0], Number(e.target.value)])}
-                  />
-                </div>
-              </div>
-              
-              <div className="mb-6">
-                <h3 className="font-medium mb-2 text-foreground">Content Type</h3>
-                <Select value={selectedType} onValueChange={setSelectedType}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select Type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="post">Post</SelectItem>
-                    <SelectItem value="story">Story</SelectItem>
-                    <SelectItem value="reel">Reel</SelectItem>
-                    <SelectItem value="video">Video</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="mb-6">
-                <HashtagInput 
-                  label="Hashtags"
-                  tags={selectedHashtags}
-                  onChange={setSelectedHashtags}
-                  placeholder="Enter hashtags"
-                  onAddHashtag={addHashtag}
-                />
-              </div>
-              
-              <h2 className="text-lg font-semibold mb-4 text-foreground">Audience Demographics</h2>
-              
-              <div className="mb-6">
-                <h3 className="font-medium mb-2 text-foreground">Age</h3>
-                <Select value={selectedAge} onValueChange={setSelectedAge}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select Age" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="13-17">13-17</SelectItem>
-                    <SelectItem value="18-24">18-24</SelectItem>
-                    <SelectItem value="25-34">25-34</SelectItem>
-                    <SelectItem value="35-44">35-44</SelectItem>
-                    <SelectItem value="45+">45+</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="mb-6">
-                <h3 className="font-medium mb-2 text-foreground">Gender</h3>
-                <Select value={selectedGender} onValueChange={setSelectedGender}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select Gender" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="male">Male</SelectItem>
-                    <SelectItem value="female">Female</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="mb-6">
-                <h3 className="font-medium mb-2 text-foreground">Interests</h3>
-                <Select value={selectedInterests} onValueChange={setSelectedInterests}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select Interests" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="fashion">Fashion</SelectItem>
-                    <SelectItem value="beauty">Beauty</SelectItem>
-                    <SelectItem value="tech">Technology</SelectItem>
-                    <SelectItem value="travel">Travel</SelectItem>
-                    <SelectItem value="food">Food</SelectItem>
-                  </SelectContent>
-                </Select>
               </div>
             </div>
             
-            <div className="w-4/5 grid grid-cols-7 gap-4">
-              <div className="col-span-3 bg-card rounded-lg shadow-sm border border-border">
+            <div className="w-3/4 grid grid-cols-7 gap-4">
+              <div className="col-span-3 bg-card rounded-lg shadow-sm border border-border overflow-hidden">
                 <div className="p-4 border-b border-border flex items-center justify-between">
                   <h2 className="text-lg font-semibold text-foreground">Influencers</h2>
                   <div className="relative w-1/2">
@@ -675,7 +677,7 @@ const InfluencersPage = () => {
                 </div>
               </div>
               
-              <div className="col-span-4 bg-card rounded-lg shadow-sm border border-border">
+              <div className="col-span-4 bg-card rounded-lg shadow-sm border border-border overflow-hidden">
                 <div className="p-4 border-b border-border">
                   <h2 className="text-lg font-semibold text-foreground">Profile</h2>
                 </div>
