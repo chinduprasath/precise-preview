@@ -52,7 +52,7 @@ const InfluencerProfilePage = () => {
       setUser(session.user);
       
       try {
-        // Fetch basic influencer data first
+        // Use a simple plain object to avoid TypeScript depth issues
         const { data, error } = await supabase
           .from('influencers')
           .select('*')
@@ -62,12 +62,27 @@ const InfluencerProfilePage = () => {
         if (error) {
           console.error('Error fetching influencer data:', error);
         } else if (data) {
-          // Use the simpler RawInfluencerData type to avoid deep type instantiation
-          const rawData = data as RawInfluencerData;
+          // Force type the data to a plain object first
+          const rawData = data as Record<string, any>;
           
-          // Initialize the full influencer object with properties we know
+          // Then construct our influencer object with explicit typing
           const fullInfluencer: Influencer = {
-            ...rawData,
+            id: rawData.id,
+            name: rawData.name,
+            username: rawData.username,
+            bio: rawData.bio,
+            country_id: rawData.country_id,
+            state_id: rawData.state_id,
+            city_id: rawData.city_id,
+            niche_id: rawData.niche_id,
+            followers_instagram: rawData.followers_instagram,
+            followers_facebook: rawData.followers_facebook,
+            followers_twitter: rawData.followers_twitter,
+            followers_youtube: rawData.followers_youtube,
+            engagement_rate: rawData.engagement_rate,
+            image_url: rawData.image_url,
+            created_at: rawData.created_at,
+            updated_at: rawData.updated_at,
             country: undefined,
             state: undefined,
             city: undefined,
@@ -75,14 +90,14 @@ const InfluencerProfilePage = () => {
             hashtags: undefined
           };
           
-          // Fetch related entities separately and add them to our object
+          // Fetch related entities separately
           
           // Get country data if available
-          if (rawData.country_id) {
+          if (fullInfluencer.country_id) {
             const { data: countryData } = await supabase
               .from('countries')
               .select('*')
-              .eq('id', rawData.country_id)
+              .eq('id', fullInfluencer.country_id)
               .single();
             
             if (countryData) {
@@ -91,11 +106,11 @@ const InfluencerProfilePage = () => {
           }
           
           // Get state data if available
-          if (rawData.state_id) {
+          if (fullInfluencer.state_id) {
             const { data: stateData } = await supabase
               .from('states')
               .select('*')
-              .eq('id', rawData.state_id)
+              .eq('id', fullInfluencer.state_id)
               .single();
               
             if (stateData) {
@@ -104,11 +119,11 @@ const InfluencerProfilePage = () => {
           }
           
           // Get city data if available
-          if (rawData.city_id) {
+          if (fullInfluencer.city_id) {
             const { data: cityData } = await supabase
               .from('cities')
               .select('*')
-              .eq('id', rawData.city_id)
+              .eq('id', fullInfluencer.city_id)
               .single();
               
             if (cityData) {
@@ -117,11 +132,11 @@ const InfluencerProfilePage = () => {
           }
           
           // Get niche data if available
-          if (rawData.niche_id) {
+          if (fullInfluencer.niche_id) {
             const { data: nicheData } = await supabase
               .from('niches')
               .select('*')
-              .eq('id', rawData.niche_id)
+              .eq('id', fullInfluencer.niche_id)
               .single();
               
             if (nicheData) {
