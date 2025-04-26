@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '@/components/layout/Sidebar';
@@ -38,7 +39,7 @@ const BusinessProfile = () => {
 
   if (loading) {
     return (
-      <div className="flex h-screen">
+      <div className="flex h-screen bg-background">
         <Sidebar />
         <div className="flex-1 p-6">
           <div className="animate-pulse flex flex-col gap-4">
@@ -78,8 +79,8 @@ const BusinessProfile = () => {
             </div>
 
             <div className="pt-16 px-4 pb-6">
-              <h1 className="text-2xl font-bold">{user?.email?.split('@')[0] || 'Username'}</h1>
-              <p className="text-gray-600">{user?.email || 'username@gmail.com'}</p>
+              <h1 className="text-2xl font-bold text-foreground">{user?.email?.split('@')[0] || 'Username'}</h1>
+              <p className="text-muted-foreground">{user?.email || 'username@gmail.com'}</p>
 
               <div className="mt-6 flex flex-col md:flex-row gap-4">
                 <div className="md:w-1/3 flex-shrink-0">
@@ -94,7 +95,7 @@ const BusinessProfile = () => {
 
                 <div className="md:w-2/3 flex-grow">
                   <Tabs defaultValue="services" className="w-full">
-                    <div className="border-b mb-6">
+                    <div className="border-b border-border mb-6">
                       <TabsList className="grid w-full grid-cols-2">
                         <TabsTrigger value="services">Services</TabsTrigger>
                         <TabsTrigger value="data">Data</TabsTrigger>

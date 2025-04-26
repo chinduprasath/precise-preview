@@ -14,18 +14,18 @@ const OrdersPage = () => {
   });
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-background">
       <Sidebar />
       <div className="flex-1 flex flex-col">
         <Header />
         <main className="flex-1 overflow-auto p-6">
           <div className="max-w-7xl mx-auto">
             <div className="flex justify-between items-center mb-6">
-              <h1 className="text-2xl font-bold">Orders</h1>
+              <h1 className="text-2xl font-bold text-foreground">Orders</h1>
               <div className="flex gap-4 items-center">
                 <div className="text-right">
-                  <p className="text-sm text-gray-500">{formattedDate}</p>
-                  <p className="text-sm text-blue-600 cursor-pointer">See More&gt;&gt;</p>
+                  <p className="text-sm text-muted-foreground">{formattedDate}</p>
+                  <p className="text-sm text-primary cursor-pointer">See More&gt;&gt;</p>
                 </div>
               </div>
             </div>
