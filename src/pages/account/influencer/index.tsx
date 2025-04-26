@@ -32,18 +32,27 @@ const InfluencerProfilePage = () => {
       setUser(session.user);
       
       try {
-        // Fetch influencer data without deep nesting that causes type issues
+        // Using type assertion for the initial influencer data to avoid deep typing
+        type BasicInfluencer = Omit<Influencer, 'country' | 'state' | 'city' | 'niche'>;
+        
+        // First, fetch the basic influencer record
         const { data, error } = await supabase
           .from('influencers')
-          .select('*, country_id, state_id, city_id, niche_id')
+          .select('*')
           .eq('user_id', session.user.id)
           .single();
           
         if (error) {
           console.error('Error fetching influencer data:', error);
         } else if (data) {
-          // Now fetch related data separately to avoid deep type nesting
-          const influencerData = data as Influencer;
+          const influencerData = data as BasicInfluencer;
+          const fullInfluencer: Influencer = {
+            ...influencerData,
+            country: undefined,
+            state: undefined,
+            city: undefined,
+            niche: undefined
+          };
           
           // Get country data if available
           if (influencerData.country_id) {
@@ -54,7 +63,7 @@ const InfluencerProfilePage = () => {
               .single();
             
             if (countryData) {
-              influencerData.country = countryData;
+              fullInfluencer.country = countryData;
             }
           }
           
@@ -67,7 +76,7 @@ const InfluencerProfilePage = () => {
               .single();
               
             if (stateData) {
-              influencerData.state = stateData;
+              fullInfluencer.state = stateData;
             }
           }
           
@@ -80,7 +89,7 @@ const InfluencerProfilePage = () => {
               .single();
               
             if (cityData) {
-              influencerData.city = cityData;
+              fullInfluencer.city = cityData;
             }
           }
           
@@ -93,11 +102,11 @@ const InfluencerProfilePage = () => {
               .single();
               
             if (nicheData) {
-              influencerData.niche = nicheData;
+              fullInfluencer.niche = nicheData;
             }
           }
           
-          setInfluencer(influencerData);
+          setInfluencer(fullInfluencer);
         }
       } catch (error) {
         console.error('Exception fetching influencer data:', error);
