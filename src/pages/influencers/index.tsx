@@ -44,38 +44,42 @@ const InfluencerListItem = ({ influencer, isSelected, onClick }: {
   return (
     <div 
       onClick={onClick} 
-      className={`p-4 hover:bg-secondary/50 cursor-pointer ${isSelected ? 'bg-secondary' : ''}`}
+      className={`flex items-center gap-3 py-3 hover:bg-secondary/50 rounded-lg px-2 transition-colors cursor-pointer ${isSelected ? 'bg-secondary/70' : ''}`}
     >
-      <div className="flex items-center gap-3">
-        <Avatar className="h-12 w-12 border">
-          <img 
-            src={influencer.image_url || 'https://via.placeholder.com/64'} 
-            alt={influencer.name} 
-            className="h-full w-full object-cover"
-          />
-        </Avatar>
-        <div className="flex-1 min-w-0">
-          <h4 className="font-medium text-foreground truncate">{influencer.name}</h4>
-          <div className="flex items-center gap-3 mt-1">
-            {influencer.followers_instagram > 0 && (
-              <div className="flex items-center gap-1">
-                <Instagram className="h-3.5 w-3.5 text-[#E4405F]" />
-                <span className="text-xs font-medium">{formatNumber(influencer.followers_instagram)}</span>
-              </div>
-            )}
-            {influencer.followers_facebook > 0 && (
-              <div className="flex items-center gap-1">
-                <Facebook className="h-3.5 w-3.5 text-[#1877F2]" />
-                <span className="text-xs font-medium">{formatNumber(influencer.followers_facebook)}</span>
-              </div>
-            )}
-            {influencer.followers_twitter > 0 && (
-              <div className="flex items-center gap-1">
-                <Twitter className="h-3.5 w-3.5 text-[#1DA1F2]" />
-                <span className="text-xs font-medium">{formatNumber(influencer.followers_twitter)}</span>
-              </div>
-            )}
-          </div>
+      <Avatar className="h-12 w-12">
+        <img 
+          src={influencer.image_url || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200'} 
+          alt={influencer.name} 
+          className="h-full w-full object-cover"
+        />
+      </Avatar>
+      <div className="flex-1">
+        <h3 className="font-medium text-foreground">{influencer.name}</h3>
+        <div className="flex flex-wrap gap-x-4 mt-1">
+          {influencer.followers_instagram > 0 && (
+            <div className="flex items-center gap-1">
+              <Instagram className="h-4 w-4 text-social-instagram" />
+              <span className="text-xs font-medium">{formatNumber(influencer.followers_instagram)}</span>
+            </div>
+          )}
+          {influencer.followers_facebook > 0 && (
+            <div className="flex items-center gap-1">
+              <Facebook className="h-4 w-4 text-social-facebook" />
+              <span className="text-xs font-medium">{formatNumber(influencer.followers_facebook)}</span>
+            </div>
+          )}
+          {influencer.followers_twitter > 0 && (
+            <div className="flex items-center gap-1">
+              <Twitter className="h-4 w-4 text-social-twitter" />
+              <span className="text-xs font-medium">{formatNumber(influencer.followers_twitter)}</span>
+            </div>
+          )}
+          {influencer.followers_youtube > 0 && (
+            <div className="flex items-center gap-1">
+              <Youtube className="h-4 w-4 text-social-youtube" />
+              <span className="text-xs font-medium">{formatNumber(influencer.followers_youtube)}</span>
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -411,9 +415,9 @@ const InfluencersPage = () => {
       <Sidebar />
       <div className="flex-1 flex flex-col">
         <Header />
-        <main className="flex-1 overflow-auto p-4">
-          <div className="flex gap-4 h-[calc(100vh-5rem)]">
-            <div className="w-1/4 bg-card rounded-lg p-4 shadow-sm border border-border overflow-y-auto">
+        <main className="flex-1 overflow-auto p-6">
+          <div className="flex gap-6">
+            <div className="w-1/3 bg-card rounded-lg p-4 shadow-sm border border-border">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-lg font-semibold text-foreground">Basic Filter</h2>
                 <Button 
@@ -627,9 +631,9 @@ const InfluencersPage = () => {
               </div>
             </div>
             
-            <div className="flex-1 grid grid-cols-7 gap-4">
+            <div className="w-2/3 grid grid-cols-7 gap-4">
               <div className="col-span-3 bg-card rounded-lg shadow-sm border border-border">
-                <div className="p-4 border-b border-border flex items-center justify-between sticky top-0 bg-card z-10">
+                <div className="p-4 border-b border-border flex items-center justify-between">
                   <h2 className="text-lg font-semibold text-foreground">Influencers</h2>
                   <div className="relative w-1/2">
                     <Input
@@ -638,10 +642,10 @@ const InfluencersPage = () => {
                       onChange={(e) => setSearchTerm(e.target.value)}
                       className="pl-9"
                     />
-                    <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Search className="absolute left-2 top-2.5 h-5 w-5 text-muted-foreground" />
                   </div>
                 </div>
-                <div className="overflow-y-auto" style={{ height: 'calc(100% - 73px)' }}>
+                <div className="max-h-[calc(100vh-200px)] overflow-y-auto">
                   {isInitialLoad ? (
                     <InfluencerListSkeleton />
                   ) : loading && !isInitialLoad ? (
@@ -651,32 +655,31 @@ const InfluencersPage = () => {
                     </div>
                   ) : filteredInfluencers.length === 0 ? (
                     <div className="p-8 text-center text-muted-foreground">
-                      <Search className="h-12 w-12 mx-auto text-muted-foreground" />
+                      <div className="mb-2">
+                        <Search className="h-12 w-12 mx-auto text-muted-foreground" />
+                      </div>
                       <h3 className="text-lg font-medium mb-1">No influencers found</h3>
                       <p className="text-sm">Try adjusting your filters to see more results</p>
                     </div>
                   ) : (
-                    <div className="divide-y divide-border">
-                      {filteredInfluencers.map((influencer) => (
+                    filteredInfluencers.map((influencer) => (
+                      <div key={influencer.id}>
                         <InfluencerListItem 
-                          key={influencer.id}
                           influencer={influencer} 
                           isSelected={selectedInfluencer && selectedInfluencer.id === influencer.id}
                           onClick={() => handleInfluencerClick(influencer)} 
                         />
-                      ))}
-                    </div>
+                      </div>
+                    ))
                   )}
                 </div>
               </div>
               
-              <div className="col-span-4 bg-card rounded-lg shadow-sm border border-border overflow-hidden">
-                <div className="p-4 border-b border-border sticky top-0 bg-card z-10">
+              <div className="col-span-4 bg-card rounded-lg shadow-sm border border-border">
+                <div className="p-4 border-b border-border">
                   <h2 className="text-lg font-semibold text-foreground">Profile</h2>
                 </div>
-                <div className="overflow-y-auto" style={{ height: 'calc(100% - 57px)' }}>
-                  <InfluencerProfile influencer={selectedInfluencer} />
-                </div>
+                <InfluencerProfile influencer={selectedInfluencer} />
               </div>
             </div>
           </div>

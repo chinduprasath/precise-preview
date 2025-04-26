@@ -1,16 +1,13 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
 import InfluencerProfile from '@/components/influencers/InfluencerProfile';
 import { supabase } from '@/integrations/supabase/client';
-import { useInfluencers } from '@/hooks/useInfluencers';
 
 const InfluencerProfilePage = () => {
   const navigate = useNavigate();
   const [user, setUser] = React.useState<any>(null);
   const [loading, setLoading] = React.useState(true);
-  const { influencers } = useInfluencers();
 
   React.useEffect(() => {
     const checkUser = async () => {
@@ -47,12 +44,9 @@ const InfluencerProfilePage = () => {
     );
   }
 
-  // Find the current user's influencer profile
-  const influencer = influencers.length > 0 ? influencers[0] : null;
-
   return (
     <Layout>
-      <InfluencerProfile influencer={influencer} />
+      <InfluencerProfile />
     </Layout>
   );
 };
