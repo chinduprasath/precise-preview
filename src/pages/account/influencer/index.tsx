@@ -6,8 +6,8 @@ import InfluencerProfile from '@/components/influencers/InfluencerProfile';
 import { supabase } from '@/integrations/supabase/client';
 import { Influencer, Country, State, City, Niche } from '@/types/location';
 
-// Define a simpler type for the raw influencer data from the database
-interface RawInfluencerData {
+// We'll define a simpler type for raw database data to avoid deep type inference issues
+type RawInfluencerData = {
   id: string;
   name: string;
   username: string | null;
@@ -24,7 +24,7 @@ interface RawInfluencerData {
   image_url: string | null;
   created_at: string;
   updated_at: string;
-}
+};
 
 const InfluencerProfilePage = () => {
   const navigate = useNavigate();
@@ -52,7 +52,7 @@ const InfluencerProfilePage = () => {
       setUser(session.user);
       
       try {
-        // Use a simple plain object to avoid TypeScript depth issues
+        // Explicitly type the response to avoid TypeScript depth issues
         const { data, error } = await supabase
           .from('influencers')
           .select('*')
@@ -62,10 +62,10 @@ const InfluencerProfilePage = () => {
         if (error) {
           console.error('Error fetching influencer data:', error);
         } else if (data) {
-          // Force type the data to a plain object first
-          const rawData = data as Record<string, any>;
+          // Cast data to our simple type to avoid complex type inference
+          const rawData = data as unknown as RawInfluencerData;
           
-          // Then construct our influencer object with explicit typing
+          // Manually construct the influencer object with explicit types
           const fullInfluencer: Influencer = {
             id: rawData.id,
             name: rawData.name,
