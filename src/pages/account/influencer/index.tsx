@@ -32,17 +32,72 @@ const InfluencerProfilePage = () => {
       setUser(session.user);
       
       try {
-        // Fetch influencer data using explicitly typed response
-        const { data: influencerData, error } = await supabase
+        // Fetch influencer data without deep nesting that causes type issues
+        const { data, error } = await supabase
           .from('influencers')
-          .select('*, country:countries(*), state:states(*), city:cities(*), niche:niches(*)')
+          .select('*, country_id, state_id, city_id, niche_id')
           .eq('user_id', session.user.id)
           .single();
           
         if (error) {
           console.error('Error fetching influencer data:', error);
-        } else {
-          setInfluencer(influencerData as Influencer);
+        } else if (data) {
+          // Now fetch related data separately to avoid deep type nesting
+          const influencerData = data as Influencer;
+          
+          // Get country data if available
+          if (influencerData.country_id) {
+            const { data: countryData } = await supabase
+              .from('countries')
+              .select('*')
+              .eq('id', influencerData.country_id)
+              .single();
+            
+            if (countryData) {
+              influencerData.country = countryData;
+            }
+          }
+          
+          // Get state data if available
+          if (influencerData.state_id) {
+            const { data: stateData } = await supabase
+              .from('states')
+              .select('*')
+              .eq('id', influencerData.state_id)
+              .single();
+              
+            if (stateData) {
+              influencerData.state = stateData;
+            }
+          }
+          
+          // Get city data if available
+          if (influencerData.city_id) {
+            const { data: cityData } = await supabase
+              .from('cities')
+              .select('*')
+              .eq('id', influencerData.city_id)
+              .single();
+              
+            if (cityData) {
+              influencerData.city = cityData;
+            }
+          }
+          
+          // Get niche data if available
+          if (influencerData.niche_id) {
+            const { data: nicheData } = await supabase
+              .from('niches')
+              .select('*')
+              .eq('id', influencerData.niche_id)
+              .single();
+              
+            if (nicheData) {
+              influencerData.niche = nicheData;
+            }
+          }
+          
+          setInfluencer(influencerData);
         }
       } catch (error) {
         console.error('Exception fetching influencer data:', error);
