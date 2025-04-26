@@ -44,7 +44,7 @@ const InfluencerListItem = ({ influencer, isSelected, onClick }: {
   return (
     <div 
       onClick={onClick} 
-      className={`flex items-center gap-3 py-3 hover:bg-gray-50 rounded-lg px-2 transition-colors cursor-pointer ${isSelected ? 'bg-gray-100' : ''}`}
+      className={`flex items-center gap-3 py-3 hover:bg-secondary/50 rounded-lg px-2 transition-colors cursor-pointer ${isSelected ? 'bg-secondary/70' : ''}`}
     >
       <Avatar className="h-12 w-12">
         <img 
@@ -54,29 +54,29 @@ const InfluencerListItem = ({ influencer, isSelected, onClick }: {
         />
       </Avatar>
       <div className="flex-1">
-        <h3 className="font-medium">{influencer.name}</h3>
+        <h3 className="font-medium text-foreground">{influencer.name}</h3>
         <div className="flex flex-wrap gap-x-4 mt-1">
           {influencer.followers_instagram > 0 && (
             <div className="flex items-center gap-1">
-              <Instagram className="h-4 w-4 text-pink-500" />
+              <Instagram className="h-4 w-4 text-social-instagram" />
               <span className="text-xs font-medium">{formatNumber(influencer.followers_instagram)}</span>
             </div>
           )}
           {influencer.followers_facebook > 0 && (
             <div className="flex items-center gap-1">
-              <Facebook className="h-4 w-4 text-blue-600" />
+              <Facebook className="h-4 w-4 text-social-facebook" />
               <span className="text-xs font-medium">{formatNumber(influencer.followers_facebook)}</span>
             </div>
           )}
           {influencer.followers_twitter > 0 && (
             <div className="flex items-center gap-1">
-              <Twitter className="h-4 w-4 text-blue-400" />
+              <Twitter className="h-4 w-4 text-social-twitter" />
               <span className="text-xs font-medium">{formatNumber(influencer.followers_twitter)}</span>
             </div>
           )}
           {influencer.followers_youtube > 0 && (
             <div className="flex items-center gap-1">
-              <Youtube className="h-4 w-4 text-red-600" />
+              <Youtube className="h-4 w-4 text-social-youtube" />
               <span className="text-xs font-medium">{formatNumber(influencer.followers_youtube)}</span>
             </div>
           )}
@@ -111,14 +111,14 @@ const InfluencerProfile = ({ influencer }: { influencer: Influencer | null }) =>
   if (!influencer) {
     return (
       <div className="flex flex-col items-center justify-center h-full p-8 text-center">
-        <div className="text-gray-400 mb-2">
+        <div className="text-muted-foreground mb-2">
           <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="12" cy="8" r="5" />
             <path d="M20 21a8 8 0 0 0-16 0" />
           </svg>
         </div>
-        <h3 className="text-xl font-medium text-gray-500 mb-1">No Profile Selected</h3>
-        <p className="text-gray-400">Please select an influencer profile to display their data</p>
+        <h3 className="text-xl font-medium text-muted-foreground mb-1">No Profile Selected</h3>
+        <p className="text-muted-foreground">Please select an influencer profile to display their data</p>
       </div>
     );
   }
@@ -134,42 +134,42 @@ const InfluencerProfile = ({ influencer }: { influencer: Influencer | null }) =>
           />
         </Avatar>
         <div>
-          <h2 className="text-xl font-semibold">{influencer.name}</h2>
-          <p className="text-sm text-gray-500">{influencer.username || '@' + influencer.name.toLowerCase().replace(/\s+/g, '')}</p>
-          <p className="text-sm text-gray-600 mt-2">{influencer.bio || 'No bio available'}</p>
+          <h2 className="text-xl font-semibold text-foreground">{influencer.name}</h2>
+          <p className="text-sm text-muted-foreground">{influencer.username || '@' + influencer.name.toLowerCase().replace(/\s+/g, '')}</p>
+          <p className="text-sm text-foreground mt-2">{influencer.bio || 'No bio available'}</p>
           
           <div className="flex gap-6 mt-4">
             <div className="flex flex-col items-center">
-              <Instagram className="h-6 w-6 text-pink-500" />
-              <span className="font-medium">{formatNumber(influencer.followers_instagram)}</span>
+              <Instagram className="h-6 w-6 text-social-instagram" />
+              <span className="font-medium text-foreground">{formatNumber(influencer.followers_instagram)}</span>
             </div>
             <div className="flex flex-col items-center">
-              <Facebook className="h-6 w-6 text-blue-600" />
-              <span className="font-medium">{formatNumber(influencer.followers_facebook)}</span>
+              <Facebook className="h-6 w-6 text-social-facebook" />
+              <span className="font-medium text-foreground">{formatNumber(influencer.followers_facebook)}</span>
             </div>
             <div className="flex flex-col items-center">
-              <Youtube className="h-6 w-6 text-red-600" />
-              <span className="font-medium">{formatNumber(influencer.followers_youtube)}</span>
+              <Youtube className="h-6 w-6 text-social-youtube" />
+              <span className="font-medium text-foreground">{formatNumber(influencer.followers_youtube)}</span>
             </div>
             <div className="flex flex-col items-center">
-              <Twitter className="h-6 w-6 text-blue-400" />
-              <span className="font-medium">{formatNumber(influencer.followers_twitter)}</span>
+              <Twitter className="h-6 w-6 text-social-twitter" />
+              <span className="font-medium text-foreground">{formatNumber(influencer.followers_twitter)}</span>
             </div>
           </div>
           
           <div className="mt-4">
             {influencer.niche && (
-              <span className="inline-block bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded mr-2">
+              <span className="inline-block bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-100 text-xs px-2 py-1 rounded mr-2">
                 {influencer.niche.name}
               </span>
             )}
             {influencer.state && (
-              <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded mr-2">
+              <span className="inline-block bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100 text-xs px-2 py-1 rounded mr-2">
                 {influencer.state.name}
               </span>
             )}
             {influencer.city && (
-              <span className="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
+              <span className="inline-block bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100 text-xs px-2 py-1 rounded">
                 {influencer.city.name}
               </span>
             )}
@@ -177,22 +177,22 @@ const InfluencerProfile = ({ influencer }: { influencer: Influencer | null }) =>
         </div>
       </div>
       
-      <div className="border-b">
+      <div className="border-b border-border">
         <div className="flex">
           <button 
-            className={`px-4 py-2 border-b-2 ${activeTab === 'services' ? 'border-primary text-primary' : 'border-transparent'}`}
+            className={`px-4 py-2 border-b-2 ${activeTab === 'services' ? 'border-primary text-primary' : 'border-transparent text-foreground'}`}
             onClick={() => setActiveTab('services')}
           >
             Services
           </button>
           <button 
-            className={`px-4 py-2 border-b-2 ${activeTab === 'prices' ? 'border-primary text-primary' : 'border-transparent'}`}
+            className={`px-4 py-2 border-b-2 ${activeTab === 'prices' ? 'border-primary text-primary' : 'border-transparent text-foreground'}`}
             onClick={() => setActiveTab('prices')}
           >
             Prices
           </button>
           <button 
-            className={`px-4 py-2 border-b-2 ${activeTab === 'data' ? 'border-primary text-primary' : 'border-transparent'}`}
+            className={`px-4 py-2 border-b-2 ${activeTab === 'data' ? 'border-primary text-primary' : 'border-transparent text-foreground'}`}
             onClick={() => setActiveTab('data')}
           >
             Data
@@ -227,32 +227,32 @@ const InfluencerProfile = ({ influencer }: { influencer: Influencer | null }) =>
 
 const ContentCard = ({ platform, type }: { platform: string; type: string }) => {
   return (
-    <div className="rounded-lg overflow-hidden shadow-sm border">
-      <div className="h-36 bg-gray-200">
+    <div className="rounded-lg overflow-hidden shadow-sm border border-border">
+      <div className="h-36 bg-muted">
         <img 
           src={`https://picsum.photos/id/${Math.floor(Math.random() * 100)}/300/200`} 
           alt="Content" 
           className="w-full h-full object-cover"
         />
       </div>
-      <div className="p-3 bg-white flex justify-between">
+      <div className="p-3 bg-card flex justify-between">
         <div className="flex items-center gap-1">
           <div className="text-red-500">❤</div>
-          <span className="text-xs">200K</span>
+          <span className="text-xs text-foreground">200K</span>
         </div>
         <div className="flex items-center gap-1">
           <div className="text-blue-500">👁️</div>
-          <span className="text-xs">500K</span>
+          <span className="text-xs text-foreground">500K</span>
         </div>
       </div>
-      <div className="p-3 bg-white flex justify-between border-t">
+      <div className="p-3 bg-card flex justify-between border-t border-border">
         <div className="flex items-center gap-1">
-          <div className="text-gray-700">💬</div>
-          <span className="text-xs">500</span>
+          <div className="text-foreground">💬</div>
+          <span className="text-xs text-foreground">500</span>
         </div>
         <div className="flex items-center gap-1">
-          <div className="text-gray-700">🔄</div>
-          <span className="text-xs">10K</span>
+          <div className="text-foreground">🔄</div>
+          <span className="text-xs text-foreground">10K</span>
         </div>
       </div>
     </div>
@@ -261,32 +261,32 @@ const ContentCard = ({ platform, type }: { platform: string; type: string }) => 
 
 const PricingCard = ({ platform, type }: { platform: string; type: string }) => {
   return (
-    <div className="rounded-lg overflow-hidden shadow-sm border">
-      <div className="h-36 bg-gray-200">
+    <div className="rounded-lg overflow-hidden shadow-sm border border-border">
+      <div className="h-36 bg-muted">
         <img 
           src={`https://picsum.photos/id/${Math.floor(Math.random() * 100)}/300/200`} 
           alt="Content" 
           className="w-full h-full object-cover"
         />
       </div>
-      <div className="p-3 bg-white flex justify-between">
+      <div className="p-3 bg-card flex justify-between">
         <div className="flex items-center gap-1">
           <div className="text-red-500">❤</div>
-          <span className="text-xs">200K</span>
+          <span className="text-xs text-foreground">200K</span>
         </div>
         <div className="flex items-center gap-1">
           <div className="text-blue-500">👁️</div>
-          <span className="text-xs">500K</span>
+          <span className="text-xs text-foreground">500K</span>
         </div>
       </div>
-      <div className="p-3 bg-white flex justify-between border-t">
+      <div className="p-3 bg-card flex justify-between border-t border-border">
         <div className="flex items-center gap-1">
-          <div className="text-gray-700">💰</div>
-          <span className="text-xs">$500</span>
+          <div className="text-foreground">💰</div>
+          <span className="text-xs text-foreground">$500</span>
         </div>
         <div className="flex items-center gap-1">
-          <div className="text-gray-700">🔄</div>
-          <span className="text-xs">10K</span>
+          <div className="text-foreground">🔄</div>
+          <span className="text-xs text-foreground">10K</span>
         </div>
       </div>
     </div>
@@ -295,32 +295,32 @@ const PricingCard = ({ platform, type }: { platform: string; type: string }) => 
 
 const DataCard = ({ platform, type }: { platform: string; type: string }) => {
   return (
-    <div className="rounded-lg overflow-hidden shadow-sm border">
-      <div className="h-36 bg-gray-200">
+    <div className="rounded-lg overflow-hidden shadow-sm border border-border">
+      <div className="h-36 bg-muted">
         <img 
           src={`https://picsum.photos/id/${Math.floor(Math.random() * 100)}/300/200`} 
           alt="Content" 
           className="w-full h-full object-cover"
         />
       </div>
-      <div className="p-3 bg-white flex justify-between">
+      <div className="p-3 bg-card flex justify-between">
         <div className="flex items-center gap-1">
           <div className="text-red-500">❤</div>
-          <span className="text-xs">200K</span>
+          <span className="text-xs text-foreground">200K</span>
         </div>
         <div className="flex items-center gap-1">
           <div className="text-blue-500">👁️</div>
-          <span className="text-xs">500K</span>
+          <span className="text-xs text-foreground">500K</span>
         </div>
       </div>
-      <div className="p-3 bg-white flex justify-between border-t">
+      <div className="p-3 bg-card flex justify-between border-t border-border">
         <div className="flex items-center gap-1">
-          <div className="text-gray-700">💰</div>
-          <span className="text-xs">$500</span>
+          <div className="text-foreground">💰</div>
+          <span className="text-xs text-foreground">$500</span>
         </div>
         <div className="flex items-center gap-1">
-          <div className="text-gray-700">🔄</div>
-          <span className="text-xs">10K</span>
+          <div className="text-foreground">🔄</div>
+          <span className="text-xs text-foreground">10K</span>
         </div>
       </div>
     </div>
@@ -411,15 +411,15 @@ const InfluencersPage = () => {
   };
   
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-background">
       <Sidebar />
       <div className="flex-1 flex flex-col">
         <Header />
         <main className="flex-1 overflow-auto p-6">
           <div className="flex gap-6">
-            <div className="w-1/3 bg-white rounded-lg p-4 shadow-sm">
+            <div className="w-1/3 bg-card rounded-lg p-4 shadow-sm border border-border">
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-lg font-semibold">Basic Filter</h2>
+                <h2 className="text-lg font-semibold text-foreground">Basic Filter</h2>
                 <Button 
                   variant="outline" 
                   size="sm" 
@@ -431,7 +431,7 @@ const InfluencersPage = () => {
               </div>
               
               <div className="mb-6">
-                <h3 className="font-medium mb-2">Location</h3>
+                <h3 className="font-medium mb-2 text-foreground">Location</h3>
                 <div className="grid grid-cols-3 gap-2">
                   <Select value={selectedCountry} onValueChange={setSelectedCountry}>
                     <SelectTrigger>
@@ -487,7 +487,7 @@ const InfluencersPage = () => {
               </div>
               
               <div className="mb-6">
-                <h3 className="font-medium mb-2">Niche</h3>
+                <h3 className="font-medium mb-2 text-foreground">Niche</h3>
                 <Select value={selectedNiche} onValueChange={setSelectedNiche}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select Niche" />
@@ -507,7 +507,7 @@ const InfluencersPage = () => {
               </div>
               
               <div className="mb-6">
-                <h3 className="font-medium mb-2">Follower Count</h3>
+                <h3 className="font-medium mb-2 text-foreground">Follower Count</h3>
                 <div className="px-2">
                   <RangeSlider 
                     label=""
@@ -523,7 +523,7 @@ const InfluencersPage = () => {
               </div>
               
               <div className="mb-6">
-                <h3 className="font-medium mb-2">Engagement Rate</h3>
+                <h3 className="font-medium mb-2 text-foreground">Engagement Rate</h3>
                 <div className="px-2">
                   <RangeSlider 
                     label=""
@@ -539,7 +539,7 @@ const InfluencersPage = () => {
               </div>
               
               <div className="mb-6">
-                <h3 className="font-medium mb-2">Price Range</h3>
+                <h3 className="font-medium mb-2 text-foreground">Price Range</h3>
                 <div className="flex gap-2">
                   <Input 
                     type="number" 
@@ -559,7 +559,7 @@ const InfluencersPage = () => {
               </div>
               
               <div className="mb-6">
-                <h3 className="font-medium mb-2">Content Type</h3>
+                <h3 className="font-medium mb-2 text-foreground">Content Type</h3>
                 <Select value={selectedType} onValueChange={setSelectedType}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select Type" />
@@ -583,10 +583,10 @@ const InfluencersPage = () => {
                 />
               </div>
               
-              <h2 className="text-lg font-semibold mb-4">Audience Demographics</h2>
+              <h2 className="text-lg font-semibold mb-4 text-foreground">Audience Demographics</h2>
               
               <div className="mb-6">
-                <h3 className="font-medium mb-2">Age</h3>
+                <h3 className="font-medium mb-2 text-foreground">Age</h3>
                 <Select value={selectedAge} onValueChange={setSelectedAge}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select Age" />
@@ -602,7 +602,7 @@ const InfluencersPage = () => {
               </div>
               
               <div className="mb-6">
-                <h3 className="font-medium mb-2">Gender</h3>
+                <h3 className="font-medium mb-2 text-foreground">Gender</h3>
                 <Select value={selectedGender} onValueChange={setSelectedGender}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select Gender" />
@@ -615,7 +615,7 @@ const InfluencersPage = () => {
               </div>
               
               <div className="mb-6">
-                <h3 className="font-medium mb-2">Interests</h3>
+                <h3 className="font-medium mb-2 text-foreground">Interests</h3>
                 <Select value={selectedInterests} onValueChange={setSelectedInterests}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select Interests" />
@@ -632,9 +632,9 @@ const InfluencersPage = () => {
             </div>
             
             <div className="w-2/3 grid grid-cols-7 gap-4">
-              <div className="col-span-3 bg-white rounded-lg shadow-sm">
-                <div className="p-4 border-b flex items-center justify-between">
-                  <h2 className="text-lg font-semibold">Influencers</h2>
+              <div className="col-span-3 bg-card rounded-lg shadow-sm border border-border">
+                <div className="p-4 border-b border-border flex items-center justify-between">
+                  <h2 className="text-lg font-semibold text-foreground">Influencers</h2>
                   <div className="relative w-1/2">
                     <Input
                       placeholder="Search influencers..."
@@ -642,7 +642,7 @@ const InfluencersPage = () => {
                       onChange={(e) => setSearchTerm(e.target.value)}
                       className="pl-9"
                     />
-                    <Search className="absolute left-2 top-2.5 h-5 w-5 text-gray-400" />
+                    <Search className="absolute left-2 top-2.5 h-5 w-5 text-muted-foreground" />
                   </div>
                 </div>
                 <div className="max-h-[calc(100vh-200px)] overflow-y-auto">
@@ -651,12 +651,12 @@ const InfluencersPage = () => {
                   ) : loading && !isInitialLoad ? (
                     <div className="flex items-center justify-center py-8">
                       <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-solid border-primary border-r-transparent"></div>
-                      <span className="ml-2 text-gray-500">Filtering...</span>
+                      <span className="ml-2 text-muted-foreground">Filtering...</span>
                     </div>
                   ) : filteredInfluencers.length === 0 ? (
-                    <div className="p-8 text-center text-gray-500">
+                    <div className="p-8 text-center text-muted-foreground">
                       <div className="mb-2">
-                        <Search className="h-12 w-12 mx-auto text-gray-300" />
+                        <Search className="h-12 w-12 mx-auto text-muted-foreground" />
                       </div>
                       <h3 className="text-lg font-medium mb-1">No influencers found</h3>
                       <p className="text-sm">Try adjusting your filters to see more results</p>
@@ -675,9 +675,9 @@ const InfluencersPage = () => {
                 </div>
               </div>
               
-              <div className="col-span-4 bg-white rounded-lg shadow-sm">
-                <div className="p-4 border-b">
-                  <h2 className="text-lg font-semibold">Profile</h2>
+              <div className="col-span-4 bg-card rounded-lg shadow-sm border border-border">
+                <div className="p-4 border-b border-border">
+                  <h2 className="text-lg font-semibold text-foreground">Profile</h2>
                 </div>
                 <InfluencerProfile influencer={selectedInfluencer} />
               </div>

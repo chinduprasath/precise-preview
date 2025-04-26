@@ -69,7 +69,7 @@ const ChatInput = () => {
       <Button variant="ghost" size="icon" className="rounded-full">
         <Mic className="h-5 w-5 text-muted-foreground" />
       </Button>
-      <Button size="icon" className="rounded-full bg-primary text-white">
+      <Button size="icon" className="rounded-full bg-primary text-primary-foreground">
         <Send className="h-5 w-5" />
       </Button>
     </div>
@@ -90,7 +90,7 @@ const ChatListItem: React.FC<{
         <img src={influencer.avatar} alt={influencer.name} className="h-full w-full object-cover" />
       </Avatar>
       <div className="flex-1 min-w-0">
-        <h4 className="font-medium text-primary">{influencer.name}</h4>
+        <h4 className="font-medium text-foreground">{influencer.name}</h4>
         <p className="text-sm text-muted-foreground truncate">{influencer.lastMessage}</p>
       </div>
     </div>
