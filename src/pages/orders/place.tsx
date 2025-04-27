@@ -15,6 +15,8 @@ import { Switch } from "@/components/ui/switch";
 import { toast } from "@/hooks/use-toast";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ScheduleSelector } from "@/components/orders/ScheduleSelector";
+import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { useNavigate } from "react-router-dom";
 
 const influencerMock = {
   avatar: "https://picsum.photos/id/64/100/100",
@@ -35,12 +37,11 @@ const affiliatePlatforms = [
   { name: "Twitter", id: "twitter", icon: <Twitter className="w-5 h-5 text-social-twitter" />, color: "bg-[#1da1f2] text-white" },
 ];
 
-// Generate time slots in 30-minute intervals in IST (Indian Standard Time)
 const generateTimeSlots = () => {
   const slots = [];
   for (let hour = 9; hour <= 18; hour++) {
     for (let minute of [0, 30]) {
-      if (hour === 18 && minute === 30) continue; // Skip 18:30
+      if (hour === 18 && minute === 30) continue;
       
       const period = hour < 12 ? 'AM' : 'PM';
       const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour;
@@ -57,7 +58,6 @@ const generateTimeSlots = () => {
 
 const timeSlots = generateTimeSlots();
 
-// Mock coupon data for demonstration
 const availableCoupons = {
   "WELCOME10": { discount: 80, type: "fixed" },
   "NEWYEAR25": { discount: 200, type: "fixed" },
@@ -87,7 +87,8 @@ export default function PlaceOrderPage() {
   const [couponCode, setCouponCode] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState<{code: string, discount: number, type: string} | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+  const [showThankYouDialog, setShowThankYouDialog] = useState(false);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const dropAreaRef = useRef<HTMLDivElement>(null);
 
@@ -266,11 +267,8 @@ export default function PlaceOrderPage() {
     
     // Simulate API call
     setTimeout(() => {
-      toast({
-        title: "Request Sent!",
-        description: "Your order has been submitted successfully",
-      });
       setIsSubmitting(false);
+      setShowThankYouDialog(true);
       
       console.log({
         platforms: selectedPlatforms,
@@ -285,15 +283,15 @@ export default function PlaceOrderPage() {
     }, 1500);
   };
 
+  const navigate = useNavigate();
+
   return (
     <Layout>
       <div className="flex-1 flex justify-center px-4 py-10 md:py-16 max-w-7xl mx-auto w-full">
         <div className="w-full rounded-xl bg-card shadow-lg p-0 flex flex-col lg:flex-row gap-8 border border-border relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#9b87f5] to-[#7E69AB]"></div>
           
-          {/* Left Column */}
           <div className="flex-1 flex flex-col gap-7 p-6 md:p-8">
-            {/* Influencer Profile Card */}
             <Card className="rounded-xl overflow-hidden border-0 shadow-md bg-white dark:bg-card">
               <CardContent className="p-0">
                 <div className="bg-gradient-to-r from-[#9b87f5]/90 to-[#7E69AB]/90 p-5 flex items-center gap-4 text-white">
@@ -325,7 +323,6 @@ export default function PlaceOrderPage() {
               </CardContent>
             </Card>
             
-            {/* Affiliate Platforms */}
             <div className="space-y-4">
               <Label className="text-base font-semibold flex items-center gap-2">
                 <svg 
@@ -399,7 +396,6 @@ export default function PlaceOrderPage() {
               </div>
             </div>
             
-            {/* Custom Message */}
             <div>
               <Label 
                 htmlFor="custom-message" 
@@ -426,7 +422,6 @@ export default function PlaceOrderPage() {
               </div>
             </div>
             
-            {/* File Upload */}
             <div>
               <Label className="text-sm mb-3 block">Upload Files</Label>
               
@@ -511,7 +506,6 @@ export default function PlaceOrderPage() {
             </div>
           </div>
           
-          {/* Right Column */}
           <div className="flex-1 flex flex-col bg-muted/30 p-6 md:p-8 gap-6">
             <div className="space-y-6">
               <div className="space-y-4">
@@ -528,7 +522,6 @@ export default function PlaceOrderPage() {
                 />
               </div>
               
-              {/* Coupon Code */}
               <div className="space-y-4 pt-4 border-t border-border">
                 <Label className="text-base font-semibold flex items-center gap-2">
                   <Tag className="w-5 h-5 text-primary/80" />
@@ -577,7 +570,6 @@ export default function PlaceOrderPage() {
               </div>
             </div>
             
-            {/* Order Summary */}
             <Card className="mt-auto">
               <CardHeader className="pb-3">
                 <h3 className="text-lg font-semibold">Order Summary</h3>
@@ -638,6 +630,36 @@ export default function PlaceOrderPage() {
           </div>
         </div>
       </div>
+      
+      <AlertDialog open={showThankYouDialog} onOpenChange={setShowThankYouDialog}>
+        <AlertDialogContent className="max-w-md">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-xl font-semibold text-center">
+              Thank You!
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-center space-y-2">
+              <p>Request has been sent to influencer successfully.</p>
+              <p>The post will be automatically scheduled and published on the influencer's page.</p>
+              <p>Once the posting is completed, you can track the results on the Reach page.</p>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="sm:space-x-4">
+            <Button
+              variant="outline"
+              className="w-full sm:w-auto"
+              onClick={() => navigate('/')}
+            >
+              Return to Home
+            </Button>
+            <Button 
+              className="w-full sm:w-auto"
+              onClick={() => navigate('/orders')}
+            >
+              View Orders
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Layout>
   );
 }
