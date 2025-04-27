@@ -22,7 +22,6 @@ const InfluencerProfilePage = () => {
         return;
       }
 
-      // Get user type from local storage
       const userType = localStorage.getItem('userType');
       
       if (userType && userType !== 'influencer') {
@@ -33,7 +32,6 @@ const InfluencerProfilePage = () => {
       setUser(session.user);
       
       try {
-        // Fetch influencer data with all related entities in a single query
         const { data: influencerData, error } = await supabase
           .from('influencers')
           .select(`
@@ -62,31 +60,32 @@ const InfluencerProfilePage = () => {
           setLoading(false);
           return;
         }
-        
-        // Transform the data to match our Influencer type
-        // This avoids the deep type inference issue
-        setInfluencer({
+
+        // Transform the data into our Influencer type
+        const transformedInfluencer: Influencer = {
           id: influencerData.id,
           name: influencerData.name,
-          username: influencerData.username || null,
-          bio: influencerData.bio || null,
-          country_id: influencerData.country_id || null,
-          state_id: influencerData.state_id || null,
-          city_id: influencerData.city_id || null,
-          niche_id: influencerData.niche_id || null,
-          followers_instagram: influencerData.followers_instagram,
-          followers_facebook: influencerData.followers_facebook,
-          followers_twitter: influencerData.followers_twitter,
-          followers_youtube: influencerData.followers_youtube,
-          engagement_rate: influencerData.engagement_rate,
-          image_url: influencerData.image_url || null,
+          username: influencerData.username,
+          bio: influencerData.bio,
+          country_id: influencerData.country_id,
+          state_id: influencerData.state_id,
+          city_id: influencerData.city_id,
+          niche_id: influencerData.niche_id,
+          followers_instagram: influencerData.followers_instagram || 0,
+          followers_facebook: influencerData.followers_facebook || 0,
+          followers_twitter: influencerData.followers_twitter || 0,
+          followers_youtube: influencerData.followers_youtube || 0,
+          engagement_rate: influencerData.engagement_rate || 0,
+          image_url: influencerData.image_url,
           created_at: influencerData.created_at,
           updated_at: influencerData.updated_at,
           country: influencerData.country || null,
           state: influencerData.state || null,
           city: influencerData.city || null,
           niche: influencerData.niche || null
-        });
+        };
+
+        setInfluencer(transformedInfluencer);
       } catch (error) {
         console.error('Exception fetching influencer data:', error);
         toast({
