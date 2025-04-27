@@ -56,9 +56,9 @@ const InfluencerProfilePage = () => {
           setLoading(false);
           return;
         }
-        
-        // Create a properly typed influencer object from the start
-        const influencerObj: Influencer = {
+
+        // Initialize the influencer object with explicit types to avoid deep type inference
+        const influencerObj = {
           id: influencerData.id,
           name: influencerData.name,
           username: influencerData.username || null,
@@ -74,8 +74,12 @@ const InfluencerProfilePage = () => {
           engagement_rate: influencerData.engagement_rate,
           image_url: influencerData.image_url || null,
           created_at: influencerData.created_at,
-          updated_at: influencerData.updated_at
-        };
+          updated_at: influencerData.updated_at,
+          country: null as Country | null,
+          state: null as State | null,
+          city: null as City | null,
+          niche: null as Niche | null
+        } as Influencer;
         
         // Fetch and assign related entities separately
         if (influencerObj.country_id) {
