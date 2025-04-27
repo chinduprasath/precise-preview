@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
@@ -56,7 +55,7 @@ const InfluencerProfilePage = () => {
       setUser(session.user);
       
       try {
-        // Use a simple query string with explicit type casting to avoid deep inference
+        // Fixed query string with proper format
         const { data, error } = await supabase
           .from('influencers')
           .select(`
@@ -88,7 +87,7 @@ const InfluencerProfilePage = () => {
           return;
         }
 
-        // Transform the data into our Influencer type, using a simple object literal without type inference
+        // Transform the data into our Influencer type
         const transformedInfluencer: Influencer = {
           id: data.id,
           name: data.name,
