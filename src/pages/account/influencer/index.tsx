@@ -7,6 +7,30 @@ import { supabase } from '@/integrations/supabase/client';
 import { Influencer } from '@/types/location';
 import { toast } from '@/components/ui/use-toast';
 
+// Define a type for the raw Supabase response to avoid deep type inference
+interface InfluencerRawResponse {
+  id: string;
+  name: string;
+  username: string | null;
+  bio: string | null;
+  country_id: number | null;
+  state_id: number | null;
+  city_id: number | null;
+  niche_id: number | null;
+  followers_instagram: number | null;
+  followers_facebook: number | null;
+  followers_twitter: number | null;
+  followers_youtube: number | null;
+  engagement_rate: number | null;
+  image_url: string | null;
+  created_at: string;
+  updated_at: string;
+  country: { id: number; name: string; code: string | null } | null;
+  state: { id: number; name: string; country_id: number } | null;
+  city: { id: number; name: string; state_id: number } | null;
+  niche: { id: number; name: string } | null;
+}
+
 const InfluencerProfilePage = () => {
   const navigate = useNavigate();
   const [user, setUser] = React.useState<any>(null);
@@ -32,15 +56,10 @@ const InfluencerProfilePage = () => {
       setUser(session.user);
       
       try {
-        const { data: influencerData, error } = await supabase
+        // Use a simple query string with explicit typing to avoid deep inference
+        const { data, error } = await supabase
           .from('influencers')
-          .select(`
-            *,
-            country:countries(*),
-            state:states(*),
-            city:cities(*),
-            niche:niches(*)
-          `)
+          .select('*, country:countries(*), state:states(*), city:cities(*), niche:niches(*)')
           .eq('user_id', session.user.id)
           .single();
           
@@ -55,11 +74,14 @@ const InfluencerProfilePage = () => {
           return;
         }
         
-        if (!influencerData) {
+        if (!data) {
           console.error('No influencer data found');
           setLoading(false);
           return;
         }
+
+        // Explicitly cast the response to our defined type
+        const influencerData = data as unknown as InfluencerRawResponse;
 
         // Transform the data into our Influencer type
         const transformedInfluencer: Influencer = {
