@@ -1,11 +1,12 @@
+
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useToast } from '@/hooks/use-toast';
 import { usePricingData } from '@/hooks/usePricingData';
-import { useNavigate } from 'react-router-dom';
 
 interface PricesTabContentProps {
   influencerId?: string;
@@ -46,8 +47,8 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
   influencerId,
   influencerName,
 }) => {
-  const { toast } = useToast();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
   const handleCheckboxChange = (itemId: string) => {
