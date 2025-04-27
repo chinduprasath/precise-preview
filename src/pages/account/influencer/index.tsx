@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
 import InfluencerProfile from '@/components/influencers/InfluencerProfile';
 import { supabase } from '@/integrations/supabase/client';
-import { Influencer, Country, State, City, Niche } from '@/types/location';
+import { Influencer } from '@/types/location';
 import { toast } from '@/components/ui/use-toast';
 
 const InfluencerProfilePage = () => {
@@ -33,15 +33,21 @@ const InfluencerProfilePage = () => {
       setUser(session.user);
       
       try {
-        // Get basic influencer data
-        const { data: influencerData, error: influencerError } = await supabase
+        // Fetch influencer data with all related entities in a single query
+        const { data: influencerData, error } = await supabase
           .from('influencers')
-          .select('*')
+          .select(`
+            *,
+            country:countries(*),
+            state:states(*),
+            city:cities(*),
+            niche:niches(*)
+          `)
           .eq('user_id', session.user.id)
           .single();
           
-        if (influencerError) {
-          console.error('Error fetching influencer data:', influencerError);
+        if (error) {
+          console.error('Error fetching influencer data:', error);
           toast({
             title: "Error",
             description: "Could not load your profile data",
@@ -56,9 +62,10 @@ const InfluencerProfilePage = () => {
           setLoading(false);
           return;
         }
-
-        // Create a base influencer object with primitive types first
-        const baseInfluencer: Influencer = {
+        
+        // Transform the data to match our Influencer type
+        // This avoids the deep type inference issue
+        setInfluencer({
           id: influencerData.id,
           name: influencerData.name,
           username: influencerData.username || null,
@@ -75,63 +82,11 @@ const InfluencerProfilePage = () => {
           image_url: influencerData.image_url || null,
           created_at: influencerData.created_at,
           updated_at: influencerData.updated_at,
-          country: null,
-          state: null,
-          city: null,
-          niche: null
-        };
-        
-        // Fetch and assign related entities separately
-        if (baseInfluencer.country_id) {
-          const { data: countryData } = await supabase
-            .from('countries')
-            .select('*')
-            .eq('id', baseInfluencer.country_id)
-            .single();
-            
-          if (countryData) {
-            baseInfluencer.country = countryData;
-          }
-        }
-        
-        if (baseInfluencer.state_id) {
-          const { data: stateData } = await supabase
-            .from('states')
-            .select('*')
-            .eq('id', baseInfluencer.state_id)
-            .single();
-            
-          if (stateData) {
-            baseInfluencer.state = stateData;
-          }
-        }
-        
-        if (baseInfluencer.city_id) {
-          const { data: cityData } = await supabase
-            .from('cities')
-            .select('*')
-            .eq('id', baseInfluencer.city_id)
-            .single();
-            
-          if (cityData) {
-            baseInfluencer.city = cityData;
-          }
-        }
-        
-        if (baseInfluencer.niche_id) {
-          const { data: nicheData } = await supabase
-            .from('niches')
-            .select('*')
-            .eq('id', baseInfluencer.niche_id)
-            .single();
-            
-          if (nicheData) {
-            baseInfluencer.niche = nicheData;
-          }
-        }
-        
-        // Set the influencer state
-        setInfluencer(baseInfluencer);
+          country: influencerData.country || null,
+          state: influencerData.state || null,
+          city: influencerData.city || null,
+          niche: influencerData.niche || null
+        });
       } catch (error) {
         console.error('Exception fetching influencer data:', error);
         toast({
