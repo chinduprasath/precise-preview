@@ -7,7 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Influencer } from '@/types/location';
 import { toast } from '@/components/ui/use-toast';
 
-// Define a type for the raw Supabase response to avoid deep type inference
+// Define a more explicit interface for the raw Supabase response to avoid deep type inference
 interface InfluencerRawResponse {
   id: string;
   name: string;
@@ -56,7 +56,7 @@ const InfluencerProfilePage = () => {
       setUser(session.user);
       
       try {
-        // Use a simple query string with explicit typing to avoid deep inference
+        // Use a simple query string with explicit type casting to avoid deep inference
         const { data, error } = await supabase
           .from('influencers')
           .select(`
