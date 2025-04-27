@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo, useCallback, useRef } from "react";
 import { Instagram, Facebook, Youtube, Twitter, Paperclip, Check, Clock, Upload, X, Loader2, Tag } from "lucide-react";
 import Layout from '@/components/layout/Layout';
@@ -15,6 +14,7 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "@/hooks/use-toast";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { ScheduleSelector } from "@/components/orders/ScheduleSelector";
 
 const influencerMock = {
   avatar: "https://picsum.photos/id/64/100/100",
@@ -64,6 +64,12 @@ const availableCoupons = {
   "SAVE15": { discount: 15, type: "percentage" },
 };
 
+interface TimeSelection {
+  hour: string;
+  minute: string;
+  period: string;
+}
+
 export default function PlaceOrderPage() {
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
   const [affiliateLink, setAffiliateLink] = useState("");
@@ -71,7 +77,11 @@ export default function PlaceOrderPage() {
   const [customMessage, setCustomMessage] = useState("");
   const [customMessageError, setCustomMessageError] = useState("");
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
-  const [selectedTime, setSelectedTime] = useState<string>("");
+  const [selectedTime, setSelectedTime] = useState<TimeSelection>({
+    hour: '',
+    minute: '',
+    period: ''
+  });
   const [files, setFiles] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [couponCode, setCouponCode] = useState("");
@@ -243,7 +253,7 @@ export default function PlaceOrderPage() {
       return;
     }
     
-    if (!selectedDate || !selectedTime) {
+    if (!selectedDate || !selectedTime.hour || !selectedTime.minute || !selectedTime.period) {
       toast({
         title: "Missing Selection",
         description: "Please select both date and time",
@@ -510,65 +520,12 @@ export default function PlaceOrderPage() {
                   Schedule
                 </Label>
                 
-                {/* Date Picker */}
-                <div className="space-y-3">
-                  <Label htmlFor="date" className="text-sm block">
-                    Select Date
-                  </Label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        id="date"
-                        variant="outline"
-                        className={cn(
-                          "w-full justify-start text-left font-normal",
-                          !selectedDate && "text-muted-foreground"
-                        )}
-                      >
-                        <Calendar className="mr-2 h-4 w-4" />
-                        {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={selectedDate}
-                        onSelect={setSelectedDate}
-                        initialFocus
-                        className="rounded-md pointer-events-auto"
-                        disabled={(date) => {
-                          // Disable dates in the past
-                          const today = new Date();
-                          today.setHours(0, 0, 0, 0);
-                          return date < today;
-                        }}
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-                
-                {/* Time Selector */}
-                <div className="space-y-3">
-                  <Label htmlFor="time" className="text-sm block">
-                    Select Time (IST)
-                  </Label>
-                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-                    {timeSlots.map((slot) => (
-                      <Button
-                        key={slot.value}
-                        type="button"
-                        variant={selectedTime === slot.value ? "default" : "outline"}
-                        className={cn(
-                          "text-xs py-1 px-2 h-auto",
-                          selectedTime === slot.value ? "bg-primary" : "hover:bg-accent"
-                        )}
-                        onClick={() => setSelectedTime(slot.value)}
-                      >
-                        {slot.label}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
+                <ScheduleSelector
+                  selectedDate={selectedDate}
+                  setSelectedDate={setSelectedDate}
+                  selectedTime={selectedTime}
+                  setSelectedTime={setSelectedTime}
+                />
               </div>
               
               {/* Coupon Code */}
