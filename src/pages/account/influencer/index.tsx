@@ -59,7 +59,15 @@ const InfluencerProfilePage = () => {
         // Use a simple query string with explicit typing to avoid deep inference
         const { data, error } = await supabase
           .from('influencers')
-          .select('*, country:countries(*), state:states(*), city:cities(*), niche:niches(*)')
+          .select(`
+            id, name, username, bio, country_id, state_id, city_id, niche_id, 
+            followers_instagram, followers_facebook, followers_twitter, followers_youtube,
+            engagement_rate, image_url, created_at, updated_at,
+            country:countries(id, name, code), 
+            state:states(id, name, country_id), 
+            city:cities(id, name, state_id), 
+            niche:niches(id, name)
+          `)
           .eq('user_id', session.user.id)
           .single();
           
@@ -80,31 +88,28 @@ const InfluencerProfilePage = () => {
           return;
         }
 
-        // Explicitly cast the response to our defined type
-        const influencerData = data as unknown as InfluencerRawResponse;
-
-        // Transform the data into our Influencer type
+        // Transform the data into our Influencer type, using a simple object literal without type inference
         const transformedInfluencer: Influencer = {
-          id: influencerData.id,
-          name: influencerData.name,
-          username: influencerData.username,
-          bio: influencerData.bio,
-          country_id: influencerData.country_id,
-          state_id: influencerData.state_id,
-          city_id: influencerData.city_id,
-          niche_id: influencerData.niche_id,
-          followers_instagram: influencerData.followers_instagram || 0,
-          followers_facebook: influencerData.followers_facebook || 0,
-          followers_twitter: influencerData.followers_twitter || 0,
-          followers_youtube: influencerData.followers_youtube || 0,
-          engagement_rate: influencerData.engagement_rate || 0,
-          image_url: influencerData.image_url,
-          created_at: influencerData.created_at,
-          updated_at: influencerData.updated_at,
-          country: influencerData.country || null,
-          state: influencerData.state || null,
-          city: influencerData.city || null,
-          niche: influencerData.niche || null
+          id: data.id,
+          name: data.name,
+          username: data.username,
+          bio: data.bio,
+          country_id: data.country_id,
+          state_id: data.state_id,
+          city_id: data.city_id,
+          niche_id: data.niche_id,
+          followers_instagram: data.followers_instagram || 0,
+          followers_facebook: data.followers_facebook || 0,
+          followers_twitter: data.followers_twitter || 0,
+          followers_youtube: data.followers_youtube || 0,
+          engagement_rate: data.engagement_rate || 0,
+          image_url: data.image_url,
+          created_at: data.created_at,
+          updated_at: data.updated_at,
+          country: data.country,
+          state: data.state,
+          city: data.city,
+          niche: data.niche
         };
 
         setInfluencer(transformedInfluencer);
