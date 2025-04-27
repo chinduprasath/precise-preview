@@ -57,8 +57,8 @@ const InfluencerProfilePage = () => {
           return;
         }
 
-        // Initialize the influencer object with explicit types to avoid deep type inference
-        const influencerObj = {
+        // Create a base influencer object with primitive types first
+        const baseInfluencer: Influencer = {
           id: influencerData.id,
           name: influencerData.name,
           username: influencerData.username || null,
@@ -75,63 +75,63 @@ const InfluencerProfilePage = () => {
           image_url: influencerData.image_url || null,
           created_at: influencerData.created_at,
           updated_at: influencerData.updated_at,
-          country: null as Country | null,
-          state: null as State | null,
-          city: null as City | null,
-          niche: null as Niche | null
-        } as Influencer;
+          country: null,
+          state: null,
+          city: null,
+          niche: null
+        };
         
         // Fetch and assign related entities separately
-        if (influencerObj.country_id) {
+        if (baseInfluencer.country_id) {
           const { data: countryData } = await supabase
             .from('countries')
             .select('*')
-            .eq('id', influencerObj.country_id)
+            .eq('id', baseInfluencer.country_id)
             .single();
             
           if (countryData) {
-            influencerObj.country = countryData as Country;
+            baseInfluencer.country = countryData;
           }
         }
         
-        if (influencerObj.state_id) {
+        if (baseInfluencer.state_id) {
           const { data: stateData } = await supabase
             .from('states')
             .select('*')
-            .eq('id', influencerObj.state_id)
+            .eq('id', baseInfluencer.state_id)
             .single();
             
           if (stateData) {
-            influencerObj.state = stateData as State;
+            baseInfluencer.state = stateData;
           }
         }
         
-        if (influencerObj.city_id) {
+        if (baseInfluencer.city_id) {
           const { data: cityData } = await supabase
             .from('cities')
             .select('*')
-            .eq('id', influencerObj.city_id)
+            .eq('id', baseInfluencer.city_id)
             .single();
             
           if (cityData) {
-            influencerObj.city = cityData as City;
+            baseInfluencer.city = cityData;
           }
         }
         
-        if (influencerObj.niche_id) {
+        if (baseInfluencer.niche_id) {
           const { data: nicheData } = await supabase
             .from('niches')
             .select('*')
-            .eq('id', influencerObj.niche_id)
+            .eq('id', baseInfluencer.niche_id)
             .single();
             
           if (nicheData) {
-            influencerObj.niche = nicheData as Niche;
+            baseInfluencer.niche = nicheData;
           }
         }
         
         // Set the influencer state
-        setInfluencer(influencerObj);
+        setInfluencer(baseInfluencer);
       } catch (error) {
         console.error('Exception fetching influencer data:', error);
         toast({
