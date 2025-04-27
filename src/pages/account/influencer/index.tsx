@@ -146,4 +146,3 @@ const InfluencerProfilePage = () => {
 };
 
 export default InfluencerProfilePage;
-
