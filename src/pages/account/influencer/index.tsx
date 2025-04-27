@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
@@ -83,7 +84,7 @@ const InfluencerProfilePage = () => {
         const influencerData = data as unknown as InfluencerRawResponse;
 
         // Transform the data into our Influencer type
-        const transformedInfluencer = {
+        const transformedInfluencer: Influencer = {
           id: influencerData.id,
           name: influencerData.name,
           username: influencerData.username,
@@ -104,7 +105,7 @@ const InfluencerProfilePage = () => {
           state: influencerData.state || null,
           city: influencerData.city || null,
           niche: influencerData.niche || null
-        } as const;
+        };
 
         setInfluencer(transformedInfluencer);
       } catch (error) {
