@@ -1,6 +1,6 @@
-
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Order } from '@/types/order';
 import { PendingCheckoutCard } from '@/components/orders/PendingCheckoutCard';
@@ -12,6 +12,7 @@ import { orderData } from '@/data/orders';
 
 const OrdersPage = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   
   const { data: apiOrders, isLoading } = useQuery({
     queryKey: ['orders'],
@@ -25,7 +26,6 @@ const OrdersPage = () => {
         throw error;
       }
 
-      // Transform the data to match our Order type
       const transformedData: Order[] = data.map((item: any) => ({
         id: item.id,
         orderNumber: item.order_number,
@@ -47,16 +47,14 @@ const OrdersPage = () => {
     }
   });
 
-  // Use mock data if API data is empty
   const orders = (apiOrders && apiOrders.length > 0) ? apiOrders : orderData;
 
   const pendingCheckoutOrders = orders.filter(order => order.status === 'pending_checkout') || [];
   const postedOrders = orders.filter(order => order.status === 'completed') || [];
 
   const handleCheckout = (order: Order) => {
-    toast({
-      title: "Checkout",
-      description: `Processing checkout for order #${order.orderNumber}`,
+    navigate('/checkout', { 
+      state: { order }
     });
   };
 
