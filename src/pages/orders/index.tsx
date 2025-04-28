@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -8,11 +7,12 @@ import { PostedOrderCard } from '@/components/orders/PostedOrderCard';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
 import { useToast } from '@/hooks/use-toast';
+import { orderData } from '@/data/orders';
 
 const OrdersPage = () => {
   const { toast } = useToast();
   
-  const { data: orders, isLoading } = useQuery({
+  const { data: apiOrders, isLoading } = useQuery({
     queryKey: ['orders'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -32,10 +32,12 @@ const OrdersPage = () => {
         url: item.url,
         status: item.status,
         scheduledDate: item.scheduled_date,
+        scheduledTime: item.scheduled_time,
         category: item.category,
         productService: item.product_service,
         businessVerified: item.business_verified,
         username: item.username,
+        amount: item.amount,
         createdAt: item.created_at,
         updatedAt: item.updated_at
       }));
@@ -44,8 +46,11 @@ const OrdersPage = () => {
     }
   });
 
-  const pendingCheckoutOrders = orders?.filter(order => order.status === 'pending_checkout') || [];
-  const postedOrders = orders?.filter(order => order.status === 'completed') || [];
+  // Use mock data if API data is empty
+  const orders = (apiOrders && apiOrders.length > 0) ? apiOrders : orderData;
+
+  const pendingCheckoutOrders = orders.filter(order => order.status === 'pending_checkout') || [];
+  const postedOrders = orders.filter(order => order.status === 'completed') || [];
 
   const handleCheckout = (order: Order) => {
     toast({
