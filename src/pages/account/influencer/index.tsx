@@ -28,14 +28,22 @@ const InfluencerProfilePage = () => {
           return;
         }
 
-        const { data: influencerData, error } = await supabase
+        // Use explicit type for the query result to avoid excessive type instantiation
+        type InfluencerWithRelations = Influencer & {
+          country: { id: number; name: string; code: string | null } | null;
+          state: { id: number; name: string; country_id: number } | null;
+          city: { id: number; name: string; state_id: number } | null;
+          niche: { id: number; name: string } | null;
+        };
+
+        const { data, error } = await supabase
           .from('influencers')
           .select('*, country:countries(*), state:states(*), city:cities(*), niche:niches(*)')
           .eq('user_id', session.user.id)
           .single();
 
         if (error) throw error;
-        setInfluencer(influencerData);
+        setInfluencer(data as InfluencerWithRelations);
       } catch (error) {
         console.error('Error:', error);
         toast({
