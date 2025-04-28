@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -43,9 +42,10 @@ import BusinessWalletPage from "./pages/wallet/business";
 import InfluencerWalletPage from "./pages/wallet/influencer";
 import AdminWalletSettingsPage from "./pages/dashboard/admin/wallet-settings";
 import AdminWalletTransactionsPage from "./pages/dashboard/admin/wallet-transactions";
+import CheckoutPage from "./pages/checkout";
+import PaymentPage from "./pages/payment";
 
 function App() {
-  // Create a new QueryClient instance with proper error handling
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
@@ -70,16 +70,13 @@ function App() {
           <ErrorBoundary>
             <BrowserRouter>
               <Routes>
-                {/* Root routes */}
                 <Route path="/" element={<Index />} />
                 <Route path="/landing" element={<LandingPage />} />
                 <Route path="/app" element={<Index />} />
                 
-                {/* Auth routes */}
                 <Route path="/signin" element={<SignInPage />} />
                 <Route path="/signup" element={<SignUpPage />} />
                 
-                {/* Main application routes */}
                 <Route path="/influencers" element={<InfluencersPage />} />
                 <Route path="/influencers/:id" element={<InfluencerDetailPage />} />
                 <Route path="/chats" element={<ChatsPage />} />
@@ -93,11 +90,9 @@ function App() {
                 <Route path="/offers" element={<OffersPage />} />
                 <Route path="/support" element={<SupportPage />} />
                 
-                {/* Wallet routes */}
                 <Route path="/wallet/business" element={<BusinessWalletPage />} />
                 <Route path="/wallet/influencer" element={<InfluencerWalletPage />} />
                 
-                {/* Dashboard routes */}
                 <Route path="/dashboard/admin" element={<AdminDashboard />} />
                 <Route path="/dashboard/admin/analytics" element={<AnalyticsPage />} />
                 <Route path="/dashboard/admin/team" element={<TeamManagementPage />} />
@@ -111,7 +106,6 @@ function App() {
                 <Route path="/dashboard/influencer" element={<InfluencerDashboard />} />
                 <Route path="/dashboard/business" element={<BusinessDashboard />} />
                 
-                {/* Account routes */}
                 <Route path="/account/business" element={<BusinessProfile />} />
                 <Route path="/account/influencer" element={<InfluencerProfile />} />
                 <Route path="/account/influencerprofile" element={<Navigate to="/account/influencer" replace />} />
@@ -123,7 +117,9 @@ function App() {
                   <Navigate to={`/account/${localStorage.getItem('userType') || 'business'}`} replace />
                 } />
                 
-                {/* 404 route */}
+                <Route path="/checkout" element={<CheckoutPage />} />
+                <Route path="/payment" element={<PaymentPage />} />
+                
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>

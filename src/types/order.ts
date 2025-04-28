@@ -1,5 +1,5 @@
 
-export type OrderStatus = 'pending' | 'completed' | 'rejected' | 'new';
+export type OrderStatus = 'pending' | 'completed' | 'rejected' | 'new' | 'pending_checkout';
 
 export interface Order {
   id: string;
@@ -16,4 +16,10 @@ export interface Order {
   amount?: number;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface CouponCode {
+  code: string;
+  discount: number; // percentage discount
+  isValid: boolean;
 }
