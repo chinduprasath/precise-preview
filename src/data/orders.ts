@@ -2,13 +2,13 @@
 import { Order } from '@/types/order';
 
 export const orderData: Order[] = [
-  // Pending Checkout Orders
+  // Pending Orders
   {
     id: '1',
     orderNumber: '4292424244',
     date: '2025-04-01T10:15:00',
     url: null,
-    status: 'pending_checkout',
+    status: 'pending',
     scheduledDate: '2025-04-15',
     scheduledTime: '14:30:00',
     category: 'Fashion',
@@ -24,7 +24,7 @@ export const orderData: Order[] = [
     orderNumber: '4292424245',
     date: '2025-04-02T11:30:00',
     url: null,
-    status: 'pending_checkout',
+    status: 'pending',
     scheduledDate: '2025-04-16',
     scheduledTime: '15:45:00',
     category: 'Tech',
