@@ -32,14 +32,12 @@ const InfluencerProfilePage = () => {
 
         setUser(session.user);
 
-        const { data: influencerData, error } = await supabase
+        // Fixed: Avoid deep type instantiation by using explicit type casting
+        const { data, error } = await supabase
           .from('influencers')
           .select(`
             id, name, username, bio, 
-            country:countries(id, name, code), 
-            state:states(id, name), 
-            city:cities(id, name), 
-            niche:niches(id, name),
+            country_id, state_id, city_id, niche_id,
             followers_instagram,
             followers_facebook,
             followers_twitter,
@@ -54,8 +52,45 @@ const InfluencerProfilePage = () => {
 
         if (error) throw error;
         
-        if (influencerData) {
-          setInfluencer(influencerData as Influencer);
+        if (data) {
+          // If needed, fetch related data separately
+          const countryPromise = data.country_id ? supabase
+            .from('countries')
+            .select('id, name, code')
+            .eq('id', data.country_id)
+            .single() : Promise.resolve({ data: null, error: null });
+            
+          const statePromise = data.state_id ? supabase
+            .from('states')
+            .select('id, name')
+            .eq('id', data.state_id)
+            .single() : Promise.resolve({ data: null, error: null });
+            
+          const cityPromise = data.city_id ? supabase
+            .from('cities')
+            .select('id, name')
+            .eq('id', data.city_id)
+            .single() : Promise.resolve({ data: null, error: null });
+            
+          const nichePromise = data.niche_id ? supabase
+            .from('niches')
+            .select('id, name')
+            .eq('id', data.niche_id)
+            .single() : Promise.resolve({ data: null, error: null });
+            
+          const [countryResult, stateResult, cityResult, nicheResult] = await Promise.all([
+            countryPromise, statePromise, cityPromise, nichePromise
+          ]);
+          
+          const influencerData: Influencer = {
+            ...data,
+            country: countryResult.data,
+            state: stateResult.data,
+            city: cityResult.data,
+            niche: nicheResult.data
+          };
+          
+          setInfluencer(influencerData);
         }
       } catch (error) {
         console.error('Exception fetching influencer data:', error);

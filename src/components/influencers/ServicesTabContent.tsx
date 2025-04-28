@@ -68,7 +68,7 @@ const ServicesTabContent: React.FC<ServicesTabContentProps> = ({ influencerId })
   }
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+    <div className="grid grid-cols-2 gap-4">
       {loading
         ? Array(6).fill(0).map((_, index) => <LoadingContentCard key={`loading-${index}`} />)
         : contentItems.map(item => <ContentCard key={item.id} item={item} />)
