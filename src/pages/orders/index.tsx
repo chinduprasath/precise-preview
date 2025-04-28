@@ -24,7 +24,23 @@ const OrdersPage = () => {
         throw error;
       }
 
-      return data as Order[];
+      // Transform the data to match our Order type
+      const transformedData: Order[] = data.map((item: any) => ({
+        id: item.id,
+        orderNumber: item.order_number,
+        date: item.date,
+        url: item.url,
+        status: item.status,
+        scheduledDate: item.scheduled_date,
+        category: item.category,
+        productService: item.product_service,
+        businessVerified: item.business_verified,
+        username: item.username,
+        createdAt: item.created_at,
+        updatedAt: item.updated_at
+      }));
+
+      return transformedData;
     }
   });
 
