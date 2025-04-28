@@ -1,17 +1,64 @@
 
 import React from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { Order } from '@/types/order';
+import { PendingCheckoutCard } from '@/components/orders/PendingCheckoutCard';
+import { PostedOrderCard } from '@/components/orders/PostedOrderCard';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
-import OrderCard from '@/components/orders/OrderCard';
-import { orderData } from '@/data/orders';
+import { useToast } from '@/hooks/use-toast';
 
 const OrdersPage = () => {
-  const currentDate = new Date();
-  const formattedDate = currentDate.toLocaleDateString('en-US', {
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric'
+  const { toast } = useToast();
+  
+  const { data: orders, isLoading } = useQuery({
+    queryKey: ['orders'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('orders')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        throw error;
+      }
+
+      return data as Order[];
+    }
   });
+
+  const pendingCheckoutOrders = orders?.filter(order => order.status === 'pending_checkout') || [];
+  const postedOrders = orders?.filter(order => order.status === 'completed') || [];
+
+  const handleCheckout = (order: Order) => {
+    toast({
+      title: "Checkout",
+      description: `Processing checkout for order #${order.orderNumber}`,
+    });
+  };
+
+  const handleReject = (order: Order) => {
+    toast({
+      title: "Reject Order",
+      description: `Rejecting order #${order.orderNumber}`,
+      variant: "destructive",
+    });
+  };
+
+  const handleUpdate = (order: Order) => {
+    toast({
+      title: "Update Order",
+      description: `Updating order #${order.orderNumber}`,
+    });
+  };
+
+  const handleNewOrder = () => {
+    toast({
+      title: "New Order",
+      description: "Creating new order",
+    });
+  };
 
   return (
     <div className="flex h-screen bg-background">
@@ -19,22 +66,54 @@ const OrdersPage = () => {
       <div className="flex-1 flex flex-col">
         <Header />
         <main className="flex-1 overflow-auto p-6">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex justify-between items-center mb-6">
-              <h1 className="text-2xl font-bold text-foreground">Orders</h1>
-              <div className="flex gap-4 items-center">
-                <div className="text-right">
-                  <p className="text-sm text-muted-foreground">{formattedDate}</p>
-                  <p className="text-sm text-primary cursor-pointer">See More&gt;&gt;</p>
+          <div className="max-w-7xl mx-auto space-y-8">
+            <section>
+              <h2 className="text-2xl font-bold mb-6">Pending Checkout Orders</h2>
+              {isLoading ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {[1, 2, 3].map((n) => (
+                    <div key={n} className="h-[200px] bg-muted animate-pulse rounded-lg" />
+                  ))}
                 </div>
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {orderData.map((order) => (
-                <OrderCard key={order.id} order={order} />
-              ))}
-            </div>
+              ) : pendingCheckoutOrders.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {pendingCheckoutOrders.map((order) => (
+                    <PendingCheckoutCard
+                      key={order.id}
+                      order={order}
+                      onCheckout={handleCheckout}
+                      onReject={handleReject}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <p className="text-center text-muted-foreground">No pending checkout orders</p>
+              )}
+            </section>
+
+            <section>
+              <h2 className="text-2xl font-bold mb-6">Posted Orders</h2>
+              {isLoading ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {[1, 2, 3].map((n) => (
+                    <div key={n} className="h-[200px] bg-muted animate-pulse rounded-lg" />
+                  ))}
+                </div>
+              ) : postedOrders.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {postedOrders.map((order) => (
+                    <PostedOrderCard
+                      key={order.id}
+                      order={order}
+                      onUpdate={handleUpdate}
+                      onNewOrder={handleNewOrder}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <p className="text-center text-muted-foreground">No posted orders</p>
+              )}
+            </section>
           </div>
         </main>
       </div>

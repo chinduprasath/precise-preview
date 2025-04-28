@@ -728,6 +728,51 @@ export type Database = {
           },
         ]
       }
+      orders: {
+        Row: {
+          business_verified: boolean | null
+          category: string | null
+          created_at: string | null
+          date: string | null
+          id: string
+          order_number: string
+          product_service: string | null
+          scheduled_date: string | null
+          status: Database["public"]["Enums"]["order_status"] | null
+          updated_at: string | null
+          url: string | null
+          username: string | null
+        }
+        Insert: {
+          business_verified?: boolean | null
+          category?: string | null
+          created_at?: string | null
+          date?: string | null
+          id?: string
+          order_number: string
+          product_service?: string | null
+          scheduled_date?: string | null
+          status?: Database["public"]["Enums"]["order_status"] | null
+          updated_at?: string | null
+          url?: string | null
+          username?: string | null
+        }
+        Update: {
+          business_verified?: boolean | null
+          category?: string | null
+          created_at?: string | null
+          date?: string | null
+          id?: string
+          order_number?: string
+          product_service?: string | null
+          scheduled_date?: string | null
+          status?: Database["public"]["Enums"]["order_status"] | null
+          updated_at?: string | null
+          url?: string | null
+          username?: string | null
+        }
+        Relationships: []
+      }
       payments: {
         Row: {
           amount: number
@@ -1483,6 +1528,7 @@ export type Database = {
     }
     Enums: {
       currency: "INR" | "USD" | "EUR" | "GBP"
+      order_status: "pending_checkout" | "pending" | "completed" | "new"
       payment_status:
         | "pending"
         | "processing"
@@ -1629,6 +1675,7 @@ export const Constants = {
   public: {
     Enums: {
       currency: ["INR", "USD", "EUR", "GBP"],
+      order_status: ["pending_checkout", "pending", "completed", "new"],
       payment_status: [
         "pending",
         "processing",
