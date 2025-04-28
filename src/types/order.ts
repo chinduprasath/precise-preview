@@ -1,18 +1,19 @@
 
-export type OrderStatus = 'pending' | 'accepted' | 'rejected' | 'completed';
+export type OrderStatus = 'pending' | 'completed' | 'rejected' | 'new';
 
 export interface Order {
   id: string;
-  username: string;
-  orderDate: string;
-  scheduledDate: string;
-  scheduledTime: string;
-  category: string;
-  productService: string;
-  businessVerified: boolean;
-  amount: number;
+  orderNumber: string;
+  date: string;
+  url: string | null;
   status: OrderStatus;
+  scheduledDate: string | null;
+  scheduledTime: string | null;
+  category: string | null;
+  productService: string | null;
+  businessVerified: boolean;
+  username: string;
+  amount?: number;
   createdAt: string;
   updatedAt: string;
-  url?: string;
 }

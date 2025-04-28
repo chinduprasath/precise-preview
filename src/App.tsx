@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -42,8 +43,6 @@ import BusinessWalletPage from "./pages/wallet/business";
 import InfluencerWalletPage from "./pages/wallet/influencer";
 import AdminWalletSettingsPage from "./pages/dashboard/admin/wallet-settings";
 import AdminWalletTransactionsPage from "./pages/dashboard/admin/wallet-transactions";
-import BusinessOrdersPage from "./pages/orders/business";
-import InfluencerOrdersPage from "./pages/orders/influencer";
 
 function App() {
   // Create a new QueryClient instance with proper error handling
@@ -123,12 +122,6 @@ function App() {
                 <Route path="/account" element={
                   <Navigate to={`/account/${localStorage.getItem('userType') || 'business'}`} replace />
                 } />
-                
-                {/* Order routes */}
-                <Route path="/orders" element={<Navigate to={`/orders/${localStorage.getItem('userType') || 'business'}`} replace />} />
-                <Route path="/orders/business" element={<BusinessOrdersPage />} />
-                <Route path="/orders/influencer" element={<InfluencerOrdersPage />} />
-                <Route path="/orders/place" element={<PlaceOrderPage />} />
                 
                 {/* 404 route */}
                 <Route path="*" element={<NotFound />} />
