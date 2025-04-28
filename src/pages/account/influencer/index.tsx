@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
@@ -37,23 +38,24 @@ const InfluencerProfilePage = () => {
 
   React.useEffect(() => {
     const checkUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        navigate('/signin');
-        return;
-      }
-
-      const userType = localStorage.getItem('userType');
-      
-      if (userType && userType !== 'influencer') {
-        navigate('/account/business');
-        return;
-      }
-
-      setUser(session.user);
-      
       try {
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (!session) {
+          navigate('/signin');
+          return;
+        }
+
+        const userType = localStorage.getItem('userType');
+        
+        if (userType && userType !== 'influencer') {
+          navigate('/account/business');
+          return;
+        }
+
+        setUser(session.user);
+        
+        // Simple approach to avoid circular reference
         const { data, error } = await supabase
           .from('influencers')
           .select(`

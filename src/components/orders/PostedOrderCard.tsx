@@ -9,12 +9,14 @@ import { Plus } from 'lucide-react';
 interface PostedOrderCardProps {
   order: Order;
   onNewOrder: () => void;
+  onUpdate?: (order: Order) => void; // Make this prop optional
   userType?: 'business' | 'influencer';
 }
 
 export const PostedOrderCard: React.FC<PostedOrderCardProps> = ({
   order,
   onNewOrder,
+  onUpdate,
   userType = 'business'
 }) => {
   const getStatusBadgeVariant = (status: string) => {
@@ -27,6 +29,12 @@ export const PostedOrderCard: React.FC<PostedOrderCardProps> = ({
         return 'destructive';
       default:
         return 'secondary';
+    }
+  };
+
+  const handleUpdate = () => {
+    if (onUpdate) {
+      onUpdate(order);
     }
   };
 
@@ -61,6 +69,15 @@ export const PostedOrderCard: React.FC<PostedOrderCardProps> = ({
           >
             <Plus className="w-4 h-4 mr-2 transition-transform group-hover:scale-110" />
             New Order
+          </Button>
+        )}
+        {onUpdate && (
+          <Button 
+            className="w-full group"
+            onClick={handleUpdate}
+            variant="outline"
+          >
+            Update
           </Button>
         )}
       </CardFooter>
