@@ -8,6 +8,7 @@ import { Separator } from '@/components/ui/separator';
 import { InfluencerRequest, RequestStatus } from '@/types/request';
 import { useToast } from '@/components/ui/use-toast';
 import { useNavigate } from 'react-router-dom';
+import { Badge } from '@/components/ui/badge';
 
 const RequestsPage = () => {
   const [requests, setRequests] = useState<InfluencerRequest[]>([]);
@@ -185,6 +186,19 @@ const RequestsPage = () => {
   const acceptedRequests = requests.filter(req => req.status === 'approved');
   const rejectedRequests = requests.filter(req => req.status === 'rejected');
 
+  const getStatusBadge = (status: RequestStatus) => {
+    switch(status) {
+      case 'pending':
+        return <Badge variant="warning">Pending</Badge>;
+      case 'approved':
+        return <Badge variant="success">Approved</Badge>;
+      case 'rejected':
+        return <Badge variant="destructive">Rejected</Badge>;
+      default:
+        return <Badge>Unknown</Badge>;
+    }
+  };
+
   return (
     <div className="flex h-screen bg-gray-50">
       <Sidebar />
@@ -302,6 +316,9 @@ const RequestsPage = () => {
                             hour12: true
                           })}
                         </div>
+                        
+                        <div>Status:</div>
+                        <div>{getStatusBadge(request.status)}</div>
                       </div>
                     </div>
                     
@@ -348,6 +365,9 @@ const RequestsPage = () => {
                             hour12: true
                           })}
                         </div>
+                        
+                        <div>Status:</div>
+                        <div>{getStatusBadge(request.status)}</div>
                       </div>
                     </div>
                     

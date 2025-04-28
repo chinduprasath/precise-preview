@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { 
   LayoutDashboard, 
@@ -16,6 +17,7 @@ import {
   User,
   Gift,
   LifeBuoy,
+  Inbox,
 } from 'lucide-react';
 
 export interface NavItem {
@@ -78,7 +80,7 @@ export const createNavigationItems = (userType: string): NavItem[] => {
     ];
   }
   
-  // For non-admin users, return the common navigation items
+  // Common navigation items for all user types
   const commonNavItems = [
     {
       icon: React.createElement(LayoutDashboard, { className: "w-full h-full" }),
@@ -118,6 +120,15 @@ export const createNavigationItems = (userType: string): NavItem[] => {
   ];
   
   let navItems = [...commonNavItems];
+  
+  // Add influencer-specific menu items
+  if (userType === 'influencer') {
+    navItems.push({
+      icon: React.createElement(Inbox, { className: "w-full h-full" }),
+      label: "Requests",
+      href: "/requests"
+    });
+  }
   
   return navItems;
 };
