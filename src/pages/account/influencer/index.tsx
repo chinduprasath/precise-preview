@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
@@ -32,8 +31,7 @@ const InfluencerProfilePage = () => {
 
         setUser(session.user);
 
-        // Fixed: Avoid deep type instantiation by using explicit type casting
-        const { data, error } = await supabase
+        const { data: influencerData, error } = await supabase
           .from('influencers')
           .select(`
             id, name, username, bio, 
@@ -52,45 +50,37 @@ const InfluencerProfilePage = () => {
 
         if (error) throw error;
         
-        if (data) {
-          // If needed, fetch related data separately
-          const countryPromise = data.country_id ? supabase
-            .from('countries')
-            .select('id, name, code')
-            .eq('id', data.country_id)
-            .single() : Promise.resolve({ data: null, error: null });
-            
-          const statePromise = data.state_id ? supabase
-            .from('states')
-            .select('id, name')
-            .eq('id', data.state_id)
-            .single() : Promise.resolve({ data: null, error: null });
-            
-          const cityPromise = data.city_id ? supabase
-            .from('cities')
-            .select('id, name')
-            .eq('id', data.city_id)
-            .single() : Promise.resolve({ data: null, error: null });
-            
-          const nichePromise = data.niche_id ? supabase
-            .from('niches')
-            .select('id, name')
-            .eq('id', data.niche_id)
-            .single() : Promise.resolve({ data: null, error: null });
-            
+        if (influencerData) {
           const [countryResult, stateResult, cityResult, nicheResult] = await Promise.all([
-            countryPromise, statePromise, cityPromise, nichePromise
+            influencerData.country_id ? supabase
+              .from('countries')
+              .select('id, name, code')
+              .eq('id', influencerData.country_id)
+              .single() : Promise.resolve({ data: null }),
+            influencerData.state_id ? supabase
+              .from('states')
+              .select('id, name')
+              .eq('id', influencerData.state_id)
+              .single() : Promise.resolve({ data: null }),
+            influencerData.city_id ? supabase
+              .from('cities')
+              .select('id, name')
+              .eq('id', influencerData.city_id)
+              .single() : Promise.resolve({ data: null }),
+            influencerData.niche_id ? supabase
+              .from('niches')
+              .select('id, name')
+              .eq('id', influencerData.niche_id)
+              .single() : Promise.resolve({ data: null })
           ]);
           
-          const influencerData: Influencer = {
-            ...data,
+          setInfluencer({
+            ...influencerData,
             country: countryResult.data,
             state: stateResult.data,
             city: cityResult.data,
             niche: nicheResult.data
-          };
-          
-          setInfluencer(influencerData);
+          });
         }
       } catch (error) {
         console.error('Exception fetching influencer data:', error);

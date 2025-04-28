@@ -210,7 +210,7 @@ const InfluencersPage = () => {
   const [selectedAge, setSelectedAge] = useState('');
   const [selectedInterests, setSelectedInterests] = useState('');
   const [selectedPlatform, setSelectedPlatform] = useState('');
-  const [isFilterOpen, setIsFilterOpen] = useState(true);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
   
   const { 
     countries, 
@@ -366,10 +366,27 @@ const InfluencersPage = () => {
         <Header />
         <main className="flex-1 overflow-auto p-6">
           <div className="mb-6">
-            <Collapsible open={isFilterOpen} onOpenChange={setIsFilterOpen} className="space-y-2">
+            <Collapsible 
+              open={isFilterOpen} 
+              onOpenChange={setIsFilterOpen} 
+              className="space-y-2"
+            >
               <div className="bg-white rounded-lg shadow-sm border border-border">
                 <div className="px-6 py-4 flex items-center justify-between border-b border-border">
-                  <h2 className="text-lg font-semibold">Filters</h2>
+                  <div className="flex items-center gap-4">
+                    <h2 className="text-lg font-semibold">Filters</h2>
+                    {!isFilterOpen && activeFilters.length > 0 && (
+                      <div className="flex flex-wrap gap-2">
+                        {activeFilters.map((filter, index) => (
+                          <FilterBadge 
+                            key={index} 
+                            label={filter.label} 
+                            onRemove={filter.onRemove} 
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
                   <CollapsibleTrigger asChild>
                     <Button variant="ghost" size="sm" className="hover:bg-transparent p-0">
                       <ChevronDown className={`h-5 w-5 transition-transform ${isFilterOpen ? 'transform rotate-180' : ''}`} />
@@ -612,24 +629,10 @@ const InfluencersPage = () => {
                   </div>
                 </CollapsibleContent>
               </div>
-              
-              {!isFilterOpen && activeFilters.length > 0 && (
-                <div className="bg-white rounded-lg shadow-sm border border-border p-4 mt-4">
-                  <div className="flex flex-wrap gap-2">
-                    {activeFilters.map((filter, index) => (
-                      <FilterBadge 
-                        key={index} 
-                        label={filter.label} 
-                        onRemove={filter.onRemove} 
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
             </Collapsible>
             
-            <div className="grid grid-cols-7 gap-4">
-              <div className="col-span-2 bg-card rounded-lg shadow-sm border border-border overflow-hidden">
+            <div className="grid grid-cols-12 gap-4">
+              <div className="col-span-4 bg-card rounded-lg shadow-sm border border-border overflow-hidden">
                 <div className="p-4 border-b border-border flex items-center justify-between">
                   <h2 className="text-lg font-semibold text-foreground">Influencers</h2>
                   <div className="relative w-1/2">
@@ -672,7 +675,7 @@ const InfluencersPage = () => {
                 </div>
               </div>
               
-              <div className="col-span-5 bg-card rounded-lg shadow-sm border border-border overflow-hidden">
+              <div className="col-span-8 bg-card rounded-lg shadow-sm border border-border overflow-hidden">
                 <div className="p-4 border-b border-border">
                   <h2 className="text-lg font-semibold text-foreground">Profile</h2>
                 </div>
