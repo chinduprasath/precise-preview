@@ -2,20 +2,34 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Order } from '@/types/order';
-import { Edit, Plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 
 interface PostedOrderCardProps {
   order: Order;
-  onUpdate: (order: Order) => void;
   onNewOrder: () => void;
+  userType?: 'business' | 'influencer';
 }
 
 export const PostedOrderCard: React.FC<PostedOrderCardProps> = ({
   order,
-  onUpdate,
   onNewOrder,
+  userType = 'business'
 }) => {
+  const getStatusBadgeVariant = (status: string) => {
+    switch (status) {
+      case 'pending':
+        return 'warning';
+      case 'completed':
+        return 'success';
+      case 'rejected':
+        return 'destructive';
+      default:
+        return 'secondary';
+    }
+  };
+
   return (
     <Card className="w-full transition-all hover:shadow-lg">
       <CardContent className="pt-6">
@@ -34,21 +48,21 @@ export const PostedOrderCard: React.FC<PostedOrderCardProps> = ({
         </div>
       </CardContent>
       <CardFooter className="flex justify-between gap-4">
-        <Button 
-          variant="outline" 
-          className="w-full group hover:bg-accent"
-          onClick={() => onUpdate(order)}
+        <Badge 
+          variant={getStatusBadgeVariant(order.status)}
+          className="w-full py-2 flex justify-center text-sm"
         >
-          <Edit className="w-4 h-4 mr-2 transition-transform group-hover:scale-110" />
-          Update Order
-        </Button>
-        <Button 
-          className="w-full group"
-          onClick={onNewOrder}
-        >
-          <Plus className="w-4 h-4 mr-2 transition-transform group-hover:scale-110" />
-          New Order
-        </Button>
+          {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+        </Badge>
+        {userType === 'influencer' && (
+          <Button 
+            className="w-full group"
+            onClick={onNewOrder}
+          >
+            <Plus className="w-4 h-4 mr-2 transition-transform group-hover:scale-110" />
+            New Order
+          </Button>
+        )}
       </CardFooter>
     </Card>
   );

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
@@ -7,8 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Influencer } from '@/types/location';
 import { toast } from '@/components/ui/use-toast';
 
-// Define a more explicit interface for the raw Supabase response
-interface InfluencerResponse {
+interface InfluencerData {
   id: string;
   name: string;
   username: string | null;
@@ -25,10 +23,10 @@ interface InfluencerResponse {
   image_url: string | null;
   created_at: string;
   updated_at: string;
-  country: { id: number; name: string; code: string | null } | null;
-  state: { id: number; name: string; country_id: number } | null;
-  city: { id: number; name: string; state_id: number } | null;
-  niche: { id: number; name: string } | null;
+  country?: { id: number; name: string; code: string | null } | null;
+  state?: { id: number; name: string; country_id: number } | null;
+  city?: { id: number; name: string; state_id: number } | null;
+  niche?: { id: number; name: string } | null;
 }
 
 const InfluencerProfilePage = () => {
@@ -56,7 +54,6 @@ const InfluencerProfilePage = () => {
       setUser(session.user);
       
       try {
-        // Fixed query string with proper format
         const { data, error } = await supabase
           .from('influencers')
           .select(`
@@ -71,27 +68,15 @@ const InfluencerProfilePage = () => {
           .eq('user_id', session.user.id)
           .single();
           
-        if (error) {
-          console.error('Error fetching influencer data:', error);
-          toast({
-            title: "Error",
-            description: "Could not load your profile data",
-            variant: "destructive"
-          });
-          setLoading(false);
-          return;
-        }
+        if (error) throw error;
         
         if (!data) {
-          console.error('No influencer data found');
           setLoading(false);
           return;
         }
 
-        // Transform the data using our explicitly typed interface
-        const responseData = data as InfluencerResponse;
+        const responseData = data as InfluencerData;
         
-        // Transform the data into our Influencer type
         const transformedInfluencer: Influencer = {
           id: responseData.id,
           name: responseData.name,

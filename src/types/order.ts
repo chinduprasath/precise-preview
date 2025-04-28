@@ -1,5 +1,5 @@
 
-export type OrderStatus = 'pending_checkout' | 'pending' | 'completed' | 'new';
+export type OrderStatus = 'pending' | 'completed' | 'rejected' | 'new';
 
 export interface Order {
   id: string;
