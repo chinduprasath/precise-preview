@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
@@ -6,8 +7,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { Influencer } from '@/types/location';
 import { toast } from '@/components/ui/use-toast';
 
-// Define a more explicit interface for the raw Supabase response to avoid deep type inference
-interface InfluencerRawResponse {
+// Define a more explicit interface for the raw Supabase response
+interface InfluencerResponse {
   id: string;
   name: string;
   username: string | null;
@@ -87,28 +88,31 @@ const InfluencerProfilePage = () => {
           return;
         }
 
+        // Transform the data using our explicitly typed interface
+        const responseData = data as InfluencerResponse;
+        
         // Transform the data into our Influencer type
         const transformedInfluencer: Influencer = {
-          id: data.id,
-          name: data.name,
-          username: data.username,
-          bio: data.bio,
-          country_id: data.country_id,
-          state_id: data.state_id,
-          city_id: data.city_id,
-          niche_id: data.niche_id,
-          followers_instagram: data.followers_instagram || 0,
-          followers_facebook: data.followers_facebook || 0,
-          followers_twitter: data.followers_twitter || 0,
-          followers_youtube: data.followers_youtube || 0,
-          engagement_rate: data.engagement_rate || 0,
-          image_url: data.image_url,
-          created_at: data.created_at,
-          updated_at: data.updated_at,
-          country: data.country,
-          state: data.state,
-          city: data.city,
-          niche: data.niche
+          id: responseData.id,
+          name: responseData.name,
+          username: responseData.username,
+          bio: responseData.bio,
+          country_id: responseData.country_id,
+          state_id: responseData.state_id,
+          city_id: responseData.city_id,
+          niche_id: responseData.niche_id,
+          followers_instagram: responseData.followers_instagram || 0,
+          followers_facebook: responseData.followers_facebook || 0,
+          followers_twitter: responseData.followers_twitter || 0,
+          followers_youtube: responseData.followers_youtube || 0,
+          engagement_rate: responseData.engagement_rate || 0,
+          image_url: responseData.image_url,
+          created_at: responseData.created_at,
+          updated_at: responseData.updated_at,
+          country: responseData.country,
+          state: responseData.state,
+          city: responseData.city,
+          niche: responseData.niche
         };
 
         setInfluencer(transformedInfluencer);
