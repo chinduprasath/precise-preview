@@ -1,4 +1,3 @@
-
 export interface Country {
   id: number;
   name: string;
@@ -49,4 +48,11 @@ export interface Influencer {
   state?: State;
   city?: City;
   niche?: Niche;
+}
+
+export interface InfluencerWithRelations extends Influencer {
+  country?: { id: number; name: string; code: string | null } | null;
+  state?: { id: number; name: string; country_id: number } | null;
+  city?: { id: number; name: string; state_id: number } | null;
+  niche?: { id: number; name: string } | null;
 }

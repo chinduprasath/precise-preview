@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React from 'react';
 import { Avatar } from '@/components/ui/avatar';
 import { Instagram, Facebook, Youtube, Twitter, MessageSquare, Share2 } from 'lucide-react';
 import { formatNumber } from '@/components/influencers/utils/formatUtils';
@@ -14,8 +15,6 @@ interface InfluencerProfileProps {
 }
 
 const InfluencerProfile: React.FC<InfluencerProfileProps> = ({ influencer }) => {
-  const [activeTab, setActiveTab] = useState('services');
-
   if (!influencer) {
     return (
       <div className="flex flex-col items-center justify-center h-full p-8 text-center">
@@ -47,10 +46,10 @@ const InfluencerProfile: React.FC<InfluencerProfileProps> = ({ influencer }) => 
               <div className="flex items-center gap-3">
                 <h2 className="text-xl font-semibold text-foreground">{influencer.name}</h2>
                 <Button variant="ghost" size="icon" className="h-8 w-8">
-                  <MessageSquare className="h-4 w-4" />
+                  <Share2 className="h-4 w-4" />
                 </Button>
                 <Button variant="ghost" size="icon" className="h-8 w-8">
-                  <Share2 className="h-4 w-4" />
+                  <MessageSquare className="h-4 w-4" />
                 </Button>
               </div>
               <p className="text-sm text-muted-foreground">
@@ -88,8 +87,8 @@ const InfluencerProfile: React.FC<InfluencerProfileProps> = ({ influencer }) => 
         </div>
       </div>
 
-      <Tabs defaultValue="services" className="w-full">
-        <TabsList className="flex justify-center">
+      <Tabs defaultValue="services">
+        <TabsList>
           <TabsTrigger value="services">Services</TabsTrigger>
           <TabsTrigger value="prices">Prices</TabsTrigger>
           <TabsTrigger value="data">Data</TabsTrigger>
@@ -112,3 +111,4 @@ const InfluencerProfile: React.FC<InfluencerProfileProps> = ({ influencer }) => 
 };
 
 export default InfluencerProfile;
+

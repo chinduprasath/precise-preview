@@ -4,12 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
 import InfluencerProfile from '@/components/influencers/InfluencerProfile';
 import { supabase } from '@/integrations/supabase/client';
-import { Influencer } from '@/types/location';
+import { InfluencerWithRelations } from '@/types/location';
 import { toast } from '@/components/ui/use-toast';
 
 const InfluencerProfilePage = () => {
   const navigate = useNavigate();
-  const [influencer, setInfluencer] = React.useState<Influencer | null>(null);
+  const [influencer, setInfluencer] = React.useState<InfluencerWithRelations | null>(null);
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
@@ -27,14 +27,6 @@ const InfluencerProfilePage = () => {
           navigate('/account/business');
           return;
         }
-
-        // Use explicit type for the query result to avoid excessive type instantiation
-        type InfluencerWithRelations = Influencer & {
-          country: { id: number; name: string; code: string | null } | null;
-          state: { id: number; name: string; country_id: number } | null;
-          city: { id: number; name: string; state_id: number } | null;
-          niche: { id: number; name: string } | null;
-        };
 
         const { data, error } = await supabase
           .from('influencers')
