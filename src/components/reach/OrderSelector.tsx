@@ -79,12 +79,15 @@ const OrderSelector: React.FC<OrderSelectorProps> = ({
         </PopoverTrigger>
         <PopoverContent className="w-[350px] p-0" align="start">
           <Command>
-            <CommandInput 
-              placeholder="Search campaigns..." 
-              value={searchTerm}
-              onValueChange={setSearchTerm}
-              className="h-9"
-            />
+            <div className="flex items-center border-b px-3">
+              <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
+              <CommandInput 
+                placeholder="Search campaigns..." 
+                value={searchTerm}
+                onValueChange={setSearchTerm}
+                className="h-9"
+              />
+            </div>
             <div className="flex items-center gap-2 p-2 border-b">
               <button
                 onClick={() => setStatusFilter(null)}
@@ -132,7 +135,8 @@ const OrderSelector: React.FC<OrderSelectorProps> = ({
                 Completed
               </button>
             </div>
-            {filteredOrders.length > 0 ? (
+            <CommandEmpty>No campaigns found.</CommandEmpty>
+            {filteredOrders.length > 0 && (
               <CommandGroup>
                 {filteredOrders.map((order) => (
                   <CommandItem
@@ -161,8 +165,6 @@ const OrderSelector: React.FC<OrderSelectorProps> = ({
                   </CommandItem>
                 ))}
               </CommandGroup>
-            ) : (
-              <CommandEmpty>No campaigns found.</CommandEmpty>
             )}
           </Command>
         </PopoverContent>

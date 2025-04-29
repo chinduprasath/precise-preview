@@ -4,11 +4,10 @@ import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
 import InfluencerProfile from '@/components/influencers/InfluencerProfile';
 import { supabase } from '@/integrations/supabase/client';
-import { Influencer } from '@/types/location';
 import { useToast } from '@/components/ui/use-toast';
 
-// Define a simpler type to avoid deep type instantiation
-type InfluencerWithRelations = {
+// Define a simplified influencer type to avoid deep type instantiation
+interface SimpleInfluencer {
   id: string;
   user_id: string;
   name: string;
@@ -19,11 +18,11 @@ type InfluencerWithRelations = {
   city?: { id: number; name: string };
   niche?: { id: number; name: string };
   [key: string]: any;
-};
+}
 
 const InfluencerProfilePage = () => {
   const navigate = useNavigate();
-  const [influencer, setInfluencer] = React.useState<Influencer | null>(null);
+  const [influencer, setInfluencer] = React.useState<SimpleInfluencer | null>(null);
   const [loading, setLoading] = React.useState(true);
   const { toast } = useToast();
 
@@ -52,8 +51,7 @@ const InfluencerProfilePage = () => {
 
         if (error) throw error;
         
-        // Cast to Influencer type without deep nesting
-        setInfluencer(data as unknown as Influencer);
+        setInfluencer(data as SimpleInfluencer);
       } catch (error) {
         console.error('Error:', error);
         toast({
