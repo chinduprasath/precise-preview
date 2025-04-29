@@ -6,12 +6,11 @@ import { formatNumber } from '@/components/influencers/utils/formatUtils';
 import PricesTabContent from '@/components/influencers/PricesTabContent';
 import DataTabContent from '@/components/influencers/DataTabContent';
 import ServicesTabContent from '@/components/influencers/ServicesTabContent';
-import { Influencer } from '@/types/location';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from '@/components/ui/button';
 
 interface InfluencerProfileProps {
-  influencer?: Influencer | null;
+  influencer?: any | null;
 }
 
 const InfluencerProfile: React.FC<InfluencerProfileProps> = ({ influencer }) => {

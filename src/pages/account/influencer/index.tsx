@@ -9,10 +9,20 @@ import { useToast } from '@/components/ui/use-toast';
 // Define a simplified influencer type to avoid deep type instantiation
 interface SimpleInfluencer {
   id: string;
-  user_id: string;
   name: string;
   bio?: string;
   avatar_url?: string;
+  image_url?: string;
+  username?: string;
+  country_id?: number;
+  state_id?: number;
+  city_id?: number;
+  niche_id?: number;
+  followers_instagram?: number;
+  followers_facebook?: number;
+  followers_youtube?: number;
+  followers_twitter?: number;
+  engagement_rate?: number;
   country?: { id: number; name: string };
   state?: { id: number; name: string };
   city?: { id: number; name: string };
