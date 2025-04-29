@@ -1,6 +1,6 @@
 
-import React, { useState, useEffect } from 'react';
-import { Search } from 'lucide-react';
+import React, { useState } from 'react';
+import { Search, Check } from 'lucide-react';
 import { 
   Popover,
   PopoverContent,
@@ -12,8 +12,8 @@ import {
   CommandGroup,
   CommandInput,
   CommandItem,
+  CommandList,
 } from "@/components/ui/command";
-import { Check } from "lucide-react";
 import { cn } from '@/lib/utils';
 import { formatDate } from '@/lib/utils';
 
@@ -135,37 +135,39 @@ const OrderSelector: React.FC<OrderSelectorProps> = ({
                 Completed
               </button>
             </div>
-            <CommandEmpty>No campaigns found.</CommandEmpty>
-            {filteredOrders.length > 0 && (
-              <CommandGroup>
-                {filteredOrders.map((order) => (
-                  <CommandItem
-                    key={order.id}
-                    value={order.id}
-                    onSelect={() => {
-                      onOrderSelect(order.id);
-                      setOpen(false);
-                    }}
-                    className="flex items-center justify-between py-3"
-                  >
-                    <div>
-                      <p className="font-medium">{order.name}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {order.orderNumber} • {formatDate(order.date)}
-                      </p>
-                      {order.description && (
-                        <p className="text-xs text-muted-foreground mt-1 max-w-[250px] truncate">
-                          {order.description}
+            <CommandList>
+              <CommandEmpty>No campaigns found.</CommandEmpty>
+              {filteredOrders.length > 0 && (
+                <CommandGroup>
+                  {filteredOrders.map((order) => (
+                    <CommandItem
+                      key={order.id}
+                      value={order.id}
+                      onSelect={() => {
+                        onOrderSelect(order.id);
+                        setOpen(false);
+                      }}
+                      className="flex items-center justify-between py-3"
+                    >
+                      <div>
+                        <p className="font-medium">{order.name}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {order.orderNumber} • {formatDate(order.date)}
                         </p>
+                        {order.description && (
+                          <p className="text-xs text-muted-foreground mt-1 max-w-[250px] truncate">
+                            {order.description}
+                          </p>
+                        )}
+                      </div>
+                      {selectedOrderId === order.id && (
+                        <Check className="w-4 h-4" />
                       )}
-                    </div>
-                    {selectedOrderId === order.id && (
-                      <Check className="w-4 h-4" />
-                    )}
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            )}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              )}
+            </CommandList>
           </Command>
         </PopoverContent>
       </Popover>
