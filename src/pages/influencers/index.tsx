@@ -139,37 +139,49 @@ const InfluencerProfile = ({ influencer }: { influencer: Influencer | null }) =>
   
   return (
     <div className="p-4">
-      <div className="flex flex-col items-center mb-6">
-        <div className="flex items-center justify-center mb-4">
-          <Avatar className="h-16 w-16 mr-4">
-            <img 
-              src={influencer.image_url || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200'} 
-              alt={influencer.name} 
-              className="h-full w-full object-cover"
-            />
-          </Avatar>
-          <div className="text-center">
-            <h2 className="text-xl font-semibold text-foreground">{influencer.name}</h2>
-            <p className="text-sm text-muted-foreground">{influencer.username || '@' + influencer.name.toLowerCase().replace(/\s+/g, '')}</p>
-          </div>
-        </div>
+      <div className="mb-6">
+        <div className="flex flex-col bg-[#F8F9FA] rounded-lg p-6">
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center">
+              <Avatar className="h-16 w-16 mr-4">
+                <img 
+                  src={influencer.image_url || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200'} 
+                  alt={influencer.name} 
+                  className="h-full w-full object-cover"
+                />
+              </Avatar>
+              <div>
+                <h2 className="text-xl font-semibold text-foreground">{influencer.name}</h2>
+                <p className="text-sm text-muted-foreground">{influencer.username || '@' + influencer.name.toLowerCase().replace(/\s+/g, '')}</p>
+              </div>
+            </div>
 
-        <div className="flex gap-8 mb-6">
-          <div className="flex flex-col items-center">
-            <Instagram size={24} className="text-pink-500 mb-1" />
-            <span className="text-lg font-medium">{formatNumber(influencer.followers_instagram || 0)}</span>
-          </div>
-          <div className="flex flex-col items-center">
-            <Facebook size={24} className="text-blue-600 mb-1" />
-            <span className="text-lg font-medium">{formatNumber(influencer.followers_facebook || 0)}</span>
-          </div>
-          <div className="flex flex-col items-center">
-            <Youtube size={24} className="text-red-600 mb-1" />
-            <span className="text-lg font-medium">{formatNumber(influencer.followers_youtube || 0)}</span>
-          </div>
-          <div className="flex flex-col items-center">
-            <Twitter size={24} className="text-blue-400 mb-1" />
-            <span className="text-lg font-medium">{formatNumber(influencer.followers_twitter || 0)}</span>
+            <div className="flex items-center gap-8">
+              {influencer.followers_instagram > 0 && (
+                <div className="flex flex-col items-center">
+                  <Instagram size={20} className="text-social-instagram mb-1" />
+                  <span className="text-sm font-medium">{formatNumber(influencer.followers_instagram)}</span>
+                </div>
+              )}
+              {influencer.followers_facebook > 0 && (
+                <div className="flex flex-col items-center">
+                  <Facebook size={20} className="text-social-facebook mb-1" />
+                  <span className="text-sm font-medium">{formatNumber(influencer.followers_facebook)}</span>
+                </div>
+              )}
+              {influencer.followers_youtube > 0 && (
+                <div className="flex flex-col items-center">
+                  <Youtube size={20} className="text-social-youtube mb-1" />
+                  <span className="text-sm font-medium">{formatNumber(influencer.followers_youtube)}</span>
+                </div>
+              )}
+              {influencer.followers_twitter > 0 && (
+                <div className="flex flex-col items-center">
+                  <Twitter size={20} className="text-social-twitter mb-1" />
+                  <span className="text-sm font-medium">{formatNumber(influencer.followers_twitter)}</span>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -182,7 +194,7 @@ const InfluencerProfile = ({ influencer }: { influencer: Influencer | null }) =>
         </TabsList>
         
         <TabsContent value="services" className="mt-0">
-          <ServicesTabContent influencerId={influencer.id} />
+          <ServicesTabContent influencerId={influencer.id} influencerName={influencer.name} />
         </TabsContent>
         
         <TabsContent value="prices" className="mt-0">

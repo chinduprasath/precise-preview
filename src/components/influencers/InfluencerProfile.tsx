@@ -34,7 +34,7 @@ const InfluencerProfile: React.FC<InfluencerProfileProps> = ({ influencer }) => 
     <div className="p-6">
       <div className="bg-[#F8F9FA] rounded-lg p-6 mb-8">
         <div className="flex items-center justify-between">
-          <div className="flex items-start gap-4">
+          <div className="flex items-center gap-4">
             <Avatar className="h-16 w-16">
               <img 
                 src={influencer.image_url || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200'} 

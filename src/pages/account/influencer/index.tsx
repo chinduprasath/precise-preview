@@ -4,12 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
 import InfluencerProfile from '@/components/influencers/InfluencerProfile';
 import { supabase } from '@/integrations/supabase/client';
-import { InfluencerWithRelations } from '@/types/location';
+import { Influencer } from '@/types/location';
 import { toast } from '@/components/ui/use-toast';
 
 const InfluencerProfilePage = () => {
   const navigate = useNavigate();
-  const [influencer, setInfluencer] = React.useState<InfluencerWithRelations | null>(null);
+  const [influencer, setInfluencer] = React.useState<Influencer | null>(null);
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
@@ -35,7 +35,7 @@ const InfluencerProfilePage = () => {
           .single();
 
         if (error) throw error;
-        setInfluencer(data as InfluencerWithRelations);
+        setInfluencer(data as Influencer);
       } catch (error) {
         console.error('Error:', error);
         toast({
