@@ -36,7 +36,7 @@ const InfluencerProfilePage = () => {
           .single();
 
         if (error) throw error;
-        setInfluencer(data as Influencer);
+        setInfluencer(data as unknown as Influencer);
       } catch (error) {
         console.error('Error:', error);
         toast({
