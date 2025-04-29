@@ -1,118 +1,131 @@
 
-import { supabase } from '@/integrations/supabase/client';
-
+// Define the content item type
 export interface ServiceContentItem {
   id: string;
   influencer_id: string;
-  media_type: 'image' | 'video';  // Restrict to these specific types
   media_url: string;
-  title: string | null;
-  description: string | null;
-  created_at: string;
-  metrics?: ServiceContentMetrics;
+  media_type: string;
+  title?: string;
+  description?: string;
+  created_at?: string;
+  metrics: {
+    likes: number;
+    views: number;
+    comments: number;
+    shares: number;
+  };
 }
 
-export interface ServiceContentMetrics {
-  id?: string;
-  content_id?: string;
-  likes: number;
-  views: number;
-  comments: number;
-  shares: number;
-  updated_at?: string;
-}
-
-/**
- * Fetch service content with metrics for a specific influencer
- */
-export const fetchServiceContent = async (influencerId?: string): Promise<ServiceContentItem[]> => {
-  try {
-    // If no influencer ID, return sample data
-    if (!influencerId) {
-      return getSampleServiceContent();
-    }
-
-    // Fetch from Supabase
-    const { data: contentData, error: contentError } = await supabase
-      .from('service_content')
-      .select('*')
-      .eq('influencer_id', influencerId);
-
-    if (contentError) {
-      console.error('Error fetching service content:', contentError);
-      return getSampleServiceContent();
-    }
-
-    if (!contentData || contentData.length === 0) {
-      return getSampleServiceContent();
-    }
-
-    // Fetch metrics for each content item
-    const contentWithMetrics = await Promise.all(
-      contentData.map(async (content) => {
-        const { data: metricsData, error: metricsError } = await supabase
-          .from('service_content_metrics')
-          .select('*')
-          .eq('content_id', content.id)
-          .single();
-
-        if (metricsError && metricsError.code !== 'PGRST116') {
-          console.error('Error fetching metrics for content:', metricsError);
-        }
-
-        // Ensure media_type is either 'image' or 'video'
-        const mediaType = content.media_type === 'video' ? 'video' : 'image';
-
-        return {
-          ...content,
-          media_type: mediaType as 'image' | 'video',
-          metrics: metricsData || {
-            likes: Math.floor(Math.random() * 1000),
-            views: Math.floor(Math.random() * 5000),
-            comments: Math.floor(Math.random() * 200),
-            shares: Math.floor(Math.random() * 100)
-          }
-        } as ServiceContentItem;
-      })
-    );
-
-    return contentWithMetrics;
-  } catch (error) {
-    console.error('Unexpected error fetching service content:', error);
-    return getSampleServiceContent();
+// Demo content items for testing
+const demoItems: ServiceContentItem[] = [
+  {
+    id: '1',
+    influencer_id: 'demo',
+    media_url: 'https://images.unsplash.com/photo-1583121274602-3e2820c69888?q=80&w=2050&auto=format&fit=crop',
+    media_type: 'image',
+    title: 'Instagram Fashion Post',
+    description: 'Summer collection highlight',
+    created_at: new Date().toISOString(),
+    metrics: { likes: 200000, views: 500000, comments: 500, shares: 10000 }
+  },
+  {
+    id: '2',
+    influencer_id: 'demo',
+    media_url: 'https://images.unsplash.com/photo-1561664089-8cc4201eba91?q=80&w=2070&auto=format&fit=crop',
+    media_type: 'image',
+    title: 'Product Review',
+    description: 'Latest tech gadget review',
+    created_at: new Date().toISOString(),
+    metrics: { likes: 180000, views: 450000, comments: 720, shares: 8500 }
+  },
+  {
+    id: '3',
+    influencer_id: 'demo',
+    media_url: 'https://images.unsplash.com/photo-1672262277543-322fa9898d0a?q=80&w=2070&auto=format&fit=crop',
+    media_type: 'image',
+    title: 'Travel Vlog',
+    description: 'Exploring hidden gems',
+    created_at: new Date().toISOString(),
+    metrics: { likes: 220000, views: 600000, comments: 950, shares: 12000 }
+  },
+  {
+    id: '4',
+    influencer_id: 'demo',
+    media_url: 'https://images.unsplash.com/photo-1560463315-6b0914461698?q=80&w=2066&auto=format&fit=crop',
+    media_type: 'image',
+    title: 'Fitness Challenge',
+    description: '30-day transformation',
+    created_at: new Date().toISOString(),
+    metrics: { likes: 195000, views: 520000, comments: 830, shares: 9200 }
+  },
+  {
+    id: '5',
+    influencer_id: 'demo',
+    media_url: 'https://images.unsplash.com/photo-1567095761054-7a02e69e5c43?q=80&w=1974&auto=format&fit=crop',
+    media_type: 'image',
+    title: 'Cooking Tutorial',
+    description: 'Easy 5-minute recipes',
+    created_at: new Date().toISOString(),
+    metrics: { likes: 178000, views: 480000, comments: 650, shares: 8800 }
+  },
+  {
+    id: '6',
+    influencer_id: 'demo',
+    media_url: 'https://images.unsplash.com/photo-1500829243541-74b677fecc30?q=80&w=2076&auto=format&fit=crop',
+    media_type: 'image',
+    title: 'Style Haul',
+    description: 'Winter fashion trends',
+    created_at: new Date().toISOString(),
+    metrics: { likes: 210000, views: 540000, comments: 780, shares: 9500 }
+  },
+  {
+    id: '7',
+    influencer_id: 'demo',
+    media_url: 'https://images.unsplash.com/photo-1513384312027-9fa69a360337?q=80&w=2071&auto=format&fit=crop',
+    media_type: 'image',
+    title: 'Makeup Tutorial',
+    description: 'Natural everyday look',
+    created_at: new Date().toISOString(),
+    metrics: { likes: 205000, views: 530000, comments: 870, shares: 11000 }
+  },
+  {
+    id: '8',
+    influencer_id: 'demo',
+    media_url: 'https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?q=80&w=2080&auto=format&fit=crop',
+    media_type: 'image',
+    title: 'Gaming Stream',
+    description: 'Gameplay highlights',
+    created_at: new Date().toISOString(),
+    metrics: { likes: 189000, views: 510000, comments: 920, shares: 7800 }
+  },
+  {
+    id: '9',
+    influencer_id: 'demo',
+    media_url: 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?q=80&w=1980&auto=format&fit=crop',
+    media_type: 'image',
+    title: 'Music Cover',
+    description: 'Acoustic version of top hits',
+    created_at: new Date().toISOString(),
+    metrics: { likes: 215000, views: 550000, comments: 980, shares: 12500 }
   }
-};
+];
 
-/**
- * Get sample service content for development and fallback
- */
-const getSampleServiceContent = (): ServiceContentItem[] => {
-  const sampleImages = [
-    'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-    'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-    'https://images.unsplash.com/photo-1542362567-b07e54358753?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-    'https://images.unsplash.com/photo-1526726538690-5cbf956ae2fd?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-    'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-    'https://images.unsplash.com/photo-1520390138845-fd2d229dd553?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'
-  ];
-
-  return sampleImages.map((url, index) => {
-    const id = `sample-${index}`;
-    return {
-      id,
-      influencer_id: 'sample-influencer',
-      media_type: 'image' as 'image', // Explicitly cast to the allowed type
-      media_url: url,
-      title: null,
-      description: null,
-      created_at: new Date().toISOString(),
-      metrics: {
-        content_id: id,
-        likes: Math.floor(Math.random() * 1000),
-        views: Math.floor(Math.random() * 5000),
-        comments: Math.floor(Math.random() * 200),
-        shares: Math.floor(Math.random() * 100)
+// Function to fetch service content
+export async function fetchServiceContent(influencerId?: string): Promise<ServiceContentItem[]> {
+  // In a real app, we would fetch from an API using the influencerId
+  // For now, return demo content
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      // If we have an influencerId, update the demo items to use it
+      if (influencerId) {
+        const items = demoItems.map(item => ({
+          ...item,
+          influencer_id: influencerId
+        }));
+        resolve(items);
+      } else {
+        resolve(demoItems);
       }
-    };
+    }, 1000);
   });
-};
+}
