@@ -13,30 +13,30 @@ interface ServicesTabContentProps {
 
 const ContentCard = ({ item }: { item: ServiceContentItem }) => {
   return (
-    <div className="overflow-hidden rounded-md group transition-all duration-300 hover:shadow-lg">
+    <div className="rounded-lg overflow-hidden shadow-sm bg-white">
       <div className="relative">
         <img 
           src={item.media_url} 
           alt={item.title || "Content"} 
-          className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105" 
+          className="w-full h-40 object-cover" 
         />
       </div>
-      <div className="px-3 flex flex-wrap justify-between text-sm text-gray-800 py-[10px] bg-slate-100">
-        <div className="flex items-center gap-1 mb-1">
+      <div className="px-3 py-3 bg-slate-100 flex flex-wrap gap-3">
+        <div className="flex items-center gap-1">
           <Heart className="w-4 h-4 text-red-500" />
-          <span className="text-xs">{formatNumber(item.metrics?.likes || 0)}</span>
+          <span className="text-xs font-medium">{formatNumber(item.metrics?.likes || 0)}</span>
         </div>
-        <div className="flex items-center gap-1 mb-1">
+        <div className="flex items-center gap-1">
           <Eye className="w-4 h-4" />
-          <span className="text-xs">{formatNumber(item.metrics?.views || 0)}</span>
+          <span className="text-xs font-medium">{formatNumber(item.metrics?.views || 0)}</span>
         </div>
         <div className="flex items-center gap-1">
           <MessageSquare className="w-4 h-4" />
-          <span className="text-xs">{formatNumber(item.metrics?.comments || 0)}</span>
+          <span className="text-xs font-medium">{formatNumber(item.metrics?.comments || 0)}</span>
         </div>
         <div className="flex items-center gap-1">
           <Share2 className="w-4 h-4" />
-          <span className="text-xs">{formatNumber(item.metrics?.shares || 0)}</span>
+          <span className="text-xs font-medium">{formatNumber(item.metrics?.shares || 0)}</span>
         </div>
       </div>
     </div>
@@ -45,9 +45,9 @@ const ContentCard = ({ item }: { item: ServiceContentItem }) => {
 
 const LoadingContentCard = () => {
   return (
-    <div className="overflow-hidden rounded-md">
-      <Skeleton className="w-full h-48" />
-      <div className="px-3 flex flex-wrap justify-between text-sm text-gray-800 py-[10px] bg-slate-100">
+    <div className="rounded-lg overflow-hidden shadow-sm">
+      <Skeleton className="w-full h-40" />
+      <div className="px-3 py-3 bg-slate-100 flex flex-wrap gap-3">
         <Skeleton className="h-4 w-16" />
         <Skeleton className="h-4 w-16" />
         <Skeleton className="h-4 w-16" />
@@ -69,9 +69,9 @@ const ServicesTabContent: React.FC<ServicesTabContentProps> = ({ influencerId })
   }
 
   return (
-    <div className="grid grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
       {loading
-        ? Array(6).fill(0).map((_, index) => <LoadingContentCard key={`loading-${index}`} />)
+        ? Array(9).fill(0).map((_, index) => <LoadingContentCard key={`loading-${index}`} />)
         : contentItems.map(item => <ContentCard key={item.id} item={item} />)
       }
     </div>
