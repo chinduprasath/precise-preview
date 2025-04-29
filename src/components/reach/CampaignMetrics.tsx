@@ -1,9 +1,7 @@
-
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { formatCurrency, formatPercentage } from './utils/formatUtils';
 import { CircleDollarSign, BarChart, Users, Target, ArrowUp, ArrowDown } from 'lucide-react';
-
 interface CampaignMetricsProps {
   campaignValue: number;
   campaignGoal: number;
@@ -22,16 +20,13 @@ interface CampaignMetricsProps {
     };
   };
 }
-
-const CampaignMetrics: React.FC<CampaignMetricsProps> = ({ 
-  campaignValue, 
-  campaignGoal, 
-  metrics 
+const CampaignMetrics: React.FC<CampaignMetricsProps> = ({
+  campaignValue,
+  campaignGoal,
+  metrics
 }) => {
-  const percentage = Math.min(Math.round((campaignValue / campaignGoal) * 100), 100);
-  
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+  const percentage = Math.min(Math.round(campaignValue / campaignGoal * 100), 100);
+  return <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
       <Card className="border-border bg-card">
         <CardContent className="p-6">
           <div className="flex items-center justify-between mb-4">
@@ -50,21 +45,7 @@ const CampaignMetrics: React.FC<CampaignMetricsProps> = ({
             </p>
           </div>
           
-          <div className="relative pt-1">
-            <div className="flex mb-2 items-center justify-between">
-              <div>
-                <span className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full bg-primary/10 text-primary">
-                  {percentage}%
-                </span>
-              </div>
-            </div>
-            <div className="overflow-hidden h-2 mb-4 text-xs flex rounded bg-muted">
-              <div 
-                style={{ width: `${percentage}%` }} 
-                className="shadow-none flex flex-col text-center whitespace-nowrap text-primary-foreground justify-center bg-primary"
-              />
-            </div>
-          </div>
+          
         </CardContent>
       </Card>
 
@@ -127,8 +108,6 @@ const CampaignMetrics: React.FC<CampaignMetricsProps> = ({
           </div>
         </CardContent>
       </Card>
-    </div>
-  );
+    </div>;
 };
-
 export default CampaignMetrics;
