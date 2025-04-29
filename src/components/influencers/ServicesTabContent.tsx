@@ -8,7 +8,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 interface ServicesTabContentProps {
   influencerId?: string;
-  influencerName?: string; // Adding this prop to match how it's being used
+  influencerName?: string;
 }
 
 const ContentCard = ({ item }: { item: ServiceContentItem }) => {

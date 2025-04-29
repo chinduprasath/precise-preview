@@ -33,7 +33,7 @@ const InfluencerProfile: React.FC<InfluencerProfileProps> = ({ influencer }) => 
   return (
     <div className="p-6">
       <div className="bg-[#F8F9FA] rounded-lg p-6 mb-8">
-        <div className="flex items-start justify-between">
+        <div className="flex items-center justify-between">
           <div className="flex items-start gap-4">
             <Avatar className="h-16 w-16">
               <img 
@@ -111,4 +111,3 @@ const InfluencerProfile: React.FC<InfluencerProfileProps> = ({ influencer }) => 
 };
 
 export default InfluencerProfile;
-
