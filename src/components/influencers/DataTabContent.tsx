@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Card } from '@/components/ui/card';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, AreaChart, Area, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, AreaChart, Area, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line, Legend } from 'recharts';
 import { useAnalyticsData } from '@/hooks/useAnalyticsData';
 import { formatNumber } from '@/components/influencers/utils/formatUtils';
 
@@ -32,7 +32,7 @@ const priceRangeData = [
   { price: 3200, count: 2 },
 ];
 
-const weightData = [
+const performanceComparisonData = [
   { month: 'Jan', yourWeight: 200, idealWeight: 220 },
   { month: 'Feb', yourWeight: 280, idealWeight: 220 },
   { month: 'Mar', yourWeight: 280, idealWeight: 220 },
@@ -49,6 +49,34 @@ const engagementData = [
   { date: '2024-04', value: 58 },
   { date: '2024-05', value: 60 },
   { date: '2024-06', value: 62 },
+];
+
+// Platform performance data
+const platformPerformanceData = [
+  { name: 'Instagram', value: 40 },
+  { name: 'Facebook', value: 30 },
+  { name: 'Twitter', value: 15 },
+  { name: 'YouTube', value: 15 },
+];
+
+const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff7300'];
+
+// Audience growth data
+const audienceGrowthData = [
+  { month: 'Jan', instagram: 1000, facebook: 800, youtube: 600, twitter: 400 },
+  { month: 'Feb', instagram: 1200, facebook: 900, youtube: 700, twitter: 500 },
+  { month: 'Mar', instagram: 1300, facebook: 1000, youtube: 800, twitter: 600 },
+  { month: 'Apr', instagram: 1500, facebook: 1200, youtube: 900, twitter: 700 },
+  { month: 'May', instagram: 1700, facebook: 1300, youtube: 950, twitter: 800 },
+  { month: 'Jun', instagram: 1900, facebook: 1400, youtube: 1000, twitter: 900 },
+];
+
+// Conversion funnel data
+const conversionFunnelData = [
+  { name: 'Views', value: 10000 },
+  { name: 'Engagements', value: 6000 },
+  { name: 'Clicks', value: 3000 },
+  { name: 'Conversions', value: 1000 },
 ];
 
 const DataTabContent: React.FC<DataTabContentProps> = ({ influencerId }) => {
@@ -83,7 +111,7 @@ const DataTabContent: React.FC<DataTabContentProps> = ({ influencerId }) => {
           label="Avg Likes" 
         />
         <MetricCard 
-          value={analytics?.engagement_rate ? `${analytics.engagement_rate}%` : "90"} 
+          value={analytics?.engagement_rate ? `${analytics.engagement_rate}%` : "90%"} 
           label="Engagement" 
         />
         <MetricCard 
@@ -95,90 +123,114 @@ const DataTabContent: React.FC<DataTabContentProps> = ({ influencerId }) => {
           label="Avg Shares" 
         />
         <MetricCard 
-          value={analytics?.fake_followers_percent ? `${analytics.fake_followers_percent}%` : "90"} 
+          value={analytics?.fake_followers_percent ? `${analytics.fake_followers_percent}%` : "1%"} 
           label="Fake Followers" 
         />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Price Range Chart */}
+        {/* Engagement Rate Over Time */}
         <Card className="p-6">
-          <h3 className="text-lg font-semibold mb-4">Price Range</h3>
+          <h3 className="text-lg font-semibold mb-4">Engagement Rate Over Time</h3>
           <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={priceRangeData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-              <CartesianGrid vertical={false} stroke="#eee" strokeDasharray="3 3" />
-              <XAxis dataKey="price" hide={true} />
-              <YAxis hide={true} />
+            <AreaChart data={engagementData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+              <defs>
+                <linearGradient id="colorGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#4F46E5" stopOpacity={0.8}/>
+                  <stop offset="95%" stopColor="#4F46E5" stopOpacity={0.1}/>
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} />
+              <XAxis dataKey="date" />
+              <YAxis />
               <Tooltip />
-              <Bar dataKey="count" fill="#4F46E5" />
-            </BarChart>
+              <Area 
+                type="monotone" 
+                dataKey="value" 
+                stroke="#4F46E5" 
+                strokeWidth={2}
+                fillOpacity={1} 
+                fill="url(#colorGradient)" 
+                name="Engagement Rate (%)"
+              />
+            </AreaChart>
           </ResponsiveContainer>
-          <div className="flex justify-between mt-2 text-sm text-gray-500">
-            <div className="flex items-center">
-              <div className="w-4 h-4 rounded-full border border-gray-300 bg-white mr-1 flex items-center justify-center">
-                <div className="w-1 h-1 rounded-full bg-blue-600"></div>
-              </div>
-              <span>$2000</span>
-            </div>
-            <div className="flex items-center">
-              <div className="w-4 h-4 rounded-full border border-gray-300 bg-white mr-1 flex items-center justify-center">
-                <div className="w-1 h-1 rounded-full bg-blue-600"></div>
-              </div>
-              <span>$3500</span>
-            </div>
-          </div>
         </Card>
 
-        {/* Performance Comparison */}
+        {/* Content Performance by Platform */}
         <Card className="p-6">
-          <h3 className="text-lg font-semibold mb-4">Performance Comparison</h3>
-          <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={weightData} margin={{ top: 5, right: 0, left: 0, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} />
-              <XAxis dataKey="month" axisLine={false} tickLine={false} />
-              <YAxis hide={true} />
-              <Tooltip />
-              <Bar dataKey="idealWeight" fill="#93C5FD" name="Ideal Weight" />
-              <Bar dataKey="yourWeight" fill="#4F46E5" name="Your Weight" />
-            </BarChart>
-          </ResponsiveContainer>
-          <div className="flex justify-center gap-6 mt-2 text-sm">
-            <div className="flex items-center">
-              <div className="w-3 h-3 rounded-full bg-blue-600 mr-1"></div>
-              <span>Your Weight</span>
-            </div>
-            <div className="flex items-center">
-              <div className="w-3 h-3 rounded-full bg-blue-200 mr-1"></div>
-              <span>Ideal Weight</span>
-            </div>
+          <h3 className="text-lg font-semibold mb-4">Content Performance by Platform</h3>
+          <div className="flex justify-center">
+            <ResponsiveContainer width="100%" height={200}>
+              <PieChart>
+                <Pie
+                  data={platformPerformanceData}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  outerRadius={80}
+                  fill="#8884d8"
+                  dataKey="value"
+                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                >
+                  {platformPerformanceData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
           </div>
         </Card>
       </div>
 
-      {/* Engagement Growth */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Audience Growth Trajectory */}
+        <Card className="p-6">
+          <h3 className="text-lg font-semibold mb-4">Audience Growth Trajectory</h3>
+          <ResponsiveContainer width="100%" height={200}>
+            <LineChart data={audienceGrowthData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Line type="monotone" dataKey="instagram" stroke="#E1306C" />
+              <Line type="monotone" dataKey="facebook" stroke="#4267B2" />
+              <Line type="monotone" dataKey="youtube" stroke="#FF0000" />
+              <Line type="monotone" dataKey="twitter" stroke="#1DA1F2" />
+            </LineChart>
+          </ResponsiveContainer>
+        </Card>
+
+        {/* Conversion Metrics */}
+        <Card className="p-6">
+          <h3 className="text-lg font-semibold mb-4">Conversion Funnel</h3>
+          <ResponsiveContainer width="100%" height={200}>
+            <BarChart data={conversionFunnelData} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+              <XAxis type="number" />
+              <YAxis dataKey="name" type="category" width={80} />
+              <Tooltip />
+              <Bar dataKey="value" fill="#8884d8" />
+            </BarChart>
+          </ResponsiveContainer>
+        </Card>
+      </div>
+
+      {/* Price Range Chart */}
       <Card className="p-6">
-        <h3 className="text-lg font-semibold mb-4">Engagement Growth</h3>
+        <h3 className="text-lg font-semibold mb-4">Regional Performance</h3>
         <ResponsiveContainer width="100%" height={200}>
-          <AreaChart data={engagementData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-            <defs>
-              <linearGradient id="colorGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#4F46E5" stopOpacity={0.8}/>
-                <stop offset="95%" stopColor="#4F46E5" stopOpacity={0.1}/>
-              </linearGradient>
-            </defs>
+          <BarChart data={performanceComparisonData} margin={{ top: 5, right: 0, left: 0, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} />
-            <XAxis dataKey="date" hide={true} />
-            <YAxis hide={true} />
+            <XAxis dataKey="month" axisLine={false} tickLine={false} />
+            <YAxis />
             <Tooltip />
-            <Area 
-              type="monotone" 
-              dataKey="value" 
-              stroke="#4F46E5" 
-              strokeWidth={2}
-              fillOpacity={1} 
-              fill="url(#colorGradient)" 
-            />
-          </AreaChart>
+            <Legend />
+            <Bar dataKey="idealWeight" fill="#93C5FD" name="Average" />
+            <Bar dataKey="yourWeight" fill="#4F46E5" name="Your Performance" />
+          </BarChart>
         </ResponsiveContainer>
       </Card>
     </div>

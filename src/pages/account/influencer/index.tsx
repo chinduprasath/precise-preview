@@ -6,7 +6,7 @@ import InfluencerProfile from '@/components/influencers/InfluencerProfile';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
 
-// Define a simplified influencer type as a regular interface instead of using deep type instantiation
+// Define a simplified influencer type without deep type instantiation
 interface SimpleInfluencer {
   id: string;
   name: string;
@@ -14,6 +14,7 @@ interface SimpleInfluencer {
   avatar_url?: string;
   image_url?: string;
   username?: string;
+  email?: string;
   country_id?: number;
   state_id?: number;
   city_id?: number;
@@ -23,11 +24,11 @@ interface SimpleInfluencer {
   followers_youtube?: number;
   followers_twitter?: number;
   engagement_rate?: number;
+  user_id?: string;
   country?: { id: number; name: string };
   state?: { id: number; name: string };
   city?: { id: number; name: string };
   niche?: { id: number; name: string };
-  [key: string]: any; // Allow any additional properties to avoid TS errors
 }
 
 const InfluencerProfilePage = () => {
@@ -61,8 +62,14 @@ const InfluencerProfilePage = () => {
 
         if (error) throw error;
         
-        // Explicitly cast the data to SimpleInfluencer to avoid TS errors
-        setInfluencer(data as SimpleInfluencer);
+        // Add email from session
+        const influencerWithEmail = {
+          ...data,
+          email: session.user.email
+        };
+        
+        // Use type assertion to avoid deep type instantiation
+        setInfluencer(influencerWithEmail as SimpleInfluencer);
       } catch (error) {
         console.error('Error:', error);
         toast({
