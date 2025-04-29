@@ -62,14 +62,15 @@ const InfluencerProfilePage = () => {
 
         if (error) throw error;
         
-        // Add email from session
-        const influencerWithEmail = {
+        // Add email from session and ensure user_id is included
+        const influencerData = {
           ...data,
-          email: session.user.email
+          email: session.user.email,
+          user_id: session.user.id
         };
         
-        // Use type assertion to avoid deep type instantiation
-        setInfluencer(influencerWithEmail as SimpleInfluencer);
+        // Use as to avoid deep type instantiation
+        setInfluencer(influencerData as SimpleInfluencer);
       } catch (error) {
         console.error('Error:', error);
         toast({
@@ -83,7 +84,7 @@ const InfluencerProfilePage = () => {
     };
 
     checkUser();
-  }, [navigate]);
+  }, [navigate, toast]);
 
   if (loading) {
     return (
