@@ -84,7 +84,6 @@ const OrderSelector: React.FC<OrderSelectorProps> = ({
               value={searchTerm}
               onValueChange={setSearchTerm}
               className="h-9"
-              startIcon={<Search className="w-4 h-4" />}
             />
             <div className="flex items-center gap-2 p-2 border-b">
               <button

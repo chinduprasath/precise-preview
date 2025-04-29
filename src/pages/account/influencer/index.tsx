@@ -5,12 +5,27 @@ import Layout from '@/components/layout/Layout';
 import InfluencerProfile from '@/components/influencers/InfluencerProfile';
 import { supabase } from '@/integrations/supabase/client';
 import { Influencer } from '@/types/location';
-import { toast } from '@/components/ui/use-toast';
+import { useToast } from '@/components/ui/use-toast';
+
+// Define a simpler type to avoid deep type instantiation
+type InfluencerWithRelations = {
+  id: string;
+  user_id: string;
+  name: string;
+  bio?: string;
+  avatar_url?: string;
+  country?: { id: number; name: string };
+  state?: { id: number; name: string };
+  city?: { id: number; name: string };
+  niche?: { id: number; name: string };
+  [key: string]: any;
+};
 
 const InfluencerProfilePage = () => {
   const navigate = useNavigate();
   const [influencer, setInfluencer] = React.useState<Influencer | null>(null);
   const [loading, setLoading] = React.useState(true);
+  const { toast } = useToast();
 
   React.useEffect(() => {
     const checkUser = async () => {
@@ -36,6 +51,8 @@ const InfluencerProfilePage = () => {
           .single();
 
         if (error) throw error;
+        
+        // Cast to Influencer type without deep nesting
         setInfluencer(data as unknown as Influencer);
       } catch (error) {
         console.error('Error:', error);
