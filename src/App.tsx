@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -44,6 +45,7 @@ import AdminWalletSettingsPage from "./pages/dashboard/admin/wallet-settings";
 import AdminWalletTransactionsPage from "./pages/dashboard/admin/wallet-transactions";
 import CheckoutPage from "./pages/checkout";
 import PaymentPage from "./pages/payment";
+import ServiceOrdersPage from "./pages/dashboard/admin/service-orders"; // Add this import
 
 function App() {
   const queryClient = new QueryClient({
@@ -102,6 +104,7 @@ function App() {
                 <Route path="/dashboard/admin/marketing" element={<MarketingDashboard />} />
                 <Route path="/dashboard/admin/wallet-settings" element={<AdminWalletSettingsPage />} />
                 <Route path="/dashboard/admin/wallet-transactions" element={<AdminWalletTransactionsPage />} />
+                <Route path="/dashboard/admin/service-orders" element={<ServiceOrdersPage />} /> {/* Add this route */}
                 <Route path="/admin/support" element={<AdminSupportPage />} />
                 <Route path="/dashboard/influencer" element={<InfluencerDashboard />} />
                 <Route path="/dashboard/business" element={<BusinessDashboard />} />

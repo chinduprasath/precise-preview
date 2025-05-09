@@ -68,6 +68,11 @@ export const createNavigationItems = (userType: string): NavItem[] => {
         href: "/dashboard/admin/marketing"
       },
       {
+        icon: React.createElement(ShoppingCart, { className: "w-full h-full" }),
+        label: "Service Orders",
+        href: "/dashboard/admin/service-orders"
+      },
+      {
         icon: React.createElement(Wallet, { className: "w-full h-full" }),
         label: "Wallet Settings",
         href: "/dashboard/admin/wallet-settings"

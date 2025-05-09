@@ -6,7 +6,7 @@ import InfluencerProfile from '@/components/influencers/InfluencerProfile';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
 
-// Simple type definition without deep nesting
+// Simplified type definition to avoid deep nesting issues
 type SimpleInfluencer = {
   id: string;
   name: string;
