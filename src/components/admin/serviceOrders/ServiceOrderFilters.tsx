@@ -71,7 +71,7 @@ const ServiceOrderFilters: React.FC<ServiceOrderFiltersProps> = ({ onFilterChang
           <SelectValue placeholder="Filter by status" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="">All Statuses</SelectItem>
+          <SelectItem value="all">All Statuses</SelectItem>
           <SelectItem value="pending">Pending</SelectItem>
           <SelectItem value="in_progress">In Progress</SelectItem>
           <SelectItem value="completed">Completed</SelectItem>
@@ -84,7 +84,7 @@ const ServiceOrderFilters: React.FC<ServiceOrderFiltersProps> = ({ onFilterChang
           <SelectValue placeholder="Filter by type" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="">All Service Types</SelectItem>
+          <SelectItem value="all">All Service Types</SelectItem>
           <SelectItem value="graphics_design">Graphics Design</SelectItem>
           <SelectItem value="digital_marketing">Digital Marketing</SelectItem>
           <SelectItem value="social_media">Social Media Campaigns</SelectItem>
@@ -97,7 +97,7 @@ const ServiceOrderFilters: React.FC<ServiceOrderFiltersProps> = ({ onFilterChang
           <SelectValue placeholder="Filter by date" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="">All Time</SelectItem>
+          <SelectItem value="all">All Time</SelectItem>
           <SelectItem value="today">Today</SelectItem>
           <SelectItem value="yesterday">Yesterday</SelectItem>
           <SelectItem value="last7days">Last 7 Days</SelectItem>

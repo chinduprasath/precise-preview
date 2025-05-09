@@ -6,7 +6,12 @@ import InfluencerProfile from '@/components/influencers/InfluencerProfile';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
 
-// Simplified type definition to avoid deep nesting issues
+// Define simplified type with explicit properties to avoid deep nesting issues
+type CountryStateCity = {
+  id: number;
+  name: string;
+};
+
 type SimpleInfluencer = {
   id: string;
   name: string;
@@ -21,10 +26,10 @@ type SimpleInfluencer = {
   followers_youtube?: number;
   followers_twitter?: number;
   engagement_rate?: number;
-  country?: { id: number; name: string };
-  state?: { id: number; name: string };
-  city?: { id: number; name: string };
-  niche?: { id: number; name: string };
+  country?: CountryStateCity;
+  state?: CountryStateCity;
+  city?: CountryStateCity;
+  niche?: CountryStateCity;
 };
 
 const InfluencerProfilePage = () => {
@@ -91,7 +96,7 @@ const InfluencerProfilePage = () => {
           user_id: session.user.id
         };
         
-        setInfluencer(influencerData as SimpleInfluencer);
+        setInfluencer(influencerData);
       } catch (error: any) {
         console.error('Error:', error);
         toast({
