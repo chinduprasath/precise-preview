@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '@/components/layout/Sidebar';
@@ -704,4 +705,337 @@ const AnalyticsPage = () => {
                                   cx="50%"
                                   cy="50%"
                                   labelLine={false}
-                                  outerRadius
+                                  outerRadius={80}
+                                  fill="#8884d8"
+                                  dataKey="value"
+                                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                                >
+                                  {serviceStats.marketing.servicesData.map((entry, index) => (
+                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                  ))}
+                                </Pie>
+                                <Tooltip />
+                              </PieChart>
+                            </ResponsiveContainer>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* OTT Campaigns */}
+                    {(serviceCategory === 'all' || serviceCategory === 'ottCampaigns') && (
+                      <div>
+                        <h3 className="text-lg font-semibold mb-4">OTT Campaigns</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div>
+                            <div className="bg-white rounded-lg border p-4 mb-4">
+                              <p className="text-sm text-gray-500">Total Campaigns</p>
+                              <p className="text-2xl font-bold">{serviceStats.ottCampaigns.totalCampaigns}</p>
+                            </div>
+                            
+                            <div className="grid grid-cols-2 gap-3">
+                              {Object.entries(serviceStats.ottCampaigns.platforms).map(([platform, count]) => (
+                                <div key={platform} className="bg-white rounded-lg border p-3">
+                                  <p className="text-xs text-gray-500 capitalize">{platform}</p>
+                                  <p className="text-lg font-bold">{count}</p>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                          
+                          <div className="h-60 bg-white rounded-lg border p-4">
+                            <ResponsiveContainer width="100%" height="100%">
+                              <PieChart>
+                                <Pie
+                                  data={serviceStats.ottCampaigns.platformsData}
+                                  cx="50%"
+                                  cy="50%"
+                                  labelLine={false}
+                                  outerRadius={80}
+                                  fill="#8884d8"
+                                  dataKey="value"
+                                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                                >
+                                  {serviceStats.ottCampaigns.platformsData.map((entry, index) => (
+                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                  ))}
+                                </Pie>
+                                <Tooltip />
+                              </PieChart>
+                            </ResponsiveContainer>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              {/* Team Analytics Tab */}
+              <TabsContent value="team" className="space-y-6">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  <Card className="lg:col-span-1">
+                    <CardHeader>
+                      <CardTitle>Team Composition</CardTitle>
+                      <CardDescription>Distribution by role</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="h-60">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <PieChart>
+                            <Pie
+                              data={teamStats.rolesData}
+                              cx="50%"
+                              cy="50%"
+                              labelLine={false}
+                              outerRadius={80}
+                              fill="#8884d8"
+                              dataKey="value"
+                              label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                            >
+                              {teamStats.rolesData.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                              ))}
+                            </Pie>
+                            <Tooltip />
+                          </PieChart>
+                        </ResponsiveContainer>
+                      </div>
+                      <div className="mt-2 grid grid-cols-1 gap-1">
+                        <p className="text-sm text-center">Total Team Members: <span className="font-bold">{teamStats.totalTeamMembers}</span></p>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="lg:col-span-2">
+                    <CardHeader>
+                      <CardTitle>Recent Team Activity</CardTitle>
+                      <CardDescription>Last actions performed</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Team Member</TableHead>
+                            <TableHead>Role</TableHead>
+                            <TableHead>Action</TableHead>
+                            <TableHead>Time</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {teamStats.recentActivity.map((activity) => (
+                            <TableRow key={activity.id}>
+                              <TableCell className="font-medium">{activity.user}</TableCell>
+                              <TableCell>{activity.role}</TableCell>
+                              <TableCell>{activity.action}</TableCell>
+                              <TableCell>{activity.timestamp}</TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </CardContent>
+                  </Card>
+                </div>
+              </TabsContent>
+
+              {/* Service Orders Analytics Tab */}
+              <TabsContent value="service_orders" className="space-y-6">
+                <div className="mb-6">
+                  <Card className="mb-6">
+                    <CardHeader>
+                      <CardTitle>Service Orders Overview</CardTitle>
+                      <CardDescription>Filter by date range</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex flex-wrap gap-4 mb-4">
+                        <Select value={orderDateRange} onValueChange={setOrderDateRange}>
+                          <SelectTrigger className="w-[180px]">
+                            <SelectValue placeholder="Date Range" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="7days">Last 7 Days</SelectItem>
+                            <SelectItem value="30days">Last 30 Days</SelectItem>
+                            <SelectItem value="90days">Last 90 Days</SelectItem>
+                            <SelectItem value="year">Last Year</SelectItem>
+                            <SelectItem value="all">All Time</SelectItem>
+                          </SelectContent>
+                        </Select>
+
+                        <Button variant="outline" onClick={handleRefresh}>
+                          <RefreshCcw className="h-4 w-4 mr-2" />
+                          Refresh Data
+                        </Button>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div className="bg-white dark:bg-gray-800 rounded-lg border p-4">
+                          <div className="flex items-center justify-between">
+                            <p className="text-sm text-gray-500">Total Orders</p>
+                          </div>
+                          <p className="text-2xl font-bold">{serviceOrderStats.totalOrders}</p>
+                        </div>
+                        <div className="bg-white dark:bg-gray-800 rounded-lg border p-4">
+                          <div className="flex items-center justify-between">
+                            <p className="text-sm text-gray-500">Pending</p>
+                          </div>
+                          <p className="text-2xl font-bold text-amber-500">{serviceOrderStats.ordersByStatus.pending}</p>
+                        </div>
+                        <div className="bg-white dark:bg-gray-800 rounded-lg border p-4">
+                          <div className="flex items-center justify-between">
+                            <p className="text-sm text-gray-500">In Progress</p>
+                          </div>
+                          <p className="text-2xl font-bold text-purple-500">{serviceOrderStats.ordersByStatus.in_progress}</p>
+                        </div>
+                        <div className="bg-white dark:bg-gray-800 rounded-lg border p-4">
+                          <div className="flex items-center justify-between">
+                            <p className="text-sm text-gray-500">Completed</p>
+                          </div>
+                          <p className="text-2xl font-bold text-green-500">{serviceOrderStats.ordersByStatus.completed}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Orders by Service Type</CardTitle>
+                        <CardDescription>Distribution across categories</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="h-60">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <PieChart>
+                              <Pie
+                                data={[
+                                  { name: 'Graphics Design', value: serviceOrderStats.ordersByType.graphics_design },
+                                  { name: 'Digital Marketing', value: serviceOrderStats.ordersByType.digital_marketing },
+                                  { name: 'Social Media', value: serviceOrderStats.ordersByType.social_media },
+                                  { name: 'OTT Campaigns', value: serviceOrderStats.ordersByType.ott_campaigns }
+                                ]}
+                                cx="50%"
+                                cy="50%"
+                                labelLine={false}
+                                outerRadius={80}
+                                fill="#8884d8"
+                                dataKey="value"
+                                label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                              >
+                                <Cell fill={SERVICE_TYPE_COLORS.graphics_design} />
+                                <Cell fill={SERVICE_TYPE_COLORS.digital_marketing} />
+                                <Cell fill={SERVICE_TYPE_COLORS.social_media} />
+                                <Cell fill={SERVICE_TYPE_COLORS.ott_campaigns} />
+                              </Pie>
+                              <Tooltip />
+                            </PieChart>
+                          </ResponsiveContainer>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Orders by Status</CardTitle>
+                        <CardDescription>Current status distribution</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="h-60">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <PieChart>
+                              <Pie
+                                data={Object.entries(serviceOrderStats.ordersByStatus).map(([key, value]) => ({
+                                  name: key.charAt(0).toUpperCase() + key.slice(1).replace('_', ' '),
+                                  value: value
+                                }))}
+                                cx="50%"
+                                cy="50%"
+                                labelLine={false}
+                                outerRadius={80}
+                                fill="#8884d8"
+                                dataKey="value"
+                                label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                              >
+                                {Object.entries(serviceOrderStats.ordersByStatus).map(([key, value]) => (
+                                  <Cell 
+                                    key={`status-${key}`} 
+                                    fill={ORDER_STATUS_COLORS[key as OrderStatus]} 
+                                  />
+                                ))}
+                              </Pie>
+                              <Tooltip />
+                            </PieChart>
+                          </ResponsiveContainer>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Order Trends Over Time</CardTitle>
+                      <CardDescription>Monthly order counts by service type</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="h-80">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <RechartsBarChart data={serviceOrderStats.ordersTrend}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="month" />
+                            <YAxis />
+                            <Tooltip />
+                            <Legend />
+                            <Bar dataKey="graphics_design" name="Graphics Design" fill={SERVICE_TYPE_COLORS.graphics_design} stackId="a" />
+                            <Bar dataKey="digital_marketing" name="Digital Marketing" fill={SERVICE_TYPE_COLORS.digital_marketing} stackId="a" />
+                            <Bar dataKey="social_media" name="Social Media" fill={SERVICE_TYPE_COLORS.social_media} stackId="a" />
+                            <Bar dataKey="ott_campaigns" name="OTT Campaigns" fill={SERVICE_TYPE_COLORS.ott_campaigns} stackId="a" />
+                          </RechartsBarChart>
+                        </ResponsiveContainer>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Team Performance</CardTitle>
+                    <CardDescription>Service orders handled by team members</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="overflow-x-auto">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Name</TableHead>
+                            <TableHead>Role</TableHead>
+                            <TableHead>Completed Orders</TableHead>
+                            <TableHead>In Progress</TableHead>
+                            <TableHead>Completion Rate</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {serviceOrderStats.teamPerformance.map((member) => (
+                            <TableRow key={member.id}>
+                              <TableCell className="font-medium">{member.name}</TableCell>
+                              <TableCell>{member.role}</TableCell>
+                              <TableCell>{member.completed}</TableCell>
+                              <TableCell>{member.inProgress}</TableCell>
+                              <TableCell>
+                                {Math.round((member.completed / (member.completed + member.inProgress)) * 100)}%
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            </Tabs>
+          </div>
+        </main>
+      </div>
+    </div>
+  );
+};
+
+export default AnalyticsPage;
