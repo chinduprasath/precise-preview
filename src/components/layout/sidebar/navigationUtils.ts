@@ -1,4 +1,3 @@
-
 import { 
   LayoutDashboard, 
   Users, 
@@ -10,9 +9,7 @@ import {
   ShoppingBag, 
   LifeBuoy, 
   MessageSquare,
-  BadgeIndianRupee,
-  User,
-  Bell
+  BadgeIndianRupee
 } from "lucide-react";
 import { LucideIcon } from "lucide-react";
 
@@ -36,8 +33,6 @@ export const createNavigationItems = (userType: string | null): NavItem[] => {
         { label: "Wallet Settings", href: "/dashboard/admin/wallet-settings", icon: Wallet },
         { label: "Transactions", href: "/dashboard/admin/wallet-transactions", icon: BadgeIndianRupee },
         { label: "Support", href: "/admin/support", icon: LifeBuoy },
-        { label: "Profile", href: "/dashboard/admin/profile", icon: User },
-        { label: "Notifications", href: "/notifications", icon: Bell },
         { label: "Site Settings", href: "/dashboard/admin/settings", icon: Settings },
       ];
     case "influencer":
@@ -46,9 +41,6 @@ export const createNavigationItems = (userType: string | null): NavItem[] => {
         { label: "Orders", href: "/orders", icon: ShoppingBag },
         { label: "Messages", href: "/chats", icon: MessageSquare },
         { label: "Wallet", href: "/wallet/influencer", icon: Wallet },
-        { label: "Profile", href: "/account/influencer", icon: User },
-        { label: "Notifications", href: "/notifications", icon: Bell },
-        { label: "Settings", href: "/account/settings", icon: Settings },
       ];
     case "business":
     default:
@@ -58,9 +50,6 @@ export const createNavigationItems = (userType: string | null): NavItem[] => {
         { label: "Orders", href: "/orders", icon: ShoppingBag },
         { label: "Messages", href: "/chats", icon: MessageSquare },
         { label: "Wallet", href: "/wallet/business", icon: Wallet },
-        { label: "Profile", href: "/account/business", icon: User },
-        { label: "Notifications", href: "/notifications", icon: Bell },
-        { label: "Settings", href: "/account/settings", icon: Settings },
       ];
   }
 };
