@@ -13,7 +13,7 @@ type NamedEntity = {
 };
 
 // Define simplified type for the influencer with mandatory fields only
-type SimpleInfluencer = {
+interface SimpleInfluencer {
   id: string;
   name: string;
   bio?: string;
@@ -31,7 +31,7 @@ type SimpleInfluencer = {
   state?: NamedEntity | null;
   city?: NamedEntity | null;
   niche?: NamedEntity | null;
-};
+}
 
 const InfluencerProfilePage = () => {
   const navigate = useNavigate();

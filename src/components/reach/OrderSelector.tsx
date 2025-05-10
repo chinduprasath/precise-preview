@@ -32,12 +32,14 @@ interface OrderSelectorProps {
   orders: OrderData[];
   selectedOrderId: string;
   onOrderSelect: (orderId: string) => void;
+  className?: string;
 }
 
 const OrderSelector: React.FC<OrderSelectorProps> = ({ 
   orders, 
   selectedOrderId, 
-  onOrderSelect 
+  onOrderSelect,
+  className
 }) => {
   const [open, setOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -57,20 +59,20 @@ const OrderSelector: React.FC<OrderSelectorProps> = ({
   });
 
   return (
-    <div className="space-y-2">
-      <label className="text-sm font-medium">Campaign</label>
+    <div className={cn("space-y-1", className)}>
+      <label className="text-sm font-medium text-gray-700">Campaign</label>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <button
-            className="flex items-center justify-between w-full px-4 py-2 text-sm border rounded-md bg-background hover:bg-accent/50"
+            className="flex items-center justify-between w-full px-4 py-2 text-sm border rounded-md bg-background hover:bg-accent/50 h-10"
             role="combobox"
             aria-expanded={open}
           >
-            <div className="flex flex-col items-start">
-              <span className="font-medium">{selectedOrder?.name || "Select a campaign"}</span>
+            <div className="flex flex-col items-start truncate">
+              <span className="font-medium truncate">{selectedOrder?.name || "Select a campaign"}</span>
               {selectedOrder && (
-                <span className="text-xs text-muted-foreground">
-                  {selectedOrder.orderNumber} • {formatDate(selectedOrder.date)} • {selectedOrder.status}
+                <span className="text-xs text-muted-foreground truncate">
+                  {selectedOrder.orderNumber} • {formatDate(selectedOrder.date)}
                 </span>
               )}
             </div>

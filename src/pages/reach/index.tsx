@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
-import { ArrowUp, ArrowDown } from 'lucide-react';
 import OrderSelector from '@/components/reach/OrderSelector';
 import PlatformMetricCard from '@/components/reach/PlatformMetricCard';
 import CampaignMetrics from '@/components/reach/CampaignMetrics';
@@ -10,6 +9,7 @@ import EngagementChart from '@/components/reach/EngagementChart';
 import ReachChart from '@/components/reach/ReachChart';
 import PerformanceMetrics from '@/components/reach/PerformanceMetrics';
 import DemographicChart from '@/components/reach/DemographicChart';
+import DateTimePicker from '@/components/reach/DateTimePicker';
 import { 
   mockOrders, 
   platformEngagementData, 
@@ -23,6 +23,17 @@ import { formatNumber } from '@/components/influencers/utils/formatUtils';
 
 const ReachPage = () => {
   const [selectedOrder, setSelectedOrder] = useState<string>("1");
+  const [startDate, setStartDate] = useState<Date | undefined>(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return today;
+  });
+  const [endDate, setEndDate] = useState<Date | undefined>(() => {
+    const today = new Date();
+    today.setHours(23, 59, 59, 999);
+    return today;
+  });
+  
   const currentOrder = mockOrders.find(order => order.id === selectedOrder) || mockOrders[0];
   
   const orderMetrics = getOrderMetrics(selectedOrder);
@@ -39,12 +50,31 @@ const ReachPage = () => {
         <Header />
         <main className="flex-1 overflow-auto p-6">
           <div className="max-w-7xl mx-auto space-y-6">
-            <div className="mb-6">
-              <OrderSelector 
-                orders={mockOrders} 
-                selectedOrderId={selectedOrder} 
-                onOrderSelect={setSelectedOrder} 
-              />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <OrderSelector 
+                  orders={mockOrders} 
+                  selectedOrderId={selectedOrder} 
+                  onOrderSelect={setSelectedOrder} 
+                  className="w-full"
+                />
+              </div>
+              <div>
+                <DateTimePicker
+                  label="From Date & Time"
+                  value={startDate}
+                  onChange={setStartDate}
+                  placeholder="Select start date & time"
+                />
+              </div>
+              <div>
+                <DateTimePicker
+                  label="To Date & Time"
+                  value={endDate}
+                  onChange={setEndDate}
+                  placeholder="Select end date & time"
+                />
+              </div>
             </div>
             
             <CampaignMetrics 
