@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
@@ -12,7 +11,7 @@ type NamedEntity = {
   name: string;
 };
 
-// Define simplified type for the influencer
+// Define simplified type for the influencer with mandatory fields only
 type SimpleInfluencer = {
   id: string;
   name: string;

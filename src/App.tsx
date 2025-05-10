@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -45,7 +44,8 @@ import AdminWalletSettingsPage from "./pages/dashboard/admin/wallet-settings";
 import AdminWalletTransactionsPage from "./pages/dashboard/admin/wallet-transactions";
 import CheckoutPage from "./pages/checkout";
 import PaymentPage from "./pages/payment";
-import ServiceOrdersPage from "./pages/dashboard/admin/service-orders"; // Add this import
+import ServiceOrdersPage from "./pages/dashboard/admin/service-orders";
+import ServiceOrderDetailPage from "./pages/dashboard/admin/service-order-detail";
 
 function App() {
   const queryClient = new QueryClient({
