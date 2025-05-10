@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
@@ -57,7 +58,7 @@ const InfluencerProfilePage = () => {
 
         const { data, error } = await supabase
           .from('influencers')
-          .select('*, country:countries(*), state:states(*), city:cities(*), niche:niches(*)')
+          .select('*, country:countries(id, name), state:states(id, name), city:cities(id, name), niche:niches(id, name)')
           .eq('user_id', session.user.id)
           .single();
 

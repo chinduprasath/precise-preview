@@ -41,3 +41,18 @@ export type ServiceOrder = {
   requirements?: string;
   estimatedCompletionDate?: string;
 };
+
+// Analytics related types
+export type ServiceOrderAnalytics = {
+  totalOrders: number;
+  ordersByStatus: Record<OrderStatus, number>;
+  ordersByType: Record<string, number>;
+  ordersTrend: OrderTrendData[];
+  ordersByTeamMember?: Record<string, number>;
+};
+
+export type OrderTrendData = {
+  date: string;
+  count: number;
+  type?: string;
+};

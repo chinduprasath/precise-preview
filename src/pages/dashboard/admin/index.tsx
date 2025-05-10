@@ -1,6 +1,7 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Plus, Edit, Trash2, Search, Users, UserPlus, Gift, Wallet, User, Ticket, FileText } from 'lucide-react';
+import { Plus, Edit, Trash2, Search, Users, UserPlus, Gift, Wallet, User, Ticket, FileText, Briefcase } from 'lucide-react';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
 import { Input } from '@/components/ui/input';
@@ -81,6 +82,11 @@ const AdminDashboard = () => {
               
               <MetricCard title="Pending Withdrawals" value="12" className="bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/20 border-red-200 dark:border-red-800/30">
                 <Wallet className="h-8 w-8 text-red-500 dark:text-red-400 opacity-80" />
+              </MetricCard>
+              
+              {/* New Service Orders Card */}
+              <MetricCard title="Service Orders" value="487" className="bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/20 dark:to-amber-800/20 border-amber-200 dark:border-amber-800/30">
+                <Briefcase className="h-8 w-8 text-amber-500 dark:text-amber-400 opacity-80" />
               </MetricCard>
             </div>
             

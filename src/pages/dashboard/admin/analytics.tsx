@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '@/components/layout/Sidebar';
@@ -7,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { Calendar, Download, Filter, Users, FileText, ShoppingCart, RefreshCcw } from 'lucide-react';
+import { Calendar, Download, Filter, Users, FileText, ShoppingCart, RefreshCcw, Briefcase } from 'lucide-react';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import {
   ResponsiveContainer,
@@ -33,12 +32,14 @@ import {
   TableHeader, 
   TableRow 
 } from '@/components/ui/table';
+import { OrderStatus } from '@/types/serviceOrder';
 
 const AnalyticsPage = () => {
   const navigate = useNavigate();
   const [dateRange, setDateRange] = useState<string>('30days');
   const [serviceCategory, setServiceCategory] = useState<string>('all');
   const [lastUpdated] = useState<Date>(new Date());
+  const [orderDateRange, setOrderDateRange] = useState<string>('30days');
 
   // Mock data
   const userStats = {
@@ -188,7 +189,58 @@ const AnalyticsPage = () => {
     ]
   };
 
+  // Mock data for Service Orders Analytics
+  const serviceOrderStats = {
+    totalOrders: 487,
+    ordersByStatus: {
+      pending: 156,
+      in_progress: 211,
+      completed: 98,
+      cancelled: 22
+    },
+    ordersByType: {
+      graphics_design: 215,
+      digital_marketing: 92,
+      social_media: 143,
+      ott_campaigns: 37
+    },
+    ordersTrend: [
+      { month: 'Jan', total: 32, graphics_design: 14, digital_marketing: 8, social_media: 7, ott_campaigns: 3 },
+      { month: 'Feb', total: 38, graphics_design: 17, digital_marketing: 9, social_media: 9, ott_campaigns: 3 },
+      { month: 'Mar', total: 45, graphics_design: 20, digital_marketing: 10, social_media: 12, ott_campaigns: 3 },
+      { month: 'Apr', total: 51, graphics_design: 23, digital_marketing: 11, social_media: 13, ott_campaigns: 4 },
+      { month: 'May', total: 48, graphics_design: 21, digital_marketing: 11, social_media: 12, ott_campaigns: 4 },
+      { month: 'Jun', total: 42, graphics_design: 19, digital_marketing: 9, social_media: 11, ott_campaigns: 3 },
+      { month: 'Jul', total: 39, graphics_design: 18, digital_marketing: 8, social_media: 10, ott_campaigns: 3 },
+      { month: 'Aug', total: 44, graphics_design: 20, digital_marketing: 9, social_media: 11, ott_campaigns: 4 },
+      { month: 'Sep', total: 47, graphics_design: 21, digital_marketing: 10, social_media: 12, ott_campaigns: 4 },
+      { month: 'Oct', total: 52, graphics_design: 23, digital_marketing: 11, social_media: 14, ott_campaigns: 4 },
+      { month: 'Nov', total: 49, graphics_design: 22, digital_marketing: 10, social_media: 13, ott_campaigns: 4 },
+      { month: 'Dec', total: 40, graphics_design: 17, digital_marketing: 9, social_media: 11, ott_campaigns: 3 }
+    ],
+    teamPerformance: [
+      { id: 1, name: "Rahul Sharma", role: "Graphic Designer", completed: 78, inProgress: 12 },
+      { id: 2, name: "Priya Singh", role: "Social Media Specialist", completed: 65, inProgress: 15 },
+      { id: 3, name: "Vikram Patel", role: "Digital Marketing Expert", completed: 52, inProgress: 9 },
+      { id: 4, name: "Divya Gupta", role: "OTT Campaign Manager", completed: 37, inProgress: 6 },
+      { id: 5, name: "Amit Kumar", role: "Graphic Designer", completed: 72, inProgress: 14 }
+    ]
+  };
+
   const COLORS = ['#9b87f5', '#7E69AB', '#6E59A5', '#1A1F2C', '#D6BCFA', '#1EAEDB'];
+  const ORDER_STATUS_COLORS = {
+    pending: '#FFB347', // Amber
+    in_progress: '#6E59A5', // Purple
+    completed: '#4CAF50', // Green
+    cancelled: '#EF5350'  // Red
+  };
+  
+  const SERVICE_TYPE_COLORS = {
+    graphics_design: '#9b87f5',
+    digital_marketing: '#1EAEDB',
+    social_media: '#7E69AB',
+    ott_campaigns: '#D6BCFA'
+  };
 
   const handleExport = (format: string) => {
     // Mock export functionality
@@ -272,10 +324,10 @@ const AnalyticsPage = () => {
                 graphData={orderStats.orderTrendData.map(d => d.orders)}
               />
               <StatsCard 
-                title="Completed Orders" 
-                value={orderStats.completedOrders.toLocaleString()} 
-                unit={`(${Math.round(orderStats.completedOrders / orderStats.totalOrders * 100)}%)`}
+                title="Service Orders" 
+                value={serviceOrderStats.totalOrders.toLocaleString()} 
                 color="#1EAEDB" 
+                graphData={serviceOrderStats.ordersTrend.map(d => d.total)}
               />
             </div>
 
@@ -297,6 +349,10 @@ const AnalyticsPage = () => {
                 <TabsTrigger value="team" className="px-4 py-2">
                   <Users className="w-4 h-4 mr-2" />
                   Team Analytics
+                </TabsTrigger>
+                <TabsTrigger value="service_orders" className="px-4 py-2">
+                  <Briefcase className="w-4 h-4 mr-2" />
+                  Order Analytics
                 </TabsTrigger>
               </TabsList>
 
@@ -648,149 +704,4 @@ const AnalyticsPage = () => {
                                   cx="50%"
                                   cy="50%"
                                   labelLine={false}
-                                  outerRadius={80}
-                                  fill="#8884d8"
-                                  dataKey="value"
-                                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                                >
-                                  {serviceStats.marketing.servicesData.map((entry, index) => (
-                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                  ))}
-                                </Pie>
-                                <Tooltip />
-                              </PieChart>
-                            </ResponsiveContainer>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* OTT Campaigns */}
-                    {(serviceCategory === 'all' || serviceCategory === 'ottCampaigns') && (
-                      <div>
-                        <h3 className="text-lg font-semibold mb-4">OTT Campaigns</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <div>
-                            <div className="bg-white rounded-lg border p-4 mb-4">
-                              <p className="text-sm text-gray-500">Total Campaigns</p>
-                              <p className="text-2xl font-bold">{serviceStats.ottCampaigns.totalCampaigns}</p>
-                            </div>
-                            
-                            <div className="grid grid-cols-2 gap-3">
-                              {Object.entries(serviceStats.ottCampaigns.platforms).map(([platform, count]) => (
-                                <div key={platform} className="bg-white rounded-lg border p-3">
-                                  <p className="text-xs text-gray-500 capitalize">
-                                    {platform === 'amazonPrime' ? 'Amazon Prime' : 
-                                     platform === 'jioCinema' ? 'Jio Cinema' : 
-                                     platform}
-                                  </p>
-                                  <p className="text-lg font-bold">{count}</p>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                          
-                          <div className="h-60 bg-white rounded-lg border p-4">
-                            <ResponsiveContainer width="100%" height="100%">
-                              <PieChart>
-                                <Pie
-                                  data={serviceStats.ottCampaigns.platformsData}
-                                  cx="50%"
-                                  cy="50%"
-                                  labelLine={false}
-                                  outerRadius={80}
-                                  fill="#8884d8"
-                                  dataKey="value"
-                                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                                >
-                                  {serviceStats.ottCampaigns.platformsData.map((entry, index) => (
-                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                  ))}
-                                </Pie>
-                                <Tooltip />
-                              </PieChart>
-                            </ResponsiveContainer>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              {/* Team Analytics Tab */}
-              <TabsContent value="team" className="space-y-6">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Team Breakdown</CardTitle>
-                      <CardDescription>By role distribution</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex flex-col items-center mb-3">
-                        <div className="text-3xl font-bold">{teamStats.totalTeamMembers}</div>
-                        <div className="text-sm text-gray-500">Total Team Members</div>
-                      </div>
-                      <div className="h-60">
-                        <ResponsiveContainer width="100%" height="100%">
-                          <PieChart>
-                            <Pie
-                              data={teamStats.rolesData}
-                              cx="50%"
-                              cy="50%"
-                              labelLine={false}
-                              outerRadius={80}
-                              fill="#8884d8"
-                              dataKey="value"
-                              label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                            >
-                              {teamStats.rolesData.map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                              ))}
-                            </Pie>
-                            <Tooltip />
-                          </PieChart>
-                        </ResponsiveContainer>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  <Card className="col-span-1 lg:col-span-2">
-                    <CardHeader>
-                      <CardTitle>Recent Team Activity</CardTitle>
-                      <CardDescription>Latest actions performed by team members</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>User</TableHead>
-                            <TableHead>Role</TableHead>
-                            <TableHead>Action</TableHead>
-                            <TableHead>Time</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {teamStats.recentActivity.map((activity) => (
-                            <TableRow key={activity.id}>
-                              <TableCell className="font-medium">{activity.user}</TableCell>
-                              <TableCell>{activity.role}</TableCell>
-                              <TableCell>{activity.action}</TableCell>
-                              <TableCell>{activity.timestamp}</TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </CardContent>
-                  </Card>
-                </div>
-              </TabsContent>
-            </Tabs>
-          </div>
-        </main>
-      </div>
-    </div>
-  );
-};
-
-export default AnalyticsPage;
+                                  outerRadius
