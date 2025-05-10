@@ -27,10 +27,10 @@ type SimpleInfluencer = {
   followers_youtube?: number;
   followers_twitter?: number;
   engagement_rate?: number;
-  country?: NamedEntity | null;
-  state?: NamedEntity | null;
-  city?: NamedEntity | null;
-  niche?: { id: number | string; name: string } | null;
+  country?: NamedEntity;
+  state?: NamedEntity;
+  city?: NamedEntity;
+  niche?: NamedEntity;
 };
 
 const InfluencerProfilePage = () => {

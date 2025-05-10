@@ -1,10 +1,9 @@
 
 import React, { memo } from 'react';
 import { cn } from '@/lib/utils';
-import { LucideIcon } from 'lucide-react';
 
 interface NavItemProps {
-  icon: LucideIcon;
+  icon: React.ReactNode;
   label: string;
   href: string;
   isActive?: boolean;
@@ -13,7 +12,7 @@ interface NavItemProps {
 }
 
 export const NavItem: React.FC<NavItemProps> = memo(({
-  icon: Icon,
+  icon,
   label,
   href,
   isActive,
@@ -42,7 +41,7 @@ export const NavItem: React.FC<NavItemProps> = memo(({
         "w-5 h-5 transition-transform duration-300 group-hover:scale-110", 
         isActive ? "text-white" : "text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white"
       )}>
-        <Icon />
+        {icon}
       </div>
       {!isCollapsed && <span>{label}</span>}
     </a>
