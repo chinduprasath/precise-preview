@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
@@ -29,7 +30,7 @@ type SimpleInfluencer = {
   country?: NamedEntity | null;
   state?: NamedEntity | null;
   city?: NamedEntity | null;
-  niche?: NamedEntity | null;
+  niche?: { id: number | string; name: string } | null;
 };
 
 const InfluencerProfilePage = () => {

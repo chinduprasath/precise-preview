@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { ChevronDown, Settings, User, FileSpreadsheet, LogOut, BadgeIndianRupee, HelpCircle } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
@@ -24,7 +23,6 @@ interface UserProfileMenuProps {
 
 const UserProfileMenu: React.FC<UserProfileMenuProps> = ({ userData }) => {
   const navigate = useNavigate();
-  const userType = localStorage.getItem('userType') || 'business';
 
   const handleLogout = async () => {
     try {
@@ -35,14 +33,6 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = ({ userData }) => {
     } catch (error) {
       console.error('Error logging out:', error);
       toast.error('Failed to log out');
-    }
-  };
-
-  const getProfilePath = () => {
-    if (userType === 'admin') {
-      return '/dashboard/admin/profile';
-    } else {
-      return `/account/${userType}`;
     }
   };
 
@@ -75,7 +65,7 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = ({ userData }) => {
         <DropdownMenuSeparator />
         <DropdownMenuItem className="cursor-pointer flex items-center gap-2">
           <User className="h-4 w-4" />
-          <Link to={getProfilePath()} className="w-full">Profile</Link>
+          <Link to={`/account/${localStorage.getItem('userType') || 'business'}`} className="w-full">Profile</Link>
         </DropdownMenuItem>
         <DropdownMenuItem className="cursor-pointer flex items-center gap-2">
           <Settings className="h-4 w-4" />
