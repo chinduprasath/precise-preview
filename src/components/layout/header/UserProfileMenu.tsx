@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { ChevronDown, Settings, User, FileSpreadsheet, LogOut, BadgeIndianRupee, HelpCircle } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
@@ -23,6 +24,7 @@ interface UserProfileMenuProps {
 
 const UserProfileMenu: React.FC<UserProfileMenuProps> = ({ userData }) => {
   const navigate = useNavigate();
+  const userType = localStorage.getItem('userType') || 'business';
 
   const handleLogout = async () => {
     try {
@@ -65,7 +67,7 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = ({ userData }) => {
         <DropdownMenuSeparator />
         <DropdownMenuItem className="cursor-pointer flex items-center gap-2">
           <User className="h-4 w-4" />
-          <Link to={`/account/${localStorage.getItem('userType') || 'business'}`} className="w-full">Profile</Link>
+          <Link to={`/account/${userType}`} className="w-full">Profile</Link>
         </DropdownMenuItem>
         <DropdownMenuItem className="cursor-pointer flex items-center gap-2">
           <Settings className="h-4 w-4" />
@@ -77,10 +79,7 @@ const UserProfileMenu: React.FC<UserProfileMenuProps> = ({ userData }) => {
         </DropdownMenuItem>
         <DropdownMenuItem className="cursor-pointer flex items-center gap-2">
           <BadgeIndianRupee className="h-4 w-4" />
-          <Link to={`/payments${
-            localStorage.getItem('userType') === 'business' ? '-business' : 
-            localStorage.getItem('userType') === 'influencer' ? '-influencer' : ''
-          }`} className="w-full">Payments</Link>
+          <Link to={`/wallet/${userType === 'admin' ? 'business' : userType}`} className="w-full">Payments</Link>
         </DropdownMenuItem>
         <DropdownMenuItem className="cursor-pointer flex items-center gap-2">
           <HelpCircle className="h-4 w-4" />

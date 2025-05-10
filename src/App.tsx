@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -23,6 +24,7 @@ import InfluencerDashboard from "./pages/dashboard/influencer";
 import BusinessDashboard from "./pages/dashboard/business";
 import BusinessProfile from "./pages/account/business";
 import InfluencerProfile from "./pages/account/influencer";
+import AdminProfile from "./pages/account/admin";
 import SettingsPage from "./pages/account/settings";
 import NotificationsPage from "./pages/notifications";
 import NotFound from "./pages/NotFound";
@@ -112,6 +114,7 @@ function App() {
                 
                 <Route path="/account/business" element={<BusinessProfile />} />
                 <Route path="/account/influencer" element={<InfluencerProfile />} />
+                <Route path="/account/admin" element={<AdminProfile />} />
                 <Route path="/account/influencerprofile" element={<Navigate to="/account/influencer" replace />} />
                 <Route path="/account/settings" element={<SettingsPage />} />
                 <Route path="/billing" element={<BillingPage />} />
