@@ -6,12 +6,13 @@ import InfluencerProfile from '@/components/influencers/InfluencerProfile';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
 
-// Define simplified type with explicit properties to avoid deep nesting issues
-type CountryStateCity = {
-  id: number;
+// Define simplified type for country/state/city objects
+type NamedEntity = {
+  id: number | string;
   name: string;
 };
 
+// Define simplified type for the influencer
 type SimpleInfluencer = {
   id: string;
   name: string;
@@ -26,10 +27,10 @@ type SimpleInfluencer = {
   followers_youtube?: number;
   followers_twitter?: number;
   engagement_rate?: number;
-  country?: CountryStateCity;
-  state?: CountryStateCity;
-  city?: CountryStateCity;
-  niche?: CountryStateCity;
+  country?: NamedEntity;
+  state?: NamedEntity;
+  city?: NamedEntity;
+  niche?: NamedEntity;
 };
 
 const InfluencerProfilePage = () => {

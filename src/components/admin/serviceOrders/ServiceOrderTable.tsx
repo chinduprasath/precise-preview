@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -18,6 +19,8 @@ const ServiceOrderTable: React.FC<ServiceOrderTableProps> = ({
   onViewOrder,
   onEditOrder
 }) => {
+  const navigate = useNavigate();
+  
   const getStatusBadgeVariant = (status: string) => {
     switch (status) {
       case 'pending': return 'warning';
@@ -26,6 +29,10 @@ const ServiceOrderTable: React.FC<ServiceOrderTableProps> = ({
       case 'cancelled': return 'destructive';
       default: return 'default';
     }
+  };
+
+  const handleViewOrderDetail = (order: ServiceOrder) => {
+    navigate(`/dashboard/admin/service-orders/${order.id}`);
   };
 
   return (
@@ -78,7 +85,7 @@ const ServiceOrderTable: React.FC<ServiceOrderTableProps> = ({
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2">
-                    <Button variant="ghost" size="icon" onClick={() => onViewOrder(order)} title="View Details">
+                    <Button variant="ghost" size="icon" onClick={() => handleViewOrderDetail(order)} title="View Details">
                       <Eye className="h-4 w-4" />
                     </Button>
                     <Button variant="ghost" size="icon" onClick={() => onEditOrder(order)} title="Edit Order">

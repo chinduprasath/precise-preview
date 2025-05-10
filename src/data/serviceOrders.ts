@@ -1,4 +1,3 @@
-
 import { ServiceOrder, ServiceOrderTeamMember } from '@/types/serviceOrder';
 import { addDays, subDays, subHours } from 'date-fns';
 
@@ -68,7 +67,8 @@ export const mockServiceOrders: ServiceOrder[] = [
       }
     ],
     amount: 350,
-    currency: 'USD'
+    currency: 'USD',
+    estimatedCompletionDate: addDays(new Date(), 5).toISOString().split('T')[0]
   },
   {
     id: 'so2',
@@ -94,7 +94,8 @@ export const mockServiceOrders: ServiceOrder[] = [
       }
     ],
     amount: 1200,
-    currency: 'USD'
+    currency: 'USD',
+    estimatedCompletionDate: addDays(new Date(), 14).toISOString().split('T')[0]
   },
   {
     id: 'so3',
@@ -113,7 +114,8 @@ export const mockServiceOrders: ServiceOrder[] = [
     internalNotes: 'Client has increased budget by 20%. Focus on tech professionals in US and Europe.',
     files: [],
     amount: 2500,
-    currency: 'USD'
+    currency: 'USD',
+    estimatedCompletionDate: subDays(new Date(), 2).toISOString().split('T')[0]
   },
   {
     id: 'so4',
@@ -130,7 +132,8 @@ export const mockServiceOrders: ServiceOrder[] = [
     requirements: 'Need advertisements for YouTube, Amazon Prime, and Netflix platforms.',
     files: [],
     amount: 5000,
-    currency: 'USD'
+    currency: 'USD',
+    estimatedCompletionDate: addDays(new Date(), 30).toISOString().split('T')[0]
   },
   {
     id: 'so5',
@@ -178,7 +181,8 @@ export const mockServiceOrders: ServiceOrder[] = [
     internalNotes: 'Client wants to focus on trending audio and challenges format.',
     files: [],
     amount: 1800,
-    currency: 'USD'
+    currency: 'USD',
+    estimatedCompletionDate: addDays(new Date(), 10).toISOString().split('T')[0]
   },
   {
     id: 'so7',
@@ -195,6 +199,7 @@ export const mockServiceOrders: ServiceOrder[] = [
     requirements: 'Need to improve search rankings for fashion and lifestyle keywords.',
     files: [],
     amount: 500,
-    currency: 'USD'
+    currency: 'USD',
+    estimatedCompletionDate: addDays(new Date(), 7).toISOString().split('T')[0]
   }
 ];

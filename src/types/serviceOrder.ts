@@ -39,4 +39,5 @@ export type ServiceOrder = {
   amount?: number;
   currency?: string;
   requirements?: string;
+  estimatedCompletionDate?: string;
 };

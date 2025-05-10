@@ -104,7 +104,8 @@ function App() {
                 <Route path="/dashboard/admin/marketing" element={<MarketingDashboard />} />
                 <Route path="/dashboard/admin/wallet-settings" element={<AdminWalletSettingsPage />} />
                 <Route path="/dashboard/admin/wallet-transactions" element={<AdminWalletTransactionsPage />} />
-                <Route path="/dashboard/admin/service-orders" element={<ServiceOrdersPage />} /> {/* Add this route */}
+                <Route path="/dashboard/admin/service-orders" element={<ServiceOrdersPage />} />
+                <Route path="/dashboard/admin/service-orders/:id" element={<ServiceOrderDetailPage />} />
                 <Route path="/admin/support" element={<AdminSupportPage />} />
                 <Route path="/dashboard/influencer" element={<InfluencerDashboard />} />
                 <Route path="/dashboard/business" element={<BusinessDashboard />} />
