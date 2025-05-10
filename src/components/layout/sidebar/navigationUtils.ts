@@ -14,11 +14,12 @@ import {
   User,
   Bell
 } from "lucide-react";
+import { LucideIcon } from "lucide-react";
 
 type NavItem = {
   label: string;
   href: string;
-  icon: React.ElementType;
+  icon: LucideIcon;
 };
 
 export const createNavigationItems = (userType: string | null): NavItem[] => {

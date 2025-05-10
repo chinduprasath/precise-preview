@@ -30,7 +30,7 @@ type SimpleInfluencer = {
   country?: NamedEntity | null;
   state?: NamedEntity | null;
   city?: NamedEntity | null;
-  niche?: NamedEntity | null;
+  niche?: { id: number | string; name: string } | null;
 };
 
 const InfluencerProfilePage = () => {
