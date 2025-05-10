@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/layout/Layout';
@@ -185,7 +184,7 @@ const AdminProfilePage = () => {
       setEditedProfile({
         ...editedProfile,
         [parentKey]: {
-          ...editedProfile[parentKey as keyof typeof editedProfile],
+          ...(editedProfile[parentKey as keyof AdminProfile] as Record<string, any>),
           [childKey]: value
         }
       });
@@ -243,7 +242,8 @@ const AdminProfilePage = () => {
       }
     });
     
-    setTheme(theme);
+    // Fix: Convert string to Theme type
+    setTheme(theme as "light" | "dark" | "system");
     localStorage.setItem('theme', theme);
   };
 

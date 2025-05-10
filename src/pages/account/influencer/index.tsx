@@ -58,7 +58,13 @@ const InfluencerProfilePage = () => {
 
         const { data, error } = await supabase
           .from('influencers')
-          .select('*, country:countries(id, name), state:states(id, name), city:cities(id, name), niche:niches(id, name)')
+          .select(`
+            *,
+            country:countries(id, name),
+            state:states(id, name),
+            city:cities(id, name),
+            niche:niches(id, name)
+          `) // Fixed the select statement to avoid deep nesting
           .eq('user_id', session.user.id)
           .single();
 
