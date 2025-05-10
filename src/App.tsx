@@ -46,6 +46,7 @@ import CheckoutPage from "./pages/checkout";
 import PaymentPage from "./pages/payment";
 import ServiceOrdersPage from "./pages/dashboard/admin/service-orders";
 import ServiceOrderDetailPage from "./pages/dashboard/admin/service-order-detail";
+import AdminProfilePage from "./pages/dashboard/admin/profile";
 
 function App() {
   const queryClient = new QueryClient({
