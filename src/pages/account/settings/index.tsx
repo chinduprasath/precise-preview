@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -9,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Eye, EyeOff, User, Lock, Bell, Globe, Shield, LogOut } from 'lucide-react';
+import { Eye, EyeOff, User, Lock, Bell, Globe, Shield, LogOut, Instagram, Facebook, Youtube, Twitter } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
 const Settings = () => {
@@ -18,6 +17,12 @@ const Settings = () => {
   const [loading, setLoading] = useState(true);
   const [userType, setUserType] = useState<string>('business'); 
   const [showPassword, setShowPassword] = useState(false);
+  const [socialMediaEditing, setSocialMediaEditing] = useState<{[key: string]: boolean}>({
+    instagram: false,
+    facebook: false,
+    youtube: false,
+    twitter: false
+  });
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -34,6 +39,12 @@ const Settings = () => {
       profileVisibility: 'public',
       messagePermission: 'followers',
       dataSharing: true,
+    },
+    socialMedia: {
+      instagram: '',
+      facebook: '',
+      youtube: '',
+      twitter: ''
     }
   });
 
@@ -72,6 +83,29 @@ const Settings = () => {
       ...prev,
       [name]: value
     }));
+  };
+
+  const handleSocialMediaChange = (platform: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      socialMedia: {
+        ...prev.socialMedia,
+        [platform]: value
+      }
+    }));
+  };
+
+  const toggleEditMode = (platform: string) => {
+    setSocialMediaEditing(prev => ({
+      ...prev,
+      [platform]: !prev[platform]
+    }));
+  };
+
+  const handleSaveSocialMedia = (platform: string) => {
+    // Here you would save the social media URL to a database
+    toast.success(`${platform.charAt(0).toUpperCase() + platform.slice(1)} URL updated successfully`);
+    toggleEditMode(platform);
   };
 
   const handleNotificationChange = (name: string, checked: boolean) => {
@@ -154,7 +188,7 @@ const Settings = () => {
           </div>
 
           <Tabs defaultValue="profile" className="space-y-4">
-            <TabsList className="grid grid-cols-3 w-full max-w-md">
+            <TabsList className="grid grid-cols-4 w-full max-w-md">
               <TabsTrigger value="profile" className="flex items-center gap-2">
                 <User className="h-4 w-4" />
                 Profile
@@ -166,6 +200,10 @@ const Settings = () => {
               <TabsTrigger value="notifications" className="flex items-center gap-2">
                 <Bell className="h-4 w-4" />
                 Notifications
+              </TabsTrigger>
+              <TabsTrigger value="social-media" className="flex items-center gap-2">
+                <Globe className="h-4 w-4" />
+                Social Media
               </TabsTrigger>
             </TabsList>
 
@@ -435,6 +473,104 @@ const Settings = () => {
                   </div>
                   
                   <Button className="mt-4">Save Notification Settings</Button>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="social-media" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Social Media Profiles</CardTitle>
+                  <CardDescription>
+                    Connect your social media accounts
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="space-y-4">
+                    {/* Instagram */}
+                    <div className="flex items-center gap-4">
+                      <div className="flex items-center justify-center w-10 h-10 bg-pink-100 rounded-full">
+                        <Instagram className="h-6 w-6 text-pink-500" />
+                      </div>
+                      <div className="flex-1 flex items-center gap-2">
+                        <Input
+                          value={formData.socialMedia.instagram}
+                          onChange={(e) => handleSocialMediaChange('instagram', e.target.value)}
+                          placeholder="Instagram Profile URL"
+                          disabled={!socialMediaEditing.instagram}
+                          className="flex-1"
+                        />
+                        {socialMediaEditing.instagram ? (
+                          <Button onClick={() => handleSaveSocialMedia('instagram')}>Save</Button>
+                        ) : (
+                          <Button variant="outline" onClick={() => toggleEditMode('instagram')}>Edit</Button>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {/* Facebook */}
+                    <div className="flex items-center gap-4">
+                      <div className="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-full">
+                        <Facebook className="h-6 w-6 text-blue-600" />
+                      </div>
+                      <div className="flex-1 flex items-center gap-2">
+                        <Input
+                          value={formData.socialMedia.facebook}
+                          onChange={(e) => handleSocialMediaChange('facebook', e.target.value)}
+                          placeholder="Facebook Profile URL"
+                          disabled={!socialMediaEditing.facebook}
+                          className="flex-1"
+                        />
+                        {socialMediaEditing.facebook ? (
+                          <Button onClick={() => handleSaveSocialMedia('facebook')}>Save</Button>
+                        ) : (
+                          <Button variant="outline" onClick={() => toggleEditMode('facebook')}>Edit</Button>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {/* YouTube */}
+                    <div className="flex items-center gap-4">
+                      <div className="flex items-center justify-center w-10 h-10 bg-red-100 rounded-full">
+                        <Youtube className="h-6 w-6 text-red-600" />
+                      </div>
+                      <div className="flex-1 flex items-center gap-2">
+                        <Input
+                          value={formData.socialMedia.youtube}
+                          onChange={(e) => handleSocialMediaChange('youtube', e.target.value)}
+                          placeholder="YouTube Channel URL"
+                          disabled={!socialMediaEditing.youtube}
+                          className="flex-1"
+                        />
+                        {socialMediaEditing.youtube ? (
+                          <Button onClick={() => handleSaveSocialMedia('youtube')}>Save</Button>
+                        ) : (
+                          <Button variant="outline" onClick={() => toggleEditMode('youtube')}>Edit</Button>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {/* Twitter */}
+                    <div className="flex items-center gap-4">
+                      <div className="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-full">
+                        <Twitter className="h-6 w-6 text-blue-400" />
+                      </div>
+                      <div className="flex-1 flex items-center gap-2">
+                        <Input
+                          value={formData.socialMedia.twitter}
+                          onChange={(e) => handleSocialMediaChange('twitter', e.target.value)}
+                          placeholder="Twitter Profile URL"
+                          disabled={!socialMediaEditing.twitter}
+                          className="flex-1"
+                        />
+                        {socialMediaEditing.twitter ? (
+                          <Button onClick={() => handleSaveSocialMedia('twitter')}>Save</Button>
+                        ) : (
+                          <Button variant="outline" onClick={() => toggleEditMode('twitter')}>Edit</Button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             </TabsContent>
