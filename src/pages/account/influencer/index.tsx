@@ -5,14 +5,9 @@ import Layout from '@/components/layout/Layout';
 import InfluencerProfile from '@/components/influencers/InfluencerProfile';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
+import { InfluencerWithRelations } from '@/types/location';
 
-// Define simplified type for country/state/city objects
-type NamedEntity = {
-  id: number | string;
-  name: string;
-};
-
-// Define simplified type for the influencer with mandatory fields only
+// Define simplified type for the influencer
 interface SimpleInfluencer {
   id: string;
   name: string;
@@ -27,10 +22,14 @@ interface SimpleInfluencer {
   followers_youtube?: number;
   followers_twitter?: number;
   engagement_rate?: number;
-  country?: NamedEntity | null;
-  state?: NamedEntity | null;
-  city?: NamedEntity | null;
-  niche?: NamedEntity | null;
+  country_id?: number | null;
+  state_id?: number | null;
+  city_id?: number | null;
+  niche_id?: number | null;
+  country?: { id: number; name: string } | null;
+  state?: { id: number; name: string } | null;
+  city?: { id: number; name: string } | null;
+  niche?: { id: number; name: string } | null;
 }
 
 const InfluencerProfilePage = () => {
@@ -96,7 +95,7 @@ const InfluencerProfilePage = () => {
         }
         
         // Add email from session and ensure user_id is included
-        const influencerData = {
+        const influencerData: SimpleInfluencer = {
           ...data,
           email: session.user.email,
           user_id: session.user.id
