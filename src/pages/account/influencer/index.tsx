@@ -5,7 +5,6 @@ import Layout from '@/components/layout/Layout';
 import InfluencerProfile from '@/components/influencers/InfluencerProfile';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
-import { InfluencerWithRelations } from '@/types/location';
 
 // Define simplified type for the influencer
 interface SimpleInfluencer {

@@ -11,6 +11,7 @@ export interface Order {
   scheduledTime: string | null;
   category: string | null;
   productService: string | null;
+  orderType?: string;
   businessVerified: boolean;
   username: string;
   amount?: number;
