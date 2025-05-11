@@ -69,7 +69,7 @@ const InfluencerProfilePage = () => {
           console.error('Database error:', error);
           
           // For demonstration purposes, provide mock data if no record found
-          const mockInfluencer: SimpleInfluencer = {
+          const mockInfluencer = {
             id: 'mock-id',
             name: 'Demo Influencer',
             username: '@demoinfluencer',
@@ -94,7 +94,7 @@ const InfluencerProfilePage = () => {
         }
         
         // Add email from session and ensure user_id is included
-        const influencerData: SimpleInfluencer = {
+        const influencerData = {
           ...data,
           email: session.user.email,
           user_id: session.user.id
