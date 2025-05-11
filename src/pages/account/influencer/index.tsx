@@ -25,10 +25,11 @@ interface SimpleInfluencer {
   state_id?: number | null;
   city_id?: number | null;
   niche_id?: number | null;
-  country?: { id: number; name: string } | null;
-  state?: { id: number; name: string } | null;
-  city?: { id: number; name: string } | null;
-  niche?: { id: number; name: string } | null;
+  // Remove nested objects to prevent deep type instantiation
+  country_name?: string;
+  state_name?: string;
+  city_name?: string;
+  niche_name?: string;
 }
 
 const InfluencerProfilePage = () => {
@@ -94,13 +95,16 @@ const InfluencerProfilePage = () => {
         }
         
         // Add email from session and ensure user_id is included
-        const influencerData = {
-          ...data,
-          email: session.user.email,
-          user_id: session.user.id
-        };
-        
-        setInfluencer(influencerData);
+        // Fix for the spread operator issue - ensure data is an object
+        if (data) {
+          const influencerData: SimpleInfluencer = {
+            ...data,
+            email: session.user.email,
+            user_id: session.user.id
+          };
+          
+          setInfluencer(influencerData);
+        }
       } catch (error: any) {
         console.error('Error:', error);
         toast({
