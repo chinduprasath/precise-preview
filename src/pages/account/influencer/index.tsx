@@ -56,15 +56,14 @@ const InfluencerProfilePage = () => {
           return;
         }
 
+        // Simplified query to avoid deep nesting issues
         const { data, error } = await supabase
           .from('influencers')
           .select(`
-            *,
-            country:countries(id, name),
-            state:states(id, name),
-            city:cities(id, name),
-            niche:niches(id, name)
-          `) // Fixed the select statement to avoid deep nesting
+            id, name, bio, image_url, username, user_id, 
+            followers_instagram, followers_facebook, followers_youtube, followers_twitter,
+            engagement_rate, country_id, state_id, city_id, niche_id
+          `)
           .eq('user_id', session.user.id)
           .single();
 

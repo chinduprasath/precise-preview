@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Eye, EyeOff, User, Lock, Bell, Globe, Shield, LogOut, Instagram, Facebook, Youtube, Twitter } from 'lucide-react';
+import { Eye, EyeOff, User, Lock, Bell, Globe, Shield, LogOut, Instagram, Facebook, Youtube, Twitter, Link } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
 const Settings = () => {
@@ -17,6 +17,7 @@ const Settings = () => {
   const [loading, setLoading] = useState(true);
   const [userType, setUserType] = useState<string>('business'); 
   const [showPassword, setShowPassword] = useState(false);
+  const [autoScheduling, setAutoScheduling] = useState(false);
   const [socialMediaEditing, setSocialMediaEditing] = useState<{[key: string]: boolean}>({
     instagram: false,
     facebook: false,
@@ -106,6 +107,20 @@ const Settings = () => {
     // Here you would save the social media URL to a database
     toast.success(`${platform.charAt(0).toUpperCase() + platform.slice(1)} URL updated successfully`);
     toggleEditMode(platform);
+  };
+
+  const handleConnectSocialMedia = (platform: string) => {
+    // In a real app, this would initiate the OAuth flow
+    toast.success(`Connecting to ${platform}...`);
+    // Simulating connection success after a delay
+    setTimeout(() => {
+      toast.success(`Successfully connected to ${platform}`);
+    }, 1500);
+  };
+
+  const handleToggleAutoScheduling = (checked: boolean) => {
+    setAutoScheduling(checked);
+    toast.success(`Auto scheduling ${checked ? 'enabled' : 'disabled'}`);
   };
 
   const handleNotificationChange = (name: string, checked: boolean) => {
@@ -480,10 +495,24 @@ const Settings = () => {
             <TabsContent value="social-media" className="space-y-4">
               <Card>
                 <CardHeader>
-                  <CardTitle>Social Media Profiles</CardTitle>
-                  <CardDescription>
-                    Connect your social media accounts
-                  </CardDescription>
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <CardTitle>Social Media Profiles</CardTitle>
+                      <CardDescription>
+                        Connect your social media accounts
+                      </CardDescription>
+                    </div>
+                    {userType === 'influencer' && (
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium">Auto Scheduling</span>
+                        <Switch 
+                          checked={autoScheduling} 
+                          onCheckedChange={handleToggleAutoScheduling} 
+                          aria-label="Toggle auto scheduling"
+                        />
+                      </div>
+                    )}
+                  </div>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="space-y-4">
@@ -504,6 +533,16 @@ const Settings = () => {
                           <Button onClick={() => handleSaveSocialMedia('instagram')}>Save</Button>
                         ) : (
                           <Button variant="outline" onClick={() => toggleEditMode('instagram')}>Edit</Button>
+                        )}
+                        {userType === 'influencer' && (
+                          <Button 
+                            variant="secondary"
+                            onClick={() => handleConnectSocialMedia('instagram')}
+                            className="flex items-center gap-1"
+                          >
+                            <Link className="h-4 w-4" />
+                            Connect
+                          </Button>
                         )}
                       </div>
                     </div>
@@ -526,6 +565,16 @@ const Settings = () => {
                         ) : (
                           <Button variant="outline" onClick={() => toggleEditMode('facebook')}>Edit</Button>
                         )}
+                        {userType === 'influencer' && (
+                          <Button 
+                            variant="secondary"
+                            onClick={() => handleConnectSocialMedia('facebook')}
+                            className="flex items-center gap-1"
+                          >
+                            <Link className="h-4 w-4" />
+                            Connect
+                          </Button>
+                        )}
                       </div>
                     </div>
                     
@@ -547,6 +596,16 @@ const Settings = () => {
                         ) : (
                           <Button variant="outline" onClick={() => toggleEditMode('youtube')}>Edit</Button>
                         )}
+                        {userType === 'influencer' && (
+                          <Button 
+                            variant="secondary"
+                            onClick={() => handleConnectSocialMedia('youtube')}
+                            className="flex items-center gap-1"
+                          >
+                            <Link className="h-4 w-4" />
+                            Connect
+                          </Button>
+                        )}
                       </div>
                     </div>
                     
@@ -567,6 +626,16 @@ const Settings = () => {
                           <Button onClick={() => handleSaveSocialMedia('twitter')}>Save</Button>
                         ) : (
                           <Button variant="outline" onClick={() => toggleEditMode('twitter')}>Edit</Button>
+                        )}
+                        {userType === 'influencer' && (
+                          <Button 
+                            variant="secondary"
+                            onClick={() => handleConnectSocialMedia('twitter')}
+                            className="flex items-center gap-1"
+                          >
+                            <Link className="h-4 w-4" />
+                            Connect
+                          </Button>
                         )}
                       </div>
                     </div>
