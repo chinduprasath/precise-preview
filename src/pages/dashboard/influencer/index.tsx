@@ -1,13 +1,16 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, XCircle, Bell, BarChart2, Users, DollarSign } from 'lucide-react';
+import { 
+  Bell, BarChart2, Users, DollarSign, 
+  FileText, Video, Reel, PollIcon
+} from 'lucide-react';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
 import RequestsList from '@/components/dashboard/RequestsList';
 import { InfluencerRequest, RequestStatus } from '@/types/request';
 import { useToast } from '@/components/ui/use-toast';
 import { Link } from 'react-router-dom';
+import MetricCard from '@/components/dashboard/MetricCard';
 
 const InfluencerDashboard = () => {
   const [requests, setRequests] = useState<InfluencerRequest[]>([]);
@@ -71,56 +74,82 @@ const InfluencerDashboard = () => {
               <p className="text-gray-500">Welcome back, Alex! Here's what's happening with your account.</p>
             </div>
             
+            {/* First row of metrics */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <div className="flex items-center">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mr-4">
-                    <Bell className="h-6 w-6 text-primary" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Pending Requests</p>
-                    <p className="text-2xl font-bold">
-                      {requests.filter(request => request.status === 'pending').length}
-                    </p>
-                  </div>
-                </div>
-              </div>
+              <MetricCard 
+                title="Earnings (INR)" 
+                value="₹48,900"
+                className="bg-white"
+                valueClassName="text-primary"
+              >
+                <DollarSign className="h-5 w-5 text-primary" />
+              </MetricCard>
               
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <div className="flex items-center">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mr-4">
-                    <BarChart2 className="h-6 w-6 text-primary" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Active Campaigns</p>
-                    <p className="text-2xl font-bold">5</p>
-                  </div>
-                </div>
-              </div>
+              <MetricCard 
+                title="Total Orders" 
+                value="24"
+                className="bg-white"
+                valueClassName="text-primary"
+              >
+                <FileText className="h-5 w-5 text-primary" />
+              </MetricCard>
               
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <div className="flex items-center">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mr-4">
-                    <Users className="h-6 w-6 text-primary" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Profile Views</p>
-                    <p className="text-2xl font-bold">1,245</p>
-                  </div>
-                </div>
-              </div>
+              <MetricCard 
+                title="Active Campaigns" 
+                value="5/12"
+                className="bg-white"
+                valueClassName="text-primary"
+              >
+                <BarChart2 className="h-5 w-5 text-primary" />
+              </MetricCard>
               
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <div className="flex items-center">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mr-4">
-                    <DollarSign className="h-6 w-6 text-primary" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Earnings (This Month)</p>
-                    <p className="text-2xl font-bold">$4,890</p>
-                  </div>
-                </div>
-              </div>
+              <MetricCard 
+                title="Connected Businesses" 
+                value="8"
+                className="bg-white"
+                valueClassName="text-primary"
+              >
+                <Users className="h-5 w-5 text-primary" />
+              </MetricCard>
+            </div>
+            
+            {/* Second row of metrics */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+              <MetricCard 
+                title="Total Posts" 
+                value="42"
+                className="bg-white"
+                valueClassName="text-primary"
+              >
+                <FileText className="h-5 w-5 text-primary" />
+              </MetricCard>
+              
+              <MetricCard 
+                title="Reels" 
+                value="18"
+                className="bg-white"
+                valueClassName="text-primary"
+              >
+                <Reel className="h-5 w-5 text-primary" />
+              </MetricCard>
+              
+              <MetricCard 
+                title="Videos" 
+                value="14"
+                className="bg-white"
+                valueClassName="text-primary"
+              >
+                <Video className="h-5 w-5 text-primary" />
+              </MetricCard>
+              
+              <MetricCard 
+                title="Polls" 
+                value="10"
+                className="bg-white"
+                valueClassName="text-primary"
+              >
+                <PollIcon className="h-5 w-5 text-primary" />
+              </MetricCard>
             </div>
             
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">

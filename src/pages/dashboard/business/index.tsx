@@ -1,9 +1,8 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { 
   Plus, Search, Users, BarChart2, BadgeIndianRupee, 
-  TrendingUp, Filter, CalendarDays
+  TrendingUp, Filter, CalendarDays, FileText, Video, Reel, PollIcon
 } from 'lucide-react';
 import Sidebar from '@/components/layout/Sidebar';
 import ConditionalHeader from '@/components/layout/ConditionalHeader';
@@ -13,6 +12,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import MetricCard from '@/components/dashboard/MetricCard';
 
 const BusinessDashboard = () => {
   const [requests, setRequests] = useState<InfluencerRequest[]>([]);
@@ -21,6 +21,14 @@ const BusinessDashboard = () => {
   const [completedCampaigns, setCompletedCampaigns] = useState(0);
   const [totalReach, setTotalReach] = useState(0);
   const [activeRequests, setActiveRequests] = useState(0);
+  const [totalOrders, setTotalOrders] = useState(0);
+  const [connectedInfluencers, setConnectedInfluencers] = useState(0);
+  const [postStats, setPostStats] = useState({
+    total: 0,
+    reels: 0,
+    videos: 0,
+    polls: 0
+  });
   const { toast: uiToast } = useToast();
   const navigate = useNavigate();
 
@@ -77,6 +85,7 @@ const BusinessDashboard = () => {
           .from('posts')
           .select(`
             id,
+            post_type,
             post_metrics(reach, impressions)
           `)
           .eq('business_id', user.id);
@@ -112,6 +121,24 @@ const BusinessDashboard = () => {
         // Calculate dashboard metrics
         const totalSpentValue = payments.reduce((sum, payment) => sum + (payment.amount || 0), 0);
         const completedCount = orderRequests.filter(req => req.status === 'completed').length;
+        const totalOrdersCount = orderRequests.length;
+        
+        // Count unique influencers
+        const uniqueInfluencers = new Set();
+        orderRequests.forEach(req => {
+          if (req.influencer_id) {
+            uniqueInfluencers.add(req.influencer_id);
+          }
+        });
+        const connectedInfluencersCount = uniqueInfluencers.size;
+        
+        // Calculate content type counts
+        const postTypes = {
+          total: postMetrics.length,
+          reels: postMetrics.filter(post => post.post_type === 'reel').length,
+          videos: postMetrics.filter(post => post.post_type === 'video' || post.post_type === 'short_video').length,
+          polls: postMetrics.filter(post => post.post_type === 'poll').length
+        };
         
         // Calculate total reach from post metrics
         let totalReachValue = 0;
@@ -131,6 +158,9 @@ const BusinessDashboard = () => {
         setCompletedCampaigns(completedCount);
         setTotalReach(totalReachValue);
         setActiveRequests(activeRequestsCount);
+        setTotalOrders(totalOrdersCount);
+        setConnectedInfluencers(connectedInfluencersCount);
+        setPostStats(postTypes);
         
         // Set up realtime subscription for order requests
         const channel = supabase
@@ -315,68 +345,74 @@ const BusinessDashboard = () => {
               </Button>
             </div>
             
+            {/* First row of metrics */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-              <div className="bg-card text-card-foreground rounded-lg shadow-sm border border-border p-6">
-                <div className="flex items-center">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mr-4">
-                    <Users className="h-6 w-6 text-primary" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Active Requests</p>
-                    <p className="text-2xl font-bold text-foreground">
-                      {isLoading ? '...' : activeRequests}
-                    </p>
-                  </div>
-                </div>
-              </div>
+              <MetricCard 
+                title="Amount Spent (INR)" 
+                value={isLoading ? "..." : `₹${totalSpent.toLocaleString('en-IN')}`}
+                className="bg-card text-card-foreground border border-border"
+              >
+                <BadgeIndianRupee className="h-6 w-6 text-primary" />
+              </MetricCard>
               
-              <div className="bg-card text-card-foreground rounded-lg shadow-sm border border-border p-6">
-                <div className="flex items-center">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mr-4">
-                    <BarChart2 className="h-6 w-6 text-primary" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Completed Campaigns</p>
-                    <p className="text-2xl font-bold text-foreground">
-                      {isLoading ? '...' : completedCampaigns}
-                    </p>
-                  </div>
-                </div>
-              </div>
+              <MetricCard 
+                title="Total Orders" 
+                value={isLoading ? "..." : totalOrders}
+                className="bg-card text-card-foreground border border-border"
+              >
+                <FileText className="h-6 w-6 text-primary" />
+              </MetricCard>
               
-              <div className="bg-card text-card-foreground rounded-lg shadow-sm border border-border p-6">
-                <div className="flex items-center">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mr-4">
-                    <TrendingUp className="h-6 w-6 text-primary" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Total Reach</p>
-                    <p className="text-2xl font-bold text-foreground">
-                      {isLoading ? '...' : totalReach > 0 
-                        ? totalReach > 1000000 
-                          ? `${(totalReach / 1000000).toFixed(1)}M` 
-                          : totalReach > 1000 
-                            ? `${(totalReach / 1000).toFixed(1)}K` 
-                            : totalReach
-                        : 'N/A'}
-                    </p>
-                  </div>
-                </div>
-              </div>
+              <MetricCard 
+                title="Active/Total Campaigns" 
+                value={isLoading ? "..." : `${activeRequests}/${completedCampaigns + activeRequests}`}
+                className="bg-card text-card-foreground border border-border"
+              >
+                <BarChart2 className="h-6 w-6 text-primary" />
+              </MetricCard>
               
-              <div className="bg-card text-card-foreground rounded-lg shadow-sm border border-border p-6">
-                <div className="flex items-center">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mr-4">
-                    <BadgeIndianRupee className="h-6 w-6 text-primary" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Total Spent</p>
-                    <p className="text-2xl font-bold text-foreground">
-                      {isLoading ? '...' : `₹${totalSpent.toLocaleString('en-IN')}`}
-                    </p>
-                  </div>
-                </div>
-              </div>
+              <MetricCard 
+                title="Connected Influencers" 
+                value={isLoading ? "..." : connectedInfluencers}
+                className="bg-card text-card-foreground border border-border"
+              >
+                <Users className="h-6 w-6 text-primary" />
+              </MetricCard>
+            </div>
+            
+            {/* Second row of metrics */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+              <MetricCard 
+                title="Total Posts" 
+                value={isLoading ? "..." : postStats.total}
+                className="bg-card text-card-foreground border border-border"
+              >
+                <FileText className="h-6 w-6 text-primary" />
+              </MetricCard>
+              
+              <MetricCard 
+                title="Reels" 
+                value={isLoading ? "..." : postStats.reels}
+                className="bg-card text-card-foreground border border-border"
+              >
+                <Reel className="h-6 w-6 text-primary" />
+              </MetricCard>
+              
+              <MetricCard 
+                title="Videos" 
+                value={isLoading ? "..." : postStats.videos}
+                className="bg-card text-card-foreground border border-border"
+              >
+                <Video className="h-6 w-6 text-primary" />
+              </MetricCard>
+              
+              <MetricCard 
+                title="Polls" 
+                value={isLoading ? "..." : postStats.polls}
+                className="bg-card text-card-foreground border border-border"
+              >
+                <PollIcon className="h-6 w-6 text-primary" />
+              </MetricCard>
             </div>
             
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
