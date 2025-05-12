@@ -189,7 +189,7 @@ const InfluencerProfile: React.FC<InfluencerProfileProps> = ({ influencer }) => 
 
         {/* Tabs Section (Right Column) */}
         <div className="md:col-span-2">
-          <Tabs defaultValue="services">
+          <Tabs defaultValue="prices">
             <TabsList className="w-full mb-6">
               <TabsTrigger value="services" className="flex-1">Services</TabsTrigger>
               <TabsTrigger value="prices" className="flex-1">Prices</TabsTrigger>
