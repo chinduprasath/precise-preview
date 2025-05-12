@@ -93,9 +93,9 @@ const InfluencerProfilePage = () => {
           return;
         }
         
-        // Add email from session and ensure user_id is included
+        // Add email from session
         if (data) {
-          const influencerData: SimpleInfluencer = {
+          const influencerData = {
             ...data,
             email: session.user.email,
             user_id: session.user.id

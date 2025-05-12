@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { 
   Plus, Search, Users, BarChart2, BadgeIndianRupee, 
-  TrendingUp, Filter, CalendarDays, FileText, Video, Film, PieChart
+  TrendingUp, Filter, CalendarDays, FileText, Video, Film, PieChart, Eye
 } from 'lucide-react';
 import Sidebar from '@/components/layout/Sidebar';
 import ConditionalHeader from '@/components/layout/ConditionalHeader';
@@ -13,6 +13,9 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import MetricCard from '@/components/dashboard/MetricCard';
+import TopPerformedOrders from '@/components/dashboard/TopPerformedOrders';
+import TopUsers from '@/components/dashboard/TopUsers';
+import PendingOrders from '@/components/dashboard/PendingOrders';
 
 const BusinessDashboard = () => {
   const [requests, setRequests] = useState<InfluencerRequest[]>([]);
@@ -31,6 +34,162 @@ const BusinessDashboard = () => {
   });
   const { toast: uiToast } = useToast();
   const navigate = useNavigate();
+
+  // Mock data for the new components
+  const [topPerformedOrders, setTopPerformedOrders] = useState([
+    {
+      id: '1',
+      title: 'Summer Collection',
+      platform: 'Instagram',
+      serviceType: 'reel',
+      performanceScore: 95,
+      engagement: 9.2,
+      reach: 65000
+    },
+    {
+      id: '2',
+      title: 'Product Launch',
+      platform: 'Youtube',
+      serviceType: 'video',
+      performanceScore: 89,
+      engagement: 7.5,
+      reach: 48000
+    },
+    {
+      id: '3',
+      title: 'Brand Promotion',
+      platform: 'Instagram',
+      serviceType: 'post',
+      performanceScore: 82,
+      engagement: 6.7,
+      reach: 35000
+    },
+    {
+      id: '4',
+      title: 'Tutorial Series',
+      platform: 'Facebook',
+      serviceType: 'video',
+      performanceScore: 78,
+      engagement: 5.4,
+      reach: 28000
+    },
+    {
+      id: '5',
+      title: 'Brand Partnership',
+      platform: 'Twitter',
+      serviceType: 'post',
+      performanceScore: 75,
+      engagement: 4.9,
+      reach: 22000
+    }
+  ]);
+  
+  const [topInfluencers, setTopInfluencers] = useState([
+    {
+      id: '1',
+      name: 'Priya Sharma',
+      username: 'priyasharma',
+      profileImage: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200',
+      ordersCount: 24
+    },
+    {
+      id: '2',
+      name: 'Raj Malhotra',
+      username: 'rajmalhotra',
+      profileImage: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200',
+      ordersCount: 21
+    },
+    {
+      id: '3',
+      name: 'Aisha Khan',
+      username: 'aishakhan',
+      profileImage: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200',
+      ordersCount: 18
+    },
+    {
+      id: '4',
+      name: 'Vikram Patel',
+      username: 'vikrampatel',
+      profileImage: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200',
+      ordersCount: 15
+    },
+    {
+      id: '5',
+      name: 'Neha Singh',
+      username: 'nehasingh',
+      profileImage: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200',
+      ordersCount: 13
+    }
+  ]);
+  
+  const [topBusinessUsers, setTopBusinessUsers] = useState([
+    {
+      id: '1',
+      name: 'Fashion Forward',
+      username: 'fashionforward',
+      profileImage: 'https://images.unsplash.com/photo-1541963463532-d68292c34b19?q=80&w=200',
+      ordersCount: 28
+    },
+    {
+      id: '2',
+      name: 'Tech Haven',
+      username: 'techhaven',
+      profileImage: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200',
+      ordersCount: 24
+    },
+    {
+      id: '3',
+      name: 'Beauty Essentials',
+      username: 'beautyessentials',
+      profileImage: 'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?q=80&w=200',
+      ordersCount: 20
+    },
+    {
+      id: '4',
+      name: 'Health First',
+      username: 'healthfirst',
+      profileImage: 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?q=80&w=200',
+      ordersCount: 16
+    },
+    {
+      id: '5',
+      name: 'Fitness Hub',
+      username: 'fitnesshub',
+      profileImage: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=200',
+      ordersCount: 14
+    }
+  ]);
+  
+  const [pendingOrders, setPendingOrders] = useState([
+    {
+      id: '1',
+      brandName: 'Your Business',
+      influencerName: 'Priya Sharma',
+      status: 'pending',
+      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 3).toISOString()
+    },
+    {
+      id: '2',
+      brandName: 'Your Business',
+      influencerName: 'Raj Malhotra',
+      status: 'pending',
+      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 6).toISOString()
+    },
+    {
+      id: '3',
+      brandName: 'Your Business',
+      influencerName: 'Aisha Khan',
+      status: 'pending',
+      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 9).toISOString()
+    },
+    {
+      id: '4',
+      brandName: 'Your Business',
+      influencerName: 'Vikram Patel',
+      status: 'awaiting',
+      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString()
+    },
+  ]);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -136,7 +295,7 @@ const BusinessDashboard = () => {
         const postTypes = {
           total: postMetrics.length,
           reels: postMetrics.filter(post => post.post_type === 'reel').length,
-          videos: postMetrics.filter(post => ['video', 'short_video'].includes(post.post_type)).length,
+          videos: postMetrics.filter(post => post.post_type === 'video').length,
           polls: postMetrics.filter(post => post.post_type === 'poll').length
         };
         
@@ -328,6 +487,14 @@ const BusinessDashboard = () => {
     }
   };
 
+  const handleViewOrder = (orderId: string) => {
+    uiToast({
+      title: "Order Details",
+      description: `Viewing details for order ${orderId}`
+    });
+    // In a real app, navigate to order details page or show a modal
+  };
+
   return (
     <div className="flex h-screen bg-background">
       <Sidebar />
@@ -413,6 +580,42 @@ const BusinessDashboard = () => {
               >
                 <PieChart className="h-6 w-6 text-primary" />
               </MetricCard>
+            </div>
+            
+            {/* Row 1 of our new design */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+              <div className="lg:col-span-2">
+                <TopPerformedOrders orders={topPerformedOrders} isLoading={isLoading} />
+              </div>
+              
+              <div>
+                <TopUsers 
+                  users={topInfluencers} 
+                  title="Top Influencers" 
+                  userType="influencer"
+                  isLoading={isLoading}
+                />
+              </div>
+            </div>
+            
+            {/* Row 2 of our new design */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+              <div className="lg:col-span-2">
+                <PendingOrders 
+                  orders={pendingOrders} 
+                  onViewOrder={handleViewOrder} 
+                  isLoading={isLoading}
+                />
+              </div>
+              
+              <div>
+                <TopUsers 
+                  users={topBusinessUsers} 
+                  title="Top Business Users" 
+                  userType="business"
+                  isLoading={isLoading}
+                />
+              </div>
             </div>
             
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
