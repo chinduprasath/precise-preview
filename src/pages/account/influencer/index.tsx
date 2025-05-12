@@ -95,11 +95,11 @@ const InfluencerProfilePage = () => {
         
         // Add email from session
         if (data) {
-          const influencerData = {
+          const influencerData: SimpleInfluencer = {
             ...data,
             email: session.user.email || '',
             user_id: session.user.id
-          } as SimpleInfluencer;
+          };
           
           setInfluencer(influencerData);
         }
