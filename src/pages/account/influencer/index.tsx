@@ -63,7 +63,7 @@ const InfluencerProfilePage = () => {
             engagement_rate, country_id, state_id, city_id, niche_id
           `)
           .eq('user_id', session.user.id)
-          .maybeSingle();
+          .single();
 
         if (error) {
           console.error('Database error:', error);
@@ -73,7 +73,7 @@ const InfluencerProfilePage = () => {
             id: 'mock-id',
             name: 'Demo Influencer',
             username: '@demoinfluencer',
-            email: session.user.email || '',
+            email: session.user.email,
             user_id: session.user.id,
             bio: 'This is a demo influencer profile',
             image_url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200',
@@ -97,7 +97,7 @@ const InfluencerProfilePage = () => {
         if (data) {
           const influencerData = {
             ...data,
-            email: session.user.email || '',
+            email: session.user.email,
             user_id: session.user.id
           };
           
