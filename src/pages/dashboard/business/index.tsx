@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { 
   Plus, Search, Users, BarChart2, BadgeIndianRupee, 
-  TrendingUp, Filter, CalendarDays, FileText, Video, Reel, PollIcon
+  TrendingUp, Filter, CalendarDays, FileText, Video, Film, PieChart
 } from 'lucide-react';
 import Sidebar from '@/components/layout/Sidebar';
 import ConditionalHeader from '@/components/layout/ConditionalHeader';
@@ -132,11 +132,11 @@ const BusinessDashboard = () => {
         });
         const connectedInfluencersCount = uniqueInfluencers.size;
         
-        // Calculate content type counts
+        // Calculate content type counts with fixed comparisons
         const postTypes = {
           total: postMetrics.length,
           reels: postMetrics.filter(post => post.post_type === 'reel').length,
-          videos: postMetrics.filter(post => post.post_type === 'video' || post.post_type === 'short_video').length,
+          videos: postMetrics.filter(post => ['video', 'short_video'].includes(post.post_type)).length,
           polls: postMetrics.filter(post => post.post_type === 'poll').length
         };
         
@@ -395,7 +395,7 @@ const BusinessDashboard = () => {
                 value={isLoading ? "..." : postStats.reels}
                 className="bg-card text-card-foreground border border-border"
               >
-                <Reel className="h-6 w-6 text-primary" />
+                <Film className="h-6 w-6 text-primary" />
               </MetricCard>
               
               <MetricCard 
@@ -411,7 +411,7 @@ const BusinessDashboard = () => {
                 value={isLoading ? "..." : postStats.polls}
                 className="bg-card text-card-foreground border border-border"
               >
-                <PollIcon className="h-6 w-6 text-primary" />
+                <PieChart className="h-6 w-6 text-primary" />
               </MetricCard>
             </div>
             

@@ -6,7 +6,7 @@ import InfluencerProfile from '@/components/influencers/InfluencerProfile';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
 
-// Define simplified type for the influencer
+// Define simplified type for the influencer without deep nesting
 interface SimpleInfluencer {
   id: string;
   name: string;
@@ -25,7 +25,6 @@ interface SimpleInfluencer {
   state_id?: number | null;
   city_id?: number | null;
   niche_id?: number | null;
-  // Remove nested objects to prevent deep type instantiation
   country_name?: string;
   state_name?: string;
   city_name?: string;
@@ -70,7 +69,7 @@ const InfluencerProfilePage = () => {
           console.error('Database error:', error);
           
           // For demonstration purposes, provide mock data if no record found
-          const mockInfluencer = {
+          const mockInfluencer: SimpleInfluencer = {
             id: 'mock-id',
             name: 'Demo Influencer',
             username: '@demoinfluencer',
@@ -95,7 +94,6 @@ const InfluencerProfilePage = () => {
         }
         
         // Add email from session and ensure user_id is included
-        // Fix for the spread operator issue - ensure data is an object
         if (data) {
           const influencerData: SimpleInfluencer = {
             ...data,

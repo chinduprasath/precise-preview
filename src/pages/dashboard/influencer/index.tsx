@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { 
   Bell, BarChart2, Users, DollarSign, 
-  FileText, Video, Reel, PollIcon
+  FileText, Video, Film, PieChart
 } from 'lucide-react';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
@@ -130,7 +130,7 @@ const InfluencerDashboard = () => {
                 className="bg-white"
                 valueClassName="text-primary"
               >
-                <Reel className="h-5 w-5 text-primary" />
+                <Film className="h-5 w-5 text-primary" />
               </MetricCard>
               
               <MetricCard 
@@ -148,7 +148,7 @@ const InfluencerDashboard = () => {
                 className="bg-white"
                 valueClassName="text-primary"
               >
-                <PollIcon className="h-5 w-5 text-primary" />
+                <PieChart className="h-5 w-5 text-primary" />
               </MetricCard>
             </div>
             
