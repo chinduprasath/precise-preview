@@ -58,7 +58,7 @@ const InfluencerProfilePage = () => {
         const { data, error } = await supabase
           .from('influencers')
           .select(`
-            id, name, bio, image_url, username, user_id, 
+            id, name, bio, image_url, username, 
             followers_instagram, followers_facebook, followers_youtube, followers_twitter,
             engagement_rate, country_id, state_id, city_id, niche_id
           `)
@@ -96,7 +96,7 @@ const InfluencerProfilePage = () => {
         // Add email from session
         if (data) {
           const influencerData: SimpleInfluencer = {
-            ...data,
+            ...data as Object,
             email: session.user.email || '',
             user_id: session.user.id
           };

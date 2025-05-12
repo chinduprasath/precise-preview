@@ -261,12 +261,12 @@ const BusinessDashboard = () => {
         });
         const connectedInfluencersCount = uniqueInfluencers.size;
 
-        // Calculate content type counts with fixed comparisons
+        // Calculate content type counts
         const postTypes = {
           total: postMetrics.length,
           reels: postMetrics.filter(post => post.post_type === 'reel').length,
           videos: postMetrics.filter(post => post.post_type === 'video').length,
-          polls: postMetrics.filter(post => post.post_type === 'poll' || post.post_type === 'poll').length
+          polls: postMetrics.filter(post => post.post_type === 'poll').length
         };
 
         // Calculate total reach from post metrics
