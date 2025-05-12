@@ -261,7 +261,7 @@ const BusinessDashboard = () => {
         });
         const connectedInfluencersCount = uniqueInfluencers.size;
 
-        // Calculate content type counts
+        // Calculate content type counts with fixed comparisons
         const postTypes = {
           total: postMetrics.length,
           reels: postMetrics.filter(post => post.post_type === 'reel').length,

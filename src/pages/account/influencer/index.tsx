@@ -58,7 +58,7 @@ const InfluencerProfilePage = () => {
         const { data, error } = await supabase
           .from('influencers')
           .select(`
-            id, name, bio, image_url, username, 
+            id, name, bio, image_url, username, user_id, 
             followers_instagram, followers_facebook, followers_youtube, followers_twitter,
             engagement_rate, country_id, state_id, city_id, niche_id
           `)
@@ -73,7 +73,7 @@ const InfluencerProfilePage = () => {
             id: 'mock-id',
             name: 'Demo Influencer',
             username: '@demoinfluencer',
-            email: session.user.email || '',
+            email: session.user.email,
             user_id: session.user.id,
             bio: 'This is a demo influencer profile',
             image_url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200',
@@ -95,9 +95,9 @@ const InfluencerProfilePage = () => {
         
         // Add email from session
         if (data) {
-          const influencerData: SimpleInfluencer = {
-            ...data as Object,
-            email: session.user.email || '',
+          const influencerData = {
+            ...data,
+            email: session.user.email,
             user_id: session.user.id
           };
           
