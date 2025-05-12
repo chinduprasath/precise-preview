@@ -17,7 +17,9 @@ export interface ComboPackage {
   name: string;
   description: string | null;
   platforms: string[];
+  service_types?: string[];
   price: number;
+  delivery_days?: number;
   is_featured: boolean;
   is_active: boolean;
 }
@@ -74,7 +76,9 @@ export function usePricingData(influencerId?: string) {
             name: item.name,
             description: item.description,
             platforms: item.platforms || [],
+            service_types: item.service_types || [],
             price: item.price,
+            delivery_days: item.delivery_days || 3,
             is_featured: item.is_featured,
             is_active: item.is_active
           })) as ComboPackage[] || [];
