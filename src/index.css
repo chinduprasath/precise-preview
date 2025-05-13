@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -40,41 +41,49 @@
     --sidebar-foreground: 235 75% 60%;
     --sidebar-primary: 235 75% 60%;
     --sidebar-primary-foreground: 210 40% 98%;
-    --sidebar-accent: 235 75% 97%;
+    --sidebar-accent: 235 75% 95%;
     --sidebar-accent-foreground: 235 75% 60%;
     --sidebar-border: 214.3 31.8% 91.4%;
     --sidebar-ring: 235 75% 60%;
   }
 
   .dark {
-    --background: 0 0% 7%;
+    --background: 240 10% 4%;
     --foreground: 0 0% 92%;
-    --card: 0 0% 7%;
+    
+    --card: 240 10% 8%;
     --card-foreground: 0 0% 92%;
-    --popover: 0 0% 7%;
+    
+    --popover: 240 10% 8%;
     --popover-foreground: 0 0% 92%;
+    
     --primary: 235 75% 60%;
     --primary-foreground: 210 40% 98%;
-    --secondary: 215 14% 26%;
+    
+    --secondary: 240 6% 15%;
     --secondary-foreground: 0 0% 98%;
-    --muted: 215 14% 26%;
-    --muted-foreground: 0 0% 64%;
-    --accent: 215 14% 26%;
+    
+    --muted: 240 6% 15%;
+    --muted-foreground: 240 5% 65%;
+    
+    --accent: 235 75% 20%;
     --accent-foreground: 0 0% 98%;
+    
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 215 14% 26%;
-    --input: 215 14% 16%;
-    --ring: 235.5 85.6% 64.7%;
+    
+    --border: 240 6% 20%;
+    --input: 240 6% 15%;
+    --ring: 235 75% 60%;
 
-    --sidebar-background: 0 0% 7%;
+    --sidebar-background: 240 10% 6%;
     --sidebar-foreground: 0 0% 92%;
     --sidebar-primary: 235 75% 60%;
     --sidebar-primary-foreground: 210 40% 98%;
-    --sidebar-accent: 215 14% 26%;
+    --sidebar-accent: 240 6% 15%;
     --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 215 14% 26%;
-    --sidebar-ring: 235.5 85.6% 64.7%;
+    --sidebar-border: 240 6% 20%;
+    --sidebar-ring: 235 75% 60%;
   }
 }
 
@@ -113,7 +122,7 @@
   }
 
   .dark-card {
-    @apply bg-card text-card-foreground dark:shadow-lg dark:shadow-black/10;
+    @apply bg-card text-card-foreground dark:shadow-lg dark:shadow-black/30;
   }
 
   .dark-input {
@@ -168,4 +177,39 @@ body, button, input, select, textarea, .transition-colors {
   transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 200ms;
+}
+
+/* Add specific dark mode styles for tables */
+.dark .table-row-hover:hover {
+  @apply bg-secondary/50;
+}
+
+.dark .table-header {
+  @apply bg-card border-b border-border text-muted-foreground;
+}
+
+/* Dark mode specific styles for the requests page */
+.dark .filterable-content {
+  @apply border-border;
+}
+
+/* Dark mode styles for services page */
+.dark .service-card {
+  @apply bg-card border-border shadow-md shadow-black/10;
+}
+
+/* Style tweaks for better dark mode consistency */
+.dark input::placeholder, 
+.dark textarea::placeholder {
+  @apply text-muted-foreground/70;
+}
+
+/* Better contrast for buttons in dark mode */
+.dark .button-primary {
+  @apply bg-primary hover:bg-primary/90;
+}
+
+/* Theme transition behavior */
+[style*="--theme-transition"] * {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, fill 0.3s ease !important;
 }

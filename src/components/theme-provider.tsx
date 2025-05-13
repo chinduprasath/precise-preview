@@ -53,6 +53,16 @@ export function ThemeProvider({
     } else {
       root.classList.add(theme)
     }
+
+    // Set a CSS variable for transition behavior
+    root.style.setProperty('--theme-transition', 'true');
+
+    // Remove the transition after the theme changes to prevent unwanted transitions when page loads
+    const timeoutId = setTimeout(() => {
+      root.style.removeProperty('--theme-transition');
+    }, 300);
+    
+    return () => clearTimeout(timeoutId);
   }, [theme, systemTheme])
 
   // Listen for changes to the prefers-color-scheme media query

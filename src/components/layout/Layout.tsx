@@ -23,9 +23,9 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const isBusinessRoute = userType === 'business';
   
   return (
-    <div className="flex h-screen bg-background">
+    <div className="flex h-screen bg-background transition-colors">
       <Sidebar />
-      <div className="flex-1 flex flex-col overflow-hidden bg-background border-l border-border">
+      <div className="flex-1 flex flex-col overflow-hidden bg-background border-l border-border transition-colors">
         <ConditionalHeader />
         <main className="flex-1 overflow-y-auto p-4 bg-background">
           {children}

@@ -5,9 +5,11 @@ import Header from '@/components/layout/Header';
 import ServiceCategories from '@/components/services/ServiceCategories';
 import ServiceForm from '@/components/services/ServiceForm';
 import { ServiceType } from '@/types/service';
+import { useTheme } from '@/components/theme-provider';
 
 const ServicesPage = () => {
   const [selectedService, setSelectedService] = useState<ServiceType | null>(null);
+  const { resolvedTheme } = useTheme();
 
   return (
     <div className="flex h-screen bg-background">
@@ -18,10 +20,10 @@ const ServicesPage = () => {
           <div className="max-w-7xl mx-auto">
             <h1 className="text-2xl font-bold mb-6 text-foreground">Services</h1>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-card rounded-lg shadow overflow-hidden border border-border">
+              <div className="bg-card rounded-lg shadow-sm overflow-hidden border border-border">
                 <ServiceCategories onSelectService={setSelectedService} selectedService={selectedService} />
               </div>
-              <div className="bg-card rounded-lg shadow border border-border">
+              <div className="bg-card rounded-lg shadow-sm border border-border service-card">
                 {selectedService ? (
                   <ServiceForm service={selectedService} />
                 ) : (
