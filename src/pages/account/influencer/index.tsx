@@ -73,7 +73,7 @@ const InfluencerProfilePage = () => {
             id: 'mock-id',
             name: 'Demo Influencer',
             username: '@demoinfluencer',
-            email: session.user.email,
+            email: session.user.email || '',
             user_id: session.user.id,
             bio: 'This is a demo influencer profile',
             image_url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200',
@@ -95,10 +95,10 @@ const InfluencerProfilePage = () => {
         
         // Add email from session
         if (data) {
-          const influencerData = {
+          // Create a new object with both data properties and email
+          const influencerData: SimpleInfluencer = {
             ...data,
-            email: session.user.email,
-            user_id: session.user.id
+            email: session.user.email || ''
           };
           
           setInfluencer(influencerData);
