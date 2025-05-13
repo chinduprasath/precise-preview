@@ -95,10 +95,24 @@ const InfluencerProfilePage = () => {
         
         // Add email from session
         if (data) {
-          // Create a new object with both data properties and email
+          // Create a complete influencer object with all required fields
           const influencerData: SimpleInfluencer = {
-            ...data,
-            email: session.user.email || ''
+            id: data.id,
+            name: data.name,
+            bio: data.bio,
+            image_url: data.image_url,
+            username: data.username,
+            user_id: data.user_id,
+            email: session.user.email || '',
+            followers_instagram: data.followers_instagram,
+            followers_facebook: data.followers_facebook,
+            followers_youtube: data.followers_youtube,
+            followers_twitter: data.followers_twitter,
+            engagement_rate: data.engagement_rate,
+            country_id: data.country_id,
+            state_id: data.state_id,
+            city_id: data.city_id,
+            niche_id: data.niche_id
           };
           
           setInfluencer(influencerData);
