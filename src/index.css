@@ -171,6 +171,37 @@
       opacity: 1;
     }
   }
+
+  @keyframes appear {
+    0% { 
+      opacity: 0; 
+      transform: translateY(10px); 
+    }
+    100% { 
+      opacity: 1; 
+      transform: translateY(0); 
+    }
+  }
+
+  @keyframes appear-zoom {
+    0% { 
+      opacity: 0; 
+      transform: scale(0.98); 
+    }
+    100% { 
+      opacity: 1; 
+      transform: scale(1); 
+    }
+  }
+}
+
+/* Add animation classes */
+.animate-appear {
+  animation: appear 0.5s ease-out forwards;
+}
+
+.animate-appear-zoom {
+  animation: appear-zoom 0.8s ease-out forwards;
 }
 
 body, button, input, select, textarea, .transition-colors {
