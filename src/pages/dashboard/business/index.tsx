@@ -13,6 +13,7 @@ import MetricCard from '@/components/dashboard/MetricCard';
 import TopPerformedOrders from '@/components/dashboard/TopPerformedOrders';
 import TopUsers from '@/components/dashboard/TopUsers';
 import PendingOrders from '@/components/dashboard/PendingOrders';
+
 const BusinessDashboard = () => {
   const [requests, setRequests] = useState<InfluencerRequest[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -261,7 +262,7 @@ const BusinessDashboard = () => {
         });
         const connectedInfluencersCount = uniqueInfluencers.size;
 
-        // Calculate content type counts with fixed comparisons
+        // Calculate content type counts with fixed comparisons for post types
         const postTypes = {
           total: postMetrics.length,
           reels: postMetrics.filter(post => post.post_type === 'reel').length,

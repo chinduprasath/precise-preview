@@ -93,7 +93,7 @@ const InfluencerProfilePage = () => {
           return;
         }
         
-        // Add email from session
+        // Only process data if it exists
         if (data) {
           const influencerData: SimpleInfluencer = {
             id: data.id,
