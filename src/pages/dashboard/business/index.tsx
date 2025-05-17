@@ -27,7 +27,7 @@ const BusinessDashboard = () => {
     total: 0,
     reels: 0,
     videos: 0,
-    polls: 0
+    shorts: 0
   });
   const {
     toast: uiToast
@@ -267,7 +267,7 @@ const BusinessDashboard = () => {
           total: postMetrics.length,
           reels: postMetrics.filter(post => post.post_type === 'reel').length,
           videos: postMetrics.filter(post => post.post_type === 'video').length,
-          polls: postMetrics.filter(post => post.post_type === 'poll' || post.post_type === 'short').length
+          shorts: postMetrics.filter(post => post.post_type === 'short').length
         };
 
         // Calculate total reach from post metrics
@@ -486,7 +486,7 @@ const BusinessDashboard = () => {
                 <Video className="h-6 w-6 text-primary" />
               </MetricCard>
               
-              <MetricCard title="Polls" value={isLoading ? "..." : postStats.polls} className="bg-card text-card-foreground border border-border">
+              <MetricCard title="Shorts" value={isLoading ? "..." : postStats.shorts} className="bg-card text-card-foreground border border-border">
                 <PieChart className="h-6 w-6 text-primary" />
               </MetricCard>
             </div>
@@ -512,10 +512,6 @@ const BusinessDashboard = () => {
                 <TopUsers users={topBusinessUsers} title="Top Business Users" userType="business" isLoading={isLoading} />
               </div>
             </div>
-            
-            
-            
-            
           </div>
         </main>
       </div>
