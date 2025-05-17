@@ -57,7 +57,7 @@ const InfluencerProfilePage = () => {
             followers_instagram, followers_facebook, followers_youtube, followers_twitter,
             engagement_rate, country_id, state_id, city_id, niche_id
           `)
-          .eq('user_id', session.user.id)
+          .eq('id', session.user.id)
           .single();
 
         if (error) {
