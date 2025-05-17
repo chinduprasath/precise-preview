@@ -58,7 +58,7 @@ const InfluencerProfilePage = () => {
         const { data, error } = await supabase
           .from('influencers')
           .select(`
-            id, name, bio, image_url, username, user_id, 
+            id, name, bio, image_url, username,
             followers_instagram, followers_facebook, followers_youtube, followers_twitter,
             engagement_rate, country_id, state_id, city_id, niche_id
           `)
@@ -90,18 +90,14 @@ const InfluencerProfilePage = () => {
             description: "Using demo data as no profile was found",
             variant: "default"
           });
-          return;
-        }
-        
-        // Only process data if it exists
-        if (data) {
+        } else if (data) {
+          // Only process data if it exists
           const influencerData: SimpleInfluencer = {
             id: data.id,
             name: data.name,
             bio: data.bio,
             image_url: data.image_url,
             username: data.username,
-            user_id: data.user_id,
             email: session.user.email || '',
             followers_instagram: data.followers_instagram,
             followers_facebook: data.followers_facebook,
@@ -111,11 +107,7 @@ const InfluencerProfilePage = () => {
             country_id: data.country_id,
             state_id: data.state_id,
             city_id: data.city_id,
-            niche_id: data.niche_id,
-            country_name: undefined,
-            state_name: undefined,
-            city_name: undefined,
-            niche_name: undefined
+            niche_id: data.niche_id
           };
           
           setInfluencer(influencerData);
