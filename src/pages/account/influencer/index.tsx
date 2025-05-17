@@ -95,7 +95,6 @@ const InfluencerProfilePage = () => {
         
         // Add email from session
         if (data) {
-          // Explicitly cast country_id, state_id, city_id, and niche_id to ensure TypeScript compatibility
           const influencerData: SimpleInfluencer = {
             id: data.id,
             name: data.name,
@@ -113,7 +112,6 @@ const InfluencerProfilePage = () => {
             state_id: data.state_id,
             city_id: data.city_id,
             niche_id: data.niche_id,
-            // Ensure these are strings in the interface, but null/undefined initially
             country_name: undefined,
             state_name: undefined,
             city_name: undefined,
