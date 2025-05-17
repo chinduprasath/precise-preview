@@ -6,7 +6,7 @@ import InfluencerProfile from '@/components/influencers/InfluencerProfile';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
 
-// Define simplified type for the influencer without deep nesting
+// Define simplified type for the influencer without recursive references
 interface SimpleInfluencer {
   id: string;
   name: string;
@@ -15,7 +15,6 @@ interface SimpleInfluencer {
   image_url?: string;
   username?: string;
   email?: string;
-  user_id?: string;
   followers_instagram?: number;
   followers_facebook?: number;
   followers_youtube?: number;
@@ -25,10 +24,6 @@ interface SimpleInfluencer {
   state_id?: number | null;
   city_id?: number | null;
   niche_id?: number | null;
-  country_name?: string;
-  state_name?: string;
-  city_name?: string;
-  niche_name?: string;
 }
 
 const InfluencerProfilePage = () => {
@@ -74,7 +69,6 @@ const InfluencerProfilePage = () => {
             name: 'Demo Influencer',
             username: '@demoinfluencer',
             email: session.user.email || '',
-            user_id: session.user.id,
             bio: 'This is a demo influencer profile',
             image_url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200',
             followers_instagram: 150000,
