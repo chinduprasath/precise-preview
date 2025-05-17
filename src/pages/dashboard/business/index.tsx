@@ -4,7 +4,7 @@ import { Plus, Search, Users, BarChart2, BadgeIndianRupee, TrendingUp, Filter, C
 import Sidebar from '@/components/layout/Sidebar';
 import ConditionalHeader from '@/components/layout/ConditionalHeader';
 import ServiceRequests from '@/components/dashboard/ServiceRequests';
-import { InfluencerRequest, RequestStatus } from '@/types/request';
+import { InfluencerRequest, RequestStatus, ServiceType } from '@/types/request';
 import { useToast } from '@/components/ui/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -262,7 +262,7 @@ const BusinessDashboard = () => {
         });
         const connectedInfluencersCount = uniqueInfluencers.size;
 
-        // Calculate content type counts with fixed comparisons for post types
+        // Calculate content type counts - fixing the type comparison issue
         const postTypes = {
           total: postMetrics.length,
           reels: postMetrics.filter(post => post.post_type === 'reel').length,
