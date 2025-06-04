@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Gift, Wallet } from 'lucide-react';
@@ -23,8 +24,9 @@ const Header = () => {
   };
 
   return (
-    <header className="h-16 border-b border-border px-6 flex items-center justify-between bg-background">
+    <header className="h-16 border-b border-border px-6 flex items-center bg-background">
       <SearchBar />
+      <div className="flex-1"></div>
       <div className="flex items-center gap-4">
         {(userType === 'business' || userType === 'influencer') && (
           <>
