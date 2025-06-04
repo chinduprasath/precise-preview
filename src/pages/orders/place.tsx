@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useCallback, useRef } from "react";
-import { Instagram, Facebook, Youtube, Twitter, Paperclip, Check, Clock, Upload, X, Loader2, Tag } from "lucide-react";
+import { Instagram, Facebook, Youtube, Twitter, Paperclip, Check, Clock, Upload, X, Loader2, Tag, FileText } from "lucide-react";
 import Layout from '@/components/layout/Layout';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -88,6 +88,11 @@ export default function PlaceOrderPage() {
   const [appliedCoupon, setAppliedCoupon] = useState<{code: string, discount: number, type: string} | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showThankYouDialog, setShowThankYouDialog] = useState(false);
+  
+  // New states for content input option
+  const [contentSubmissionMethod, setContentSubmissionMethod] = useState<'upload' | 'describe'>('upload');
+  const [contentDescription, setContentDescription] = useState("");
+  const [contentDescriptionError, setContentDescriptionError] = useState("");
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const dropAreaRef = useRef<HTMLDivElement>(null);
@@ -124,6 +129,16 @@ export default function PlaceOrderPage() {
     return "";
   };
 
+  const validateContentDescription = (description: string) => {
+    if (contentSubmissionMethod === 'describe' && !description.trim()) {
+      return "Content description is required";
+    }
+    if (description.length > 500) {
+      return "Description must be less than 500 characters";
+    }
+    return "";
+  };
+
   const handlePlatformChange = (values: string[]) => {
     setSelectedPlatforms(values);
   };
@@ -138,6 +153,12 @@ export default function PlaceOrderPage() {
     const message = e.target.value;
     setCustomMessage(message);
     setCustomMessageError(validateCustomMessage(message));
+  };
+
+  const handleContentDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const description = e.target.value;
+    setContentDescription(description);
+    setContentDescriptionError(validateContentDescription(description));
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -227,16 +248,28 @@ export default function PlaceOrderPage() {
     });
   };
 
+  const handleContentMethodChange = (method: 'upload' | 'describe') => {
+    setContentSubmissionMethod(method);
+    // Clear any validation errors when switching methods
+    if (method === 'upload') {
+      setContentDescriptionError("");
+    } else {
+      setFiles([]);
+    }
+  };
+
   const handleSendRequest = (e: React.FormEvent) => {
     e.preventDefault();
     
     const linkError = validateAffiliateLink(affiliateLink);
     const messageError = validateCustomMessage(customMessage);
+    const descriptionError = validateContentDescription(contentDescription);
     
     setAffiliateLinkError(linkError);
     setCustomMessageError(messageError);
+    setContentDescriptionError(descriptionError);
     
-    if (linkError || messageError) {
+    if (linkError || messageError || descriptionError) {
       toast({
         title: "Form Error",
         description: "Please fix the errors in the form",
@@ -249,6 +282,25 @@ export default function PlaceOrderPage() {
       toast({
         title: "Missing Selection",
         description: "Please select at least one platform",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Validate content submission based on method
+    if (contentSubmissionMethod === 'upload' && files.length === 0) {
+      toast({
+        title: "Missing Content",
+        description: "Please upload content files or switch to describe content option",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (contentSubmissionMethod === 'describe' && !contentDescription.trim()) {
+      toast({
+        title: "Missing Content",
+        description: "Please provide a description or switch to upload files option",
         variant: "destructive"
       });
       return;
@@ -276,9 +328,11 @@ export default function PlaceOrderPage() {
         customMessage,
         selectedDate: selectedDate ? format(selectedDate, "PPP") : undefined,
         selectedTime,
-        files: files.map((f) => f.name),
+        contentSubmissionMethod,
+        files: contentSubmissionMethod === 'upload' ? files.map((f) => f.name) : [],
+        contentDescription: contentSubmissionMethod === 'describe' ? contentDescription : '',
         appliedCoupon,
-        total
+        total: contentSubmissionMethod === 'upload' ? total : 'To be quoted'
       });
     }, 1500);
   };
@@ -422,88 +476,142 @@ export default function PlaceOrderPage() {
               </div>
             </div>
             
-            <div>
-              <Label className="text-sm mb-3 block">Upload Files</Label>
+            <div className="space-y-4">
+              <Label className="text-base font-semibold flex items-center gap-2">
+                <FileText className="w-5 h-5 text-primary/80" />
+                How would you like to provide the content?
+              </Label>
               
-              <div
-                ref={dropAreaRef}
-                className="border-2 border-dashed border-border rounded-lg p-6 transition-all cursor-pointer hover:bg-accent/30"
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-                onClick={() => fileInputRef.current?.click()}
+              <RadioGroup 
+                value={contentSubmissionMethod} 
+                onValueChange={(value) => handleContentMethodChange(value as 'upload' | 'describe')}
+                className="space-y-3"
               >
-                <div className="flex flex-col items-center justify-center text-center">
-                  {isUploading ? (
-                    <div className="flex flex-col items-center">
-                      <Loader2 className="h-8 w-8 text-primary animate-spin mb-2" />
-                      <p className="text-sm text-muted-foreground">Uploading files...</p>
-                    </div>
-                  ) : (
-                    <>
-                      <Upload className="h-8 w-8 text-primary mb-2" />
-                      <p className="text-sm font-medium mb-1">Drag & drop files here</p>
-                      <p className="text-xs text-muted-foreground mb-3">or click to browse</p>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        className="text-xs"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          fileInputRef.current?.click();
-                        }}
-                      >
-                        Select Files
-                      </Button>
-                    </>
-                  )}
-                  
-                  <input
-                    ref={fileInputRef}
-                    id="file-upload"
-                    type="file"
-                    multiple
-                    onChange={handleFileChange}
-                    className="hidden"
-                  />
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="upload" id="upload" />
+                  <Label htmlFor="upload" className="text-sm font-medium cursor-pointer">
+                    Upload Files
+                  </Label>
                 </div>
-              </div>
-              
-              {files.length > 0 && (
-                <div className="mt-4 space-y-2">
-                  <Label className="text-sm block">Selected Files ({files.length})</Label>
-                  <div className="max-h-40 overflow-y-auto pr-2 space-y-2">
-                    {files.map((file, index) => (
-                      <div 
-                        key={`${file.name}-${index}`}
-                        className="flex items-center justify-between bg-accent/50 p-2 rounded-md text-sm"
-                      >
-                        <div className="flex items-center gap-2 truncate">
-                          <Paperclip className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                          <span className="truncate">{file.name}</span>
-                          <span className="text-xs text-muted-foreground">
-                            ({(file.size / 1024).toFixed(1)} KB)
-                          </span>
-                        </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="describe" id="describe" />
+                  <Label htmlFor="describe" className="text-sm font-medium cursor-pointer">
+                    Describe What to Create
+                  </Label>
+                </div>
+              </RadioGroup>
+            </div>
+            
+            {contentSubmissionMethod === 'upload' ? (
+              <div>
+                <Label className="text-sm mb-3 block">Upload Files</Label>
+                
+                <div
+                  ref={dropAreaRef}
+                  className="border-2 border-dashed border-border rounded-lg p-6 transition-all cursor-pointer hover:bg-accent/30"
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <div className="flex flex-col items-center justify-center text-center">
+                    {isUploading ? (
+                      <div className="flex flex-col items-center">
+                        <Loader2 className="h-8 w-8 text-primary animate-spin mb-2" />
+                        <p className="text-sm text-muted-foreground">Uploading files...</p>
+                      </div>
+                    ) : (
+                      <>
+                        <Upload className="h-8 w-8 text-primary mb-2" />
+                        <p className="text-sm font-medium mb-1">Drag & drop files here</p>
+                        <p className="text-xs text-muted-foreground mb-3">or click to browse</p>
                         <Button
-                          variant="ghost"
+                          type="button"
+                          variant="outline"
                           size="sm"
-                          className="h-7 w-7 p-0"
+                          className="text-xs"
                           onClick={(e) => {
                             e.stopPropagation();
-                            removeFile(index);
+                            fileInputRef.current?.click();
                           }}
                         >
-                          <X className="h-4 w-4" />
-                          <span className="sr-only">Remove</span>
+                          Select Files
                         </Button>
-                      </div>
-                    ))}
+                      </>
+                    )}
+                    
+                    <input
+                      ref={fileInputRef}
+                      id="file-upload"
+                      type="file"
+                      multiple
+                      onChange={handleFileChange}
+                      className="hidden"
+                    />
                   </div>
                 </div>
-              )}
-            </div>
+                
+                {files.length > 0 && (
+                  <div className="mt-4 space-y-2">
+                    <Label className="text-sm block">Selected Files ({files.length})</Label>
+                    <div className="max-h-40 overflow-y-auto pr-2 space-y-2">
+                      {files.map((file, index) => (
+                        <div 
+                          key={`${file.name}-${index}`}
+                          className="flex items-center justify-between bg-accent/50 p-2 rounded-md text-sm"
+                        >
+                          <div className="flex items-center gap-2 truncate">
+                            <Paperclip className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                            <span className="truncate">{file.name}</span>
+                            <span className="text-xs text-muted-foreground">
+                              ({(file.size / 1024).toFixed(1)} KB)
+                            </span>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-7 w-7 p-0"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              removeFile(index);
+                            }}
+                          >
+                            <X className="h-4 w-4" />
+                            <span className="sr-only">Remove</span>
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div>
+                <Label 
+                  htmlFor="content-description" 
+                  className={cn(
+                    "text-sm mb-1.5 block",
+                    contentDescriptionError && "text-destructive"
+                  )}
+                >
+                  Content Description {contentDescriptionError && `(${contentDescriptionError})`}
+                </Label>
+                <Textarea
+                  id="content-description"
+                  placeholder="Describe what kind of content you want the influencer to create. E.g., 'Create a video story promoting our eco-friendly shoes. Include discount, brand colors, and a call to action.'"
+                  className={cn(
+                    "min-h-[120px] resize-none transition-all focus-visible:ring-primary",
+                    contentDescriptionError && "border-destructive focus-visible:ring-destructive"
+                  )}
+                  value={contentDescription}
+                  onChange={handleContentDescriptionChange}
+                  onBlur={() => setContentDescriptionError(validateContentDescription(contentDescription))}
+                />
+                <div className="mt-1 text-xs text-right text-muted-foreground">
+                  {contentDescription.length}/500 characters
+                </div>
+              </div>
+            )}
           </div>
           
           <div className="flex-1 flex flex-col bg-muted/30 p-6 md:p-8 gap-6">
@@ -575,39 +683,67 @@ export default function PlaceOrderPage() {
                 <h3 className="text-lg font-semibold">Order Summary</h3>
               </CardHeader>
               <CardContent className="pb-4">
-                <div className="space-y-1.5">
-                  <div className="flex justify-between">
-                    <span className="text-sm">{packageName}</span>
-                    <span className="font-medium">{packagePrice}₹</span>
+                {contentSubmissionMethod === 'upload' ? (
+                  <div className="space-y-1.5">
+                    <div className="flex justify-between">
+                      <span className="text-sm">{packageName}</span>
+                      <span className="font-medium">{packagePrice}₹</span>
+                    </div>
+                    
+                    <div className="flex justify-between text-sm">
+                      <span className={cn(
+                        "transition-all",
+                        appliedCoupon ? "text-primary" : "text-muted-foreground"
+                      )}>
+                        Coupon Discount
+                      </span>
+                      <span className={cn(
+                        appliedCoupon ? "text-primary font-medium" : "text-muted-foreground"
+                      )}>
+                        {couponDiscount ? `-${couponDiscount}₹` : "—"}
+                      </span>
+                    </div>
+                    
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Platform Fee</span>
+                      <span className="text-muted-foreground">{platformFee}₹</span>
+                    </div>
                   </div>
-                  
-                  <div className="flex justify-between text-sm">
-                    <span className={cn(
-                      "transition-all",
-                      appliedCoupon ? "text-primary" : "text-muted-foreground"
-                    )}>
-                      Coupon Discount
-                    </span>
-                    <span className={cn(
-                      appliedCoupon ? "text-primary font-medium" : "text-muted-foreground"
-                    )}>
-                      {couponDiscount ? `-${couponDiscount}₹` : "—"}
-                    </span>
+                ) : (
+                  <div className="space-y-3">
+                    <div className="flex justify-between">
+                      <span className="text-sm">{packageName}</span>
+                      <span className="font-medium">Custom Quote</span>
+                    </div>
+                    
+                    <div className="bg-amber-50 dark:bg-amber-950/20 p-3 rounded-md">
+                      <div className="text-sm text-amber-800 dark:text-amber-200 font-medium mb-1">
+                        Content Type: Describe & Request Creation
+                      </div>
+                      <div className="text-sm text-amber-700 dark:text-amber-300">
+                        Pricing: To be quoted after review
+                      </div>
+                    </div>
+                    
+                    <div className="text-xs text-muted-foreground p-2 bg-muted rounded-md">
+                      <strong>Note:</strong> Your request will be reviewed by the influencer, and a custom quote will be shared based on your content needs.
+                    </div>
+                    
+                    <div className="text-sm text-primary font-medium">
+                      Estimated: ₹800 – ₹1,500
+                    </div>
                   </div>
-                  
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Platform Fee</span>
-                    <span className="text-muted-foreground">{platformFee}₹</span>
-                  </div>
-                </div>
+                )}
               </CardContent>
               
-              <div className="px-6 py-4 bg-muted/30 border-t">
-                <div className="flex justify-between items-center">
-                  <span className="text-base font-semibold">Total</span>
-                  <span className="text-xl font-bold">{total}₹</span>
+              {contentSubmissionMethod === 'upload' && (
+                <div className="px-6 py-4 bg-muted/30 border-t">
+                  <div className="flex justify-between items-center">
+                    <span className="text-base font-semibold">Total</span>
+                    <span className="text-xl font-bold">{total}₹</span>
+                  </div>
                 </div>
-              </div>
+              )}
               
               <CardFooter className="pt-6">
                 <Button
@@ -621,8 +757,10 @@ export default function PlaceOrderPage() {
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       Processing...
                     </>
-                  ) : (
+                  ) : contentSubmissionMethod === 'upload' ? (
                     "Send Request"
+                  ) : (
+                    "Send Request for Quote"
                   )}
                 </Button>
               </CardFooter>
@@ -638,9 +776,19 @@ export default function PlaceOrderPage() {
               Thank You!
             </AlertDialogTitle>
             <AlertDialogDescription className="text-center space-y-2">
-              <p>Request has been sent to influencer successfully.</p>
-              <p>The post will be automatically scheduled and published on the influencer's page.</p>
-              <p>Once the posting is completed, you can track the results on the Reach page.</p>
+              {contentSubmissionMethod === 'upload' ? (
+                <>
+                  <p>Request has been sent to influencer successfully.</p>
+                  <p>The post will be automatically scheduled and published on the influencer's page.</p>
+                  <p>Once the posting is completed, you can track the results on the Reach page.</p>
+                </>
+              ) : (
+                <>
+                  <p>Your request for quote has been sent to the influencer successfully.</p>
+                  <p>The influencer will review your content requirements and provide a custom quote.</p>
+                  <p>You'll receive a notification once the quote is ready for review.</p>
+                </>
+              )}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="sm:space-x-4">
