@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo, useCallback, useRef } from "react";
 import { Instagram, Facebook, Youtube, Twitter, Paperclip, Check, Clock, Upload, X, Loader2, Tag, FileText } from "lucide-react";
 import Layout from '@/components/layout/Layout';
@@ -710,27 +711,33 @@ export default function PlaceOrderPage() {
                     </div>
                   </div>
                 ) : (
-                  <div className="space-y-3">
+                  <div className="space-y-4">
                     <div className="flex justify-between">
-                      <span className="text-sm">{packageName}</span>
-                      <span className="font-medium">Custom Quote</span>
+                      <span className="text-sm font-semibold">{packageName}</span>
                     </div>
                     
-                    <div className="bg-amber-50 dark:bg-amber-950/20 p-3 rounded-md">
-                      <div className="text-sm text-amber-800 dark:text-amber-200 font-medium mb-1">
-                        Content Type: Describe & Request Creation
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm font-medium">Posting Fee (Fixed):</span>
+                        <span className="font-bold">₹800</span>
                       </div>
-                      <div className="text-sm text-amber-700 dark:text-amber-300">
-                        Pricing: To be quoted after review
+                      
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm">Custom Content Creation Fee:</span>
+                        <span className="bg-amber-100 dark:bg-amber-900/20 text-amber-800 dark:text-amber-200 px-2 py-1 rounded-md text-xs font-medium">
+                          To be quoted
+                        </span>
                       </div>
                     </div>
                     
-                    <div className="text-xs text-muted-foreground p-2 bg-muted rounded-md">
-                      <strong>Note:</strong> Your request will be reviewed by the influencer, and a custom quote will be shared based on your content needs.
+                    <div className="bg-gray-50 dark:bg-gray-900/20 p-3 rounded-md border">
+                      <div className="text-sm text-muted-foreground">
+                        <strong>Note:</strong> Your request will be reviewed by the influencer. A custom quote for content creation will be shared based on your description. Once approved, the final total will be calculated.
+                      </div>
                     </div>
                     
-                    <div className="text-sm text-primary font-medium">
-                      Estimated: ₹800 – ₹1,500
+                    <div className="text-sm font-medium text-purple-700 dark:text-purple-300">
+                      <strong>Estimated Range:</strong> ₹800 (base) + ₹0 – ₹700 (content) = <span className="font-bold">₹800 – ₹1,500</span>
                     </div>
                   </div>
                 )}
