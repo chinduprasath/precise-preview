@@ -1,5 +1,4 @@
 
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Gift, Wallet } from 'lucide-react';
@@ -25,21 +24,20 @@ const Header = () => {
   };
 
   return (
-    <header className="h-16 border-b border-border px-6 flex items-center bg-background">
+    <header className="h-16 border-b border-border px-6 flex items-center justify-between bg-background">
       <SearchBar />
-      <div className="flex-1"></div>
-      <div className="flex items-center gap-4 ml-auto">
+      <div className="flex items-center gap-3">
         {(userType === 'business' || userType === 'influencer') && (
           <>
             <button 
-              className="relative cursor-pointer hover:opacity-80 transition-opacity"
+              className="relative cursor-pointer hover:opacity-80 transition-opacity p-2 rounded-lg hover:bg-muted"
               onClick={navigateToOffers}
               title="Offers"
             >
               <Gift className="w-5 h-5 text-primary" />
             </button>
             <button 
-              className="relative cursor-pointer hover:opacity-80 transition-opacity"
+              className="relative cursor-pointer hover:opacity-80 transition-opacity p-2 rounded-lg hover:bg-muted"
               onClick={navigateToWallet}
               title="Wallet"
             >
@@ -55,4 +53,3 @@ const Header = () => {
 };
 
 export default Header;
-
