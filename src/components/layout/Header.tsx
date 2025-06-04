@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Gift, Wallet } from 'lucide-react';
@@ -27,7 +28,7 @@ const Header = () => {
     <header className="h-16 border-b border-border px-6 flex items-center bg-background">
       <SearchBar />
       <div className="flex-1"></div>
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 ml-auto">
         {(userType === 'business' || userType === 'influencer') && (
           <>
             <button 
@@ -54,3 +55,4 @@ const Header = () => {
 };
 
 export default Header;
+
