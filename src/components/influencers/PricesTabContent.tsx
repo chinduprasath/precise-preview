@@ -3,11 +3,17 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useToast } from '@/hooks/use-toast';
 import { usePricingData } from '@/hooks/usePricingData';
 import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { 
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { ChevronDown, X } from 'lucide-react';
 
 interface PricesTabContentProps {
   influencerId?: string;
@@ -44,6 +50,13 @@ const comboPackages = [
   },
 ];
 
+const availablePlatforms = [
+  { id: 'instagram', name: 'Instagram' },
+  { id: 'facebook', name: 'Facebook' },
+  { id: 'youtube', name: 'YouTube' },
+  { id: 'twitter', name: 'Twitter' },
+];
+
 const PricesTabContent: React.FC<PricesTabContentProps> = ({
   influencerId,
   influencerName,
@@ -52,6 +65,8 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
   const { toast } = useToast();
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [selectedPackageType, setSelectedPackageType] = useState<'platform' | 'combo'>('platform');
+  const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
+  const [platformDropdownOpen, setPlatformDropdownOpen] = useState(false);
 
   const handleCheckboxChange = (itemId: string) => {
     setSelectedItems(prev => {
@@ -60,6 +75,19 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
       }
       return [...prev, itemId];
     });
+  };
+
+  const handlePlatformToggle = (platformId: string) => {
+    setSelectedPlatforms(prev => {
+      if (prev.includes(platformId)) {
+        return prev.filter(id => id !== platformId);
+      }
+      return [...prev, platformId];
+    });
+  };
+
+  const removePlatform = (platformId: string) => {
+    setSelectedPlatforms(prev => prev.filter(id => id !== platformId));
   };
 
   const handleBook = () => {
@@ -94,14 +122,57 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
             
             {selectedPackageType === 'platform' && (
               <>
-                <Select defaultValue="platform">
-                  <SelectTrigger className="mb-4 w-48">
-                    <SelectValue placeholder="Select Platform" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="platform">Select Platform</SelectItem>
-                  </SelectContent>
-                </Select>
+                <div className="space-y-3">
+                  <Popover open={platformDropdownOpen} onOpenChange={setPlatformDropdownOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={platformDropdownOpen}
+                        className="w-48 justify-between"
+                      >
+                        Select Platforms
+                        <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-48 p-0" align="start">
+                      <div className="p-2 space-y-2">
+                        {availablePlatforms.map((platform) => (
+                          <div key={platform.id} className="flex items-center space-x-2">
+                            <Checkbox
+                              id={platform.id}
+                              checked={selectedPlatforms.includes(platform.id)}
+                              onCheckedChange={() => handlePlatformToggle(platform.id)}
+                            />
+                            <label
+                              htmlFor={platform.id}
+                              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                            >
+                              {platform.name}
+                            </label>
+                          </div>
+                        ))}
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+
+                  {selectedPlatforms.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {selectedPlatforms.map((platformId) => {
+                        const platform = availablePlatforms.find(p => p.id === platformId);
+                        return (
+                          <Badge key={platformId} variant="secondary" className="flex items-center gap-1">
+                            {platform?.name}
+                            <X
+                              className="h-3 w-3 cursor-pointer"
+                              onClick={() => removePlatform(platformId)}
+                            />
+                          </Badge>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
                 
                 <div className="space-y-3">
                   {platformServices.map((service) => (
