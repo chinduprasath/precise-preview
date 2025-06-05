@@ -342,10 +342,8 @@ export default function PlaceOrderPage() {
   return (
     <Layout>
       <div className="flex-1 flex justify-center px-4 py-10 md:py-16 max-w-7xl mx-auto w-full">
-        <div className="w-full rounded-xl bg-card shadow-lg p-0 flex flex-col lg:flex-row gap-8 border border-border relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#9b87f5] to-[#7E69AB]"></div>
-          
-          <div className="flex-1 flex flex-col gap-7 p-6 md:p-8">
+        <div className="w-full flex flex-col lg:flex-row gap-8">
+          <div className="flex-1 flex flex-col gap-7">
             <Card className="rounded-xl overflow-hidden border-0 shadow-md bg-white dark:bg-card">
               <CardContent className="p-0">
                 <div className="bg-gradient-to-r from-[#9b87f5]/90 to-[#7E69AB]/90 p-5 flex items-center gap-4 text-white">
@@ -588,7 +586,7 @@ export default function PlaceOrderPage() {
             )}
           </div>
           
-          <div className="flex-1 flex flex-col bg-muted/30 p-6 md:p-8 gap-6">
+          <div className="flex-1 flex flex-col gap-6">
             <div className="space-y-6">
               <div className="space-y-4">
                 <Label className="text-base font-semibold flex items-center gap-2">
