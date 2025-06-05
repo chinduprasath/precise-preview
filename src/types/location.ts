@@ -1,24 +1,27 @@
 export interface Country {
   id: number;
   name: string;
-  code: string | null;
+  code: string;
 }
 
 export interface State {
   id: number;
   name: string;
   country_id: number;
+  code?: string;
 }
 
 export interface City {
   id: number;
   name: string;
   state_id: number;
+  country_id: number;
 }
 
 export interface Niche {
   id: number;
   name: string;
+  description?: string;
 }
 
 export interface Hashtag {
@@ -29,30 +32,30 @@ export interface Hashtag {
 export interface Influencer {
   id: string;
   name: string;
-  username: string | null;
-  bio: string | null;
-  country_id: number | null;
-  state_id: number | null;
-  city_id: number | null;
-  niche_id: number | null;
-  followers_instagram: number;
-  followers_facebook: number;
-  followers_twitter: number;
-  followers_youtube: number;
-  engagement_rate: number;
-  image_url: string | null;
-  created_at: string;
-  updated_at: string;
-  hashtags?: Hashtag[];
+  username?: string;
+  bio?: string;
+  image_url?: string;
+  avatar_url?: string;
+  email?: string;
+  followers_instagram?: number;
+  followers_facebook?: number;
+  followers_youtube?: number;
+  followers_twitter?: number;
+  engagement_rate?: number;
+  country_id?: number | null;
+  state_id?: number | null;
+  city_id?: number | null;
+  niche_id?: number | null;
+  is_blurred?: boolean;
   country?: Country;
   state?: State;
   city?: City;
   niche?: Niche;
+  hashtags?: Hashtag[];
 }
 
-export interface InfluencerWithRelations extends Influencer {
-  country?: { id: number; name: string; code: string | null } | null;
-  state?: { id: number; name: string; country_id: number } | null;
-  city?: { id: number; name: string; state_id: number } | null;
-  niche?: { id: number; name: string } | null;
+export interface LocationFilters {
+  countryId?: number;
+  stateId?: number;
+  cityId?: number;
 }

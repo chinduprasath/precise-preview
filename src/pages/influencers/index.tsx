@@ -21,6 +21,96 @@ import PricesTabContent from '@/components/influencers/PricesTabContent';
 import DataTabContent from '@/components/influencers/DataTabContent';
 import ServicesTabContent from '@/components/influencers/ServicesTabContent';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+
+// Mock additional influencers with blurred identity
+const MOCK_BLURRED_INFLUENCERS: Influencer[] = [
+  {
+    id: 'mock-blur-1',
+    name: 'Sarah Johnson',
+    username: '@sarahj_lifestyle',
+    bio: 'Lifestyle and fashion content creator',
+    image_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200',
+    followers_instagram: 245000,
+    followers_facebook: 85000,
+    followers_youtube: 125000,
+    followers_twitter: 65000,
+    engagement_rate: 3.8,
+    is_blurred: true,
+    country_id: 1,
+    state_id: 1,
+    city_id: 1,
+    niche_id: 1
+  },
+  {
+    id: 'mock-blur-2',
+    name: 'Alex Rodriguez',
+    username: '@alex_techreview',
+    bio: 'Tech reviewer and gadget enthusiast',
+    image_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200',
+    followers_instagram: 180000,
+    followers_facebook: 95000,
+    followers_youtube: 320000,
+    followers_twitter: 145000,
+    engagement_rate: 4.2,
+    is_blurred: true,
+    country_id: 1,
+    state_id: 1,
+    city_id: 1,
+    niche_id: 2
+  },
+  {
+    id: 'mock-blur-3',
+    name: 'Maya Patel',
+    username: '@maya_fitness',
+    bio: 'Fitness trainer and wellness coach',
+    image_url: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=200',
+    followers_instagram: 195000,
+    followers_facebook: 45000,
+    followers_youtube: 85000,
+    followers_twitter: 35000,
+    engagement_rate: 5.1,
+    is_blurred: true,
+    country_id: 1,
+    state_id: 1,
+    city_id: 1,
+    niche_id: 3
+  },
+  {
+    id: 'mock-blur-4',
+    name: 'David Chen',
+    username: '@david_foodie',
+    bio: 'Food blogger and restaurant reviewer',
+    image_url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=200',
+    followers_instagram: 155000,
+    followers_facebook: 120000,
+    followers_youtube: 75000,
+    followers_twitter: 88000,
+    engagement_rate: 3.9,
+    is_blurred: true,
+    country_id: 1,
+    state_id: 1,
+    city_id: 1,
+    niche_id: 4
+  },
+  {
+    id: 'mock-blur-5',
+    name: 'Emma Williams',
+    username: '@emma_travel',
+    bio: 'Travel photographer and adventure seeker',
+    image_url: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=200',
+    followers_instagram: 285000,
+    followers_facebook: 65000,
+    followers_youtube: 145000,
+    followers_twitter: 95000,
+    engagement_rate: 4.7,
+    is_blurred: true,
+    country_id: 1,
+    state_id: 1,
+    city_id: 1,
+    niche_id: 5
+  }
+];
+
 const formatNumber = (num: number): string => {
   if (num >= 1000000) {
     return (num / 1000000).toFixed(1) + 'M';
@@ -30,6 +120,7 @@ const formatNumber = (num: number): string => {
   }
   return num.toString();
 };
+
 const InfluencerListItem = ({
   influencer,
   isSelected,
@@ -41,10 +132,19 @@ const InfluencerListItem = ({
 }) => {
   return <div onClick={onClick} className={`flex items-center gap-3 py-3 hover:bg-secondary/50 rounded-lg px-2 transition-colors cursor-pointer ${isSelected ? 'bg-secondary/70' : ''}`}>
       <Avatar className="h-12 w-12">
-        <img src={influencer.image_url || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200'} alt={influencer.name} className="h-full w-full object-cover" />
+        <img 
+          src={influencer.image_url || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200'} 
+          alt={influencer.name} 
+          className={`h-full w-full object-cover ${influencer.is_blurred ? 'blur-sm' : ''}`} 
+        />
       </Avatar>
       <div className="flex-1">
         <h3 className="font-medium text-foreground">{influencer.name}</h3>
+        {influencer.username && (
+          <p className={`text-xs text-muted-foreground ${influencer.is_blurred ? 'blur-sm' : ''}`}>
+            {influencer.username}
+          </p>
+        )}
         <div className="flex flex-wrap gap-x-4 mt-1">
           {influencer.followers_instagram > 0 && <div className="flex items-center gap-1">
               <Instagram className="h-4 w-4 text-social-instagram" />
@@ -66,6 +166,7 @@ const InfluencerListItem = ({
       </div>
     </div>;
 };
+
 const InfluencerListSkeleton = () => {
   return <div className="space-y-3 px-2">
       {[1, 2, 3, 4, 5].map(i => <div key={i} className="flex items-center gap-3 py-3">
@@ -80,6 +181,7 @@ const InfluencerListSkeleton = () => {
         </div>)}
     </div>;
 };
+
 const FilterBadge = ({
   label,
   onRemove
@@ -92,6 +194,7 @@ const FilterBadge = ({
       <X className="h-3 w-3" />
     </Button>
   </div>;
+
 const InfluencerProfile = ({
   influencer
 }: {
@@ -115,11 +218,17 @@ const InfluencerProfile = ({
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center">
               <Avatar className="h-16 w-16 mr-4">
-                <img src={influencer.image_url || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200'} alt={influencer.name} className="h-full w-full object-cover" />
+                <img 
+                  src={influencer.image_url || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200'} 
+                  alt={influencer.name} 
+                  className={`h-full w-full object-cover ${influencer.is_blurred ? 'blur-sm' : ''}`} 
+                />
               </Avatar>
               <div>
                 <h2 className="text-xl font-semibold text-foreground">{influencer.name}</h2>
-                <p className="text-sm text-muted-foreground">{influencer.username || '@' + influencer.name.toLowerCase().replace(/\s+/g, '')}</p>
+                <p className={`text-sm text-muted-foreground ${influencer.is_blurred ? 'blur-sm' : ''}`}>
+                  {influencer.username || '@' + influencer.name.toLowerCase().replace(/\s+/g, '')}
+                </p>
               </div>
             </div>
 
@@ -166,6 +275,7 @@ const InfluencerProfile = ({
       </Tabs>
     </div>;
 };
+
 const InfluencersPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [followerRange, setFollowerRange] = useState<[number, number]>([0, 1500000]);
@@ -232,13 +342,22 @@ const InfluencersPage = () => {
     loading,
     isInitialLoad
   } = useInfluencers(filters);
-  const filteredInfluencers = influencers.filter(influencer => {
-    const matchesSearch = searchTerm === '' || influencer.name.toLowerCase().includes(searchTerm.toLowerCase()) || influencer.niche?.name.toLowerCase().includes(searchTerm.toLowerCase()) || false || influencer.bio?.toLowerCase().includes(searchTerm.toLowerCase()) || false;
+
+  // Combine real influencers with mock blurred influencers
+  const combinedInfluencers = [...influencers, ...MOCK_BLURRED_INFLUENCERS];
+
+  const filteredInfluencers = combinedInfluencers.filter(influencer => {
+    const matchesSearch = searchTerm === '' || 
+      influencer.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      influencer.niche?.name.toLowerCase().includes(searchTerm.toLowerCase()) || false || 
+      influencer.bio?.toLowerCase().includes(searchTerm.toLowerCase()) || false;
     return matchesSearch;
   });
+  
   const handleInfluencerClick = (influencer: Influencer) => {
     setSelectedInfluencer(influencer);
   };
+  
   const getActiveFilters = () => {
     const active: {
       label: string;
@@ -319,6 +438,7 @@ const InfluencersPage = () => {
     return active;
   };
   const activeFilters = getActiveFilters();
+
   return <div className="flex h-screen bg-background">
       <Sidebar />
       <div className="flex-1 flex flex-col">
@@ -550,4 +670,5 @@ const InfluencersPage = () => {
       </div>
     </div>;
 };
+
 export default InfluencersPage;
