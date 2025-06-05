@@ -115,64 +115,66 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
         <RadioGroup value={selectedPackageType} onValueChange={(value) => setSelectedPackageType(value as 'platform' | 'combo')} className="space-y-6">
           {/* Platform Based Section */}
           <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <RadioGroupItem id="platform" value="platform" className="h-4 w-4" />
-              <label htmlFor="platform" className="text-base font-medium">Platform Based</label>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <RadioGroupItem id="platform" value="platform" className="h-4 w-4" />
+                <label htmlFor="platform" className="text-base font-medium">Platform Based</label>
+              </div>
+              
+              {selectedPackageType === 'platform' && (
+                <Popover open={platformDropdownOpen} onOpenChange={setPlatformDropdownOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      aria-expanded={platformDropdownOpen}
+                      className="w-48 justify-between"
+                    >
+                      Select Platforms
+                      <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-48 p-0" align="end">
+                    <div className="p-2 space-y-2">
+                      {availablePlatforms.map((platform) => (
+                        <div key={platform.id} className="flex items-center space-x-2">
+                          <Checkbox
+                            id={platform.id}
+                            checked={selectedPlatforms.includes(platform.id)}
+                            onCheckedChange={() => handlePlatformToggle(platform.id)}
+                          />
+                          <label
+                            htmlFor={platform.id}
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                          >
+                            {platform.name}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              )}
             </div>
             
             {selectedPackageType === 'platform' && (
               <>
-                <div className="space-y-3">
-                  <Popover open={platformDropdownOpen} onOpenChange={setPlatformDropdownOpen}>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        role="combobox"
-                        aria-expanded={platformDropdownOpen}
-                        className="w-48 justify-between"
-                      >
-                        Select Platforms
-                        <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-48 p-0" align="start">
-                      <div className="p-2 space-y-2">
-                        {availablePlatforms.map((platform) => (
-                          <div key={platform.id} className="flex items-center space-x-2">
-                            <Checkbox
-                              id={platform.id}
-                              checked={selectedPlatforms.includes(platform.id)}
-                              onCheckedChange={() => handlePlatformToggle(platform.id)}
-                            />
-                            <label
-                              htmlFor={platform.id}
-                              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-                            >
-                              {platform.name}
-                            </label>
-                          </div>
-                        ))}
-                      </div>
-                    </PopoverContent>
-                  </Popover>
-
-                  {selectedPlatforms.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {selectedPlatforms.map((platformId) => {
-                        const platform = availablePlatforms.find(p => p.id === platformId);
-                        return (
-                          <Badge key={platformId} variant="secondary" className="flex items-center gap-1">
-                            {platform?.name}
-                            <X
-                              className="h-3 w-3 cursor-pointer"
-                              onClick={() => removePlatform(platformId)}
-                            />
-                          </Badge>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
+                {selectedPlatforms.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {selectedPlatforms.map((platformId) => {
+                      const platform = availablePlatforms.find(p => p.id === platformId);
+                      return (
+                        <Badge key={platformId} variant="secondary" className="flex items-center gap-1">
+                          {platform?.name}
+                          <X
+                            className="h-3 w-3 cursor-pointer"
+                            onClick={() => removePlatform(platformId)}
+                          />
+                        </Badge>
+                      );
+                    })}
+                  </div>
+                )}
                 
                 <div className="space-y-3">
                   {platformServices.map((service) => (
