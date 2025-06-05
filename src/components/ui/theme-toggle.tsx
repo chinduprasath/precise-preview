@@ -10,17 +10,7 @@ export function ThemeToggle() {
     setTheme,
     resolvedTheme
   } = useTheme();
-  return <ToggleGroup type="single" value={theme} onValueChange={value => value && setTheme(value as any)}>
-      <ToggleGroupItem value="light" aria-label="Light mode">
-        <Sun className="h-4 w-4" />
-      </ToggleGroupItem>
-      <ToggleGroupItem value="dark" aria-label="Dark mode">
-        <Moon className="h-4 w-4" />
-      </ToggleGroupItem>
-      <ToggleGroupItem value="system" aria-label="System mode">
-        <span className="text-xs">Auto</span>
-      </ToggleGroupItem>
-    </ToggleGroup>;
+  return;
 }
 export function ThemeToggleMinimal() {
   const {
