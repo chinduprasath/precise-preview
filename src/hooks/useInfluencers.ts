@@ -35,7 +35,7 @@ export function useInfluencers(filters: InfluencerFilters = {}) {
             *,
             country:countries(*),
             state:states(*),
-            city:cities(id, name, state_id, country_id),
+            city:cities(*),
             niche:niches(*)
           `);
         
@@ -72,7 +72,15 @@ export function useInfluencers(filters: InfluencerFilters = {}) {
           throw error;
         }
         
-        let influencersList = data as Influencer[];
+        // Type assertion with proper handling of the nested data structure
+        let influencersList = (data || []).map(item => ({
+          ...item,
+          // Ensure city has country_id if it exists
+          city: item.city ? {
+            ...item.city,
+            country_id: item.city.country_id || item.country_id
+          } : undefined
+        })) as Influencer[];
         
         // If hashtag filter is applied, fetch influencer hashtags and filter
         if (filters.hashtags && filters.hashtags.length > 0) {
