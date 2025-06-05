@@ -24,12 +24,14 @@ const Header = () => {
   };
 
   return (
-    <header className="h-16 border-b border-border flex items-center bg-background">
-      <div className="px-6">
+    <header className="h-16 border-b border-border flex items-center justify-between bg-background w-full">
+      {/* Left side - Search Bar */}
+      <div className="pl-6">
         <SearchBar />
       </div>
-      <div className="flex-1"></div>
-      <div className="flex items-center gap-2 pr-6">
+      
+      {/* Right side - All utility icons */}
+      <div className="flex items-center gap-3 pr-6">
         {(userType === 'business' || userType === 'influencer') && (
           <>
             <button 
