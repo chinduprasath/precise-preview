@@ -35,7 +35,7 @@ export function useInfluencers(filters: InfluencerFilters = {}) {
             *,
             country:countries(*),
             state:states(*),
-            city:cities(*),
+            city:cities(id, name, state_id, country_id),
             niche:niches(*)
           `);
         
