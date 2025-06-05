@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo, useCallback, useRef } from "react";
 import { Instagram, Facebook, Youtube, Twitter, Paperclip, Check, Clock, Upload, X, Loader2, Tag, FileText } from "lucide-react";
 import Layout from '@/components/layout/Layout';
@@ -451,32 +450,6 @@ export default function PlaceOrderPage() {
               </div>
             </div>
             
-            <div>
-              <Label 
-                htmlFor="custom-message" 
-                className={cn(
-                  "text-sm mb-1.5 block",
-                  customMessageError && "text-destructive"
-                )}
-              >
-                Custom Message {customMessageError && `(${customMessageError})`}
-              </Label>
-              <Textarea
-                id="custom-message"
-                placeholder="Add any specific instructions or details about your request..."
-                className={cn(
-                  "min-h-[100px] resize-none transition-all focus-visible:ring-primary",
-                  customMessageError && "border-destructive focus-visible:ring-destructive"
-                )}
-                value={customMessage}
-                onChange={handleCustomMessageChange}
-                onBlur={() => setCustomMessageError(validateCustomMessage(customMessage))}
-              />
-              <div className="mt-1 text-xs text-right text-muted-foreground">
-                {customMessage.length}/500 characters
-              </div>
-            </div>
-            
             <div className="space-y-4">
               <Label className="text-base font-semibold flex items-center gap-2">
                 <FileText className="w-5 h-5 text-primary/80" />
@@ -629,6 +602,32 @@ export default function PlaceOrderPage() {
                   selectedTime={selectedTime}
                   setSelectedTime={setSelectedTime}
                 />
+              </div>
+              
+              <div className="space-y-4 pt-4 border-t border-border">
+                <Label 
+                  htmlFor="custom-message" 
+                  className={cn(
+                    "text-base font-semibold block",
+                    customMessageError && "text-destructive"
+                  )}
+                >
+                  Custom Message {customMessageError && `(${customMessageError})`}
+                </Label>
+                <Textarea
+                  id="custom-message"
+                  placeholder="Add any specific instructions or details about your request..."
+                  className={cn(
+                    "min-h-[100px] resize-none transition-all focus-visible:ring-primary",
+                    customMessageError && "border-destructive focus-visible:ring-destructive"
+                  )}
+                  value={customMessage}
+                  onChange={handleCustomMessageChange}
+                  onBlur={() => setCustomMessageError(validateCustomMessage(customMessage))}
+                />
+                <div className="mt-1 text-xs text-right text-muted-foreground">
+                  {customMessage.length}/500 characters
+                </div>
               </div>
               
               <div className="space-y-4 pt-4 border-t border-border">
