@@ -75,10 +75,12 @@ export function useInfluencers(filters: InfluencerFilters = {}) {
         // Type assertion with proper handling of the nested data structure
         let influencersList = (data || []).map(item => ({
           ...item,
-          // Ensure city has country_id if it exists
+          // Ensure city has proper structure if it exists
           city: item.city ? {
-            ...item.city,
-            country_id: item.city.country_id || item.country_id
+            id: item.city.id,
+            name: item.city.name,
+            state_id: item.city.state_id,
+            country_id: (item.city as any).country_id || item.country_id || 0
           } : undefined
         })) as Influencer[];
         
