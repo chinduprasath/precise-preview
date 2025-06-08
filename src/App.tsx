@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -48,6 +47,10 @@ import CheckoutPage from "./pages/checkout";
 import PaymentPage from "./pages/payment";
 import ServiceOrdersPage from "./pages/dashboard/admin/service-orders";
 import ServiceOrderDetailPage from "./pages/dashboard/admin/service-order-detail";
+import FeaturesPage from "./pages/features";
+import AboutPage from "./pages/about";
+import ContactPage from "./pages/contact";
+import PricingPage from "./pages/pricing";
 
 function App() {
   const queryClient = new QueryClient({
@@ -80,6 +83,11 @@ function App() {
                 
                 <Route path="/signin" element={<SignInPage />} />
                 <Route path="/signup" element={<SignUpPage />} />
+                
+                <Route path="/features" element={<FeaturesPage />} />
+                <Route path="/about" element={<AboutPage />} />
+                <Route path="/contact" element={<ContactPage />} />
+                <Route path="/pricing" element={<PricingPage />} />
                 
                 <Route path="/influencers" element={<InfluencersPage />} />
                 <Route path="/influencers/:id" element={<InfluencerDetailPage />} />
