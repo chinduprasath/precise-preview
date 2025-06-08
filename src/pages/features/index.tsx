@@ -1,10 +1,10 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Search, BarChart3, Shield, Target, TrendingUp, Users, Eye, Globe } from 'lucide-react';
+import { Search, BarChart2, Shield, Target, TrendingUp, Users, Eye, Globe } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import LandingHeader from '@/components/landing/LandingHeader';
+import DigitalMarketingSection from '@/components/landing/DigitalMarketingSection';
 
 const FeaturesPage = () => {
   const navigate = useNavigate();
@@ -17,7 +17,7 @@ const FeaturesPage = () => {
       benefits: ["Advanced filtering options", "Real-time data updates", "Verified profiles", "Global reach"]
     },
     {
-      icon: BarChart3,
+      icon: BarChart2,
       title: "Audience Analytics",
       description: "Get deep insights into influencer audiences with detailed demographics, interests, and engagement patterns to ensure perfect brand alignment.",
       benefits: ["Demographic breakdowns", "Interest analysis", "Engagement tracking", "Growth trends"]
@@ -113,6 +113,9 @@ const FeaturesPage = () => {
           </div>
         </div>
       </section>
+
+      {/* Digital Marketing Services Section */}
+      <DigitalMarketingSection />
 
       {/* CTA Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8">

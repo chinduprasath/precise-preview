@@ -2,9 +2,10 @@
 import React from 'react';
 import LandingHeader from '@/components/landing/LandingHeader';
 import HeroSection from '@/components/landing/HeroSection';
+import FeaturesSection from '@/components/landing/FeaturesSection';
 import HowItWorksSection from '@/components/landing/HowItWorksSection';
 import StatsSection from '@/components/landing/StatsSection';
-import FeaturesSection from '@/components/landing/FeaturesSection';
+import DigitalMarketingSection from '@/components/landing/DigitalMarketingSection';
 import TestimonialsSection from '@/components/landing/TestimonialsSection';
 import PricingSection from '@/components/landing/PricingSection';
 import AboutSection from '@/components/landing/AboutSection';
@@ -20,6 +21,7 @@ const LandingPage = () => {
       <FeaturesSection />
       <HowItWorksSection />
       <StatsSection />
+      <DigitalMarketingSection />
       <TestimonialsSection />
       <PricingSection />
       <AboutSection id="about" />
