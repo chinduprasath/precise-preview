@@ -1,17 +1,15 @@
-
 import React from 'react';
 import { TrendingUp, Users, Shield, Clock } from 'lucide-react';
-
 interface AboutSectionProps {
   id?: string;
 }
-
-const AboutSection = ({ id }: AboutSectionProps) => {
-  return (
-    <section id={id} className="py-20 px-6 bg-gradient-to-b from-white to-gray-50">
+const AboutSection = ({
+  id
+}: AboutSectionProps) => {
+  return <section id={id} className="py-20 px-6 bg-gradient-to-b from-white to-gray-50">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">About InfluenceConnect</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">About InfluexKonnect</h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             We're on a mission to revolutionize influencer marketing by making it accessible, 
             transparent, and effective for businesses of all sizes.
@@ -21,11 +19,7 @@ const AboutSection = ({ id }: AboutSectionProps) => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center mb-16">
           <div>
             <h3 className="text-2xl font-semibold mb-4">Our Story</h3>
-            <p className="text-gray-600 mb-4">
-              InfluenceConnect was born out of frustration with the traditional influencer marketing landscape. 
-              Our founders, having worked with brands of all sizes, saw a need for a platform that removed the 
-              barriers to effective influencer partnerships.
-            </p>
+            <p className="text-gray-600 mb-4">InfluexKonnect was born out of frustration with the traditional influencer marketing landscape. Our founders, having worked with brands of all sizes, saw a need for a platform that removed the barriers to effective influencer partnerships.</p>
             <p className="text-gray-600 mb-4">
               What started as a simple matchmaking service has evolved into a comprehensive platform that handles 
               every aspect of the influencer marketing process, from discovery to reporting.
@@ -36,11 +30,7 @@ const AboutSection = ({ id }: AboutSectionProps) => {
             </p>
           </div>
           <div>
-            <img 
-              src="https://picsum.photos/id/1045/800/600" 
-              alt="Team collaboration" 
-              className="rounded-xl shadow-lg w-full"
-            />
+            <img src="https://picsum.photos/id/1045/800/600" alt="Team collaboration" className="rounded-xl shadow-lg w-full" />
           </div>
         </div>
         
@@ -50,9 +40,7 @@ const AboutSection = ({ id }: AboutSectionProps) => {
               <TrendingUp className="h-8 w-8 text-primary" />
             </div>
             <h3 className="text-xl font-semibold mb-3">Proven Results</h3>
-            <p className="text-gray-600">
-              Our platform has generated over $100M in revenue for our clients through strategic influencer partnerships.
-            </p>
+            <p className="text-gray-600">Our platform helps brands achieve growth through strategic, measurable influencer collaborations.</p>
           </div>
           
           <div className="bg-white rounded-xl p-8 shadow-sm text-center">
@@ -60,9 +48,7 @@ const AboutSection = ({ id }: AboutSectionProps) => {
               <Users className="h-8 w-8 text-primary" />
             </div>
             <h3 className="text-xl font-semibold mb-3">Expert Team</h3>
-            <p className="text-gray-600">
-              Our team of marketing professionals provides guidance and support at every step of your campaign.
-            </p>
+            <p className="text-gray-600">Get expert guidance from our marketing team at every stage—from strategy to execution.</p>
           </div>
           
           <div className="bg-white rounded-xl p-8 shadow-sm text-center">
@@ -70,9 +56,7 @@ const AboutSection = ({ id }: AboutSectionProps) => {
               <Shield className="h-8 w-8 text-primary" />
             </div>
             <h3 className="text-xl font-semibold mb-3">Trusted Platform</h3>
-            <p className="text-gray-600">
-              We vet all influencers on our platform to ensure quality, engagement, and authenticity.
-            </p>
+            <p className="text-gray-600">Every influencer is vetted for authenticity, quality, and audience engagement.</p>
           </div>
           
           <div className="bg-white rounded-xl p-8 shadow-sm text-center">
@@ -117,9 +101,7 @@ const AboutSection = ({ id }: AboutSectionProps) => {
           </div>
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
-
 export default AboutSection;
 export { AboutSection }; // Add named export to support both import styles
