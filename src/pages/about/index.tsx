@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,42 +5,39 @@ import { Users, Target, Globe, Award, Heart, Lightbulb } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import LandingHeader from '@/components/landing/LandingHeader';
 import Footer from '@/components/landing/Footer';
-
 const AboutPage = () => {
   const navigate = useNavigate();
-
-  const values = [
-    {
-      icon: Heart,
-      title: "Authenticity",
-      description: "We believe in genuine connections between brands and creators, fostering authentic relationships that drive real results."
-    },
-    {
-      icon: Globe,
-      title: "Global Impact",
-      description: "Connecting brands and influencers worldwide to create campaigns that resonate across cultures and communities."
-    },
-    {
-      icon: Lightbulb,
-      title: "Innovation",
-      description: "Continuously evolving our platform with cutting-edge technology to stay ahead of industry trends."
-    },
-    {
-      icon: Award,
-      title: "Excellence",
-      description: "Committed to delivering exceptional results and experiences for both brands and content creators."
-    }
-  ];
-
-  const stats = [
-    { number: "10,000+", label: "Active Influencers" },
-    { number: "500+", label: "Brand Partners" },
-    { number: "1M+", label: "Campaigns Launched" },
-    { number: "50+", label: "Countries Served" }
-  ];
-
-  return (
-    <div className="min-h-screen bg-background">
+  const values = [{
+    icon: Heart,
+    title: "Authenticity",
+    description: "We believe in genuine connections between brands and creators, fostering authentic relationships that drive real results."
+  }, {
+    icon: Globe,
+    title: "Global Impact",
+    description: "Connecting brands and influencers worldwide to create campaigns that resonate across cultures and communities."
+  }, {
+    icon: Lightbulb,
+    title: "Innovation",
+    description: "Continuously evolving our platform with cutting-edge technology to stay ahead of industry trends."
+  }, {
+    icon: Award,
+    title: "Excellence",
+    description: "Committed to delivering exceptional results and experiences for both brands and content creators."
+  }];
+  const stats = [{
+    number: "10,000+",
+    label: "Active Influencers"
+  }, {
+    number: "500+",
+    label: "Brand Partners"
+  }, {
+    number: "1M+",
+    label: "Campaigns Launched"
+  }, {
+    number: "50+",
+    label: "Countries Served"
+  }];
+  return <div className="min-h-screen bg-background">
       <LandingHeader />
 
       {/* Hero Section */}
@@ -89,15 +85,11 @@ const AboutPage = () => {
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-3xl md:text-4xl font-bold mb-8">Our Story</h2>
             <div className="space-y-6 text-lg text-muted-foreground text-left">
-              <p>
-                InfluencerConnect was born from a simple observation: the disconnect between brands seeking authentic promotion and creators looking for meaningful partnerships. Founded in 2023 by a team of marketing professionals and technology experts, we set out to solve this challenge.
-              </p>
+              <p>InfluexKonnect was born from a simple observation: the disconnect between brands seeking authentic promotion and creators looking for meaningful partnerships. Founded in 2023 by a team of marketing professionals and technology experts, we set out to solve this challenge.</p>
               <p>
                 Our founders experienced firsthand the frustrations of traditional influencer marketing - from fake followers and inflated metrics to poor campaign tracking and ROI measurement. They envisioned a platform that would bring transparency, authenticity, and data-driven insights to the industry.
               </p>
-              <p>
-                Today, InfluencerConnect serves thousands of brands and creators worldwide, facilitating genuine partnerships that drive real business results. We're proud to be at the forefront of the evolution in influencer marketing, continuously innovating to meet the changing needs of our community.
-              </p>
+              <p>Today, InfluexKonnect serves thousands of brands and creators worldwide, facilitating genuine partnerships that drive real business results. We're proud to be at the forefront of the evolution in influencer marketing, continuously innovating to meet the changing needs of our community.</p>
             </div>
           </div>
         </div>
@@ -108,8 +100,7 @@ const AboutPage = () => {
         <div className="container mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Our Values</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {values.map((value, index) => (
-              <Card key={index} className="text-center h-full">
+            {values.map((value, index) => <Card key={index} className="text-center h-full">
                 <CardHeader>
                   <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                     <value.icon className="w-8 h-8 text-primary" />
@@ -121,8 +112,7 @@ const AboutPage = () => {
                     {value.description}
                   </CardDescription>
                 </CardContent>
-              </Card>
-            ))}
+              </Card>)}
           </div>
         </div>
       </section>
@@ -132,12 +122,10 @@ const AboutPage = () => {
         <div className="container mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Our Impact</h2>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-            {stats.map((stat, index) => (
-              <div key={index} className="text-center">
+            {stats.map((stat, index) => <div key={index} className="text-center">
                 <div className="text-4xl md:text-5xl font-bold text-primary mb-2">{stat.number}</div>
                 <div className="text-lg text-muted-foreground">{stat.label}</div>
-              </div>
-            ))}
+              </div>)}
           </div>
         </div>
       </section>
@@ -163,8 +151,6 @@ const AboutPage = () => {
       </section>
 
       <Footer />
-    </div>
-  );
+    </div>;
 };
-
 export default AboutPage;
