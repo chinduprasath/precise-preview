@@ -8,7 +8,7 @@ const HeroSection = () => {
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <div className="space-y-6">
-            <h1 className="text-4xl md:text-6xl font-bold">Find the Right Influencer for Your Brand</h1>
+            <h1 className="text-4xl font-bold md:text-5xl">Supercharge Your Brand’s Growth with the Right Influencers</h1>
             <p className="text-xl text-muted-foreground">
               Connect with top influencers across social platforms to amplify your brand's reach and engagement.
             </p>
