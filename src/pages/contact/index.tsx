@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Users, Mail, Phone, MapPin, Send, Twitter, Linkedin, Instagram } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/components/ui/use-toast';
+import LandingHeader from '@/components/landing/LandingHeader';
 
 const ContactPage = () => {
   const navigate = useNavigate();
@@ -72,29 +73,7 @@ const ContactPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <Users className="w-5 h-5 text-primary-foreground" />
-              </div>
-              <span className="text-xl font-bold">InfluencerConnect</span>
-            </div>
-            <nav className="hidden md:flex space-x-8">
-              <Button variant="ghost" onClick={() => navigate('/features')}>Features</Button>
-              <Button variant="ghost" onClick={() => navigate('/about')}>About</Button>
-              <Button variant="ghost" onClick={() => navigate('/pricing')}>Pricing</Button>
-              <Button variant="ghost" onClick={() => navigate('/contact')}>Contact</Button>
-            </nav>
-            <div className="flex space-x-4">
-              <Button variant="outline" onClick={() => navigate('/signin')}>Sign In</Button>
-              <Button onClick={() => navigate('/signup')}>Get Started</Button>
-            </div>
-          </div>
-        </div>
-      </header>
+      <LandingHeader />
 
       {/* Hero Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8">
