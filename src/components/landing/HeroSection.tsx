@@ -9,9 +9,7 @@ const HeroSection = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <div className="space-y-6">
             <h1 className="text-4xl font-bold md:text-5xl">Supercharge Your Brand’s Growth with the Right Influencers</h1>
-            <p className="text-xl text-muted-foreground">
-              Connect with top influencers across social platforms to amplify your brand's reach and engagement.
-            </p>
+            <p className="text-xl text-muted-foreground">Our platform helps emerging brands discover influencers, manage campaigns, and track performance — all in one place.</p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Button size="lg" onClick={() => navigate('/signup')} className="gap-2">
                 Get Started <ArrowRight className="w-4 h-4" />
