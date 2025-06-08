@@ -17,9 +17,9 @@ const LandingPage = () => {
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
       <LandingHeader />
       <HeroSection />
+      <FeaturesSection />
       <HowItWorksSection />
       <StatsSection />
-      <FeaturesSection />
       <TestimonialsSection />
       <PricingSection />
       <AboutSection id="about" />
