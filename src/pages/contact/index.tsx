@@ -9,6 +9,7 @@ import { Users, Mail, Phone, MapPin, Send, Twitter, Linkedin, Instagram } from '
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/components/ui/use-toast';
 import LandingHeader from '@/components/landing/LandingHeader';
+import Footer from '@/components/landing/Footer';
 
 const ContactPage = () => {
   const navigate = useNavigate();
@@ -262,12 +263,7 @@ const ContactPage = () => {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-border py-8 px-4 sm:px-6 lg:px-8">
-        <div className="container mx-auto text-center text-muted-foreground">
-          <p>&copy; 2024 InfluencerConnect. All rights reserved.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 };

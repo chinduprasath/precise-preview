@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -5,6 +6,7 @@ import { Search, BarChart2, Shield, Target, TrendingUp, Users, Eye, Globe } from
 import { useNavigate } from 'react-router-dom';
 import LandingHeader from '@/components/landing/LandingHeader';
 import DigitalMarketingSection from '@/components/landing/DigitalMarketingSection';
+import Footer from '@/components/landing/Footer';
 
 const FeaturesPage = () => {
   const navigate = useNavigate();
@@ -137,12 +139,7 @@ const FeaturesPage = () => {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-border py-8 px-4 sm:px-6 lg:px-8">
-        <div className="container mx-auto text-center text-muted-foreground">
-          <p>&copy; 2024 InfluencerConnect. All rights reserved.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 };

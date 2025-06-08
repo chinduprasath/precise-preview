@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Users, Target, Globe, Award, Heart, Lightbulb } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import LandingHeader from '@/components/landing/LandingHeader';
+import Footer from '@/components/landing/Footer';
 
 const AboutPage = () => {
   const navigate = useNavigate();
@@ -161,12 +162,7 @@ const AboutPage = () => {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-border py-8 px-4 sm:px-6 lg:px-8">
-        <div className="container mx-auto text-center text-muted-foreground">
-          <p>&copy; 2024 InfluencerConnect. All rights reserved.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 };
