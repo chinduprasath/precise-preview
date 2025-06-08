@@ -12,6 +12,7 @@ const LandingHeader = () => {
           <span className="font-bold text-xl text-foreground">InfluenceConnect</span>
         </Link>
         <nav className="hidden md:flex items-center space-x-6 text-sm font-medium">
+          <Link to="/landing" className="text-foreground/60 hover:text-foreground transition-colors">Home</Link>
           <Link to="/features" className="text-foreground/60 hover:text-foreground transition-colors">Features</Link>
           <Link to="/pricing" className="text-foreground/60 hover:text-foreground transition-colors">Pricing</Link>
           <Link to="/about" className="text-foreground/60 hover:text-foreground transition-colors">About</Link>
