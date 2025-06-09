@@ -171,7 +171,10 @@ const ReachPage = () => {
                 ]}
               />
               <DemographicChart data={currentDemographicData} />
-              <PerformanceMetrics metrics={{ cpe: currentPerformanceData.cpe, cpm: currentPerformanceData.cpm }} />
+              <PerformanceMetrics metrics={{ 
+                cpe: currentPerformanceData.find(item => item.label === 'Cost per Acquisition')?.percentage || 0,
+                cpm: currentPerformanceData.find(item => item.label === 'CTR')?.percentage || 0
+              }} />
             </div>
           </div>
         </main>
