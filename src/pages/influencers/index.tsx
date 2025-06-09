@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
@@ -362,10 +363,22 @@ const InfluencersPage = () => {
        }));
 
     const matchesFollowerRange = 
-      (influencer.followers_instagram && Number(influencer.followers_instagram) >= followerRange[0] && Number(influencer.followers_instagram) <= followerRange[1]) ||
-      (influencer.followers_facebook && Number(influencer.followers_facebook) >= followerRange[0] && Number(influencer.followers_facebook) <= followerRange[1]) ||
-      (influencer.followers_twitter && Number(influencer.followers_twitter) >= followerRange[0] && Number(influencer.followers_twitter) <= followerRange[1]) ||
-      (influencer.followers_youtube && Number(influencer.followers_youtube) >= followerRange[0] && Number(influencer.followers_youtube) <= followerRange[1]);
+      (influencer.followers_instagram && 
+       typeof influencer.followers_instagram === 'number' && 
+       influencer.followers_instagram >= followerRange[0] && 
+       influencer.followers_instagram <= followerRange[1]) ||
+      (influencer.followers_facebook && 
+       typeof influencer.followers_facebook === 'number' && 
+       influencer.followers_facebook >= followerRange[0] && 
+       influencer.followers_facebook <= followerRange[1]) ||
+      (influencer.followers_twitter && 
+       typeof influencer.followers_twitter === 'number' && 
+       influencer.followers_twitter >= followerRange[0] && 
+       influencer.followers_twitter <= followerRange[1]) ||
+      (influencer.followers_youtube && 
+       typeof influencer.followers_youtube === 'number' && 
+       influencer.followers_youtube >= followerRange[0] && 
+       influencer.followers_youtube <= followerRange[1]);
 
     return matchesSearch && matchesPlatform && matchesFollowerRange;
   });
