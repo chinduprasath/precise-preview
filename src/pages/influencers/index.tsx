@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
@@ -362,10 +363,10 @@ const InfluencersPage = () => {
        }));
 
     const matchesFollowerRange = 
-      (influencer.followers_instagram || 0) >= followerRange[0] && (influencer.followers_instagram || 0) <= followerRange[1] ||
-      (influencer.followers_facebook || 0) >= followerRange[0] && (influencer.followers_facebook || 0) <= followerRange[1] ||
-      (influencer.followers_twitter || 0) >= followerRange[0] && (influencer.followers_twitter || 0) <= followerRange[1] ||
-      (influencer.followers_youtube || 0) >= followerRange[0] && (influencer.followers_youtube || 0) <= followerRange[1];
+      (influencer.followers_instagram || 0) >= Number(followerRange[0]) && (influencer.followers_instagram || 0) <= Number(followerRange[1]) ||
+      (influencer.followers_facebook || 0) >= Number(followerRange[0]) && (influencer.followers_facebook || 0) <= Number(followerRange[1]) ||
+      (influencer.followers_twitter || 0) >= Number(followerRange[0]) && (influencer.followers_twitter || 0) <= Number(followerRange[1]) ||
+      (influencer.followers_youtube || 0) >= Number(followerRange[0]) && (influencer.followers_youtube || 0) <= Number(followerRange[1]);
 
     return matchesSearch && matchesPlatform && matchesFollowerRange;
   });

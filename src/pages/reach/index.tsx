@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
@@ -172,7 +171,7 @@ const ReachPage = () => {
                 ]}
               />
               <DemographicChart data={currentDemographicData} />
-              <PerformanceMetrics metrics={currentPerformanceData} />
+              <PerformanceMetrics metrics={{ cpe: currentPerformanceData.cpe, cpm: currentPerformanceData.cpm }} />
             </div>
           </div>
         </main>
