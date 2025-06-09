@@ -168,25 +168,25 @@ const InfluencerListItem = ({
           </p>
         )}
         <div className="flex flex-wrap gap-x-4 mt-1">
-          {influencer.followers_instagram > 0 && (
+          {influencer.followers_instagram && influencer.followers_instagram > 0 && (
             <div className="flex items-center gap-1">
               <Instagram className="h-4 w-4 text-social-instagram" />
               <span className="text-xs font-medium">{formatNumber(influencer.followers_instagram)}</span>
             </div>
           )}
-          {influencer.followers_facebook > 0 && (
+          {influencer.followers_facebook && influencer.followers_facebook > 0 && (
             <div className="flex items-center gap-1">
               <Facebook className="h-4 w-4 text-social-facebook" />
               <span className="text-xs font-medium">{formatNumber(influencer.followers_facebook)}</span>
             </div>
           )}
-          {influencer.followers_twitter > 0 && (
+          {influencer.followers_twitter && influencer.followers_twitter > 0 && (
             <div className="flex items-center gap-1">
               <Twitter className="h-4 w-4 text-social-twitter" />
               <span className="text-xs font-medium">{formatNumber(influencer.followers_twitter)}</span>
             </div>
           )}
-          {influencer.followers_youtube > 0 && (
+          {influencer.followers_youtube && influencer.followers_youtube > 0 && (
             <div className="flex items-center gap-1">
               <Youtube className="h-4 w-4 text-social-youtube" />
               <span className="text-xs font-medium">{formatNumber(influencer.followers_youtube)}</span>
@@ -356,7 +356,10 @@ const InfluencersPage = () => {
     
     const matchesPlatform = selectedPlatforms.length === 0 || 
       (influencer.social_platforms && 
-       influencer.social_platforms.some(p => selectedPlatforms.includes(p.platform_name.toLowerCase())));
+       influencer.social_platforms.some(p => {
+         const platformName = p.platform_name.toLowerCase() as Platform['value'];
+         return selectedPlatforms.includes(platformName);
+       }));
 
     return matchesSearch && matchesPlatform;
   });
@@ -481,25 +484,25 @@ const InfluencersPage = () => {
                       </div>
                     </div>
                     <div className="flex flex-row gap-x-6">
-                      {selectedInfluencer.followers_instagram > 0 && (
+                      {selectedInfluencer.followers_instagram && selectedInfluencer.followers_instagram > 0 && (
                         <div className="flex flex-col items-center gap-1">
                           <Instagram className="h-5 w-5 text-social-instagram" />
                           <span className="text-sm font-medium">{formatNumber(selectedInfluencer.followers_instagram)}</span>
                         </div>
                       )}
-                      {selectedInfluencer.followers_facebook > 0 && (
+                      {selectedInfluencer.followers_facebook && selectedInfluencer.followers_facebook > 0 && (
                         <div className="flex flex-col items-center gap-1">
                           <Facebook className="h-5 w-5 text-social-facebook" />
                           <span className="text-sm font-medium">{formatNumber(selectedInfluencer.followers_facebook)}</span>
                         </div>
                       )}
-                      {selectedInfluencer.followers_youtube > 0 && (
+                      {selectedInfluencer.followers_youtube && selectedInfluencer.followers_youtube > 0 && (
                         <div className="flex flex-col items-center gap-1">
                           <Youtube className="h-5 w-5 text-social-youtube" />
                           <span className="text-sm font-medium">{formatNumber(selectedInfluencer.followers_youtube)}</span>
                         </div>
                       )}
-                      {selectedInfluencer.followers_twitter > 0 && (
+                      {selectedInfluencer.followers_twitter && selectedInfluencer.followers_twitter > 0 && (
                         <div className="flex flex-col items-center gap-1">
                           <Twitter className="h-5 w-5 text-social-twitter" />
                           <span className="text-sm font-medium">{formatNumber(selectedInfluencer.followers_twitter)}</span>
@@ -515,10 +518,10 @@ const InfluencersPage = () => {
                       <TabsTrigger value="data">Data</TabsTrigger>
                     </TabsList>
                     <TabsContent value="services" className="mt-4">
-                      <ServicesTabContent influencer={selectedInfluencer} />
+                      <ServicesTabContent influencerId={selectedInfluencer.id} influencerName={selectedInfluencer.name} />
                     </TabsContent>
                     <TabsContent value="prices" className="mt-4">
-                      <PricesTabContent influencer={selectedInfluencer} />
+                      <PricesTabContent influencerId={selectedInfluencer.id} influencerName={selectedInfluencer.name} />
                     </TabsContent>
                     <TabsContent value="data" className="mt-4">
                       <DataTabContent influencerId={selectedInfluencer?.id} />
