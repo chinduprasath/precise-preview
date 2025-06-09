@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,7 +10,6 @@ import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/components/ui/use-toast';
 import LandingHeader from '@/components/landing/LandingHeader';
 import Footer from '@/components/landing/Footer';
-import { BackgroundGradientAnimation } from '@/components/ui/background-gradient-animation';
 
 const ContactPage = () => {
   const navigate = useNavigate();
@@ -73,211 +73,197 @@ const ContactPage = () => {
   ];
 
   return (
-    <div className="min-h-screen relative">
-      <BackgroundGradientAnimation
-        gradientBackgroundStart="hsl(235, 75%, 60%)"
-        gradientBackgroundEnd="hsl(222.2, 84%, 4.9%)"
-        firstColor="114, 183, 255"
-        secondColor="114, 9, 183"
-        thirdColor="242, 37, 133"
-        fourthColor="255, 51, 102"
-        fifthColor="251, 133, 0"
-        pointerColor="114, 183, 255"
-        containerClassName="fixed inset-0"
-      >
-        <div className="relative z-10 min-h-screen bg-background/80 backdrop-blur-sm">
-          <LandingHeader />
+    <div className="min-h-screen bg-background">
+      <LandingHeader />
 
-          {/* Hero Section */}
-          <section className="py-20 px-4 sm:px-6 lg:px-8">
-            <div className="container mx-auto text-center">
-              <h1 className="text-4xl md:text-6xl font-bold mb-6 text-white">
-                Get in Touch
-                <span className="block">We're Here to Help</span>
-              </h1>
-              <p className="text-xl text-white/80 mb-8 max-w-3xl mx-auto">
-                Have questions about our platform? Need help with your campaign? Our team is ready to assist you every step of the way.
-              </p>
-            </div>
-          </section>
+      {/* Hero Section */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8">
+        <div className="container mx-auto text-center">
+          <h1 className="text-4xl md:text-6xl font-bold mb-6">
+            Get in Touch
+            <span className="text-primary block">We're Here to Help</span>
+          </h1>
+          <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
+            Have questions about our platform? Need help with your campaign? Our team is ready to assist you every step of the way.
+          </p>
+        </div>
+      </section>
 
-          {/* Contact Form and Info */}
-          <section className="py-20 px-4 sm:px-6 lg:px-8">
-            <div className="container mx-auto">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                {/* Contact Form */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-2xl">Send Us a Message</CardTitle>
-                    <CardDescription>
-                      Fill out the form below and we'll get back to you as soon as possible.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                      <div className="space-y-2">
-                        <Label htmlFor="name">Full Name</Label>
-                        <Input
-                          id="name"
-                          name="name"
-                          value={formData.name}
-                          onChange={handleInputChange}
-                          placeholder="Enter your full name"
-                          required
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="email">Email Address</Label>
-                        <Input
-                          id="email"
-                          name="email"
-                          type="email"
-                          value={formData.email}
-                          onChange={handleInputChange}
-                          placeholder="Enter your email address"
-                          required
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="message">Message</Label>
-                        <Textarea
-                          id="message"
-                          name="message"
-                          value={formData.message}
-                          onChange={handleInputChange}
-                          placeholder="Tell us how we can help you..."
-                          rows={6}
-                          required
-                        />
-                      </div>
-                      <Button 
-                        type="submit" 
-                        className="w-full" 
-                        disabled={isSubmitting}
-                      >
-                        {isSubmitting ? (
-                          <>Sending...</>
-                        ) : (
-                          <>
-                            <Send className="w-4 h-4 mr-2" />
-                            Send Message
-                          </>
-                        )}
-                      </Button>
-                    </form>
-                  </CardContent>
-                </Card>
-
-                {/* Contact Information */}
-                <div className="space-y-8">
-                  <div>
-                    <h2 className="text-3xl font-bold mb-6">Contact Information</h2>
-                    <p className="text-lg text-muted-foreground mb-8">
-                      Choose the best way to reach us. We're here to support your influencer marketing journey.
-                    </p>
+      {/* Contact Form and Info */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8">
+        <div className="container mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            {/* Contact Form */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-2xl">Send Us a Message</CardTitle>
+                <CardDescription>
+                  Fill out the form below and we'll get back to you as soon as possible.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="name">Full Name</Label>
+                    <Input
+                      id="name"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      placeholder="Enter your full name"
+                      required
+                    />
                   </div>
-
-                  <div className="space-y-6">
-                    {contactInfo.map((info, index) => (
-                      <Card key={index}>
-                        <CardContent className="pt-6">
-                          <div className="flex items-start space-x-4">
-                            <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                              <info.icon className="w-6 h-6 text-primary" />
-                            </div>
-                            <div>
-                              <h3 className="font-semibold text-lg mb-1">{info.title}</h3>
-                              <p className="font-medium text-foreground mb-1">{info.content}</p>
-                              <p className="text-sm text-muted-foreground">{info.description}</p>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email Address</Label>
+                    <Input
+                      id="email"
+                      name="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      placeholder="Enter your email address"
+                      required
+                    />
                   </div>
-
-                  {/* Social Media */}
-                  <div>
-                    <h3 className="font-semibold text-lg mb-4">Follow Us</h3>
-                    <div className="flex space-x-4">
-                      {socialLinks.map((social, index) => (
-                        <Button
-                          key={index}
-                          variant="outline"
-                          size="icon"
-                          onClick={() => window.open(social.href, '_blank')}
-                        >
-                          <social.icon className="w-5 h-5" />
-                        </Button>
-                      ))}
-                    </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="message">Message</Label>
+                    <Textarea
+                      id="message"
+                      name="message"
+                      value={formData.message}
+                      onChange={handleInputChange}
+                      placeholder="Tell us how we can help you..."
+                      rows={6}
+                      required
+                    />
                   </div>
-                </div>
-              </div>
-            </div>
-          </section>
+                  <Button 
+                    type="submit" 
+                    className="w-full" 
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      <>Sending...</>
+                    ) : (
+                      <>
+                        <Send className="w-4 h-4 mr-2" />
+                        Send Message
+                      </>
+                    )}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
 
-          {/* FAQ Section */}
-          <section className="py-20 px-4 sm:px-6 lg:px-8 bg-background/50 backdrop-blur-sm">
-            <div className="container mx-auto">
-              <div className="text-center mb-12">
-                <h2 className="text-3xl md:text-4xl font-bold mb-6">Frequently Asked Questions</h2>
-                <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                  Find quick answers to common questions about our platform and services.
+            {/* Contact Information */}
+            <div className="space-y-8">
+              <div>
+                <h2 className="text-3xl font-bold mb-6">Contact Information</h2>
+                <p className="text-lg text-muted-foreground mb-8">
+                  Choose the best way to reach us. We're here to support your influencer marketing journey.
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">How do I get started?</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground">
-                      Simply sign up for a free account, complete your profile, and start exploring our platform. Our onboarding process will guide you through the basics.
-                    </p>
-                  </CardContent>
-                </Card>
+              <div className="space-y-6">
+                {contactInfo.map((info, index) => (
+                  <Card key={index}>
+                    <CardContent className="pt-6">
+                      <div className="flex items-start space-x-4">
+                        <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                          <info.icon className="w-6 h-6 text-primary" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-lg mb-1">{info.title}</h3>
+                          <p className="font-medium text-foreground mb-1">{info.content}</p>
+                          <p className="text-sm text-muted-foreground">{info.description}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">Is there a free trial?</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground">
-                      Yes! We offer a 14-day free trial for all new users. You can explore all features and see if our platform is right for you.
-                    </p>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">How does pricing work?</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground">
-                      We offer flexible pricing plans based on your needs. Check our pricing page for detailed information about features and costs.
-                    </p>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">Can I cancel anytime?</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground">
-                      Absolutely! You can cancel your subscription at any time. No long-term contracts or cancellation fees.
-                    </p>
-                  </CardContent>
-                </Card>
+              {/* Social Media */}
+              <div>
+                <h3 className="font-semibold text-lg mb-4">Follow Us</h3>
+                <div className="flex space-x-4">
+                  {socialLinks.map((social, index) => (
+                    <Button
+                      key={index}
+                      variant="outline"
+                      size="icon"
+                      onClick={() => window.open(social.href, '_blank')}
+                    >
+                      <social.icon className="w-5 h-5" />
+                    </Button>
+                  ))}
+                </div>
               </div>
             </div>
-          </section>
-
-          <Footer />
+          </div>
         </div>
-      </BackgroundGradientAnimation>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-muted/50">
+        <div className="container mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">Frequently Asked Questions</h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Find quick answers to common questions about our platform and services.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">How do I get started?</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">
+                  Simply sign up for a free account, complete your profile, and start exploring our platform. Our onboarding process will guide you through the basics.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Is there a free trial?</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">
+                  Yes! We offer a 14-day free trial for all new users. You can explore all features and see if our platform is right for you.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">How does pricing work?</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">
+                  We offer flexible pricing plans based on your needs. Check our pricing page for detailed information about features and costs.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Can I cancel anytime?</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">
+                  Absolutely! You can cancel your subscription at any time. No long-term contracts or cancellation fees.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      <Footer />
     </div>
   );
 };
