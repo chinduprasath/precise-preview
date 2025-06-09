@@ -5,8 +5,11 @@ import { Users, Target, Globe, Award, Heart, Lightbulb } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import LandingHeader from '@/components/landing/LandingHeader';
 import Footer from '@/components/landing/Footer';
+import { BackgroundGradientAnimation } from '@/components/ui/background-gradient-animation';
+
 const AboutPage = () => {
   const navigate = useNavigate();
+  
   const values = [{
     icon: Heart,
     title: "Authenticity",
@@ -37,20 +40,36 @@ const AboutPage = () => {
     number: "50+",
     label: "Countries Served"
   }];
-  return <div className="min-h-screen bg-background">
+  
+  return (
+    <div className="min-h-screen bg-background">
       <LandingHeader />
 
-      {/* Hero Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
-        <div className="container mx-auto text-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6">
-            Empowering Authentic
-            <span className="text-primary block">Brand-Creator Connections</span>
-          </h1>
-          <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
-            We're on a mission to revolutionize influencer marketing by creating meaningful partnerships that drive real results for brands and creators alike.
-          </p>
-        </div>
+      {/* Hero Section with Gradient Background */}
+      <section className="relative min-h-[60vh]">
+        <BackgroundGradientAnimation
+          gradientBackgroundStart="hsl(235, 75%, 60%)"
+          gradientBackgroundEnd="hsl(222.2, 84%, 4.9%)"
+          firstColor="114, 183, 255"
+          secondColor="114, 9, 183"
+          thirdColor="242, 37, 133"
+          fourthColor="255, 51, 102"
+          fifthColor="251, 133, 0"
+          pointerColor="114, 183, 255"
+          containerClassName="absolute inset-0"
+        >
+          <div className="relative z-10 py-20 px-4 sm:px-6 lg:px-8">
+            <div className="container mx-auto text-center">
+              <h1 className="text-4xl md:text-6xl font-bold mb-6 text-white">
+                Empowering Authentic
+                <span className="block">Brand-Creator Connections</span>
+              </h1>
+              <p className="text-xl text-white/80 mb-8 max-w-3xl mx-auto">
+                We're on a mission to revolutionize influencer marketing by creating meaningful partnerships that drive real results for brands and creators alike.
+              </p>
+            </div>
+          </div>
+        </BackgroundGradientAnimation>
       </section>
 
       {/* Mission & Vision */}
@@ -100,7 +119,8 @@ const AboutPage = () => {
         <div className="container mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Our Values</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {values.map((value, index) => <Card key={index} className="text-center h-full">
+            {values.map((value, index) => (
+              <Card key={index} className="text-center h-full">
                 <CardHeader>
                   <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                     <value.icon className="w-8 h-8 text-primary" />
@@ -112,7 +132,8 @@ const AboutPage = () => {
                     {value.description}
                   </CardDescription>
                 </CardContent>
-              </Card>)}
+              </Card>
+            ))}
           </div>
         </div>
       </section>
@@ -122,10 +143,12 @@ const AboutPage = () => {
         <div className="container mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Our Impact</h2>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-            {stats.map((stat, index) => <div key={index} className="text-center">
+            {stats.map((stat, index) => (
+              <div key={index} className="text-center">
                 <div className="text-4xl md:text-5xl font-bold text-primary mb-2">{stat.number}</div>
                 <div className="text-lg text-muted-foreground">{stat.label}</div>
-              </div>)}
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -151,6 +174,8 @@ const AboutPage = () => {
       </section>
 
       <Footer />
-    </div>;
+    </div>
+  );
 };
+
 export default AboutPage;

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,6 +6,7 @@ import { Check, X, Star, Zap, Crown, Rocket } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import LandingHeader from '@/components/landing/LandingHeader';
 import Footer from '@/components/landing/Footer';
+import { BackgroundGradientAnimation } from '@/components/ui/background-gradient-animation';
 
 const PricingPage = () => {
   const navigate = useNavigate();
@@ -100,23 +100,37 @@ const PricingPage = () => {
     <div className="min-h-screen bg-background">
       <LandingHeader />
 
-      {/* Hero Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
-        <div className="container mx-auto text-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6">
-            Simple, Transparent
-            <span className="text-primary block">Pricing Plans</span>
-          </h1>
-          <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
-            Choose the perfect plan for your business. Start with a free trial and scale as you grow.
-          </p>
-          <div className="flex justify-center">
-            <Badge variant="secondary" className="text-sm px-4 py-2">
-              <Rocket className="w-4 h-4 mr-2" />
-              All plans include 14-day free trial
-            </Badge>
+      {/* Hero Section with Gradient Background */}
+      <section className="relative min-h-[60vh]">
+        <BackgroundGradientAnimation
+          gradientBackgroundStart="hsl(235, 75%, 60%)"
+          gradientBackgroundEnd="hsl(222.2, 84%, 4.9%)"
+          firstColor="114, 183, 255"
+          secondColor="114, 9, 183"
+          thirdColor="242, 37, 133"
+          fourthColor="255, 51, 102"
+          fifthColor="251, 133, 0"
+          pointerColor="114, 183, 255"
+          containerClassName="absolute inset-0"
+        >
+          <div className="relative z-10 py-20 px-4 sm:px-6 lg:px-8">
+            <div className="container mx-auto text-center">
+              <h1 className="text-4xl md:text-6xl font-bold mb-6 text-white">
+                Simple, Transparent
+                <span className="block">Pricing Plans</span>
+              </h1>
+              <p className="text-xl text-white/80 mb-8 max-w-3xl mx-auto">
+                Choose the perfect plan for your business. Start with a free trial and scale as you grow.
+              </p>
+              <div className="flex justify-center">
+                <Badge variant="secondary" className="text-sm px-4 py-2 bg-white/20 text-white border-white/30">
+                  <Rocket className="w-4 h-4 mr-2" />
+                  All plans include 14-day free trial
+                </Badge>
+              </div>
+            </div>
           </div>
-        </div>
+        </BackgroundGradientAnimation>
       </section>
 
       {/* Pricing Cards */}

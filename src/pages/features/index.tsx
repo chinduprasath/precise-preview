@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import LandingHeader from '@/components/landing/LandingHeader';
 import DigitalMarketingSection from '@/components/landing/DigitalMarketingSection';
 import Footer from '@/components/landing/Footer';
+import { BackgroundGradientAnimation } from '@/components/ui/background-gradient-animation';
 
 const FeaturesPage = () => {
   const navigate = useNavigate();
@@ -66,23 +66,39 @@ const FeaturesPage = () => {
     <div className="min-h-screen bg-background">
       <LandingHeader />
 
-      {/* Hero Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
-        <div className="container mx-auto text-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6">
-            Powerful Features for
-            <span className="text-primary block">Influencer Marketing</span>
-          </h1>
-          <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
-            Discover everything you need to run successful influencer marketing campaigns, from discovery to ROI measurement.
-          </p>
-          <Button size="lg" onClick={() => navigate('/signup')} className="mr-4">
-            Start Free Trial
-          </Button>
-          <Button size="lg" variant="outline" onClick={() => navigate('/contact')}>
-            Schedule Demo
-          </Button>
-        </div>
+      {/* Hero Section with Gradient Background */}
+      <section className="relative min-h-[60vh]">
+        <BackgroundGradientAnimation
+          gradientBackgroundStart="hsl(235, 75%, 60%)"
+          gradientBackgroundEnd="hsl(222.2, 84%, 4.9%)"
+          firstColor="114, 183, 255"
+          secondColor="114, 9, 183"
+          thirdColor="242, 37, 133"
+          fourthColor="255, 51, 102"
+          fifthColor="251, 133, 0"
+          pointerColor="114, 183, 255"
+          containerClassName="absolute inset-0"
+        >
+          <div className="relative z-10 py-20 px-4 sm:px-6 lg:px-8">
+            <div className="container mx-auto text-center">
+              <h1 className="text-4xl md:text-6xl font-bold mb-6 text-white">
+                Powerful Features for
+                <span className="block">Influencer Marketing</span>
+              </h1>
+              <p className="text-xl text-white/80 mb-8 max-w-3xl mx-auto">
+                Discover everything you need to run successful influencer marketing campaigns, from discovery to ROI measurement.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button size="lg" onClick={() => navigate('/signup')} className="bg-white text-primary hover:bg-white/90">
+                  Start Free Trial
+                </Button>
+                <Button size="lg" variant="outline" onClick={() => navigate('/contact')} className="border-white text-white hover:bg-white hover:text-primary">
+                  Schedule Demo
+                </Button>
+              </div>
+            </div>
+          </div>
+        </BackgroundGradientAnimation>
       </section>
 
       {/* Features Grid */}

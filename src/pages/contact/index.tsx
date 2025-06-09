@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/components/ui/use-toast';
 import LandingHeader from '@/components/landing/LandingHeader';
 import Footer from '@/components/landing/Footer';
+import { BackgroundGradientAnimation } from '@/components/ui/background-gradient-animation';
 
 const ContactPage = () => {
   const navigate = useNavigate();
@@ -76,17 +76,31 @@ const ContactPage = () => {
     <div className="min-h-screen bg-background">
       <LandingHeader />
 
-      {/* Hero Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
-        <div className="container mx-auto text-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6">
-            Get in Touch
-            <span className="text-primary block">We're Here to Help</span>
-          </h1>
-          <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
-            Have questions about our platform? Need help with your campaign? Our team is ready to assist you every step of the way.
-          </p>
-        </div>
+      {/* Hero Section with Gradient Background */}
+      <section className="relative min-h-[60vh]">
+        <BackgroundGradientAnimation
+          gradientBackgroundStart="hsl(235, 75%, 60%)"
+          gradientBackgroundEnd="hsl(222.2, 84%, 4.9%)"
+          firstColor="114, 183, 255"
+          secondColor="114, 9, 183"
+          thirdColor="242, 37, 133"
+          fourthColor="255, 51, 102"
+          fifthColor="251, 133, 0"
+          pointerColor="114, 183, 255"
+          containerClassName="absolute inset-0"
+        >
+          <div className="relative z-10 py-20 px-4 sm:px-6 lg:px-8">
+            <div className="container mx-auto text-center">
+              <h1 className="text-4xl md:text-6xl font-bold mb-6 text-white">
+                Get in Touch
+                <span className="block">We're Here to Help</span>
+              </h1>
+              <p className="text-xl text-white/80 mb-8 max-w-3xl mx-auto">
+                Have questions about our platform? Need help with your campaign? Our team is ready to assist you every step of the way.
+              </p>
+            </div>
+          </div>
+        </BackgroundGradientAnimation>
       </section>
 
       {/* Contact Form and Info */}
