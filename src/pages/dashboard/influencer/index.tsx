@@ -11,54 +11,54 @@ import MetricCard from '@/components/dashboard/MetricCard';
 import TopPerformedOrders from '@/components/dashboard/TopPerformedOrders';
 import TopUsers from '@/components/dashboard/TopUsers';
 import PendingOrders from '@/components/dashboard/PendingOrders';
+
 const InfluencerDashboard = () => {
   const [requests, setRequests] = useState<InfluencerRequest[]>([]);
-  const {
-    toast
-  } = useToast();
+  const { toast } = useToast();
 
-  // Mock data for our new components
+  // Mock data with correct types
   const [topPerformedOrders, setTopPerformedOrders] = useState([{
     id: '1',
     title: 'Spring Collection',
-    platform: 'Instagram',
-    serviceType: 'reel',
+    platforms: ['Instagram'],
+    serviceTypes: ['reel'],
     performanceScore: 92,
     engagement: 8.5,
     reach: 45000
   }, {
     id: '2',
     title: 'Tech Review',
-    platform: 'Youtube',
-    serviceType: 'video',
+    platforms: ['Youtube'],
+    serviceTypes: ['video'],
     performanceScore: 87,
     engagement: 6.2,
     reach: 32000
   }, {
     id: '3',
     title: 'Fashion Haul',
-    platform: 'Instagram',
-    serviceType: 'post',
+    platforms: ['Instagram'],
+    serviceTypes: ['post'],
     performanceScore: 78,
     engagement: 5.1,
     reach: 28000
   }, {
     id: '4',
     title: 'Product Unboxing',
-    platform: 'Facebook',
-    serviceType: 'video',
+    platforms: ['Facebook'],
+    serviceTypes: ['video'],
     performanceScore: 65,
     engagement: 3.8,
     reach: 15000
   }, {
     id: '5',
     title: 'Lifestyle Tips',
-    platform: 'Twitter',
-    serviceType: 'post',
+    platforms: ['Twitter'],
+    serviceTypes: ['post'],
     performanceScore: 73,
     engagement: 4.2,
     reach: 19500
   }]);
+
   const [topBusinessUsers, setTopBusinessUsers] = useState([{
     id: '1',
     name: 'Trendy Fashions',
@@ -90,6 +90,7 @@ const InfluencerDashboard = () => {
     profileImage: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=200',
     ordersCount: 5
   }]);
+
   const [topInfluencers, setTopInfluencers] = useState([{
     id: '1',
     name: 'Priya Sharma',
@@ -121,31 +122,41 @@ const InfluencerDashboard = () => {
     profileImage: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=200',
     ordersCount: 13
   }]);
+
   const [pendingOrders, setPendingOrders] = useState([{
     id: '1',
-    brandName: 'Trendy Fashions',
+    title: 'Spring Campaign',
     influencerName: 'Alex',
+    platforms: ['Instagram'],
+    serviceTypes: ['post'],
     status: 'pending',
     timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString()
   }, {
     id: '2',
-    brandName: 'Tech Gizmos',
+    title: 'Tech Review Video',
     influencerName: 'Alex',
+    platforms: ['Youtube'],
+    serviceTypes: ['video'],
     status: 'pending',
     timestamp: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString()
   }, {
     id: '3',
-    brandName: 'Beauty Brand',
+    title: 'Beauty Tutorial',
     influencerName: 'Alex',
+    platforms: ['Instagram'],
+    serviceTypes: ['reel'],
     status: 'pending',
     timestamp: new Date(Date.now() - 1000 * 60 * 60 * 8).toISOString()
   }, {
     id: '4',
-    brandName: 'Healthy Eats',
+    title: 'Food Review',
     influencerName: 'Alex',
+    platforms: ['Facebook'],
+    serviceTypes: ['post'],
     status: 'awaiting',
     timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString()
   }]);
+
   useEffect(() => {
     // In a real app, we would fetch this from an API
     // For now, we'll use localStorage
@@ -158,6 +169,7 @@ const InfluencerDashboard = () => {
     }));
     setRequests(typedRequests);
   }, []);
+
   const handleApproveRequest = (requestId: string) => {
     const updatedRequests = requests.map(request => request.id === requestId ? {
       ...request,
@@ -171,6 +183,7 @@ const InfluencerDashboard = () => {
       description: "The business has been notified of your approval."
     });
   };
+
   const handleRejectRequest = (requestId: string) => {
     const updatedRequests = requests.map(request => request.id === requestId ? {
       ...request,
@@ -184,6 +197,7 @@ const InfluencerDashboard = () => {
       description: "The business has been notified of your decision."
     });
   };
+
   const handleViewOrder = (orderId: string) => {
     toast({
       title: "Order Details",
@@ -191,7 +205,9 @@ const InfluencerDashboard = () => {
     });
     // In a real app, navigate to order details page or show a modal
   };
-  return <div className="flex h-screen bg-gray-50">
+
+  return (
+    <div className="flex h-screen bg-gray-50">
       <Sidebar />
       <div className="flex-1 flex flex-col">
         <Header />
@@ -267,6 +283,8 @@ const InfluencerDashboard = () => {
           </div>
         </main>
       </div>
-    </div>;
+    </div>
+  );
 };
+
 export default InfluencerDashboard;
