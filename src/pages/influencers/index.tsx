@@ -363,10 +363,10 @@ const InfluencersPage = () => {
        }));
 
     const matchesFollowerRange = 
-      (influencer.followers_instagram || 0) >= followerRange[0] && (influencer.followers_instagram || 0) <= followerRange[1] ||
-      (influencer.followers_facebook || 0) >= followerRange[0] && (influencer.followers_facebook || 0) <= followerRange[1] ||
-      (influencer.followers_twitter || 0) >= followerRange[0] && (influencer.followers_twitter || 0) <= followerRange[1] ||
-      (influencer.followers_youtube || 0) >= followerRange[0] && (influencer.followers_youtube || 0) <= followerRange[1];
+      (influencer.followers_instagram && influencer.followers_instagram >= followerRange[0] && influencer.followers_instagram <= followerRange[1]) ||
+      (influencer.followers_facebook && influencer.followers_facebook >= followerRange[0] && influencer.followers_facebook <= followerRange[1]) ||
+      (influencer.followers_twitter && influencer.followers_twitter >= followerRange[0] && influencer.followers_twitter <= followerRange[1]) ||
+      (influencer.followers_youtube && influencer.followers_youtube >= followerRange[0] && influencer.followers_youtube <= followerRange[1]);
 
     return matchesSearch && matchesPlatform && matchesFollowerRange;
   });
