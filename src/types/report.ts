@@ -1,7 +1,11 @@
-
 export type Report = {
   id: string;
-  title: string;
-  fileSize: string;
-  fileType: string;
+  reportNo: string;
+  orderName: string;
+  orderPlacedDate: string;
+  fromDate: string;
+  toDate: string;
+  paymentStatus: "Pending" | "Completed";
+  reportName: string;
+  reportStatus?: "Request Pending";
 };

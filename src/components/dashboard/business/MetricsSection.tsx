@@ -1,7 +1,7 @@
-
 import React from 'react';
 import MetricCard from '@/components/dashboard/MetricCard';
-import { BadgeIndianRupee, FileText, BarChart2, Users } from 'lucide-react';
+import CampaignImpactCard from '@/components/dashboard/CampaignImpactCard';
+import { FileText, BarChart2, Users } from 'lucide-react';
 
 interface MetricsSectionProps {
   isLoading: boolean;
@@ -10,6 +10,7 @@ interface MetricsSectionProps {
   activeRequests: number;
   completedCampaigns: number;
   connectedInfluencers: number;
+  impactScore: number;
 }
 
 const MetricsSection: React.FC<MetricsSectionProps> = ({
@@ -18,22 +19,21 @@ const MetricsSection: React.FC<MetricsSectionProps> = ({
   totalOrders,
   activeRequests,
   completedCampaigns,
-  connectedInfluencers
+  connectedInfluencers,
+  impactScore
 }) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-      <MetricCard 
-        title="Amount Spent (INR)" 
-        value={isLoading ? "..." : `₹${totalSpent.toLocaleString('en-IN')}`} 
-        className="bg-card text-card-foreground border border-border"
-      >
-        <BadgeIndianRupee className="h-6 w-6 text-primary" />
-      </MetricCard>
+      <CampaignImpactCard 
+        score={impactScore}
+        isLoading={isLoading}
+      />
       
       <MetricCard 
         title="Total Orders" 
         value={isLoading ? "..." : totalOrders} 
         className="bg-card text-card-foreground border border-border"
+        valueClassName="text-2xl font-bold"
       >
         <FileText className="h-6 w-6 text-primary" />
       </MetricCard>
@@ -42,6 +42,7 @@ const MetricsSection: React.FC<MetricsSectionProps> = ({
         title="Active/Total Campaigns" 
         value={isLoading ? "..." : `${activeRequests}/${completedCampaigns + activeRequests}`} 
         className="bg-card text-card-foreground border border-border"
+        valueClassName="text-2xl font-bold"
       >
         <BarChart2 className="h-6 w-6 text-primary" />
       </MetricCard>
@@ -50,6 +51,7 @@ const MetricsSection: React.FC<MetricsSectionProps> = ({
         title="Connected Influencers" 
         value={isLoading ? "..." : connectedInfluencers} 
         className="bg-card text-card-foreground border border-border"
+        valueClassName="text-2xl font-bold"
       >
         <Users className="h-6 w-6 text-primary" />
       </MetricCard>

@@ -1,4 +1,3 @@
-
 import { OrderData } from '@/components/reach/OrderSelector';
 
 export const mockOrders: OrderData[] = [
@@ -275,63 +274,11 @@ export const performanceData = {
 };
 
 export const getOrderMetrics = (orderId: string) => {
-  const metrics = {
-    impressions: {
-      value: 0,
-      change: 0
-    },
-    engagementRate: {
-      value: 0,
-      change: 0
-    },
-    conversionRate: {
-      value: 0,
-      change: 0
-    }
+  // In a real app, this would fetch data from an API
+  return {
+    totalPosts: 42,
+    engagementRate: 3.2,
+    reach: 15000,
+    impressions: 25000
   };
-
-  switch (orderId) {
-    case '1':
-      metrics.impressions.value = 125400;
-      metrics.impressions.change = 12.5;
-      metrics.engagementRate.value = 8.2;
-      metrics.engagementRate.change = 3.1;
-      metrics.conversionRate.value = 3.6;
-      metrics.conversionRate.change = 1.2;
-      break;
-    case '2':
-      metrics.impressions.value = 158200;
-      metrics.impressions.change = 15.8;
-      metrics.engagementRate.value = 10.5;
-      metrics.engagementRate.change = 4.2;
-      metrics.conversionRate.value = 4.2;
-      metrics.conversionRate.change = 1.5;
-      break;
-    case '3':
-      metrics.impressions.value = 105300;
-      metrics.impressions.change = -2.5;
-      metrics.engagementRate.value = 12.8;
-      metrics.engagementRate.change = 5.6;
-      metrics.conversionRate.value = 6.5;
-      metrics.conversionRate.change = 2.3;
-      break;
-    case '4':
-      metrics.impressions.value = 87500;
-      metrics.impressions.change = 8.7;
-      metrics.engagementRate.value = 9.4;
-      metrics.engagementRate.change = -1.2;
-      metrics.conversionRate.value = 2.8;
-      metrics.conversionRate.change = -0.5;
-      break;
-    case '5':
-      metrics.impressions.value = 210800;
-      metrics.impressions.change = 18.3;
-      metrics.engagementRate.value = 11.2;
-      metrics.engagementRate.change = 4.8;
-      metrics.conversionRate.value = 5.1;
-      metrics.conversionRate.change = 2.1;
-      break;
-  }
-
-  return metrics;
 };

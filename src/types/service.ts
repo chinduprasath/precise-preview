@@ -1,4 +1,3 @@
-
 export type ServiceType = {
   id: string;
   name: string;
@@ -10,6 +9,7 @@ export type ServiceCategoryType = {
   id: string;
   name: string;
   services: ServiceType[];
+  comingSoon?: boolean;
 };
 
 export type ServiceFormData = {

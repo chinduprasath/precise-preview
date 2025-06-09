@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -10,6 +9,7 @@ export interface InfluencerAnalytics {
   avg_comments: number;
   avg_shares: number;
   avg_views: number;
+  avg_reach: number;
   engagement_rate: number;
   fake_followers_percent: number;
 }
@@ -70,15 +70,16 @@ export function useAnalyticsData(influencerId?: string) {
           if (analyticsData) {
             // Type casting for analytics data
             const typedAnalytics: InfluencerAnalytics = {
-              id: analyticsData.id,
-              influencer_id: analyticsData.influencer_id,
-              total_campaigns: analyticsData.total_campaigns || 0,
-              avg_likes: analyticsData.avg_likes || 0,
-              avg_comments: analyticsData.avg_comments || 0,
-              avg_shares: analyticsData.avg_shares || 0,
-              avg_views: analyticsData.avg_views || 0,
-              engagement_rate: analyticsData.engagement_rate || 0,
-              fake_followers_percent: analyticsData.fake_followers_percent || 0
+              id: (analyticsData as any).id,
+              influencer_id: (analyticsData as any).influencer_id,
+              total_campaigns: (analyticsData as any).total_campaigns || 0,
+              avg_likes: (analyticsData as any).avg_likes || 0,
+              avg_comments: (analyticsData as any).avg_comments || 0,
+              avg_shares: (analyticsData as any).avg_shares || 0,
+              avg_views: (analyticsData as any).avg_views || 0,
+              avg_reach: (analyticsData as any).avg_reach || 0,
+              engagement_rate: (analyticsData as any).engagement_rate || 0,
+              fake_followers_percent: (analyticsData as any).fake_followers_percent || 0
             };
             setAnalytics(typedAnalytics);
           } else {

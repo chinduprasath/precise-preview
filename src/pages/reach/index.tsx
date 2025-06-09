@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
@@ -9,7 +8,6 @@ import EngagementChart from '@/components/reach/EngagementChart';
 import ReachChart from '@/components/reach/ReachChart';
 import PerformanceMetrics from '@/components/reach/PerformanceMetrics';
 import DemographicChart from '@/components/reach/DemographicChart';
-import DateTimePicker from '@/components/reach/DateTimePicker';
 import { 
   mockOrders, 
   platformEngagementData, 
@@ -20,19 +18,36 @@ import {
   getOrderMetrics 
 } from '@/data/reachData';
 import { formatNumber } from '@/components/influencers/utils/formatUtils';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Lock } from 'lucide-react';
+import { addDays, subDays, subHours } from 'date-fns';
 
 const ReachPage = () => {
   const [selectedOrder, setSelectedOrder] = useState<string>("1");
-  const [startDate, setStartDate] = useState<Date | undefined>(() => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    return today;
-  });
-  const [endDate, setEndDate] = useState<Date | undefined>(() => {
-    const today = new Date();
-    today.setHours(23, 59, 59, 999);
-    return today;
-  });
+  const [timeRange, setTimeRange] = useState<string>('last_24_hours');
+
+  const calculateDates = (range: string) => {
+    const now = new Date();
+    let start = now;
+    let end = now;
+
+    switch (range) {
+      case 'last_24_hours':
+        start = subHours(now, 24);
+        break;
+      case 'last_7_days':
+        start = subDays(now, 7);
+        break;
+      case 'last_30_days':
+        start = subDays(now, 30);
+        break;
+      default:
+        break;
+    }
+    return { startDate: start, endDate: end };
+  };
+
+  const { startDate, endDate } = calculateDates(timeRange);
   
   const currentOrder = mockOrders.find(order => order.id === selectedOrder) || mockOrders[0];
   
@@ -43,6 +58,15 @@ const ReachPage = () => {
   const currentDemographicData = demographicData[selectedOrder as keyof typeof demographicData] || demographicData['1'];
   const currentPerformanceData = performanceData[selectedOrder as keyof typeof performanceData] || performanceData['1'];
 
+  const timeRangeOptions = [
+    { value: 'last_24_hours', label: 'Last 24 hours', disabled: false },
+    { value: 'last_7_days', label: 'Last 7 days', disabled: false },
+    { value: 'last_30_days', label: 'Last 30 days', disabled: false },
+    { value: 'last_3_months', label: 'Last 3 months', disabled: true },
+    { value: 'last_6_months', label: 'Last 6 months', disabled: true },
+    { value: 'last_12_months', label: 'Last 12 months', disabled: true },
+  ];
+
   return (
     <div className="flex h-screen bg-background">
       <Sidebar />
@@ -50,7 +74,7 @@ const ReachPage = () => {
         <Header />
         <main className="flex-1 overflow-auto p-6">
           <div className="max-w-7xl mx-auto space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
               <div>
                 <OrderSelector 
                   orders={mockOrders} 
@@ -59,21 +83,27 @@ const ReachPage = () => {
                   className="w-full"
                 />
               </div>
-              <div>
-                <DateTimePicker
-                  label="From Date & Time"
-                  value={startDate}
-                  onChange={setStartDate}
-                  placeholder="Select start date & time"
-                />
-              </div>
-              <div>
-                <DateTimePicker
-                  label="To Date & Time"
-                  value={endDate}
-                  onChange={setEndDate}
-                  placeholder="Select end date & time"
-                />
+              <div className="flex justify-end">
+                <Select value={timeRange} onValueChange={setTimeRange}>
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Select time range" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {timeRangeOptions.map((option) => (
+                      <SelectItem 
+                        key={option.value} 
+                        value={option.value} 
+                        disabled={option.disabled}
+                        className={option.disabled ? "text-gray-400 cursor-not-allowed flex items-center justify-between w-full" : "flex items-center justify-between w-full"}
+                      >
+                        <div className="flex items-center gap-1">
+                          <span>{option.label}</span>
+                          {option.disabled && <Lock className="h-4 w-4 flex-shrink-0" />}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
             
@@ -86,27 +116,27 @@ const ReachPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
               <PlatformMetricCard 
                 platform="instagram" 
-                title="Instagram Engagement" 
+                title="Total Views" 
                 value={formatNumber(12500)} 
                 change={{ value: 15.2, isPositive: true }} 
               />
               <PlatformMetricCard 
                 platform="facebook" 
-                title="Facebook Reach" 
+                title="Link Clicks" 
                 value={formatNumber(15800)} 
                 change={{ value: 8.5, isPositive: true }} 
               />
               <PlatformMetricCard 
-                platform="twitter" 
-                title="Twitter Impressions" 
-                value={formatNumber(7200)} 
-                change={{ value: 4.2, isPositive: true }} 
+                platform="cpe" 
+                title="CPE" 
+                value={formatNumber(0.5)} 
+                change={{ value: 0.1, isPositive: true }} 
               />
               <PlatformMetricCard 
-                platform="youtube" 
-                title="YouTube Views" 
-                value={formatNumber(4500)} 
-                change={{ value: 12.8, isPositive: true }} 
+                platform="cpm" 
+                title="CPM" 
+                value={formatNumber(2.5)} 
+                change={{ value: 0.3, isPositive: true }} 
               />
             </div>
 
@@ -135,10 +165,9 @@ const ReachPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <EngagementChart 
                 data={currentConversionData}
-                title="Clicks & Conversions"
+                title="Clicks"
                 dataKeys={[
-                  { key: 'clicks', name: 'Clicks' },
-                  { key: 'conversions', name: 'Conversions' }
+                  { key: 'clicks', name: 'Clicks' }
                 ]}
               />
               <DemographicChart data={currentDemographicData} />

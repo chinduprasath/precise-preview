@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Sidebar from '@/components/layout/Sidebar';
 import ConditionalHeader from '@/components/layout/ConditionalHeader';
@@ -41,6 +40,7 @@ const BusinessDashboard = () => {
               activeRequests={dashboardData.activeRequests}
               completedCampaigns={dashboardData.completedCampaigns}
               connectedInfluencers={dashboardData.connectedInfluencers}
+              impactScore={dashboardData.impactScore}
             />
             
             {/* Content metrics */}

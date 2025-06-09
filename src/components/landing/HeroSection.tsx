@@ -41,5 +41,4 @@ const HeroSection = () => {
       </div>
     </section>;
 };
-export default HeroSection;
-export { HeroSection };
+export default HeroSection;export { HeroSection };

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Gift, Wallet } from 'lucide-react';
@@ -27,7 +26,7 @@ const Header = () => {
     <header className="h-16 border-b border-border flex items-center justify-between bg-background w-full">
       {/* Left side - Search Bar */}
       <div className="pl-6">
-        <SearchBar />
+        {userType !== 'business' && <SearchBar />}
       </div>
       
       {/* Right side - All utility icons */}

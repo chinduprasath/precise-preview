@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
@@ -8,8 +7,8 @@ import { Instagram, Facebook, Youtube, Twitter, BarChart2 } from 'lucide-react';
 interface OrderPerformance {
   id: string;
   title: string;
-  platform: string;
-  serviceType: string;
+  platforms: string[];
+  serviceTypes: string[];
   performanceScore: number;
   engagement: number;
   reach: number;
@@ -23,16 +22,45 @@ interface TopPerformedOrdersProps {
 const getPlatformIcon = (platform: string) => {
   switch (platform.toLowerCase()) {
     case 'instagram':
-      return <Instagram className="h-4 w-4 text-pink-500" />;
+      return <Instagram key="instagram" className="h-4 w-4 text-pink-500" />;
     case 'facebook':
-      return <Facebook className="h-4 w-4 text-blue-600" />;
+      return <Facebook key="facebook" className="h-4 w-4 text-blue-600" />;
     case 'youtube':
-      return <Youtube className="h-4 w-4 text-red-600" />;
+      return <Youtube key="youtube" className="h-4 w-4 text-red-600" />;
     case 'twitter':
-      return <Twitter className="h-4 w-4 text-blue-400" />;
+      return <Twitter key="twitter" className="h-4 w-4 text-blue-400" />;
     default:
-      return <BarChart2 className="h-4 w-4 text-gray-400" />;
+      return null;
   }
+};
+
+const getServiceTypeBadge = (type: string) => {
+  const typeLower = type.toLowerCase();
+  let variant: "default" | "secondary" | "outline" | "destructive" = "outline";
+  let className = "capitalize";
+
+  switch (typeLower) {
+    case 'video':
+    case 'reel':
+    case 'short':
+      className = "bg-blue-100 text-blue-700 hover:bg-blue-100";
+      break;
+    case 'post':
+      className = "bg-purple-100 text-purple-700 hover:bg-purple-100";
+      break;
+    case 'story':
+      className = "bg-orange-100 text-orange-700 hover:bg-orange-100";
+      break;
+    default:
+      className = "bg-gray-100 text-gray-700 hover:bg-gray-100";
+      break;
+  }
+
+  return (
+    <Badge key={type} variant={variant} className={className}>
+      {type}
+    </Badge>
+  );
 };
 
 const TopPerformedOrders: React.FC<TopPerformedOrdersProps> = ({ orders, isLoading = false }) => {
@@ -66,15 +94,14 @@ const TopPerformedOrders: React.FC<TopPerformedOrdersProps> = ({ orders, isLoadi
                 <TableRow key={order.id}>
                   <TableCell className="font-medium">{order.title}</TableCell>
                   <TableCell>
-                    <div className="flex items-center">
-                      {getPlatformIcon(order.platform)}
-                      <span className="ml-1">{order.platform}</span>
+                    <div className="flex items-center gap-2">
+                      {order.platforms.map(platform => getPlatformIcon(platform))}
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Badge variant="outline" className="capitalize">
-                      {order.serviceType}
-                    </Badge>
+                    <div className="flex flex-wrap gap-1">
+                      {order.serviceTypes.map(type => getServiceTypeBadge(type))}
+                    </div>
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center">

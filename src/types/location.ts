@@ -52,6 +52,9 @@ export interface Influencer {
   city?: City;
   niche?: Niche;
   hashtags?: Hashtag[];
+  social_platforms?: { platform_name: string }[];
+  is_verified?: boolean;
+  is_trending?: boolean;
 }
 
 export interface LocationFilters {

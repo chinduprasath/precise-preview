@@ -1,10 +1,10 @@
-
 // Define the content item type
 export interface ServiceContentItem {
   id: string;
   influencer_id: string;
   media_url: string;
-  media_type: string;
+  media_type: 'image' | 'video' | 'poll'; // Explicitly define media types
+  platforms: ('instagram' | 'facebook' | 'youtube' | 'twitter')[]; // Array of platforms
   title?: string;
   description?: string;
   created_at?: string;
@@ -23,6 +23,7 @@ const demoItems: ServiceContentItem[] = [
     influencer_id: 'demo',
     media_url: 'https://images.unsplash.com/photo-1583121274602-3e2820c69888?q=80&w=2050&auto=format&fit=crop',
     media_type: 'image',
+    platforms: ['instagram', 'facebook'],
     title: 'Instagram Fashion Post',
     description: 'Summer collection highlight',
     created_at: new Date().toISOString(),
@@ -33,6 +34,7 @@ const demoItems: ServiceContentItem[] = [
     influencer_id: 'demo',
     media_url: 'https://images.unsplash.com/photo-1561664089-8cc4201eba91?q=80&w=2070&auto=format&fit=crop',
     media_type: 'image',
+    platforms: ['youtube'],
     title: 'Product Review',
     description: 'Latest tech gadget review',
     created_at: new Date().toISOString(),
@@ -43,6 +45,7 @@ const demoItems: ServiceContentItem[] = [
     influencer_id: 'demo',
     media_url: 'https://images.unsplash.com/photo-1672262277543-322fa9898d0a?q=80&w=2070&auto=format&fit=crop',
     media_type: 'image',
+    platforms: ['twitter'],
     title: 'Travel Vlog',
     description: 'Exploring hidden gems',
     created_at: new Date().toISOString(),
@@ -53,6 +56,7 @@ const demoItems: ServiceContentItem[] = [
     influencer_id: 'demo',
     media_url: 'https://images.unsplash.com/photo-1560463315-6b0914461698?q=80&w=2066&auto=format&fit=crop',
     media_type: 'image',
+    platforms: ['instagram', 'facebook'],
     title: 'Fitness Challenge',
     description: '30-day transformation',
     created_at: new Date().toISOString(),
@@ -63,6 +67,7 @@ const demoItems: ServiceContentItem[] = [
     influencer_id: 'demo',
     media_url: 'https://images.unsplash.com/photo-1567095761054-7a02e69e5c43?q=80&w=1974&auto=format&fit=crop',
     media_type: 'image',
+    platforms: ['instagram'],
     title: 'Cooking Tutorial',
     description: 'Easy 5-minute recipes',
     created_at: new Date().toISOString(),
@@ -73,6 +78,7 @@ const demoItems: ServiceContentItem[] = [
     influencer_id: 'demo',
     media_url: 'https://images.unsplash.com/photo-1500829243541-74b677fecc30?q=80&w=2076&auto=format&fit=crop',
     media_type: 'image',
+    platforms: ['facebook'],
     title: 'Style Haul',
     description: 'Winter fashion trends',
     created_at: new Date().toISOString(),
@@ -83,6 +89,7 @@ const demoItems: ServiceContentItem[] = [
     influencer_id: 'demo',
     media_url: 'https://images.unsplash.com/photo-1513384312027-9fa69a360337?q=80&w=2071&auto=format&fit=crop',
     media_type: 'image',
+    platforms: ['instagram', 'twitter'],
     title: 'Makeup Tutorial',
     description: 'Natural everyday look',
     created_at: new Date().toISOString(),
@@ -92,7 +99,8 @@ const demoItems: ServiceContentItem[] = [
     id: '8',
     influencer_id: 'demo',
     media_url: 'https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?q=80&w=2080&auto=format&fit=crop',
-    media_type: 'image',
+    media_type: 'video',
+    platforms: ['youtube', 'facebook'],
     title: 'Gaming Stream',
     description: 'Gameplay highlights',
     created_at: new Date().toISOString(),
@@ -102,9 +110,10 @@ const demoItems: ServiceContentItem[] = [
     id: '9',
     influencer_id: 'demo',
     media_url: 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?q=80&w=1980&auto=format&fit=crop',
-    media_type: 'image',
-    title: 'Music Cover',
-    description: 'Acoustic version of top hits',
+    media_type: 'poll',
+    platforms: ['instagram'],
+    title: 'Music Cover Poll',
+    description: 'Which song next?',
     created_at: new Date().toISOString(),
     metrics: { likes: 215000, views: 550000, comments: 980, shares: 12500 }
   }

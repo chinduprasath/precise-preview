@@ -1,4 +1,3 @@
-
 import { ServiceCategoryType, ServiceType } from '@/types/service';
 
 export const services: ServiceType[] = [
@@ -34,12 +33,12 @@ export const services: ServiceType[] = [
 export const serviceCategories: ServiceCategoryType[] = [
   {
     id: 'designers',
-    name: 'Looking for Designers',
+    name: 'Design Services',
     services: services.filter(service => service.category === 'designers')
   },
   {
     id: 'marketing',
-    name: 'Marketing',
+    name: 'Marketing Services',
     services: services.filter(service => service.category === 'marketing')
   },
   {
@@ -50,6 +49,7 @@ export const serviceCategories: ServiceCategoryType[] = [
   {
     id: 'ott',
     name: 'OTT Campaigns',
-    services: services.filter(service => service.category === 'ott')
+    services: services.filter(service => service.category === 'ott'),
+    comingSoon: true
   }
 ];

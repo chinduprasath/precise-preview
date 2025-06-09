@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Search, Check } from 'lucide-react';
 import { 
@@ -90,53 +89,6 @@ const OrderSelector: React.FC<OrderSelectorProps> = ({
                 className="h-9"
               />
             </div>
-            <div className="flex items-center gap-2 p-2 border-b">
-              <button
-                onClick={() => setStatusFilter(null)}
-                className={cn(
-                  "px-2 py-1 text-xs rounded-full",
-                  !statusFilter ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
-                )}
-              >
-                All
-              </button>
-              <button
-                onClick={() => setStatusFilter('processing')}
-                className={cn(
-                  "px-2 py-1 text-xs rounded-full",
-                  statusFilter === 'processing' ? "bg-amber-500 text-white" : "bg-muted text-muted-foreground"
-                )}
-              >
-                Processing
-              </button>
-              <button
-                onClick={() => setStatusFilter('shipped')}
-                className={cn(
-                  "px-2 py-1 text-xs rounded-full",
-                  statusFilter === 'shipped' ? "bg-blue-500 text-white" : "bg-muted text-muted-foreground"
-                )}
-              >
-                Shipped
-              </button>
-              <button
-                onClick={() => setStatusFilter('delivered')}
-                className={cn(
-                  "px-2 py-1 text-xs rounded-full",
-                  statusFilter === 'delivered' ? "bg-green-500 text-white" : "bg-muted text-muted-foreground"
-                )}
-              >
-                Delivered
-              </button>
-              <button
-                onClick={() => setStatusFilter('completed')}
-                className={cn(
-                  "px-2 py-1 text-xs rounded-full",
-                  statusFilter === 'completed' ? "bg-purple-500 text-white" : "bg-muted text-muted-foreground"
-                )}
-              >
-                Completed
-              </button>
-            </div>
             <CommandList>
               <CommandEmpty>No campaigns found.</CommandEmpty>
               {filteredOrders.length > 0 && (
@@ -156,11 +108,6 @@ const OrderSelector: React.FC<OrderSelectorProps> = ({
                         <p className="text-xs text-muted-foreground">
                           {order.orderNumber} • {formatDate(order.date)}
                         </p>
-                        {order.description && (
-                          <p className="text-xs text-muted-foreground mt-1 max-w-[250px] truncate">
-                            {order.description}
-                          </p>
-                        )}
                       </div>
                       {selectedOrderId === order.id && (
                         <Check className="w-4 h-4" />

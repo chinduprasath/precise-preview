@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card } from '@/components/ui/card';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, AreaChart, Area, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line, Legend } from 'recharts';
@@ -43,12 +42,11 @@ const performanceComparisonData = [
 ];
 
 const engagementData = [
-  { date: '2024-01', value: 50 },
-  { date: '2024-02', value: 52 },
-  { date: '2024-03', value: 55 },
-  { date: '2024-04', value: 58 },
-  { date: '2024-05', value: 60 },
-  { date: '2024-06', value: 62 },
+  { date: 'Feb', value: 52 },
+  { date: 'Mar', value: 55 },
+  { date: 'Apr', value: 58 },
+  { date: 'May', value: 60 },
+  { date: 'Jun', value: 62 },
 ];
 
 // Platform performance data
@@ -73,10 +71,11 @@ const audienceGrowthData = [
 
 // Conversion funnel data
 const conversionFunnelData = [
-  { name: 'Views', value: 10000 },
-  { name: 'Engagements', value: 6000 },
-  { name: 'Clicks', value: 3000 },
-  { name: 'Conversions', value: 1000 },
+  { month: 'Jan', clicks: 2500 },
+  { month: 'Feb', clicks: 3000 },
+  { month: 'Mar', clicks: 3500 },
+  { month: 'Apr', clicks: 3200 },
+  { month: 'May', clicks: 4000 },
 ];
 
 const DataTabContent: React.FC<DataTabContentProps> = ({ influencerId }) => {
@@ -101,7 +100,7 @@ const DataTabContent: React.FC<DataTabContentProps> = ({ influencerId }) => {
   return (
     <div className="space-y-6">
       {/* Metrics Grid */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-4 gap-4">
         <MetricCard 
           value={analytics?.total_campaigns || 90} 
           label="Total Campaigns" 
@@ -109,6 +108,14 @@ const DataTabContent: React.FC<DataTabContentProps> = ({ influencerId }) => {
         <MetricCard 
           value={analytics?.avg_likes ? formatNumber(analytics.avg_likes) : "90"} 
           label="Avg Likes" 
+        />
+        <MetricCard 
+          value={analytics?.avg_views ? formatNumber(analytics.avg_views) : "90K"} 
+          label="Avg Views" 
+        />
+        <MetricCard 
+          value={analytics?.avg_reach ? formatNumber(analytics.avg_reach) : "500K"} 
+          label="Avg Reach" 
         />
         <MetricCard 
           value={analytics?.engagement_rate ? `${analytics.engagement_rate}%` : "90%"} 
@@ -205,34 +212,19 @@ const DataTabContent: React.FC<DataTabContentProps> = ({ influencerId }) => {
 
         {/* Conversion Metrics */}
         <Card className="p-6">
-          <h3 className="text-lg font-semibold mb-4">Conversion Funnel</h3>
+          <h3 className="text-lg font-semibold mb-4">Link Clicks by Month</h3>
           <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={conversionFunnelData} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-              <XAxis type="number" />
-              <YAxis dataKey="name" type="category" width={80} />
+            <BarChart data={conversionFunnelData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} />
+              <XAxis dataKey="month" />
+              <YAxis />
               <Tooltip />
-              <Bar dataKey="value" fill="#8884d8" />
+              <Legend />
+              <Bar dataKey="clicks" fill="#8884d8" name="Link Clicks" />
             </BarChart>
           </ResponsiveContainer>
         </Card>
       </div>
-
-      {/* Price Range Chart */}
-      <Card className="p-6">
-        <h3 className="text-lg font-semibold mb-4">Regional Performance</h3>
-        <ResponsiveContainer width="100%" height={200}>
-          <BarChart data={performanceComparisonData} margin={{ top: 5, right: 0, left: 0, bottom: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" vertical={false} />
-            <XAxis dataKey="month" axisLine={false} tickLine={false} />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="idealWeight" fill="#93C5FD" name="Average" />
-            <Bar dataKey="yourWeight" fill="#4F46E5" name="Your Performance" />
-          </BarChart>
-        </ResponsiveContainer>
-      </Card>
     </div>
   );
 };

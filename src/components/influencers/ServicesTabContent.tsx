@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { Heart, Eye, MessageSquare, Share2 } from 'lucide-react';
+import { Heart, Eye, MessageSquare, Share2, Youtube, Instagram, Facebook, Twitter } from 'lucide-react';
 import { useServiceContent } from '@/hooks/useServiceContent';
 import { formatNumber } from '@/components/influencers/utils/formatUtils';
 import { ServiceContentItem } from './utils/serviceContentUtils';
@@ -12,14 +11,57 @@ interface ServicesTabContentProps {
 }
 
 const ContentCard = ({ item }: { item: ServiceContentItem }) => {
+  const renderMedia = () => {
+    if (item.media_type === 'video') {
+      return (
+        <div className="relative w-full h-40 bg-black flex items-center justify-center">
+          <img
+            src={item.media_url} // Assuming media_url can be a video thumbnail
+            alt={item.title || "Video Content"}
+            className="w-full h-full object-cover opacity-70"
+          />
+          <Youtube className="absolute h-12 w-12 text-red-500" />
+        </div>
+      );
+    } else if (item.media_type === 'poll') {
+      return (
+        <div className="relative w-full h-40 bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-2xl font-bold">
+          <span className="z-10">Poll</span>
+          <img
+            src={item.media_url} // Using media_url as a background for the poll
+            alt={item.title || "Poll Content"}
+            className="absolute inset-0 w-full h-full object-cover opacity-20"
+          />
+        </div>
+      );
+    } else {
+      return (
+        <img
+          src={item.media_url}
+          alt={item.title || "Content"}
+          className="w-full h-40 object-cover"
+        />
+      );
+    }
+  };
+
+  const getPlatformIcon = (platform: string) => {
+    switch (platform) {
+      case 'instagram': return <Instagram key="instagram" className="h-4 w-4 text-social-instagram" />;
+      case 'facebook': return <Facebook key="facebook" className="h-4 w-4 text-social-facebook" />;
+      case 'youtube': return <Youtube key="youtube" className="h-4 w-4 text-social-youtube" />;
+      case 'twitter': return <Twitter key="twitter" className="h-4 w-4 text-social-twitter" />;
+      default: return null;
+    }
+  };
+
   return (
     <div className="rounded-lg overflow-hidden shadow-sm bg-white">
       <div className="relative">
-        <img 
-          src={item.media_url} 
-          alt={item.title || "Content"} 
-          className="w-full h-40 object-cover" 
-        />
+        {renderMedia()}
+        <div className="absolute top-2 right-2 flex gap-1">
+          {item.platforms.map(platform => getPlatformIcon(platform))}
+        </div>
       </div>
       <div className="px-3 py-3 bg-slate-100 flex flex-wrap justify-between">
         <div className="flex items-center gap-1">

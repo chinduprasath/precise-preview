@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Influencer, Hashtag } from '@/types/location';
@@ -12,6 +11,7 @@ export interface InfluencerFilters {
   hashtags?: string[];
   followerRange?: [number, number];
   engagementRange?: [number, number];
+  platforms?: string[];
 }
 
 export function useInfluencers(filters: InfluencerFilters = {}) {

@@ -1,60 +1,59 @@
-
 import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { ArrowUp, ArrowDown, Instagram, Facebook, Twitter, Youtube } from 'lucide-react';
-import { formatNumber, formatPercentage, getPlatformColor } from './utils/formatUtils';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Eye, Link, Info } from 'lucide-react';
+import { formatNumber } from '@/components/influencers/utils/formatUtils';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface PlatformMetricCardProps {
-  platform: 'instagram' | 'facebook' | 'twitter' | 'youtube';
+  platform: string;
   title: string;
-  value: number | string;
-  change?: {
+  value: string;
+  change: {
     value: number;
     isPositive: boolean;
   };
-  className?: string;
 }
 
-const PlatformMetricCard: React.FC<PlatformMetricCardProps> = ({
-  platform,
-  title,
-  value,
-  change,
-  className = ''
-}) => {
+const PlatformMetricCard: React.FC<PlatformMetricCardProps> = ({ platform, title, value, change }) => {
   const getIcon = () => {
-    switch (platform) {
-      case 'instagram':
-        return <Instagram size={18} />;
-      case 'facebook':
-        return <Facebook size={18} />;
-      case 'twitter':
-        return <Twitter size={18} />;
-      case 'youtube':
-        return <Youtube size={18} />;
+    if (title === 'Link Clicks') {
+      return <Link className="h-4 w-4 text-muted-foreground" />;
     }
+    return <Eye className="h-4 w-4 text-muted-foreground" />;
   };
-  
-  const platformColor = getPlatformColor(platform);
+
+  const getTooltipContent = () => {
+    if (title.includes('CPE')) {
+      return 'The average cost spent for each user engagement (like, comment, share, etc.)';
+    }
+    if (title.includes('CPM')) {
+      return 'The average cost spent to get 1,000 impressions on the content.';
+    }
+    return '';
+  };
 
   return (
-    <Card className={`border-border bg-card ${className}`}>
-      <CardContent className="p-5">
-        <div className="flex items-center justify-between mb-2">
-          <h3 className="text-sm font-medium text-muted-foreground">{title}</h3>
-          <div className="p-2 rounded-full" style={{ backgroundColor: `${platformColor}20` }}>
-            <div style={{ color: platformColor }}>{getIcon()}</div>
-          </div>
-        </div>
-        <div className="flex items-end justify-between">
-          <h2 className="text-2xl font-bold text-foreground">{value}</h2>
-          {change && (
-            <div className={`flex items-center text-sm ${change.isPositive ? 'text-green-500' : 'text-red-500'}`}>
-              {change.isPositive ? <ArrowUp className="w-4 h-4 mr-1" /> : <ArrowDown className="w-4 h-4 mr-1" />}
-              {formatPercentage(change.value)}
-            </div>
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <div className="flex items-center gap-1">
+          <CardTitle className="text-base font-bold">{title}</CardTitle>
+          {getTooltipContent() && (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  <Info className="h-4 w-4 text-muted-foreground" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{getTooltipContent()}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           )}
         </div>
+        {getIcon()}
+      </CardHeader>
+      <CardContent>
+        <div className="text-2xl font-bold">{value}</div>
       </CardContent>
     </Card>
   );

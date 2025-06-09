@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
@@ -13,6 +12,7 @@ interface DashboardData {
   activeRequests: number;
   totalOrders: number;
   connectedInfluencers: number;
+  impactScore: number;
   postStats: {
     total: number;
     reels: number;
@@ -31,6 +31,7 @@ export const useBusinessDashboardData = () => {
     activeRequests: 0,
     totalOrders: 0,
     connectedInfluencers: 0,
+    impactScore: 0,
     postStats: {
       total: 0,
       reels: 0,
@@ -43,40 +44,40 @@ export const useBusinessDashboardData = () => {
   const [topPerformedOrders, setTopPerformedOrders] = useState([{
     id: '1',
     title: 'Summer Collection',
-    platform: 'Instagram',
-    serviceType: 'reel',
+    platforms: ['Instagram', 'Facebook'],
+    serviceTypes: ['reel', 'story'],
     performanceScore: 95,
     engagement: 9.2,
     reach: 65000
   }, {
     id: '2',
     title: 'Product Launch',
-    platform: 'Youtube',
-    serviceType: 'video',
+    platforms: ['Youtube'],
+    serviceTypes: ['video'],
     performanceScore: 89,
     engagement: 7.5,
     reach: 48000
   }, {
     id: '3',
     title: 'Brand Promotion',
-    platform: 'Instagram',
-    serviceType: 'post',
+    platforms: ['Instagram', 'Twitter'],
+    serviceTypes: ['post', 'reel'],
     performanceScore: 82,
     engagement: 6.7,
     reach: 35000
   }, {
     id: '4',
     title: 'Tutorial Series',
-    platform: 'Facebook',
-    serviceType: 'video',
+    platforms: ['Facebook', 'Youtube'],
+    serviceTypes: ['video', 'short'],
     performanceScore: 78,
     engagement: 5.4,
     reach: 28000
   }, {
     id: '5',
     title: 'Brand Partnership',
-    platform: 'Twitter',
-    serviceType: 'post',
+    platforms: ['Twitter'],
+    serviceTypes: ['post'],
     performanceScore: 75,
     engagement: 4.9,
     reach: 22000
@@ -148,26 +149,34 @@ export const useBusinessDashboardData = () => {
   
   const [pendingOrders, setPendingOrders] = useState([{
     id: '1',
-    brandName: 'Your Business',
+    title: 'Influencer Campaign - Summer',
     influencerName: 'Priya Sharma',
+    platforms: ['Instagram', 'Youtube'],
+    serviceTypes: ['reel', 'video'],
     status: 'pending',
     timestamp: new Date(Date.now() - 1000 * 60 * 60 * 3).toISOString()
   }, {
     id: '2',
-    brandName: 'Your Business',
+    title: 'Product Launch - Spring',
     influencerName: 'Raj Malhotra',
+    platforms: ['Facebook'],
+    serviceTypes: ['post'],
     status: 'pending',
     timestamp: new Date(Date.now() - 1000 * 60 * 60 * 6).toISOString()
   }, {
     id: '3',
-    brandName: 'Your Business',
+    title: 'Brand Awareness - Winter',
     influencerName: 'Aisha Khan',
+    platforms: ['Twitter', 'Instagram'],
+    serviceTypes: ['story', 'post'],
     status: 'pending',
     timestamp: new Date(Date.now() - 1000 * 60 * 60 * 9).toISOString()
   }, {
     id: '4',
-    brandName: 'Your Business',
+    title: 'Engagement Boost - Autumn',
     influencerName: 'Vikram Patel',
+    platforms: ['Youtube'],
+    serviceTypes: ['short'],
     status: 'awaiting',
     timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString()
   }]);
@@ -178,6 +187,29 @@ export const useBusinessDashboardData = () => {
   useEffect(() => {
     fetchDashboardData();
   }, [navigate]);
+
+  const calculateImpactScore = (
+    engagementRate: number,
+    reach: number,
+    consistency: number,
+    platformDiversity: number,
+    orderCompletionRate: number
+  ) => {
+    // Ensure all inputs are valid numbers, defaulting to 0 if NaN
+    const safeEngagementRate = isNaN(engagementRate) ? 0 : Math.min(engagementRate, 100);
+    const safeReach = isNaN(reach) ? 0 : Math.min(reach, 100);
+    const safeConsistency = isNaN(consistency) ? 0 : Math.min(consistency, 100);
+    const safePlatformDiversity = isNaN(platformDiversity) ? 0 : Math.min(platformDiversity, 100);
+    const safeOrderCompletionRate = isNaN(orderCompletionRate) ? 0 : Math.min(orderCompletionRate, 100);
+
+    return Math.round(
+      (safeEngagementRate * 0.35) +
+      (safeReach * 0.25) +
+      (safeConsistency * 0.15) +
+      (safePlatformDiversity * 0.10) +
+      (safeOrderCompletionRate * 0.15)
+    );
+  };
 
   const fetchDashboardData = async () => {
     setIsLoading(true);
@@ -213,30 +245,85 @@ export const useBusinessDashboardData = () => {
         throw requestsError;
       }
 
-      // Fetch payments
-      const { data: payments, error: paymentsError } = await supabase
-        .from('payments')
-        .select('amount, currency')
-        .eq('business_id', user.id)
-        .in('status', ['completed', 'processing']);
-      
-      if (paymentsError) {
-        throw paymentsError;
-      }
-
-      // Fetch post metrics for reach calculation
+      // Fetch post metrics for reach and engagement calculation
       const { data: postMetrics, error: metricsError } = await supabase
         .from('posts')
         .select(`
           id,
           post_type,
-          post_metrics(reach, impressions)
+          post_metrics(reach, impressions, engagement_rate)
         `)
         .eq('business_id', user.id);
       
       if (metricsError) {
         throw metricsError;
       }
+
+      // Calculate metrics
+      const totalSpentValue = orderRequests.reduce((sum, req) => sum + (req.price || 0), 0);
+      const completedCount = orderRequests.filter(req => req.status === 'completed').length;
+      const totalOrdersCount = orderRequests.length;
+      const activeRequestsCount = orderRequests.filter(req => req.status === 'pending' || req.status === 'approved').length;
+
+      // Calculate unique influencers
+      const uniqueInfluencers = new Set();
+      orderRequests.forEach(req => {
+        if (req.influencer_id) {
+          uniqueInfluencers.add(req.influencer_id);
+        }
+      });
+      const connectedInfluencersCount = uniqueInfluencers.size;
+
+      // Calculate content type counts
+      const postTypes = {
+        total: postMetrics.length,
+        reels: postMetrics.filter(post => post.post_type === 'reel').length,
+        videos: postMetrics.filter(post => post.post_type === 'video').length,
+        shorts: postMetrics.filter(post => post.post_type === 'short').length
+      };
+
+      // Calculate total reach
+      let totalReachValue = 0;
+      postMetrics.forEach(post => {
+        if (post.post_metrics && post.post_metrics.length > 0) {
+          totalReachValue += post.post_metrics.reduce((sum, metric) => sum + (metric.reach || 0), 0);
+        }
+      });
+
+      // Calculate impact score components
+      const avgEngagementRate = postMetrics.length > 0 
+        ? postMetrics.reduce((sum, post) => {
+            if (post.post_metrics && post.post_metrics.length > 0) {
+              return sum + post.post_metrics.reduce((metricSum, metric) => metricSum + (metric.engagement_rate || 0), 0);
+            }
+            return sum;
+          }, 0) / postMetrics.length
+        : 0;
+
+      const reachScore = totalReachValue > 0 
+        ? Math.min((totalReachValue / 100000) * 100, 100) 
+        : 0;
+
+      const consistencyScore = totalOrdersCount > 0 
+        ? (completedCount / totalOrdersCount) * 100 
+        : 0;
+
+      const platformDiversityScore = Math.min((Object.keys(postTypes).length / 4) * 100, 100);
+
+      const orderCompletionScore = totalOrdersCount > 0 
+        ? (completedCount / totalOrdersCount) * 100 
+        : 0;
+
+      const impactScore = calculateImpactScore(
+        avgEngagementRate,
+        reachScore,
+        consistencyScore,
+        platformDiversityScore,
+        orderCompletionScore
+      );
+
+      // Ensure impactScore is a valid number
+      const finalImpactScore = isNaN(impactScore) ? 0 : impactScore;
 
       // Transform the data to match our existing interface
       const formattedRequests: InfluencerRequest[] = orderRequests.map(request => {
@@ -262,38 +349,6 @@ export const useBusinessDashboardData = () => {
         };
       });
 
-      // Calculate dashboard metrics
-      const totalSpentValue = payments.reduce((sum, payment) => sum + (payment.amount || 0), 0);
-      const completedCount = orderRequests.filter(req => req.status === 'completed').length;
-      const totalOrdersCount = orderRequests.length;
-
-      // Count unique influencers
-      const uniqueInfluencers = new Set();
-      orderRequests.forEach(req => {
-        if (req.influencer_id) {
-          uniqueInfluencers.add(req.influencer_id);
-        }
-      });
-      const connectedInfluencersCount = uniqueInfluencers.size;
-
-      // Calculate content type counts - fixing the type comparison issue
-      const postTypes = {
-        total: postMetrics.length,
-        reels: postMetrics.filter(post => post.post_type === 'reel').length,
-        videos: postMetrics.filter(post => post.post_type === 'video').length,
-        shorts: postMetrics.filter(post => post.post_type === 'short').length
-      };
-
-      // Calculate total reach from post metrics
-      let totalReachValue = 0;
-      postMetrics.forEach(post => {
-        if (post.post_metrics && post.post_metrics.length > 0) {
-          totalReachValue += post.post_metrics.reduce((sum, metric) => sum + (metric.reach || 0), 0);
-        }
-      });
-      
-      const activeRequestsCount = orderRequests.filter(req => req.status === 'pending' || req.status === 'approved').length;
-
       // Update state with fetched data
       setRequests(formattedRequests);
       setDashboardData({
@@ -303,6 +358,7 @@ export const useBusinessDashboardData = () => {
         activeRequests: activeRequestsCount,
         totalOrders: totalOrdersCount,
         connectedInfluencers: connectedInfluencersCount,
+        impactScore: finalImpactScore,
         postStats: postTypes
       });
 
@@ -351,7 +407,7 @@ export const useBusinessDashboardData = () => {
       };
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
-      toast.error('Failed to load dashboard data');
+      toast.error('Failed to fetch dashboard data. Please try again.');
     } finally {
       setIsLoading(false);
     }

@@ -1,113 +1,55 @@
 import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { formatCurrency, formatPercentage } from './utils/formatUtils';
-import { CircleDollarSign, BarChart, Users, Target, ArrowUp, ArrowDown } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { formatNumber } from '@/components/influencers/utils/formatUtils';
+
 interface CampaignMetricsProps {
   campaignValue: number;
   campaignGoal: number;
   metrics: {
-    impressions: {
-      value: number;
-      change: number;
-    };
-    engagementRate: {
-      value: number;
-      change: number;
-    };
-    conversionRate: {
-      value: number;
-      change: number;
-    };
+    totalPosts: number;
+    engagementRate: number;
+    reach: number;
+    impressions: number;
   };
 }
-const CampaignMetrics: React.FC<CampaignMetricsProps> = ({
-  campaignValue,
-  campaignGoal,
-  metrics
-}) => {
-  const percentage = Math.min(Math.round(campaignValue / campaignGoal * 100), 100);
-  return <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-      <Card className="border-border bg-card">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-medium text-foreground">Campaign Revenue</h3>
-            <div className="p-2 bg-primary/10 text-primary rounded-full">
-              <CircleDollarSign className="h-5 w-5" />
-            </div>
-          </div>
-          
-          <div className="text-center mb-2">
-            <h2 className="text-3xl font-bold text-primary">
-              {formatCurrency(campaignValue)}
-            </h2>
-            <p className="text-sm text-muted-foreground">
-              of {formatCurrency(campaignGoal)} Monthly Goal
-            </p>
-          </div>
-          
-          
-        </CardContent>
-      </Card>
 
-      <Card className="border-border bg-card">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-medium text-muted-foreground">Total Impressions</h3>
-            <div className="p-2 bg-primary/10 text-primary rounded-full">
-              <Users className="h-5 w-5" />
-            </div>
-          </div>
-          <div className="flex items-end justify-between">
-            <h2 className="text-2xl font-bold text-foreground">
-              {metrics.impressions.value.toLocaleString()}
-            </h2>
-            <div className={`flex items-center text-sm ${metrics.impressions.change > 0 ? 'text-green-500' : 'text-red-500'}`}>
-              {metrics.impressions.change > 0 ? <ArrowUp className="w-4 h-4 mr-1" /> : <ArrowDown className="w-4 h-4 mr-1" />}
-              {formatPercentage(Math.abs(metrics.impressions.change))}
-            </div>
-          </div>
+const CampaignMetrics: React.FC<CampaignMetricsProps> = ({ campaignValue, campaignGoal, metrics }) => {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Total No. of Posts</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">{formatNumber(metrics.totalPosts)}</div>
         </CardContent>
       </Card>
-
-      <Card className="border-border bg-card">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-medium text-muted-foreground">Engagement Rate</h3>
-            <div className="p-2 bg-primary/10 text-primary rounded-full">
-              <BarChart className="h-5 w-5" />
-            </div>
-          </div>
-          <div className="flex items-end justify-between">
-            <h2 className="text-2xl font-bold text-foreground">
-              {formatPercentage(metrics.engagementRate.value)}
-            </h2>
-            <div className={`flex items-center text-sm ${metrics.engagementRate.change > 0 ? 'text-green-500' : 'text-red-500'}`}>
-              {metrics.engagementRate.change > 0 ? <ArrowUp className="w-4 h-4 mr-1" /> : <ArrowDown className="w-4 h-4 mr-1" />}
-              {formatPercentage(Math.abs(metrics.engagementRate.change))}
-            </div>
-          </div>
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Engagement Rate</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">{metrics.engagementRate}%</div>
         </CardContent>
       </Card>
-
-      <Card className="border-border bg-card">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-medium text-muted-foreground">Conversion Rate</h3>
-            <div className="p-2 bg-primary/10 text-primary rounded-full">
-              <Target className="h-5 w-5" />
-            </div>
-          </div>
-          <div className="flex items-end justify-between">
-            <h2 className="text-2xl font-bold text-foreground">
-              {formatPercentage(metrics.conversionRate.value)}
-            </h2>
-            <div className={`flex items-center text-sm ${metrics.conversionRate.change > 0 ? 'text-green-500' : 'text-red-500'}`}>
-              {metrics.conversionRate.change > 0 ? <ArrowUp className="w-4 h-4 mr-1" /> : <ArrowDown className="w-4 h-4 mr-1" />}
-              {formatPercentage(Math.abs(metrics.conversionRate.change))}
-            </div>
-          </div>
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Reach</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">{formatNumber(metrics.reach)}</div>
         </CardContent>
       </Card>
-    </div>;
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Impressions</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">{formatNumber(metrics.impressions)}</div>
+        </CardContent>
+      </Card>
+    </div>
+  );
 };
+
 export default CampaignMetrics;
