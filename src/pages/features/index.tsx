@@ -63,23 +63,23 @@ const FeaturesPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
-      <LandingHeader />
+    <div className="min-h-screen relative">
+      <BackgroundGradientAnimation
+        gradientBackgroundStart="hsl(235, 75%, 60%)"
+        gradientBackgroundEnd="hsl(222.2, 84%, 4.9%)"
+        firstColor="114, 183, 255"
+        secondColor="114, 9, 183"
+        thirdColor="242, 37, 133"
+        fourthColor="255, 51, 102"
+        fifthColor="251, 133, 0"
+        pointerColor="114, 183, 255"
+        containerClassName="fixed inset-0"
+      >
+        <div className="relative z-10 min-h-screen bg-background/80 backdrop-blur-sm">
+          <LandingHeader />
 
-      {/* Hero Section with Gradient Background */}
-      <section className="relative min-h-[60vh]">
-        <BackgroundGradientAnimation
-          gradientBackgroundStart="hsl(235, 75%, 60%)"
-          gradientBackgroundEnd="hsl(222.2, 84%, 4.9%)"
-          firstColor="114, 183, 255"
-          secondColor="114, 9, 183"
-          thirdColor="242, 37, 133"
-          fourthColor="255, 51, 102"
-          fifthColor="251, 133, 0"
-          pointerColor="114, 183, 255"
-          containerClassName="absolute inset-0"
-        >
-          <div className="relative z-10 py-20 px-4 sm:px-6 lg:px-8">
+          {/* Hero Section */}
+          <section className="py-20 px-4 sm:px-6 lg:px-8">
             <div className="container mx-auto text-center">
               <h1 className="text-4xl md:text-6xl font-bold mb-6 text-white">
                 Powerful Features for
@@ -97,65 +97,65 @@ const FeaturesPage = () => {
                 </Button>
               </div>
             </div>
-          </div>
-        </BackgroundGradientAnimation>
-      </section>
+          </section>
 
-      {/* Features Grid */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-muted/50">
-        <div className="container mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {features.map((feature, index) => (
-              <Card key={index} className="h-full hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-                    <feature.icon className="w-6 h-6 text-primary" />
-                  </div>
-                  <CardTitle className="text-xl">{feature.title}</CardTitle>
-                  <CardDescription className="text-base">
-                    {feature.description}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-2">
-                    {feature.benefits.map((benefit, idx) => (
-                      <li key={idx} className="flex items-center text-sm text-muted-foreground">
-                        <div className="w-1.5 h-1.5 bg-primary rounded-full mr-3"></div>
-                        {benefit}
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          {/* Features Grid */}
+          <section className="py-20 px-4 sm:px-6 lg:px-8 bg-background/50 backdrop-blur-sm">
+            <div className="container mx-auto">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {features.map((feature, index) => (
+                  <Card key={index} className="h-full hover:shadow-lg transition-shadow">
+                    <CardHeader>
+                      <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                        <feature.icon className="w-6 h-6 text-primary" />
+                      </div>
+                      <CardTitle className="text-xl">{feature.title}</CardTitle>
+                      <CardDescription className="text-base">
+                        {feature.description}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <ul className="space-y-2">
+                        {feature.benefits.map((benefit, idx) => (
+                          <li key={idx} className="flex items-center text-sm text-muted-foreground">
+                            <div className="w-1.5 h-1.5 bg-primary rounded-full mr-3"></div>
+                            {benefit}
+                          </li>
+                        ))}
+                      </ul>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* Digital Marketing Services Section */}
+          <DigitalMarketingSection />
+
+          {/* CTA Section */}
+          <section className="py-20 px-4 sm:px-6 lg:px-8">
+            <div className="container mx-auto text-center">
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                Ready to Transform Your Influencer Marketing?
+              </h2>
+              <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+                Join thousands of brands using InfluencerConnect to run successful campaigns and measure real ROI.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button size="lg" onClick={() => navigate('/signup')}>
+                  Start Your Free Trial
+                </Button>
+                <Button size="lg" variant="outline" onClick={() => navigate('/pricing')}>
+                  View Pricing Plans
+                </Button>
+              </div>
+            </div>
+          </section>
+
+          <Footer />
         </div>
-      </section>
-
-      {/* Digital Marketing Services Section */}
-      <DigitalMarketingSection />
-
-      {/* CTA Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
-        <div className="container mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">
-            Ready to Transform Your Influencer Marketing?
-          </h2>
-          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Join thousands of brands using InfluencerConnect to run successful campaigns and measure real ROI.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" onClick={() => navigate('/signup')}>
-              Start Your Free Trial
-            </Button>
-            <Button size="lg" variant="outline" onClick={() => navigate('/pricing')}>
-              View Pricing Plans
-            </Button>
-          </div>
-        </div>
-      </section>
-
-      <Footer />
+      </BackgroundGradientAnimation>
     </div>
   );
 };
