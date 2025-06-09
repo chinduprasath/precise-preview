@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -68,11 +67,11 @@ interface FilterPanelProps {
   selectedAge: string;
   setSelectedAge: (age: string) => void;
   selectedPlatforms: Platform['value'][];
-  setSelectedPlatforms: (platforms: Platform['value'][]) => void;
+  setSelectedPlatforms: React.Dispatch<React.SetStateAction<Platform['value'][]>>;
   selectedAudienceCountries: AudienceCountry[];
-  setSelectedAudienceCountries: (countries: AudienceCountry[]) => void;
+  setSelectedAudienceCountries: React.Dispatch<React.SetStateAction<AudienceCountry[]>>;
   selectedAudienceLanguages: AudienceLanguage[];
-  setSelectedAudienceLanguages: (languages: AudienceLanguage[]) => void;
+  setSelectedAudienceLanguages: React.Dispatch<React.SetStateAction<AudienceLanguage[]>>;
   isPlatformDropdownOpen: boolean;
   setIsPlatformDropdownOpen: (open: boolean) => void;
   isAudienceCountryDropdownOpen: boolean;
