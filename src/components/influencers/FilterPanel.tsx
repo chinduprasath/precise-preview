@@ -148,7 +148,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
   formatNumber
 }) => {
   const handlePlatformSelect = (platform: Platform['value']) => {
-    setSelectedPlatforms(prev => 
+    setSelectedPlatforms((prev: Platform['value'][]) => 
       prev.includes(platform) 
         ? prev.filter(p => p !== platform)
         : [...prev, platform]
@@ -369,7 +369,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
                       key={country.value}
                       className="flex items-center gap-2 px-2 py-1.5 hover:bg-accent cursor-pointer"
                       onClick={() => {
-                        setSelectedAudienceCountries(prev =>
+                        setSelectedAudienceCountries((prev: AudienceCountry[]) =>
                           prev.includes(country.value)
                             ? prev.filter(c => c !== country.value)
                             : [...prev, country.value]
@@ -379,7 +379,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
                       <Checkbox
                         checked={selectedAudienceCountries.includes(country.value)}
                         onCheckedChange={() => {
-                          setSelectedAudienceCountries(prev =>
+                          setSelectedAudienceCountries((prev: AudienceCountry[]) =>
                             prev.includes(country.value)
                               ? prev.filter(c => c !== country.value)
                               : [...prev, country.value]
@@ -418,7 +418,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
                       key={language.value}
                       className="flex items-center gap-2 px-2 py-1.5 hover:bg-accent cursor-pointer"
                       onClick={() => {
-                        setSelectedAudienceLanguages(prev =>
+                        setSelectedAudienceLanguages((prev: AudienceLanguage[]) =>
                           prev.includes(language.value)
                             ? prev.filter(l => l !== language.value)
                             : [...prev, language.value]
@@ -428,7 +428,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
                       <Checkbox
                         checked={selectedAudienceLanguages.includes(language.value)}
                         onCheckedChange={() => {
-                          setSelectedAudienceLanguages(prev =>
+                          setSelectedAudienceLanguages((prev: AudienceLanguage[]) =>
                             prev.includes(language.value)
                               ? prev.filter(l => l !== language.value)
                               : [...prev, language.value]
