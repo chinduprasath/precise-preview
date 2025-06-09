@@ -361,7 +361,13 @@ const InfluencersPage = () => {
          return selectedPlatforms.includes(platformName);
        }));
 
-    return matchesSearch && matchesPlatform;
+    const matchesFollowerRange = 
+      (influencer.followers_instagram || 0) >= followerRange[0] && (influencer.followers_instagram || 0) <= followerRange[1] ||
+      (influencer.followers_facebook || 0) >= followerRange[0] && (influencer.followers_facebook || 0) <= followerRange[1] ||
+      (influencer.followers_twitter || 0) >= followerRange[0] && (influencer.followers_twitter || 0) <= followerRange[1] ||
+      (influencer.followers_youtube || 0) >= followerRange[0] && (influencer.followers_youtube || 0) <= followerRange[1];
+
+    return matchesSearch && matchesPlatform && matchesFollowerRange;
   });
   
   const handleInfluencerClick = (influencer: Influencer) => {
