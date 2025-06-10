@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { 
   LayoutDashboard, 
@@ -56,6 +55,11 @@ export const createNavigationItems = (userType: string): NavItem[] => {
         icon: React.createElement(Shield, { className: "w-full h-full" }),
         label: "Team Management",
         href: "/dashboard/admin/team"
+      },
+      {
+        icon: React.createElement(FileText, { className: "w-full h-full" }),
+        label: "Reports",
+        href: "/admin/reports"
       },
       {
         icon: React.createElement(LifeBuoy, { className: "w-full h-full" }),

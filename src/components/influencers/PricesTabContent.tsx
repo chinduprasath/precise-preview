@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -22,7 +21,7 @@ interface PricesTabContentProps {
 
 const platformServices = [
   { id: 'post', name: 'Post Image/Video', price: '499₹' },
-  { id: 'reel', name: 'Reel', price: '499₹' },
+  { id: 'reel', name: 'Reels/Shorts', price: '499₹' },
   { id: 'story', name: 'Story (Image/Video)', price: '499₹' },
   { id: 'shorts', name: 'Short Video (<10m)', price: '499₹' },
   { id: 'videos', name: 'Video (>10m)', price: '499₹' },

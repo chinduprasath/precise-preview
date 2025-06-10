@@ -251,8 +251,8 @@ const InfluencerDashboard = () => {
                 <Video className="h-5 w-5 text-primary" />
               </MetricCard>
               
-              <MetricCard title="Polls" value="10" className="bg-white" valueClassName="text-primary">
-                <PieChart className="h-5 w-5 text-primary" />
+              <MetricCard title="Story" value="25" className="bg-white" valueClassName="text-primary">
+                <FileText className="h-5 w-5 text-primary" />
               </MetricCard>
             </div>
             

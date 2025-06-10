@@ -14,7 +14,6 @@ import ServicesPage from "./pages/services";
 import OrdersPage from "./pages/orders";
 import PlaceOrderPage from "./pages/orders/place";
 import RequestsPage from "./pages/requests";
-import ReportsPage from "./pages/reports";
 import LandingPage from "./pages/landing";
 import SignUpPage from "./pages/auth/signup";
 import SignInPage from "./pages/auth/signin";
@@ -47,10 +46,12 @@ import CheckoutPage from "./pages/checkout";
 import PaymentPage from "./pages/payment";
 import ServiceOrdersPage from "./pages/dashboard/admin/service-orders";
 import ServiceOrderDetailPage from "./pages/dashboard/admin/service-order-detail";
+import ReportsPage from "./pages/reports";
 import FeaturesPage from "./pages/features";
 import AboutPage from "./pages/about";
 import ContactPage from "./pages/contact";
 import PricingPage from "./pages/pricing";
+import AdminReportsPage from "./pages/admin/reports/AdminReportsPage";
 
 function App() {
   const queryClient = new QueryClient({
@@ -117,19 +118,20 @@ function App() {
                 <Route path="/dashboard/admin/service-orders" element={<ServiceOrdersPage />} />
                 <Route path="/dashboard/admin/service-orders/:id" element={<ServiceOrderDetailPage />} />
                 <Route path="/admin/support" element={<AdminSupportPage />} />
+                <Route path="/admin/reports" element={<AdminReportsPage />} />
                 <Route path="/dashboard/influencer" element={<InfluencerDashboard />} />
                 <Route path="/dashboard/business" element={<BusinessDashboard />} />
                 
                 <Route path="/account/business" element={<BusinessProfile />} />
                 <Route path="/account/influencer" element={<InfluencerProfile />} />
                 <Route path="/account/admin" element={<AdminProfile />} />
-                <Route path="/account/influencerprofile" element={<Navigate to="/account/influencer" replace />} />
+                <Route path="/account/influencerprofile" element={<Navigate to={`/account/${localStorage.getItem("userType") || "business"}`} replace />} />
                 <Route path="/account/settings" element={<SettingsPage />} />
                 <Route path="/billing" element={<BillingPage />} />
                 <Route path="/onboard" element={<OnboardPage />} />
                 
                 <Route path="/account" element={
-                  <Navigate to={`/account/${localStorage.getItem('userType') || 'business'}`} replace />
+                  <Navigate to={`/account/${localStorage.getItem("userType") || "business"}`} replace />
                 } />
                 
                 <Route path="/checkout" element={<CheckoutPage />} />

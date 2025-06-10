@@ -26,7 +26,7 @@ const Header = () => {
     <header className="h-16 border-b border-border flex items-center justify-between bg-background w-full">
       {/* Left side - Search Bar */}
       <div className="pl-6">
-        {userType !== 'business' && <SearchBar />}
+        {userType !== 'business' && userType !== 'admin' && userType !== 'influencer' && <SearchBar />}
       </div>
       
       {/* Right side - All utility icons */}
