@@ -9,6 +9,7 @@ import ReachChart from '@/components/reach/ReachChart';
 import PerformanceMetrics from '@/components/reach/PerformanceMetrics';
 import DemographicChart from '@/components/reach/DemographicChart';
 import ReachViewsChart from '@/components/reach/ReachViewsChart';
+import SegmentedDonutChart from '@/components/reach/SegmentedDonutChart';
 import { 
   mockOrders, 
   platformEngagementData, 
@@ -17,6 +18,7 @@ import {
   demographicData, 
   performanceData,
   reachViewsData,
+  analyticsData,
   getOrderMetrics 
 } from '@/data/reachData';
 import { formatNumber } from '@/components/influencers/utils/formatUtils';
@@ -60,6 +62,7 @@ const ReachPage = () => {
   const currentDemographicData = demographicData[selectedOrder as keyof typeof demographicData] || demographicData['1'];
   const currentPerformanceData = performanceData[selectedOrder as keyof typeof performanceData] || performanceData['1'];
   const currentReachViewsData = reachViewsData[selectedOrder as keyof typeof reachViewsData] || reachViewsData['1'];
+  const currentAnalyticsData = analyticsData[selectedOrder as keyof typeof analyticsData] || analyticsData['1'];
 
   const timeRangeOptions = [
     { value: 'last_24_hours', label: 'Last 24 hours', disabled: false },
@@ -180,12 +183,20 @@ const ReachPage = () => {
               }} />
             </div>
 
-            {/* New Reach & Views Chart */}
-            <div className="w-full">
-              <ReachViewsChart 
-                data={currentReachViewsData}
-                title="Reach vs Views Analysis"
-              />
+            {/* Reach & Views Chart with Analytics */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2">
+                <ReachViewsChart 
+                  data={currentReachViewsData}
+                  title="Reach vs Views Analysis"
+                />
+              </div>
+              <div className="lg:col-span-1">
+                <SegmentedDonutChart 
+                  data={currentAnalyticsData}
+                  title="Paid vs Organic Analytics"
+                />
+              </div>
             </div>
           </div>
         </main>

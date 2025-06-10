@@ -321,6 +321,69 @@ export const reachViewsData = {
   ]
 };
 
+export const analyticsData = {
+  '1': {
+    paid: {
+      impressions: 45000,
+      reach: 32000,
+      engagement: 8500
+    },
+    organic: {
+      impressions: 68000,
+      reach: 48000,
+      engagement: 12500
+    }
+  },
+  '2': {
+    paid: {
+      impressions: 52000,
+      reach: 38000,
+      engagement: 9800
+    },
+    organic: {
+      impressions: 75000,
+      reach: 55000,
+      engagement: 14200
+    }
+  },
+  '3': {
+    paid: {
+      impressions: 38000,
+      reach: 28000,
+      engagement: 7200
+    },
+    organic: {
+      impressions: 85000,
+      reach: 62000,
+      engagement: 18500
+    }
+  },
+  '4': {
+    paid: {
+      impressions: 48000,
+      reach: 35000,
+      engagement: 8900
+    },
+    organic: {
+      impressions: 42000,
+      reach: 32000,
+      engagement: 9500
+    }
+  },
+  '5': {
+    paid: {
+      impressions: 55000,
+      reach: 42000,
+      engagement: 11500
+    },
+    organic: {
+      impressions: 78000,
+      reach: 58000,
+      engagement: 16800
+    }
+  }
+};
+
 export const getOrderMetrics = (orderId: string) => {
   // In a real app, this would fetch data from an API
   return {
