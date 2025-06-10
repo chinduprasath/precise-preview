@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { 
@@ -82,17 +81,17 @@ const ReachViewsChart: React.FC<ReachViewsChartProps> = ({
               <Line 
                 type="monotone" 
                 dataKey="views" 
-                stroke="hsl(var(--secondary))" 
+                stroke="#FFD700" 
                 strokeWidth={3}
                 name="Views"
                 dot={{ 
-                  fill: "hsl(var(--secondary))", 
+                  fill: "#FFD700", 
                   strokeWidth: 2,
                   r: 4
                 }}
                 activeDot={{ 
                   r: 6, 
-                  stroke: "hsl(var(--secondary))",
+                  stroke: "#FFD700",
                   strokeWidth: 2,
                   fill: "hsl(var(--background))"
                 }}

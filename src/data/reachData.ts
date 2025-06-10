@@ -9,7 +9,8 @@ export const mockOrders: OrderData[] = [
     influencer: 'Christopher Campbell', 
     status: 'completed', 
     value: 125000,
-    description: 'Summer fashion photoshoot with product placement and Instagram stories'
+    description: 'Summer fashion photoshoot with product placement and Instagram stories',
+    orderType: 'Post'
   },
   { 
     id: '2', 
@@ -19,7 +20,8 @@ export const mockOrders: OrderData[] = [
     influencer: 'Kelly Sikkema', 
     status: 'processing', 
     value: 158000,
-    description: 'Viral unboxing video and review of the new XYZ tech product'
+    description: 'Viral unboxing video and review of the new XYZ tech product',
+    orderType: 'Reel'
   },
   { 
     id: '3', 
@@ -29,7 +31,8 @@ export const mockOrders: OrderData[] = [
     influencer: 'Houcine Ncib', 
     status: 'shipped', 
     value: 105000,
-    description: 'In-depth review and tutorial for the Spring skincare line'
+    description: 'In-depth review and tutorial for the Spring skincare line',
+    orderType: 'Video'
   },
   { 
     id: '4', 
@@ -39,7 +42,8 @@ export const mockOrders: OrderData[] = [
     influencer: 'Jake Nackos', 
     status: 'delivered', 
     value: 87000,
-    description: 'Behind-the-scenes coverage of Fashion Week events and afterparties'
+    description: 'Behind-the-scenes coverage of Fashion Week events and afterparties',
+    orderType: 'Post'
   },
   { 
     id: '5', 
@@ -49,7 +53,8 @@ export const mockOrders: OrderData[] = [
     influencer: 'Sarah Johnson', 
     status: 'completed', 
     value: 210000,
-    description: 'Coordinated campaign across Instagram, YouTube, and Facebook promoting wellness products'
+    description: 'Coordinated campaign across Instagram, YouTube, and Facebook promoting wellness products',
+    orderType: 'Poll'
   },
 ];
 

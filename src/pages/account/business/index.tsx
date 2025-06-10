@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '@/components/layout/Sidebar';
@@ -10,11 +9,93 @@ import { supabase } from '@/integrations/supabase/client';
 import BusinessDetails from '@/components/profile/BusinessDetails';
 import BusinessServicesTab from '@/components/profile/BusinessServicesTab';
 import BusinessDataTab from '@/components/profile/BusinessDataTab';
+import BusinessEditModal from '@/components/profile/BusinessEditModal';
 
 const BusinessProfile = () => {
   const navigate = useNavigate();
   const [user, setUser] = React.useState<any>(null);
   const [loading, setLoading] = React.useState(true);
+  const [isRegistered, setIsRegistered] = React.useState(true);
+  const [businessData, setBusinessData] = React.useState<any>(null);
+  const [isEditing, setIsEditing] = React.useState(false);
+
+  const handleEdit = () => {
+    setIsEditing(true);
+  };
+
+  const handleSave = async (updatedData: any) => {
+    if (!user?.id) return;
+
+    setLoading(true);
+    const { error } = await supabase
+      .from('business_profiles')
+      .update({
+        company_name: updatedData.businessName,
+        industry: [updatedData.category],
+        website: updatedData.website,
+      })
+      .eq('id', user.id);
+
+    if (error) {
+      console.error('Error updating business profile:', error);
+      // TODO: Show a toast notification for error
+    } else {
+      // Update the local state with the new data immediately for UI consistency
+      setBusinessData(updatedData);
+      setIsRegistered(updatedData.isRegistered);
+      // The following fields are not directly supported by the current business_profiles schema.
+      // To persist these, the Supabase table schema would need to be updated:
+      // updatedData.serviceType
+      // updatedData.location
+      // updatedData.priceRange
+      // updatedData.accountManagement
+      // A full re-fetch might still be needed if other data dependencies exist
+      // await fetchBusinessData(user.id); // Uncomment if a full re-fetch is desired
+    }
+    setIsEditing(false);
+    setLoading(false);
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+  };
+
+  const fetchBusinessData = async (userId: string) => {
+    const { data: businessProfile, error } = await supabase
+      .from('business_profiles')
+      .select('company_name, industry, website')
+      .eq('id', userId)
+      .single();
+
+    if (error && error.code !== 'PGRST116') {
+      console.error('Error fetching business profile:', error);
+      setIsRegistered(false);
+    } else if (businessProfile) {
+      setBusinessData({
+        businessName: businessProfile.company_name || "",
+        category: businessProfile.industry ? businessProfile.industry[0] : '',
+        website: businessProfile.website || "",
+        isRegistered: true,
+        serviceType: "Online & Offline",
+        location: "[Address]",
+        priceRange: "₹5,000 - ₹50,000",
+        accountManagement: "Select",
+      });
+      setIsRegistered(true);
+    } else {
+      setIsRegistered(false);
+      setBusinessData({
+        businessName: "ABC company",
+        category: "XYZ Products",
+        website: "www.xyz.com",
+        isRegistered: false,
+        serviceType: "Online & Offline",
+        location: "[Address]",
+        priceRange: "₹5,000 - ₹50,000",
+        accountManagement: "Select",
+      });
+    }
+  };
 
   React.useEffect(() => {
     const checkUser = async () => {
@@ -31,11 +112,16 @@ const BusinessProfile = () => {
       }
       
       setUser(data.session.user);
+
+      if (data.session.user?.id) {
+        await fetchBusinessData(data.session.user.id);
+      }
+
       setLoading(false);
     };
 
     checkUser();
-  }, [navigate]);
+  }, [navigate, user?.id]);
 
   if (loading) {
     return (
@@ -85,11 +171,13 @@ const BusinessProfile = () => {
               <div className="mt-6 flex flex-col md:flex-row gap-4">
                 <div className="md:w-1/3 flex-shrink-0">
                   <BusinessDetails 
-                    businessName="ABC company"
-                    category="XYZ Products"
-                    serviceType="Online & Offline"
-                    website="www.xyz.com"
-                    location="[Address]"
+                    businessName={businessData?.businessName || "ABC company"}
+                    category={businessData?.category || "XYZ Products"}
+                    serviceType={businessData?.serviceType || "Online & Offline"}
+                    website={businessData?.website || "www.xyz.com"}
+                    location={businessData?.location || "[Address]"}
+                    isRegistered={businessData?.isRegistered ?? false}
+                    onEdit={handleEdit}
                   />
                 </div>
 
@@ -116,6 +204,14 @@ const BusinessProfile = () => {
           </div>
         </div>
       </div>
+      {isEditing && businessData && (
+        <BusinessEditModal 
+          isOpen={isEditing}
+          onClose={handleCancel}
+          onSave={handleSave}
+          initialData={businessData}
+        />
+      )}
     </div>
   );
 };

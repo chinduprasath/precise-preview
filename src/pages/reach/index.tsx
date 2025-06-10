@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
@@ -114,18 +113,41 @@ const ReachPage = () => {
               </div>
             </div>
             
-            <CampaignMetrics 
-              campaignValue={currentOrder.value} 
-              campaignGoal={200000} 
-              metrics={orderMetrics}
-            />
-
+            {/* First row of metric cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+              <PlatformMetricCard 
+                platform="instagram" 
+                title="Total No of Posts" 
+                value={formatNumber(orderMetrics.totalPosts)} 
+                change={{ value: 15.2, isPositive: true }} // Placeholder change
+              />
               <PlatformMetricCard 
                 platform="instagram" 
                 title="Total Views" 
                 value={formatNumber(12500)} 
                 change={{ value: 15.2, isPositive: true }} 
+              />
+              <PlatformMetricCard 
+                platform="facebook" 
+                title="Engagement Rate" 
+                value={`${orderMetrics.engagementRate}%`} 
+                change={{ value: 8.5, isPositive: true }} 
+              />
+              <PlatformMetricCard 
+                platform="twitter" 
+                title="Reach" 
+                value={formatNumber(orderMetrics.reach)} 
+                change={{ value: 0.1, isPositive: true }} 
+              />
+            </div>
+
+            {/* Second row of metric cards */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+              <PlatformMetricCard 
+                platform="youtube" 
+                title="Impressions" 
+                value={formatNumber(orderMetrics.impressions)} 
+                change={{ value: 0.3, isPositive: true }} 
               />
               <PlatformMetricCard 
                 platform="facebook" 
@@ -136,13 +158,13 @@ const ReachPage = () => {
               <PlatformMetricCard 
                 platform="cpe" 
                 title="CPE" 
-                value={formatNumber(0.5)} 
+                value={formatNumber(currentPerformanceData.find(item => item.label === 'Cost per Acquisition')?.percentage || 0)} 
                 change={{ value: 0.1, isPositive: true }} 
               />
               <PlatformMetricCard 
                 platform="cpm" 
                 title="CPM" 
-                value={formatNumber(2.5)} 
+                value={formatNumber(currentPerformanceData.find(item => item.label === 'CTR')?.percentage || 0)} 
                 change={{ value: 0.3, isPositive: true }} 
               />
             </div>
@@ -169,34 +191,37 @@ const ReachPage = () => {
               />
             </div>
 
+            {/* Adjusted layout for Demographic and Analytics charts */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-              <EngagementChart 
-                data={currentConversionData}
-                title="Clicks"
-                dataKeys={[
-                  { key: 'clicks', name: 'Clicks' }
-                ]}
-              />
-              <DemographicChart data={currentDemographicData} />
-              <PerformanceMetrics metrics={{ 
-                cpe: currentPerformanceData.find(item => item.label === 'Cost per Acquisition')?.percentage || 0,
-                cpm: currentPerformanceData.find(item => item.label === 'CTR')?.percentage || 0
-              }} />
-            </div>
-
-            {/* Reach & Views Chart with Analytics - Adjusted sizes */}
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-              <div className="lg:col-span-2">
-                <ReachViewsChart 
-                  data={currentReachViewsData}
-                  title="Reach vs Views Analysis"
-                />
+              <div className="md:col-span-1">
+                <DemographicChart data={currentDemographicData} />
               </div>
-              <div className="lg:col-span-3">
+              <div className="md:col-span-2">
                 <SegmentedDonutChart 
                   data={currentAnalyticsData}
                   title="Paid vs Organic Analytics"
                 />
+              </div>
+            </div>
+
+            {/* Adjusted layout for Clicks, Performance, and Reach & Views charts */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <ReachViewsChart 
+                data={currentReachViewsData}
+                title="Reach vs Views Analysis"
+              />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <EngagementChart 
+                  data={currentConversionData}
+                  title="Clicks"
+                  dataKeys={[
+                    { key: 'clicks', name: 'Clicks' }
+                  ]}
+                />
+                <PerformanceMetrics metrics={{ 
+                  cpe: currentPerformanceData.find(item => item.label === 'Cost per Acquisition')?.percentage || 0,
+                  cpm: currentPerformanceData.find(item => item.label === 'CTR')?.percentage || 0
+                }} />
               </div>
             </div>
           </div>

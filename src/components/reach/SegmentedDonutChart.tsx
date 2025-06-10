@@ -198,15 +198,18 @@ const SegmentedDonutChart: React.FC<SegmentedDonutChartProps> = ({
                   ))}
                 </Pie>
                 
-                <Tooltip content={<CustomTooltip />} />
+                <Tooltip 
+                  content={<CustomTooltip />} 
+                  wrapperStyle={{ zIndex: 9999 }}
+                />
               </PieChart>
             </ResponsiveContainer>
             
             {/* Center label */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
               <div className="text-center">
-                <div className="text-sm text-muted-foreground font-medium">Total Activity</div>
-                <div className="text-2xl font-bold text-foreground">
+                <div className="text-xs text-muted-foreground font-medium">Total Activity</div>
+                <div className="text-lg font-bold text-foreground">
                   {(grandTotal / 1000).toFixed(0)}K
                 </div>
               </div>

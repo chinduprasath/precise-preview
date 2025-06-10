@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
@@ -30,7 +29,7 @@ const PerformanceMetrics: React.FC<PerformanceMetricsProps> = ({ metrics }) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Campaign Performance Metrics</CardTitle>
+        <CardTitle>CPE & CPM</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="h-[300px]">

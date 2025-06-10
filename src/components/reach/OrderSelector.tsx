@@ -25,6 +25,11 @@ export interface OrderData {
   status: 'processing' | 'shipped' | 'delivered' | 'completed';
   value: number;
   description?: string;
+  orderType?: 'Post' | 'Reel' | 'Video' | 'Poll';
+  totalViews?: number;
+  totalVotes?: number;
+  numberOfPolls?: number;
+  pollStatus?: string;
 }
 
 interface OrderSelectorProps {
@@ -104,7 +109,9 @@ const OrderSelector: React.FC<OrderSelectorProps> = ({
                       className="flex items-center justify-between py-3"
                     >
                       <div>
-                        <p className="font-medium">{order.name}</p>
+                        <p className="font-medium">
+                          {order.name} {order.orderType && <span className="text-muted-foreground text-xs">({order.orderType})</span>}
+                        </p>
                         <p className="text-xs text-muted-foreground">
                           {order.orderNumber} • {formatDate(order.date)}
                         </p>
