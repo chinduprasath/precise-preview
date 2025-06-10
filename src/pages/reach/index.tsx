@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
@@ -119,7 +120,7 @@ const ReachPage = () => {
               metrics={orderMetrics}
             />
 
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
               <PlatformMetricCard 
                 platform="instagram" 
                 title="Total Views" 
@@ -168,7 +169,7 @@ const ReachPage = () => {
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
               <EngagementChart 
                 data={currentConversionData}
                 title="Clicks"
@@ -183,15 +184,15 @@ const ReachPage = () => {
               }} />
             </div>
 
-            {/* Reach & Views Chart with Analytics */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Reach & Views Chart with Analytics - Adjusted sizes */}
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
               <div className="lg:col-span-2">
                 <ReachViewsChart 
                   data={currentReachViewsData}
                   title="Reach vs Views Analysis"
                 />
               </div>
-              <div className="lg:col-span-1">
+              <div className="lg:col-span-3">
                 <SegmentedDonutChart 
                   data={currentAnalyticsData}
                   title="Paid vs Organic Analytics"
