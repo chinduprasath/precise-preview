@@ -155,20 +155,20 @@ const SegmentedDonutChart: React.FC<SegmentedDonutChartProps> = ({
     <Card className="border-border">
       <CardContent className="p-6">
         <h3 className="text-lg font-medium mb-4 text-foreground">{title}</h3>
-        <div className="flex items-center gap-8">
-          {/* Chart Container - Increased size */}
-          <div className="flex-1 h-96 relative">
+        <div className="flex items-start gap-8">
+          {/* Chart Container - Matching height with ReachViewsChart (320px) */}
+          <div className="flex-1 h-80 relative">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
-                {/* Outer ring (Paid vs Organic) - Increased radius */}
+                {/* Outer ring (Paid vs Organic) */}
                 <Pie
                   data={outerRingData}
                   cx="50%"
                   cy="50%"
                   labelLine={false}
                   label={formatPercentageLabel}
-                  outerRadius={140}
-                  innerRadius={100}
+                  outerRadius={120}
+                  innerRadius={85}
                   paddingAngle={2}
                   dataKey="value"
                 >
@@ -180,13 +180,13 @@ const SegmentedDonutChart: React.FC<SegmentedDonutChartProps> = ({
                   ))}
                 </Pie>
                 
-                {/* Inner ring (Sub-metrics) - Increased radius */}
+                {/* Inner ring (Sub-metrics) */}
                 <Pie
                   data={innerRingData}
                   cx="50%"
                   cy="50%"
-                  outerRadius={95}
-                  innerRadius={50}
+                  outerRadius={80}
+                  innerRadius={40}
                   paddingAngle={1}
                   dataKey="value"
                 >
@@ -213,10 +213,10 @@ const SegmentedDonutChart: React.FC<SegmentedDonutChartProps> = ({
             </div>
           </div>
 
-          {/* Right Side Legend - Updated format */}
-          <div className="w-72 space-y-3">
-            <div className="space-y-3">
-              <h4 className="text-sm font-semibold text-foreground mb-4">Legend</h4>
+          {/* Right Side Legend - Removed top margin/padding */}
+          <div className="w-72 space-y-2">
+            <h4 className="text-sm font-semibold text-foreground mb-2">Legend</h4>
+            <div className="space-y-2">
               {allLegendItems.map((item, index) => (
                 <div key={index} className="flex items-center gap-3">
                   <div 
