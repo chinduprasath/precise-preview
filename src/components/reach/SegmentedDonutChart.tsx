@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { 
@@ -214,7 +213,7 @@ const SegmentedDonutChart: React.FC<SegmentedDonutChartProps> = ({
             </div>
           </div>
 
-          {/* Right Side Legend - Improved spacing */}
+          {/* Right Side Legend - Updated format */}
           <div className="w-72 space-y-3">
             <div className="space-y-3">
               <h4 className="text-sm font-semibold text-foreground mb-4">Legend</h4>
@@ -225,11 +224,8 @@ const SegmentedDonutChart: React.FC<SegmentedDonutChartProps> = ({
                     style={{ backgroundColor: item.color }}
                   />
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm text-foreground font-medium truncate">
-                      {item.name}
-                    </div>
-                    <div className="text-xs text-muted-foreground">
-                      {item.percentage}% • {item.value.toLocaleString()}
+                    <div className="text-sm text-foreground font-medium">
+                      {item.name} - {item.percentage}% • {item.value.toLocaleString()}
                     </div>
                   </div>
                 </div>
