@@ -6,8 +6,7 @@ import {
   Pie, 
   Cell, 
   ResponsiveContainer, 
-  Tooltip, 
-  Legend 
+  Tooltip 
 } from 'recharts';
 
 interface SegmentedDonutChartProps {
@@ -133,81 +132,108 @@ const SegmentedDonutChart: React.FC<SegmentedDonutChartProps> = ({
     return null;
   };
 
-  const CustomLegend = ({ payload }: any) => (
-    <div className="grid grid-cols-2 gap-2 mt-4 text-sm">
-      {payload?.map((entry: any, index: number) => (
-        <div key={index} className="flex items-center gap-2">
-          <div 
-            className="w-3 h-3 rounded-sm"
-            style={{ backgroundColor: entry.color }}
-          />
-          <span className="text-foreground text-xs">{entry.value}</span>
-        </div>
-      ))}
-    </div>
-  );
-
   const formatPercentageLabel = (entry: any) => {
     return `${entry.name}\n${entry.percentage}%`;
   };
+
+  // Legend items with all metrics
+  const allLegendItems = [
+    ...outerRingData.map(item => ({
+      name: item.name,
+      color: outerColors[item.name as keyof typeof outerColors],
+      percentage: item.percentage,
+      value: item.value
+    })),
+    ...innerRingData.map(item => ({
+      name: item.name,
+      color: innerColors[item.name as keyof typeof innerColors],
+      percentage: item.totalPercentage,
+      value: item.value
+    }))
+  ];
 
   return (
     <Card className="border-border">
       <CardContent className="p-6">
         <h3 className="text-lg font-medium mb-4 text-foreground">{title}</h3>
-        <div className="h-80 relative">
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              {/* Outer ring (Paid vs Organic) */}
-              <Pie
-                data={outerRingData}
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                label={formatPercentageLabel}
-                outerRadius={120}
-                innerRadius={80}
-                paddingAngle={2}
-                dataKey="value"
-              >
-                {outerRingData.map((entry, index) => (
-                  <Cell 
-                    key={`outer-cell-${index}`} 
-                    fill={outerColors[entry.name as keyof typeof outerColors]} 
-                  />
-                ))}
-              </Pie>
-              
-              {/* Inner ring (Sub-metrics) */}
-              <Pie
-                data={innerRingData}
-                cx="50%"
-                cy="50%"
-                outerRadius={75}
-                innerRadius={40}
-                paddingAngle={1}
-                dataKey="value"
-              >
-                {innerRingData.map((entry, index) => (
-                  <Cell 
-                    key={`inner-cell-${index}`} 
-                    fill={innerColors[entry.name as keyof typeof innerColors]} 
-                  />
-                ))}
-              </Pie>
-              
-              <Tooltip content={<CustomTooltip />} />
-              <Legend content={<CustomLegend />} />
-            </PieChart>
-          </ResponsiveContainer>
-          
-          {/* Center label */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="text-center">
-              <div className="text-sm text-muted-foreground">Total Activity</div>
-              <div className="text-lg font-semibold text-foreground">
-                {(grandTotal / 1000).toFixed(0)}K
+        <div className="flex items-center gap-6">
+          {/* Chart Container */}
+          <div className="flex-1 h-80 relative">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                {/* Outer ring (Paid vs Organic) */}
+                <Pie
+                  data={outerRingData}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={formatPercentageLabel}
+                  outerRadius={120}
+                  innerRadius={80}
+                  paddingAngle={2}
+                  dataKey="value"
+                >
+                  {outerRingData.map((entry, index) => (
+                    <Cell 
+                      key={`outer-cell-${index}`} 
+                      fill={outerColors[entry.name as keyof typeof outerColors]} 
+                    />
+                  ))}
+                </Pie>
+                
+                {/* Inner ring (Sub-metrics) */}
+                <Pie
+                  data={innerRingData}
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={75}
+                  innerRadius={40}
+                  paddingAngle={1}
+                  dataKey="value"
+                >
+                  {innerRingData.map((entry, index) => (
+                    <Cell 
+                      key={`inner-cell-${index}`} 
+                      fill={innerColors[entry.name as keyof typeof innerColors]} 
+                    />
+                  ))}
+                </Pie>
+                
+                <Tooltip content={<CustomTooltip />} />
+              </PieChart>
+            </ResponsiveContainer>
+            
+            {/* Center label */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div className="text-center">
+                <div className="text-sm text-muted-foreground font-medium">Total Activity</div>
+                <div className="text-2xl font-bold text-foreground">
+                  {(grandTotal / 1000).toFixed(0)}K
+                </div>
               </div>
+            </div>
+          </div>
+
+          {/* Right Side Legend */}
+          <div className="w-64 space-y-3">
+            <div className="space-y-2">
+              <h4 className="text-sm font-semibold text-foreground mb-3">Legend</h4>
+              {allLegendItems.map((item, index) => (
+                <div key={index} className="flex items-center gap-3">
+                  <div 
+                    className="w-3 h-3 rounded-sm flex-shrink-0"
+                    style={{ backgroundColor: item.color }}
+                  />
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm text-foreground font-medium truncate">
+                      {item.name}
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      {item.percentage}% • {item.value.toLocaleString()}
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
