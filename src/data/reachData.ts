@@ -273,6 +273,54 @@ export const performanceData = {
   ]
 };
 
+export const reachViewsData = {
+  '1': [
+    { day: 'Mon', reach: 12000, views: 25000 },
+    { day: 'Tue', reach: 13500, views: 28000 },
+    { day: 'Wed', reach: 18200, views: 35000 },
+    { day: 'Thu', reach: 20500, views: 42000 },
+    { day: 'Fri', reach: 17800, views: 38000 },
+    { day: 'Sat', reach: 14200, views: 30000 },
+    { day: 'Sun', reach: 13800, views: 28500 }
+  ],
+  '2': [
+    { day: 'Mon', reach: 22000, views: 45000 },
+    { day: 'Tue', reach: 23500, views: 48000 },
+    { day: 'Wed', reach: 28200, views: 55000 },
+    { day: 'Thu', reach: 30500, views: 62000 },
+    { day: 'Fri', reach: 27800, views: 58000 },
+    { day: 'Sat', reach: 24200, views: 50000 },
+    { day: 'Sun', reach: 23800, views: 48500 }
+  ],
+  '3': [
+    { day: 'Mon', reach: 8000, views: 35000 },
+    { day: 'Tue', reach: 8500, views: 38000 },
+    { day: 'Wed', reach: 9200, views: 42000 },
+    { day: 'Thu', reach: 10500, views: 48000 },
+    { day: 'Fri', reach: 9800, views: 45000 },
+    { day: 'Sat', reach: 8200, views: 38000 },
+    { day: 'Sun', reach: 7800, views: 35500 }
+  ],
+  '4': [
+    { day: 'Mon', reach: 28000, views: 15000 },
+    { day: 'Tue', reach: 29500, views: 18000 },
+    { day: 'Wed', reach: 35200, views: 22000 },
+    { day: 'Thu', reach: 38500, views: 25000 },
+    { day: 'Fri', reach: 32800, views: 20000 },
+    { day: 'Sat', reach: 28200, views: 16000 },
+    { day: 'Sun', reach: 27800, views: 15500 }
+  ],
+  '5': [
+    { day: 'Mon', reach: 18000, views: 40000 },
+    { day: 'Tue', reach: 19500, views: 43000 },
+    { day: 'Wed', reach: 25200, views: 52000 },
+    { day: 'Thu', reach: 28500, views: 58000 },
+    { day: 'Fri', reach: 23800, views: 50000 },
+    { day: 'Sat', reach: 19200, views: 42000 },
+    { day: 'Sun', reach: 18800, views: 40500 }
+  ]
+};
+
 export const getOrderMetrics = (orderId: string) => {
   // In a real app, this would fetch data from an API
   return {

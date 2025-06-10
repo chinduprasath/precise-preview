@@ -8,6 +8,7 @@ import EngagementChart from '@/components/reach/EngagementChart';
 import ReachChart from '@/components/reach/ReachChart';
 import PerformanceMetrics from '@/components/reach/PerformanceMetrics';
 import DemographicChart from '@/components/reach/DemographicChart';
+import ReachViewsChart from '@/components/reach/ReachViewsChart';
 import { 
   mockOrders, 
   platformEngagementData, 
@@ -15,6 +16,7 @@ import {
   conversionData, 
   demographicData, 
   performanceData,
+  reachViewsData,
   getOrderMetrics 
 } from '@/data/reachData';
 import { formatNumber } from '@/components/influencers/utils/formatUtils';
@@ -57,6 +59,7 @@ const ReachPage = () => {
   const currentConversionData = conversionData[selectedOrder as keyof typeof conversionData] || conversionData['1'];
   const currentDemographicData = demographicData[selectedOrder as keyof typeof demographicData] || demographicData['1'];
   const currentPerformanceData = performanceData[selectedOrder as keyof typeof performanceData] || performanceData['1'];
+  const currentReachViewsData = reachViewsData[selectedOrder as keyof typeof reachViewsData] || reachViewsData['1'];
 
   const timeRangeOptions = [
     { value: 'last_24_hours', label: 'Last 24 hours', disabled: false },
@@ -175,6 +178,14 @@ const ReachPage = () => {
                 cpe: currentPerformanceData.find(item => item.label === 'Cost per Acquisition')?.percentage || 0,
                 cpm: currentPerformanceData.find(item => item.label === 'CTR')?.percentage || 0
               }} />
+            </div>
+
+            {/* New Reach & Views Chart */}
+            <div className="w-full">
+              <ReachViewsChart 
+                data={currentReachViewsData}
+                title="Reach vs Views Analysis"
+              />
             </div>
           </div>
         </main>
