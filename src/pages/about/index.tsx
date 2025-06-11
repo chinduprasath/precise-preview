@@ -1,57 +1,82 @@
+
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Users, Target, Globe, Award, Heart, Lightbulb } from 'lucide-react';
+import { Users, Target, Globe, Award, Heart, Lightbulb, Mail } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import LandingHeader from '@/components/landing/LandingHeader';
 import Footer from '@/components/landing/Footer';
+import { HeroWithMockup } from '@/components/ui/hero-with-mockup';
+
 const AboutPage = () => {
   const navigate = useNavigate();
-  const values = [{
-    icon: Heart,
-    title: "Authenticity",
-    description: "We believe in genuine connections between brands and creators, fostering authentic relationships that drive real results."
-  }, {
-    icon: Globe,
-    title: "Global Impact",
-    description: "Connecting brands and influencers worldwide to create campaigns that resonate across cultures and communities."
-  }, {
-    icon: Lightbulb,
-    title: "Innovation",
-    description: "Continuously evolving our platform with cutting-edge technology to stay ahead of industry trends."
-  }, {
-    icon: Award,
-    title: "Excellence",
-    description: "Committed to delivering exceptional results and experiences for both brands and content creators."
-  }];
-  const stats = [{
-    number: "10,000+",
-    label: "Active Influencers"
-  }, {
-    number: "500+",
-    label: "Brand Partners"
-  }, {
-    number: "1M+",
-    label: "Campaigns Launched"
-  }, {
-    number: "50+",
-    label: "Countries Served"
-  }];
-  return <div className="min-h-screen bg-background">
+
+  const values = [
+    {
+      icon: Heart,
+      title: "Authenticity",
+      description: "We believe in genuine connections between brands and creators, fostering authentic relationships that drive real results."
+    },
+    {
+      icon: Globe,
+      title: "Global Impact",
+      description: "Connecting brands and influencers worldwide to create campaigns that resonate across cultures and communities."
+    },
+    {
+      icon: Lightbulb,
+      title: "Innovation",
+      description: "Continuously evolving our platform with cutting-edge technology to stay ahead of industry trends."
+    },
+    {
+      icon: Award,
+      title: "Excellence",
+      description: "Committed to delivering exceptional results and experiences for both brands and content creators."
+    }
+  ];
+
+  const stats = [
+    {
+      number: "10,000+",
+      label: "Active Influencers"
+    },
+    {
+      number: "500+",
+      label: "Brand Partners"
+    },
+    {
+      number: "1M+",
+      label: "Campaigns Launched"
+    },
+    {
+      number: "50+",
+      label: "Countries Served"
+    }
+  ];
+
+  return (
+    <div className="min-h-screen bg-background">
       <LandingHeader />
 
       {/* Hero Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
-        <div className="container mx-auto text-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6">
-            Empowering Authentic
-            <span className="text-primary block">Brand-Creator Connections</span>
-          </h1>
-          <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
-            We're on a mission to revolutionize influencer marketing by creating meaningful partnerships that drive real results for brands and creators alike.
-          </p>
-        </div>
-      </section>
+      <HeroWithMockup
+        title="Empowering Authentic Brand-Creator Connections"
+        description="We're on a mission to revolutionize influencer marketing by creating meaningful partnerships that drive real results for brands and creators alike."
+        primaryCta={{
+          text: "Get Started Today",
+          href: "/signup"
+        }}
+        secondaryCta={{
+          text: "Contact Us",
+          href: "/contact",
+          icon: <Mail className="mr-2 h-4 w-4" />
+        }}
+        mockupImage={{
+          src: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=1248&h=765&fit=crop&auto=format",
+          alt: "Team Collaboration",
+          width: 1248,
+          height: 765
+        }}
+      />
 
       {/* Mission & Vision */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-muted/50">
@@ -151,6 +176,8 @@ const AboutPage = () => {
       </section>
 
       <Footer />
-    </div>;
+    </div>
+  );
 };
+
 export default AboutPage;

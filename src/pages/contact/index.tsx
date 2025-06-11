@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/components/ui/use-toast';
 import LandingHeader from '@/components/landing/LandingHeader';
 import Footer from '@/components/landing/Footer';
+import { HeroWithMockup } from '@/components/ui/hero-with-mockup';
 
 const ContactPage = () => {
   const navigate = useNavigate();
@@ -77,17 +78,25 @@ const ContactPage = () => {
       <LandingHeader />
 
       {/* Hero Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
-        <div className="container mx-auto text-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6">
-            Get in Touch
-            <span className="text-primary block">We're Here to Help</span>
-          </h1>
-          <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
-            Have questions about our platform? Need help with your campaign? Our team is ready to assist you every step of the way.
-          </p>
-        </div>
-      </section>
+      <HeroWithMockup
+        title="Get in Touch - We're Here to Help"
+        description="Have questions about our platform? Need help with your campaign? Our team is ready to assist you every step of the way."
+        primaryCta={{
+          text: "Start Free Trial",
+          href: "/signup"
+        }}
+        secondaryCta={{
+          text: "View Pricing",
+          href: "/pricing",
+          icon: <Users className="mr-2 h-4 w-4" />
+        }}
+        mockupImage={{
+          src: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=1248&h=765&fit=crop&auto=format",
+          alt: "Customer Support Team",
+          width: 1248,
+          height: 765
+        }}
+      />
 
       {/* Contact Form and Info */}
       <section className="py-20 px-4 sm:px-6 lg:px-8">
