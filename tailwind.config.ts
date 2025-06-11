@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -163,6 +162,46 @@ export default {
 						transform: 'scale(1)' 
 					},
 				},
+				'fadeInUp': {
+					'0%': { 
+						opacity: '0', 
+						transform: 'translateY(30px)' 
+					},
+					'100%': { 
+						opacity: '1', 
+						transform: 'translateY(0)' 
+					},
+				},
+				'fadeInLeft': {
+					'0%': { 
+						opacity: '0', 
+						transform: 'translateX(-30px)' 
+					},
+					'100%': { 
+						opacity: '1', 
+						transform: 'translateX(0)' 
+					},
+				},
+				'fadeInRight': {
+					'0%': { 
+						opacity: '0', 
+						transform: 'translateX(30px)' 
+					},
+					'100%': { 
+						opacity: '1', 
+						transform: 'translateX(0)' 
+					},
+				},
+				'fadeInScale': {
+					'0%': { 
+						opacity: '0', 
+						transform: 'scale(0.9)' 
+					},
+					'100%': { 
+						opacity: '1', 
+						transform: 'scale(1)' 
+					},
+				},
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
@@ -178,6 +217,10 @@ export default {
 				'pulse-slow': 'pulse-slow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
 				'appear': 'appear 0.5s ease-out forwards',
 				'appear-zoom': 'appear-zoom 0.8s ease-out forwards',
+				'fadeInUp': 'fadeInUp 0.7s ease-out forwards',
+				'fadeInLeft': 'fadeInLeft 0.7s ease-out forwards',
+				'fadeInRight': 'fadeInRight 0.7s ease-out forwards',
+				'fadeInScale': 'fadeInScale 0.7s ease-out forwards',
 			},
 			transitionProperty: {
 				'height': 'height',

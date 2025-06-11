@@ -1,18 +1,23 @@
+
 import React from 'react';
 import { Users, CheckCircle, BarChart2 } from 'lucide-react';
+
 const FeaturesSection = () => {
-  return <section className="py-20 px-6 bg-background border-y border-border">
+  return (
+    <section className="py-20 px-6 bg-background border-y border-border">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">How InfluexKonnect Works</h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4 opacity-0 animate-fadeInUp">
+            How InfluexKonnect Works
+          </h2>
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto opacity-0 animate-fadeInUp [animation-delay:100ms]">
             Our platform makes it easy to discover, connect, and collaborate with influencers who align with your brand.
           </p>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-          <div className="bg-card text-card-foreground rounded-xl p-8 shadow-sm border border-border transition-all hover:shadow-md">
-            <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mb-6">
+          <div className="bg-card text-card-foreground rounded-xl p-8 shadow-sm border border-border transition-all duration-300 hover:shadow-lg hover:scale-105 hover:-translate-y-1 opacity-0 animate-fadeInScale">
+            <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mb-6 transition-transform duration-300 hover:scale-110 hover:rotate-3">
               <Users className="h-7 w-7 text-primary" />
             </div>
             <h3 className="text-xl font-semibold mb-3">Discover Influencers</h3>
@@ -21,8 +26,8 @@ const FeaturesSection = () => {
             </p>
           </div>
           
-          <div className="bg-card text-card-foreground rounded-xl p-8 shadow-sm border border-border transition-all hover:shadow-md">
-            <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mb-6">
+          <div className="bg-card text-card-foreground rounded-xl p-8 shadow-sm border border-border transition-all duration-300 hover:shadow-lg hover:scale-105 hover:-translate-y-1 opacity-0 animate-fadeInScale [animation-delay:100ms]">
+            <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mb-6 transition-transform duration-300 hover:scale-110 hover:rotate-3">
               <CheckCircle className="h-7 w-7 text-primary" />
             </div>
             <h3 className="text-xl font-semibold mb-3">Connect & Collaborate</h3>
@@ -31,8 +36,8 @@ const FeaturesSection = () => {
             </p>
           </div>
           
-          <div className="bg-card text-card-foreground rounded-xl p-8 shadow-sm border border-border transition-all hover:shadow-md">
-            <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mb-6">
+          <div className="bg-card text-card-foreground rounded-xl p-8 shadow-sm border border-border transition-all duration-300 hover:shadow-lg hover:scale-105 hover:-translate-y-1 opacity-0 animate-fadeInScale [animation-delay:200ms]">
+            <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mb-6 transition-transform duration-300 hover:scale-110 hover:rotate-3">
               <BarChart2 className="h-7 w-7 text-primary" />
             </div>
             <h3 className="text-xl font-semibold mb-3">Track Results</h3>
@@ -42,7 +47,9 @@ const FeaturesSection = () => {
           </div>
         </div>
       </div>
-    </section>;
+    </section>
+  );
 };
+
 export default FeaturesSection;
 export { FeaturesSection };
