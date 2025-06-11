@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -8,8 +7,37 @@ const HeroSection = () => {
   const navigate = useNavigate();
 
   return (
-    <section className="px-4 py-20 md:py-32 bg-gradient-to-r from-primary-foreground to-background dark:from-gray-900 dark:to-background">
-      <div className="max-w-7xl mx-auto">
+    <section className="relative px-4 py-20 md:py-32 bg-gradient-to-r from-primary-foreground to-background dark:from-gray-900 dark:to-background overflow-hidden">
+      {/* Animated Blue Background Layers */}
+      <div className="absolute inset-0 pointer-events-none">
+        {/* Blue Wave Animation */}
+        <div 
+          className="absolute inset-0 animate-blue-wave opacity-10"
+          style={{
+            background: 'linear-gradient(45deg, rgba(67, 97, 238, 0.1), rgba(114, 9, 183, 0.08), rgba(67, 97, 238, 0.1))',
+            backgroundSize: '400% 400%'
+          }}
+        />
+        
+        {/* Blue Glow Animation */}
+        <div 
+          className="absolute top-1/4 left-1/4 w-96 h-96 animate-blue-glow rounded-full"
+          style={{
+            background: 'radial-gradient(circle, rgba(67, 97, 238, 0.08) 0%, transparent 70%)'
+          }}
+        />
+        
+        {/* Secondary Blue Glow */}
+        <div 
+          className="absolute bottom-1/4 right-1/4 w-80 h-80 animate-blue-glow rounded-full"
+          style={{
+            background: 'radial-gradient(circle, rgba(33, 150, 243, 0.06) 0%, transparent 70%)',
+            animationDelay: '3s'
+          }}
+        />
+      </div>
+
+      <div className="relative z-10 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <div className="space-y-6">
             <h1 className="text-4xl font-bold md:text-5xl opacity-0 animate-fadeInUp">

@@ -202,6 +202,34 @@ export default {
 						transform: 'scale(1)' 
 					},
 				},
+				'blue-wave': {
+					'0%': { 
+						backgroundPosition: '0% 50%',
+						opacity: '0.1'
+					},
+					'50%': { 
+						backgroundPosition: '100% 50%',
+						opacity: '0.15'
+					},
+					'100%': { 
+						backgroundPosition: '0% 50%',
+						opacity: '0.1'
+					},
+				},
+				'blue-glow': {
+					'0%': { 
+						transform: 'scale(1)',
+						opacity: '0.05'
+					},
+					'50%': { 
+						transform: 'scale(1.1)',
+						opacity: '0.1'
+					},
+					'100%': { 
+						transform: 'scale(1)',
+						opacity: '0.05'
+					},
+				},
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
@@ -221,6 +249,8 @@ export default {
 				'fadeInLeft': 'fadeInLeft 0.7s ease-out forwards',
 				'fadeInRight': 'fadeInRight 0.7s ease-out forwards',
 				'fadeInScale': 'fadeInScale 0.7s ease-out forwards',
+				'blue-wave': 'blue-wave 10s ease-in-out infinite',
+				'blue-glow': 'blue-glow 6s ease-in-out infinite',
 			},
 			transitionProperty: {
 				'height': 'height',
