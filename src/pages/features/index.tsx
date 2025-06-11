@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import LandingHeader from '@/components/landing/LandingHeader';
 import DigitalMarketingSection from '@/components/landing/DigitalMarketingSection';
 import Footer from '@/components/landing/Footer';
+import { HeroWithMockup } from '@/components/ui/hero-with-mockup';
 
 const FeaturesPage = () => {
   const navigate = useNavigate();
@@ -66,24 +67,25 @@ const FeaturesPage = () => {
     <div className="min-h-screen bg-background">
       <LandingHeader />
 
-      {/* Hero Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
-        <div className="container mx-auto text-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6">
-            Powerful Features for
-            <span className="text-primary block">Influencer Marketing</span>
-          </h1>
-          <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
-            Discover everything you need to run successful influencer marketing campaigns, from discovery to ROI measurement.
-          </p>
-          <Button size="lg" onClick={() => navigate('/signup')} className="mr-4">
-            Start Free Trial
-          </Button>
-          <Button size="lg" variant="outline" onClick={() => navigate('/contact')}>
-            Schedule Demo
-          </Button>
-        </div>
-      </section>
+      {/* Hero Section with Mockup */}
+      <HeroWithMockup
+        title="Powerful Features for Influencer Marketing"
+        description="Discover everything you need to run successful influencer marketing campaigns, from discovery to ROI measurement."
+        primaryCta={{
+          text: "Start Free Trial",
+          href: "/signup",
+        }}
+        secondaryCta={{
+          text: "Schedule Demo",
+          href: "/contact",
+        }}
+        mockupImage={{
+          src: "https://images.unsplash.com/photo-1551650975-87deedd944c3?w=1200&h=800&fit=crop",
+          alt: "Influencer Marketing Dashboard",
+          width: 1200,
+          height: 800,
+        }}
+      />
 
       {/* Features Grid */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-muted/50">
