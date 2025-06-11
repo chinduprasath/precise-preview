@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -163,6 +162,16 @@ export default {
 						transform: 'scale(1)' 
 					},
 				},
+				'slide-in-left': {
+					'0%': { 
+						opacity: '0', 
+						transform: 'translateX(-20px)' 
+					},
+					'100%': { 
+						opacity: '1', 
+						transform: 'translateX(0)' 
+					},
+				},
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
@@ -178,6 +187,7 @@ export default {
 				'pulse-slow': 'pulse-slow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
 				'appear': 'appear 0.5s ease-out forwards',
 				'appear-zoom': 'appear-zoom 0.8s ease-out forwards',
+				'slide-in-left': 'slide-in-left 0.7s ease-out forwards',
 			},
 			transitionProperty: {
 				'height': 'height',
