@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '@/components/layout/Sidebar';
@@ -61,6 +60,12 @@ const AnalyticsPage = () => {
       { month: 'Oct', influencers: 1200, business: 840 },
       { month: 'Nov', influencers: 1230, business: 860 },
       { month: 'Dec', influencers: 1245, business: 873 }
+    ],
+    subscriptionData: [
+      { plan: 'Freemium', influencer: 485, business: 234 },
+      { plan: 'Basic', influencer: 356, business: 298 },
+      { plan: 'Advanced', influencer: 287, business: 187 },
+      { plan: 'Custom', influencer: 117, business: 154 }
     ]
   };
 
@@ -437,6 +442,28 @@ const AnalyticsPage = () => {
                             <YAxis />
                             <Tooltip />
                             <Bar dataKey="retention" fill="#9b87f5" name="Retention Rate %" />
+                          </RechartsBarChart>
+                        </ResponsiveContainer>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>User Count by Role and Subscription Plan</CardTitle>
+                      <CardDescription>User segmentation by role and plan type</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="h-80">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <RechartsBarChart data={userStats.subscriptionData}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="plan" />
+                            <YAxis />
+                            <Tooltip />
+                            <Legend />
+                            <Bar dataKey="influencer" fill="#9b87f5" name="Influencer" />
+                            <Bar dataKey="business" fill="#1EAEDB" name="Business" />
                           </RechartsBarChart>
                         </ResponsiveContainer>
                       </div>
