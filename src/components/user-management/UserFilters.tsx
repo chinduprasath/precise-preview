@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Search, Calendar as CalendarIcon, X } from 'lucide-react';
+import { Search, Calendar as CalendarIcon, X, FileExport } from 'lucide-react';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
 import { UserTag } from './UserTable';
@@ -22,6 +22,7 @@ interface UserFiltersProps {
   onSearch: (query: string) => void;
   onFilterChange: (filters: UserFilters) => void;
   availableTags: UserTag[];
+  onExport?: () => void;
 }
 
 export interface UserFilters {
@@ -30,7 +31,7 @@ export interface UserFilters {
   tags: string[];
 }
 
-const UserFilters: React.FC<UserFiltersProps> = ({ onSearch, onFilterChange, availableTags }) => {
+const UserFilters: React.FC<UserFiltersProps> = ({ onSearch, onFilterChange, availableTags, onExport }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filters, setFilters] = useState<UserFilters>({
     dateRange: undefined,
@@ -164,7 +165,15 @@ const UserFilters: React.FC<UserFiltersProps> = ({ onSearch, onFilterChange, ava
       </div>
       
       <div>
-        <Label className="mb-2 inline-block">Filter by Tags:</Label>
+        <div className="flex items-center justify-between mb-2">
+          <Label className="inline-block">Filter by Tags:</Label>
+          {onExport && (
+            <Button variant="outline" size="sm" onClick={onExport}>
+              <FileExport className="mr-2 h-4 w-4" />
+              Export
+            </Button>
+          )}
+        </div>
         <div className="flex flex-wrap gap-2">
           {availableTags.map(tag => (
             <Badge

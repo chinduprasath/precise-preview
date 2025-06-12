@@ -4,7 +4,7 @@ import UserFilters, { UserFilters as UserFiltersType } from '@/components/user-m
 import UserTable, { User, UserTag } from '@/components/user-management/UserTable';
 import UserFormDialog from '@/components/user-management/UserFormDialog';
 import { Button } from '@/components/ui/button';
-import { PlusCircle } from 'lucide-react';
+import { PlusCircle, FileExport } from 'lucide-react';
 import { toast } from 'sonner';
 
 // Sample data
@@ -203,6 +203,37 @@ const BusinessUsersPage = () => {
     setIsFormOpen(false);
   };
 
+  const handleExport = () => {
+    // Create CSV content
+    const headers = ['Name', 'Username', 'Email', 'Status', 'Joined Date', 'Tags'];
+    const csvContent = [
+      headers.join(','),
+      ...filteredUsers.map(user => [
+        `"${user.name}"`,
+        `"${user.username}"`,
+        `"${user.email}"`,
+        user.status,
+        user.joinedDate,
+        `"${user.tags.map(tag => tag.name).join(', ')}"`
+      ].join(','))
+    ].join('\n');
+
+    // Create and download file
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    if (link.download !== undefined) {
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `business-users-${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+    
+    toast.success('Business users data exported successfully');
+  };
+
   const logUserAction = (action: string, userId: string, additionalData?: any) => {
     // In a real implementation, this would log to the database
     console.log(`Admin action: ${action} on user ${userId}`, {
@@ -232,6 +263,7 @@ const BusinessUsersPage = () => {
           onSearch={handleSearch} 
           onFilterChange={handleFilterChange}
           availableTags={SAMPLE_TAGS}
+          onExport={handleExport}
         />
 
         <UserTable 
