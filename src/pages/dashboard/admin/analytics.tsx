@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '@/components/layout/Sidebar';
@@ -263,6 +262,12 @@ const AnalyticsPage = () => {
   // Get last 6 months of user growth data
   const last6MonthsData = userStats.userGrowthData.slice(-6);
 
+  // Active users data for bar chart
+  const activeUsersData = [
+    { period: 'Last 7 Days', users: userStats.activeUsers7Days },
+    { period: 'Last 30 Days', users: userStats.activeUsers30Days }
+  ];
+
   return (
     <div className="flex h-screen bg-gray-50">
       <Sidebar />
@@ -429,23 +434,43 @@ const AnalyticsPage = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <Card>
                     <CardHeader>
-                      <CardTitle>Active Users</CardTitle>
-                      <CardDescription>User activity in the last 30 days</CardDescription>
+                      <CardTitle>Active Users Overview</CardTitle>
+                      <CardDescription>User activity in recent time periods</CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div className="flex flex-col items-center justify-center p-4 bg-gray-50 rounded-lg">
-                          <span className="text-4xl font-bold text-primary">
-                            {userStats.activeUsers7Days}
-                          </span>
-                          <span className="text-sm text-gray-500">Last 7 Days</span>
-                        </div>
-                        <div className="flex flex-col items-center justify-center p-4 bg-gray-50 rounded-lg">
-                          <span className="text-4xl font-bold text-primary">
-                            {userStats.activeUsers30Days}
-                          </span>
-                          <span className="text-sm text-gray-500">Last 30 Days</span>
-                        </div>
+                      <div className="h-60">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <RechartsBarChart data={activeUsersData}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis 
+                              dataKey="period" 
+                              tick={{ fontSize: 12 }}
+                              axisLine={{ stroke: '#e5e7eb' }}
+                            />
+                            <YAxis 
+                              label={{ value: 'Active Users', angle: -90, position: 'insideLeft' }}
+                              tick={{ fontSize: 12 }}
+                              axisLine={{ stroke: '#e5e7eb' }}
+                            />
+                            <Tooltip 
+                              formatter={(value, name) => [value, 'Active Users']}
+                              labelFormatter={(label) => `Time Period: ${label}`}
+                            />
+                            <Bar 
+                              dataKey="users" 
+                              fill="#9b87f5"
+                              stroke="#7E69AB"
+                              strokeWidth={1}
+                              radius={[4, 4, 0, 0]}
+                              label={{ 
+                                position: 'top', 
+                                fontSize: 12, 
+                                fontWeight: 'bold',
+                                fill: '#374151'
+                              }}
+                            />
+                          </RechartsBarChart>
+                        </ResponsiveContainer>
                       </div>
                     </CardContent>
                   </Card>
@@ -532,6 +557,7 @@ const AnalyticsPage = () => {
                             <XAxis dataKey="month" />
                             <YAxis />
                             <Tooltip />
+                            <Legend />
                             <Bar dataKey="orders" fill="#9b87f5" name="Orders" />
                           </RechartsBarChart>
                         </ResponsiveContainer>
