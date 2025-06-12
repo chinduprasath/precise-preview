@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -12,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Search, Calendar as CalendarIcon, X, FileExport } from 'lucide-react';
+import { Search, Calendar as CalendarIcon, X, FileText } from 'lucide-react';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
 import { UserTag } from './UserTable';
@@ -169,7 +168,7 @@ const UserFilters: React.FC<UserFiltersProps> = ({ onSearch, onFilterChange, ava
           <Label className="inline-block">Filter by Tags:</Label>
           {onExport && (
             <Button variant="outline" size="sm" onClick={onExport}>
-              <FileExport className="mr-2 h-4 w-4" />
+              <FileText className="mr-2 h-4 w-4" />
               Export
             </Button>
           )}

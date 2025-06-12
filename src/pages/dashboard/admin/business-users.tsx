@@ -1,10 +1,11 @@
+
 import React, { useState } from 'react';
 import { Layout } from '@/components/layout/Layout';
 import UserFilters, { UserFilters as UserFiltersType } from '@/components/user-management/UserFilters';
 import UserTable, { User, UserTag } from '@/components/user-management/UserTable';
 import UserFormDialog from '@/components/user-management/UserFormDialog';
 import { Button } from '@/components/ui/button';
-import { PlusCircle, FileExport } from 'lucide-react';
+import { PlusCircle, FileText } from 'lucide-react';
 import { toast } from 'sonner';
 
 // Sample data
