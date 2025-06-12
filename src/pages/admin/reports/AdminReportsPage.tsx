@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, FileText, Upload, CalendarIcon } from 'lucide-react';
+import { Search, FileText, Upload, CalendarIcon, Download } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
@@ -198,6 +198,11 @@ const AdminReportsPage: React.FC = () => {
     );
   };
 
+  const handleExport = () => {
+    console.log('Exporting reports...', { reports, fromDate, toDate });
+    alert('Exporting reports data...');
+  };
+
   return (
     <div className="flex h-screen bg-background">
       <Sidebar />
@@ -259,6 +264,14 @@ const AdminReportsPage: React.FC = () => {
                     />
                   </PopoverContent>
                 </Popover>
+                <Button
+                  onClick={handleExport}
+                  variant="default"
+                  className="flex items-center space-x-2"
+                >
+                  <Download className="h-4 w-4" />
+                  <span>Export</span>
+                </Button>
               </div>
             </div>
 
@@ -279,4 +292,4 @@ const AdminReportsPage: React.FC = () => {
   );
 };
 
-export default AdminReportsPage; 
+export default AdminReportsPage;
