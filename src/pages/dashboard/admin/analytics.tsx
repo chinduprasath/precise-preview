@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '@/components/layout/Sidebar';
@@ -367,35 +368,37 @@ const AnalyticsPage = () => {
 
               {/* User Analytics Tab */}
               <TabsContent value="users" className="space-y-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>User Growth</CardTitle>
-                    <CardDescription>User growth over the last 6 months</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="h-80">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <AreaChart data={last6MonthsData}>
-                          <CartesianGrid strokeDasharray="3 3" />
-                          <XAxis dataKey="month" />
-                          <YAxis />
-                          <Tooltip />
-                          <Legend />
-                          <Area 
-                            type="monotone" 
-                            dataKey="influencers" 
-                            stackId="1" 
-                            stroke="#9b87f5" 
-                            fill="#9b87f5" 
-                          />
-                          <Area 
-                            type="monotone" 
-                            dataKey="business" 
-                            stackId="1" 
-                            stroke="#7E69AB" 
-                            fill="#7E69AB" 
-                          />
-                        </AreaChart>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>User Growth</CardTitle>
+                      <CardDescription>User growth over the last 6 months</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="h-80">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <AreaChart data={last6MonthsData}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="month" />
+                            <YAxis />
+                            <Tooltip />
+                            <Legend />
+                            <Area 
+                              type="monotone" 
+                              dataKey="influencers" 
+                              stackId="1" 
+                              stroke="#9b87f5" 
+                              fill="#9b87f5" 
+                            />
+                            <Area 
+                              type="monotone" 
+                              dataKey="business" 
+                              stackId="1" 
+                              stroke="#7E69AB" 
+                              fill="#7E69AB" 
+                            />
+                          </AreaChart>
+                        </ResponsiveContainer>
                       </div>
                     </CardContent>
                   </Card>
