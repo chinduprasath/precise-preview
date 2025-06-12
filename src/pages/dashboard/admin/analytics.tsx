@@ -259,6 +259,9 @@ const AnalyticsPage = () => {
     // In a real application, this would fetch fresh data
   };
 
+  // Get last 6 months of user growth data
+  const last6MonthsData = userStats.userGrowthData.slice(-6);
+
   return (
     <div className="flex h-screen bg-gray-50">
       <Sidebar />
@@ -367,12 +370,12 @@ const AnalyticsPage = () => {
                 <Card>
                   <CardHeader>
                     <CardTitle>User Growth</CardTitle>
-                    <CardDescription>Monthly user growth over the last year</CardDescription>
+                    <CardDescription>User growth over the last 6 months</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="h-80">
                       <ResponsiveContainer width="100%" height="100%">
-                        <AreaChart data={userStats.userGrowthData}>
+                        <AreaChart data={last6MonthsData}>
                           <CartesianGrid strokeDasharray="3 3" />
                           <XAxis dataKey="month" />
                           <YAxis />
@@ -393,10 +396,32 @@ const AnalyticsPage = () => {
                             fill="#7E69AB" 
                           />
                         </AreaChart>
-                      </ResponsiveContainer>
-                    </div>
-                  </CardContent>
-                </Card>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>User Count by Role and Subscription Plan</CardTitle>
+                      <CardDescription>User segmentation by role and plan type</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="h-80">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <RechartsBarChart data={userStats.subscriptionData}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="plan" />
+                            <YAxis />
+                            <Tooltip />
+                            <Legend />
+                            <Bar dataKey="influencer" fill="#9b87f5" name="Influencer" />
+                            <Bar dataKey="business" fill="#1EAEDB" name="Business" />
+                          </RechartsBarChart>
+                        </ResponsiveContainer>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <Card>
@@ -442,28 +467,6 @@ const AnalyticsPage = () => {
                             <YAxis />
                             <Tooltip />
                             <Bar dataKey="retention" fill="#9b87f5" name="Retention Rate %" />
-                          </RechartsBarChart>
-                        </ResponsiveContainer>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>User Count by Role and Subscription Plan</CardTitle>
-                      <CardDescription>User segmentation by role and plan type</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="h-80">
-                        <ResponsiveContainer width="100%" height="100%">
-                          <RechartsBarChart data={userStats.subscriptionData}>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="plan" />
-                            <YAxis />
-                            <Tooltip />
-                            <Legend />
-                            <Bar dataKey="influencer" fill="#9b87f5" name="Influencer" />
-                            <Bar dataKey="business" fill="#1EAEDB" name="Business" />
                           </RechartsBarChart>
                         </ResponsiveContainer>
                       </div>
