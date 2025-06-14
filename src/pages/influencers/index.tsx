@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
 import { Button } from '@/components/ui/button';
-import { Instagram, Facebook, Twitter, Youtube } from 'lucide-react';
+import { Instagram, Facebook, Twitter, Youtube, MessageCircle, Share2 } from 'lucide-react';
 import { Avatar } from '@/components/ui/avatar';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useLocations } from '@/hooks/useLocations';
@@ -233,6 +233,25 @@ const InfluencersPage = () => {
     navigate('/orders/place');
   };
 
+  const handleChatInfluencer = () => {
+    navigate('/chats');
+  };
+
+  const handleShareInfluencer = () => {
+    // Simple share functionality - could be enhanced with actual sharing
+    if (navigator.share) {
+      navigator.share({
+        title: `Check out ${selectedInfluencer?.name}`,
+        text: `Influencer profile: ${selectedInfluencer?.name}`,
+        url: window.location.href,
+      });
+    } else {
+      // Fallback: copy to clipboard
+      navigator.clipboard.writeText(window.location.href);
+      // You could add a toast notification here
+    }
+  };
+
   return (
     <div className="flex h-screen bg-background">
       <Sidebar />
@@ -296,11 +315,34 @@ const InfluencersPage = () => {
                         />
                       </Avatar>
                       <div>
-                        <h3 className="text-xl font-semibold text-foreground">{selectedInfluencer.name}</h3>
+                        <div className="flex items-center gap-2">
+                          <h3 className="text-xl font-semibold text-foreground">{selectedInfluencer.name}</h3>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={handleChatInfluencer}
+                            className="h-8 w-8"
+                          >
+                            <MessageCircle className="h-4 w-4" />
+                          </Button>
+                        </div>
                         {selectedInfluencer.username && (
                           <p className={`text-sm text-muted-foreground ${selectedInfluencer.is_blurred ? 'blur-sm' : ''}`}>
                             {selectedInfluencer.username}
                           </p>
+                        )}
+                        {selectedInfluencer.niche && (
+                          <div className="flex items-center gap-2 mt-1">
+                            <span className="text-sm text-muted-foreground">{selectedInfluencer.niche.name}</span>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={handleShareInfluencer}
+                              className="h-6 w-6"
+                            >
+                              <Share2 className="h-3 w-3" />
+                            </Button>
+                          </div>
                         )}
                       </div>
                     </div>
