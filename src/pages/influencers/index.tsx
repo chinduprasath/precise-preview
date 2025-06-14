@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
@@ -18,6 +17,7 @@ import FilterPanel from '@/components/influencers/FilterPanel';
 import InfluencerList from '@/components/influencers/InfluencerList';
 import ActiveFilterChips from '@/components/influencers/ActiveFilterChips';
 import { MOCK_BLURRED_INFLUENCERS } from '@/data/mockInfluencers';
+import { useNavigate } from 'react-router-dom';
 
 const formatNumber = (num: number): string => {
   if (num >= 1000000) {
@@ -72,6 +72,8 @@ type AudienceCountry = typeof audienceCountries[number]['value'];
 type AudienceLanguage = typeof audienceLanguages[number]['value'];
 
 const InfluencersPage = () => {
+  const navigate = useNavigate();
+  
   const [searchTerm, setSearchTerm] = useState('');
   const [followerRange, setFollowerRange] = useState<[number, number]>([0, 1500000]);
   const [engagementRange, setEngagementRange] = useState<[number, number]>([0, 10]);
@@ -227,6 +229,10 @@ const InfluencersPage = () => {
     setSelectedInfluencer(influencer);
   };
 
+  const handleBookInfluencer = () => {
+    navigate('/orders/place');
+  };
+
   return (
     <div className="flex h-screen bg-background">
       <Sidebar />
@@ -271,7 +277,15 @@ const InfluencersPage = () => {
             <div className="md:col-span-2 h-full flex flex-col">
               {selectedInfluencer ? (
                 <div className="bg-card rounded-lg shadow-sm border border-border p-6 flex-1 overflow-auto">
-                  <h2 className="text-2xl font-bold mb-4">Profile</h2>
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-2xl font-bold">Profile</h2>
+                    <Button 
+                      onClick={handleBookInfluencer}
+                      className="bg-primary text-primary-foreground hover:bg-primary/90 px-6 py-2"
+                    >
+                      Book
+                    </Button>
+                  </div>
                   <div className="flex items-start justify-between mb-6">
                     <div className="flex items-center gap-4">
                       <Avatar className="h-20 w-20">
