@@ -267,18 +267,18 @@ const InfluencersPage = () => {
   const getSocialMediaPageName = (influencer: Influencer) => {
     // Priority order: Instagram, Facebook, YouTube, Twitter
     if (influencer.followers_instagram && influencer.followers_instagram > 0) {
-      return `@${influencer.name.toLowerCase().replace(/\s+/g, '')}`;
+      return `@${influencer.name.toLowerCase().replace(/\s+/g, '_')}`;
     }
     if (influencer.followers_facebook && influencer.followers_facebook > 0) {
-      return `${influencer.name} on Facebook`;
+      return `${influencer.name.replace(/\s+/g, '_')} on Facebook`;
     }
     if (influencer.followers_youtube && influencer.followers_youtube > 0) {
-      return `${influencer.name} YouTube`;
+      return `${influencer.name.replace(/\s+/g, '_')} YouTube`;
     }
     if (influencer.followers_twitter && influencer.followers_twitter > 0) {
-      return `@${influencer.name.toLowerCase().replace(/\s+/g, '')}`;
+      return `@${influencer.name.toLowerCase().replace(/\s+/g, '_')}`;
     }
-    return `@${influencer.name.toLowerCase().replace(/\s+/g, '')}`;
+    return `@${influencer.name.toLowerCase().replace(/\s+/g, '_')}`;
   };
   return <div className="flex h-screen bg-background">
       <Sidebar />
