@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
 import { Button } from '@/components/ui/button';
-import { Heart, Eye, MessageCircle, Share2 } from 'lucide-react';
+import { Heart, Instagram, Facebook, Youtube, Twitter } from 'lucide-react';
 import { Avatar } from '@/components/ui/avatar';
 import { Influencer } from '@/types/location';
 
@@ -50,6 +50,44 @@ const WishlistPage = () => {
       return `@${influencer.name.toLowerCase().replace(/\s+/g, '_')}`;
     }
     return `@${influencer.name.toLowerCase().replace(/\s+/g, '_')}`;
+  };
+
+  const getSocialMediaIcons = (influencer: Influencer) => {
+    const socialMedia = [];
+    
+    if (influencer.followers_instagram && influencer.followers_instagram > 0) {
+      socialMedia.push({
+        icon: <Instagram className="h-3 w-3" />,
+        count: influencer.followers_instagram,
+        color: 'text-pink-500'
+      });
+    }
+    
+    if (influencer.followers_youtube && influencer.followers_youtube > 0) {
+      socialMedia.push({
+        icon: <Youtube className="h-3 w-3" />,
+        count: influencer.followers_youtube,
+        color: 'text-red-500'
+      });
+    }
+    
+    if (influencer.followers_facebook && influencer.followers_facebook > 0) {
+      socialMedia.push({
+        icon: <Facebook className="h-3 w-3" />,
+        count: influencer.followers_facebook,
+        color: 'text-blue-500'
+      });
+    }
+    
+    if (influencer.followers_twitter && influencer.followers_twitter > 0) {
+      socialMedia.push({
+        icon: <Twitter className="h-3 w-3" />,
+        count: influencer.followers_twitter,
+        color: 'text-blue-400'
+      });
+    }
+    
+    return socialMedia;
   };
 
   const handleInfluencerClick = (influencer: Influencer) => {
@@ -112,32 +150,22 @@ const WishlistPage = () => {
                       {getSocialMediaPageName(influencer)}
                     </h3>
                     {influencer.niche && (
-                      <p className="text-xs text-muted-foreground mb-2 truncate">
+                      <p className="text-xs text-muted-foreground mb-3 truncate">
                         {influencer.niche.name}
                       </p>
                     )}
                     
-                    <div className="flex justify-center gap-2 text-xs">
-                      {influencer.followers_instagram && influencer.followers_instagram > 0 && (
-                        <span className="text-muted-foreground">
-                          {formatNumber(influencer.followers_instagram)}
-                        </span>
-                      )}
-                      {influencer.followers_facebook && influencer.followers_facebook > 0 && (
-                        <span className="text-muted-foreground">
-                          {formatNumber(influencer.followers_facebook)}
-                        </span>
-                      )}
-                      {influencer.followers_youtube && influencer.followers_youtube > 0 && (
-                        <span className="text-muted-foreground">
-                          {formatNumber(influencer.followers_youtube)}
-                        </span>
-                      )}
-                      {influencer.followers_twitter && influencer.followers_twitter > 0 && (
-                        <span className="text-muted-foreground">
-                          {formatNumber(influencer.followers_twitter)}
-                        </span>
-                      )}
+                    <div className="flex flex-col gap-1">
+                      {getSocialMediaIcons(influencer).map((social, index) => (
+                        <div key={index} className="flex items-center justify-center gap-1">
+                          <span className={social.color}>
+                            {social.icon}
+                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            {formatNumber(social.count)}
+                          </span>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>
