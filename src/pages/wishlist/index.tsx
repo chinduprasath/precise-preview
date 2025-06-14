@@ -4,13 +4,15 @@ import { useNavigate } from 'react-router-dom';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
 import { Button } from '@/components/ui/button';
-import { Heart, Instagram, Facebook, Youtube, Twitter } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Heart, Instagram, Facebook, Youtube, Twitter, Search } from 'lucide-react';
 import { Avatar } from '@/components/ui/avatar';
 import { Influencer } from '@/types/location';
 
 const WishlistPage = () => {
   const navigate = useNavigate();
   const [wishlistInfluencers, setWishlistInfluencers] = useState<Influencer[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     // Load wishlist from localStorage
@@ -94,17 +96,36 @@ const WishlistPage = () => {
     navigate('/influencers', { state: { selectedInfluencer: influencer } });
   };
 
+  // Filter influencers based on search query
+  const filteredInfluencers = wishlistInfluencers.filter(influencer =>
+    influencer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (influencer.niche && influencer.niche.name.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
+
   return (
     <div className="flex h-screen bg-background">
       <Sidebar />
       <div className="flex-1 flex flex-col">
         <Header />
         <main className="flex-1 overflow-auto p-6">
-          <div className="mb-6">
-            <h1 className="text-3xl font-bold text-foreground mb-2">My Wishlist</h1>
-            <p className="text-muted-foreground">
-              {wishlistInfluencers.length} influencer{wishlistInfluencers.length !== 1 ? 's' : ''} saved
-            </p>
+          <div className="mb-6 flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-foreground mb-2">My Wishlist</h1>
+              <p className="text-muted-foreground">
+                {filteredInfluencers.length} of {wishlistInfluencers.length} influencer{wishlistInfluencers.length !== 1 ? 's' : ''} 
+                {searchQuery && ' found'}
+              </p>
+            </div>
+            <div className="relative w-80">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="text"
+                placeholder="Search influencers..."
+                className="pl-10"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
           </div>
 
           {wishlistInfluencers.length === 0 ? (
@@ -116,9 +137,15 @@ const WishlistPage = () => {
                 Browse Influencers
               </Button>
             </div>
+          ) : filteredInfluencers.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-64 text-center">
+              <Search className="h-16 w-16 text-muted-foreground mb-4" />
+              <h3 className="text-xl font-medium text-muted-foreground mb-2">No Results Found</h3>
+              <p className="text-muted-foreground mb-4">Try adjusting your search terms</p>
+            </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-              {wishlistInfluencers.map((influencer) => (
+              {filteredInfluencers.map((influencer) => (
                 <div
                   key={influencer.id}
                   className="bg-card rounded-lg border border-border p-4 hover:shadow-md transition-shadow cursor-pointer"
