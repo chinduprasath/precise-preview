@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
@@ -252,6 +253,24 @@ const InfluencersPage = () => {
     }
   };
 
+  // Helper function to get social media page name
+  const getSocialMediaPageName = (influencer: Influencer) => {
+    // Priority order: Instagram, Facebook, YouTube, Twitter
+    if (influencer.followers_instagram && influencer.followers_instagram > 0) {
+      return `@${influencer.name.toLowerCase().replace(/\s+/g, '')}`;
+    }
+    if (influencer.followers_facebook && influencer.followers_facebook > 0) {
+      return `${influencer.name} on Facebook`;
+    }
+    if (influencer.followers_youtube && influencer.followers_youtube > 0) {
+      return `${influencer.name} YouTube`;
+    }
+    if (influencer.followers_twitter && influencer.followers_twitter > 0) {
+      return `@${influencer.name.toLowerCase().replace(/\s+/g, '')}`;
+    }
+    return `@${influencer.name.toLowerCase().replace(/\s+/g, '')}`;
+  };
+
   return (
     <div className="flex h-screen bg-background">
       <Sidebar />
@@ -326,11 +345,9 @@ const InfluencersPage = () => {
                             <MessageCircle className="h-4 w-4" />
                           </Button>
                         </div>
-                        {selectedInfluencer.username && (
-                          <p className={`text-sm text-muted-foreground ${selectedInfluencer.is_blurred ? 'blur-sm' : ''}`}>
-                            {selectedInfluencer.username}
-                          </p>
-                        )}
+                        <p className={`text-sm text-muted-foreground ${selectedInfluencer.is_blurred ? 'blur-sm' : ''}`}>
+                          {getSocialMediaPageName(selectedInfluencer)}
+                        </p>
                         {selectedInfluencer.niche && (
                           <div className="flex items-center gap-2 mt-1">
                             <span className="text-sm text-muted-foreground">{selectedInfluencer.niche.name}</span>
