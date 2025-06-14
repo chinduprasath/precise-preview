@@ -155,9 +155,9 @@ const WishlistPage = () => {
                       </p>
                     )}
                     
-                    <div className="flex flex-col gap-1">
+                    <div className="flex flex-wrap justify-center gap-2">
                       {getSocialMediaIcons(influencer).map((social, index) => (
-                        <div key={index} className="flex items-center justify-center gap-1">
+                        <div key={index} className="flex items-center gap-1">
                           <span className={social.color}>
                             {social.icon}
                           </span>
