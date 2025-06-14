@@ -1,6 +1,7 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Gift, Wallet } from 'lucide-react';
+import { Gift, Wallet, Heart } from 'lucide-react';
 import SearchBar from './header/SearchBar';
 import NotificationBell from './header/NotificationBell';
 import UserProfileMenu from './header/UserProfileMenu';
@@ -22,6 +23,10 @@ const Header = () => {
     navigate('/offers');
   };
 
+  const navigateToWishlist = () => {
+    navigate('/wishlist');
+  };
+
   return (
     <header className="h-16 border-b border-border flex items-center justify-between bg-background w-full">
       {/* Left side - Search Bar */}
@@ -39,6 +44,13 @@ const Header = () => {
               title="Offers"
             >
               <Gift className="w-5 h-5 text-primary" />
+            </button>
+            <button 
+              className="relative cursor-pointer hover:opacity-80 transition-opacity p-2 rounded-lg hover:bg-muted"
+              onClick={navigateToWishlist}
+              title="Wishlist"
+            >
+              <Heart className="w-5 h-5 text-primary" />
             </button>
             <button 
               className="relative cursor-pointer hover:opacity-80 transition-opacity p-2 rounded-lg hover:bg-muted"

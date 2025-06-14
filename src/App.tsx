@@ -52,6 +52,7 @@ import AboutPage from "./pages/about";
 import ContactPage from "./pages/contact";
 import PricingPage from "./pages/pricing";
 import AdminReportsPage from "./pages/admin/reports/AdminReportsPage";
+import WishlistPage from "./pages/wishlist";
 
 function App() {
   const queryClient = new QueryClient({
@@ -102,6 +103,7 @@ function App() {
                 <Route path="/notifications" element={<NotificationsPage />} />
                 <Route path="/offers" element={<OffersPage />} />
                 <Route path="/support" element={<SupportPage />} />
+                <Route path="/wishlist" element={<WishlistPage />} />
                 
                 <Route path="/wallet/business" element={<BusinessWalletPage />} />
                 <Route path="/wallet/influencer" element={<InfluencerWalletPage />} />

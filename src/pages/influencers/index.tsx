@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
 import { Button } from '@/components/ui/button';
-import { Instagram, Facebook, Twitter, Youtube, MessageCircle, Share2 } from 'lucide-react';
+import { Instagram, Facebook, Twitter, Youtube, MessageCircle, Share2, Heart } from 'lucide-react';
 import { Avatar } from '@/components/ui/avatar';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useLocations } from '@/hooks/useLocations';
@@ -18,6 +18,8 @@ import InfluencerList from '@/components/influencers/InfluencerList';
 import ActiveFilterChips from '@/components/influencers/ActiveFilterChips';
 import { MOCK_BLURRED_INFLUENCERS } from '@/data/mockInfluencers';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from '@/hooks/use-toast';
+
 const formatNumber = (num: number): string => {
   if (num >= 1000000) {
     return (num / 1000000).toFixed(1) + 'M';
@@ -115,6 +117,7 @@ type AudienceCountry = typeof audienceCountries[number]['value'];
 type AudienceLanguage = typeof audienceLanguages[number]['value'];
 const InfluencersPage = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [followerRange, setFollowerRange] = useState<[number, number]>([0, 1500000]);
   const [engagementRange, setEngagementRange] = useState<[number, number]>([0, 10]);
@@ -280,6 +283,35 @@ const InfluencersPage = () => {
     }
     return `@${influencer.name.toLowerCase().replace(/\s+/g, '_')}`;
   };
+
+  const addToWishlist = (influencer: Influencer) => {
+    const savedWishlist = localStorage.getItem('influencerWishlist');
+    const wishlist = savedWishlist ? JSON.parse(savedWishlist) : [];
+    
+    // Check if already in wishlist
+    if (wishlist.some((item: Influencer) => item.id === influencer.id)) {
+      toast({
+        title: "Already in Wishlist",
+        description: `${influencer.name} is already in your wishlist`,
+      });
+      return;
+    }
+
+    wishlist.push(influencer);
+    localStorage.setItem('influencerWishlist', JSON.stringify(wishlist));
+    toast({
+      title: "Added to Wishlist",
+      description: `${influencer.name} has been added to your wishlist`,
+    });
+  };
+
+  const isInWishlist = (influencerId: string) => {
+    const savedWishlist = localStorage.getItem('influencerWishlist');
+    if (!savedWishlist) return false;
+    const wishlist = JSON.parse(savedWishlist);
+    return wishlist.some((item: Influencer) => item.id === influencerId);
+  };
+
   return <div className="flex h-screen bg-background">
       <Sidebar />
       <div className="flex-1 flex flex-col">
@@ -310,6 +342,15 @@ const InfluencersPage = () => {
                       <div>
                         <div className="flex items-center gap-2">
                           <h3 className="text-xl font-semibold text-foreground">{getSocialMediaPageName(selectedInfluencer)}</h3>
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            onClick={() => addToWishlist(selectedInfluencer)}
+                            className="h-8 w-8"
+                            disabled={isInWishlist(selectedInfluencer.id)}
+                          >
+                            <Heart className={`h-4 w-4 ${isInWishlist(selectedInfluencer.id) ? 'fill-red-500 text-red-500' : ''}`} />
+                          </Button>
                           <Button variant="ghost" size="icon" onClick={handleChatInfluencer} className="h-8 w-8">
                             <MessageCircle className="h-4 w-4" />
                           </Button>
