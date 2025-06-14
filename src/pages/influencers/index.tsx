@@ -335,7 +335,7 @@ const InfluencersPage = () => {
                       </Avatar>
                       <div>
                         <div className="flex items-center gap-2">
-                          <h3 className="text-xl font-semibold text-foreground">{selectedInfluencer.name}</h3>
+                          <h3 className="text-xl font-semibold text-foreground">{getSocialMediaPageName(selectedInfluencer)}</h3>
                           <Button
                             variant="ghost"
                             size="icon"
