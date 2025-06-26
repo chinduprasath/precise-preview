@@ -1,10 +1,10 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { usePricingData } from '@/hooks/usePricingData';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
@@ -28,7 +28,7 @@ const platformServices = [
   { id: 'polls', name: 'Polls', price: '499₹' },
 ];
 
-const comboPackages = [
+const customPackages = [
   { 
     id: 'package1', 
     name: 'Packagename-1', 
@@ -63,7 +63,6 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
   const navigate = useNavigate();
   const { toast } = useToast();
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
-  const [selectedPackageType, setSelectedPackageType] = useState<'platform' | 'combo'>('platform');
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
   const [platformDropdownOpen, setPlatformDropdownOpen] = useState(false);
 
@@ -110,17 +109,17 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
 
   return (
     <div className="space-y-8">
-      <Card className="p-6">
-        <RadioGroup value={selectedPackageType} onValueChange={(value) => setSelectedPackageType(value as 'platform' | 'combo')} className="space-y-6">
-          {/* Platform Based Section */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <RadioGroupItem id="platform" value="platform" className="h-4 w-4" />
-                <label htmlFor="platform" className="text-base font-medium">Platform Based</label>
-              </div>
-              
-              {selectedPackageType === 'platform' && (
+      <Tabs defaultValue="platform" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="platform">Platform Based</TabsTrigger>
+          <TabsTrigger value="custom">Custom Package</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="platform" className="mt-6">
+          <Card className="p-6">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-medium">Platform Services</h3>
                 <Popover open={platformDropdownOpen} onOpenChange={setPlatformDropdownOpen}>
                   <PopoverTrigger asChild>
                     <Button
@@ -153,81 +152,75 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
                     </div>
                   </PopoverContent>
                 </Popover>
-              )}
-            </div>
-            
-            {selectedPackageType === 'platform' && (
-              <>
-                {selectedPlatforms.length > 0 && (
-                  <div className="flex flex-wrap gap-2">
-                    {selectedPlatforms.map((platformId) => {
-                      const platform = availablePlatforms.find(p => p.id === platformId);
-                      return (
-                        <Badge key={platformId} variant="secondary" className="flex items-center gap-1">
-                          {platform?.name}
-                          <X
-                            className="h-3 w-3 cursor-pointer"
-                            onClick={() => removePlatform(platformId)}
-                          />
-                        </Badge>
-                      );
-                    })}
-                  </div>
-                )}
-                
-                <div className="space-y-3">
-                  {platformServices.map((service) => (
-                    <div key={service.id} className="flex items-center justify-between py-1">
-                      <div className="flex items-center gap-2">
-                        <Checkbox 
-                          id={service.id}
-                          checked={selectedItems.includes(service.id)}
-                          onCheckedChange={() => handleCheckboxChange(service.id)}
+              </div>
+              
+              {selectedPlatforms.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {selectedPlatforms.map((platformId) => {
+                    const platform = availablePlatforms.find(p => p.id === platformId);
+                    return (
+                      <Badge key={platformId} variant="secondary" className="flex items-center gap-1">
+                        {platform?.name}
+                        <X
+                          className="h-3 w-3 cursor-pointer"
+                          onClick={() => removePlatform(platformId)}
                         />
-                        <label htmlFor={service.id} className="text-sm">
-                          {service.name}
-                        </label>
-                      </div>
-                      <span className="text-sm">{service.price}</span>
-                    </div>
-                  ))}
+                      </Badge>
+                    );
+                  })}
                 </div>
-              </>
-            )}
-          </div>
-
-          {/* Combo Package Section */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <RadioGroupItem id="combo" value="combo" className="h-4 w-4" />
-              <label htmlFor="combo" className="text-base font-medium">Combo Package</label>
-            </div>
-            
-            {selectedPackageType === 'combo' && (
+              )}
+              
               <div className="space-y-3">
-                {comboPackages.map((pkg) => (
-                  <div key={pkg.id} className="flex items-center justify-between py-1">
-                    <div className="flex items-center gap-2">
+                {platformServices.map((service) => (
+                  <div key={service.id} className="flex items-center justify-between py-2 border-b border-gray-100">
+                    <div className="flex items-center gap-3">
+                      <Checkbox 
+                        id={service.id}
+                        checked={selectedItems.includes(service.id)}
+                        onCheckedChange={() => handleCheckboxChange(service.id)}
+                      />
+                      <label htmlFor={service.id} className="text-sm font-medium cursor-pointer">
+                        {service.name}
+                      </label>
+                    </div>
+                    <span className="text-sm font-semibold text-primary">{service.price}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="custom" className="mt-6">
+          <Card className="p-6">
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium">Custom Packages</h3>
+              
+              <div className="space-y-3">
+                {customPackages.map((pkg) => (
+                  <div key={pkg.id} className="flex items-center justify-between py-2 border-b border-gray-100">
+                    <div className="flex items-center gap-3">
                       <Checkbox 
                         id={pkg.id}
                         checked={selectedItems.includes(pkg.id)}
                         onCheckedChange={() => handleCheckboxChange(pkg.id)}
                       />
                       <div>
-                        <label htmlFor={pkg.id} className="text-sm block">
+                        <label htmlFor={pkg.id} className="text-sm font-medium cursor-pointer block">
                           {pkg.name}
                         </label>
-                        <span className="text-xs text-gray-500">{pkg.platforms}</span>
+                        <span className="text-xs text-muted-foreground">{pkg.platforms}</span>
                       </div>
                     </div>
-                    <span className="text-sm">{pkg.price}</span>
+                    <span className="text-sm font-semibold text-primary">{pkg.price}</span>
                   </div>
                 ))}
               </div>
-            )}
-          </div>
-        </RadioGroup>
-      </Card>
+            </div>
+          </Card>
+        </TabsContent>
+      </Tabs>
 
       <div className="flex justify-end">
         <Button 
