@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -19,13 +19,13 @@ interface PricesTabContentProps {
   influencerName: string;
 }
 
-const platformServices = [
-  { id: 'post', name: 'Post Image/Video', price: '499₹' },
-  { id: 'reel', name: 'Reels/Shorts', price: '499₹' },
-  { id: 'story', name: 'Story (Image/Video)', price: '499₹' },
-  { id: 'shorts', name: 'Short Video (<10m)', price: '499₹' },
-  { id: 'videos', name: 'Video (>10m)', price: '499₹' },
-  { id: 'polls', name: 'Polls', price: '499₹' },
+const allPlatformServices = [
+  { id: 'post', name: 'Post Image/Video', price: '499₹', platforms: ['instagram', 'facebook', 'youtube', 'twitter'] },
+  { id: 'reel', name: 'Reels/Shorts', price: '499₹', platforms: ['instagram', 'facebook', 'youtube'] },
+  { id: 'story', name: 'Story (Image/Video)', price: '499₹', platforms: ['instagram', 'facebook'] },
+  { id: 'shorts', name: 'Short Video (<10m)', price: '499₹', platforms: ['instagram', 'facebook', 'youtube', 'twitter'] },
+  { id: 'videos', name: 'Video (>10m)', price: '499₹', platforms: ['youtube'] },
+  { id: 'polls', name: 'Polls', price: '499₹', platforms: ['twitter'] },
 ];
 
 const customPackages = [
@@ -53,7 +53,7 @@ const availablePlatforms = [
   { id: 'instagram', name: 'Instagram' },
   { id: 'facebook', name: 'Facebook' },
   { id: 'youtube', name: 'YouTube' },
-  { id: 'twitter', name: 'Twitter' },
+  { id: 'twitter', name: 'Twitter/X' },
 ];
 
 const PricesTabContent: React.FC<PricesTabContentProps> = ({
@@ -65,6 +65,20 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
   const [platformDropdownOpen, setPlatformDropdownOpen] = useState(false);
+
+  // Filter services based on selected platforms
+  const filteredServices = useMemo(() => {
+    if (selectedPlatforms.length === 0) {
+      return allPlatformServices;
+    }
+
+    // For multiple platforms, show only services that are available on ALL selected platforms
+    const commonServices = allPlatformServices.filter(service => 
+      selectedPlatforms.every(platform => service.platforms.includes(platform))
+    );
+
+    return commonServices;
+  }, [selectedPlatforms]);
 
   const handleCheckboxChange = (itemId: string) => {
     setSelectedItems(prev => {
@@ -171,23 +185,30 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
                 </div>
               )}
               
-              <div className="space-y-3">
-                {platformServices.map((service) => (
-                  <div key={service.id} className="flex items-center justify-between py-2 border-b border-gray-100">
-                    <div className="flex items-center gap-3">
-                      <Checkbox 
-                        id={service.id}
-                        checked={selectedItems.includes(service.id)}
-                        onCheckedChange={() => handleCheckboxChange(service.id)}
-                      />
-                      <label htmlFor={service.id} className="text-sm font-medium cursor-pointer">
-                        {service.name}
-                      </label>
+              {filteredServices.length > 0 ? (
+                <div className="space-y-3">
+                  {filteredServices.map((service) => (
+                    <div key={service.id} className="flex items-center justify-between py-2 border-b border-gray-100">
+                      <div className="flex items-center gap-3">
+                        <Checkbox 
+                          id={service.id}
+                          checked={selectedItems.includes(service.id)}
+                          onCheckedChange={() => handleCheckboxChange(service.id)}
+                        />
+                        <label htmlFor={service.id} className="text-sm font-medium cursor-pointer">
+                          {service.name}
+                        </label>
+                      </div>
+                      <span className="text-sm font-semibold text-primary">{service.price}</span>
                     </div>
-                    <span className="text-sm font-semibold text-primary">{service.price}</span>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              ) : selectedPlatforms.length > 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <p>No common order types available for selected platforms.</p>
+                  <p className="text-sm mt-1">Try selecting fewer platforms or different combinations.</p>
+                </div>
+              ) : null}
             </div>
           </Card>
         </TabsContent>
