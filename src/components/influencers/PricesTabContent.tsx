@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -12,7 +11,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { ChevronDown, X } from 'lucide-react';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { ChevronDown, X, Info } from 'lucide-react';
 
 interface PricesTabContentProps {
   influencerId?: string;
@@ -20,12 +25,56 @@ interface PricesTabContentProps {
 }
 
 const allPlatformServices = [
-  { id: 'post', name: 'Post Image/Video', price: '499₹', platforms: ['instagram', 'facebook', 'youtube', 'twitter'] },
-  { id: 'reel', name: 'Reels/Shorts', price: '499₹', platforms: ['instagram', 'facebook', 'youtube'] },
-  { id: 'story', name: 'Story (Image/Video)', price: '499₹', platforms: ['instagram', 'facebook'] },
-  { id: 'shorts', name: 'Short Video (<10m)', price: '499₹', platforms: ['instagram', 'facebook', 'youtube', 'twitter'] },
-  { id: 'videos', name: 'Video (>10m)', price: '499₹', platforms: ['youtube'] },
-  { id: 'polls', name: 'Polls', price: '499₹', platforms: ['twitter'] },
+  { 
+    id: 'post', 
+    name: 'Post Image/Video', 
+    price: '499₹', 
+    platforms: ['instagram', 'facebook', 'youtube', 'twitter'],
+    tooltip: 'Standard feed post with an image or video provided by the brand.'
+  },
+  { 
+    id: 'reel', 
+    name: 'Reels/Shorts', 
+    price: '499₹', 
+    platforms: ['instagram', 'facebook', 'youtube'],
+    tooltip: 'Vertical short video (15–90 sec) for high engagement. Suitable for Instagram, Facebook, YouTube Shorts.'
+  },
+  { 
+    id: 'story', 
+    name: 'Story (Image/Video)', 
+    price: '499₹', 
+    platforms: ['instagram', 'facebook'],
+    tooltip: 'Temporary 24-hour image/video post. Great for timely promotions.'
+  },
+  { 
+    id: 'in-video-promotion', 
+    name: 'In-Video Promotion (<10 min)', 
+    price: '499₹', 
+    platforms: ['youtube'],
+    tooltip: 'Brand mention or product feature integrated inside influencer\'s YouTube video. Typically 1–5 mins.'
+  },
+  { 
+    id: 'promotions-long', 
+    name: 'Promotions (>10 min)', 
+    price: '499₹', 
+    platforms: ['youtube'],
+    tooltip: 'Long-form brand video (provided by business) uploaded to influencer\'s YouTube channel. Best for detailed content.'
+  },
+  { 
+    id: 'polls', 
+    name: 'Polls', 
+    price: '499₹', 
+    platforms: ['twitter'],
+    tooltip: 'Only supported on Twitter/X. Allows voting and result extraction via API.'
+  },
+  { 
+    id: 'visit-promote', 
+    name: 'Visit & Promote', 
+    price: '₹1000 – ₹5000', 
+    platforms: ['instagram', 'facebook', 'youtube', 'twitter'],
+    tooltip: 'Influencer visits your location, creates real-time content (Reels/Stories), and publishes it to promote footfall.',
+    isVisitPromote: true
+  },
 ];
 
 const customPackages = [
@@ -63,22 +112,20 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
   const navigate = useNavigate();
   const { toast } = useToast();
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
-  const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
+  const [selectedPlatform, setSelectedPlatform] = useState<string>(''); // Changed to single platform
   const [platformDropdownOpen, setPlatformDropdownOpen] = useState(false);
 
-  // Filter services based on selected platforms
+  // Filter services based on selected platform (single selection)
   const filteredServices = useMemo(() => {
-    if (selectedPlatforms.length === 0) {
+    if (!selectedPlatform) {
       return allPlatformServices;
     }
 
-    // For multiple platforms, show only services that are available on ALL selected platforms
-    const commonServices = allPlatformServices.filter(service => 
-      selectedPlatforms.every(platform => service.platforms.includes(platform))
+    // Show only services that are available on the selected platform
+    return allPlatformServices.filter(service => 
+      service.platforms.includes(selectedPlatform)
     );
-
-    return commonServices;
-  }, [selectedPlatforms]);
+  }, [selectedPlatform]);
 
   const handleCheckboxChange = (itemId: string) => {
     setSelectedItems(prev => {
@@ -89,18 +136,16 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
     });
   };
 
-  const handlePlatformToggle = (platformId: string) => {
-    setSelectedPlatforms(prev => {
-      if (prev.includes(platformId)) {
-        return prev.filter(id => id !== platformId);
-      }
-      return [...prev, platformId];
-    });
+  const handlePlatformSelect = (platformId: string) => {
+    setSelectedPlatform(platformId);
+    setPlatformDropdownOpen(false);
   };
 
-  const removePlatform = (platformId: string) => {
-    setSelectedPlatforms(prev => prev.filter(id => id !== platformId));
+  const removePlatform = () => {
+    setSelectedPlatform('');
   };
+
+  const hasVisitPromoteSelected = selectedItems.includes('visit-promote');
 
   const handleBook = () => {
     if (selectedItems.length === 0) {
@@ -112,146 +157,165 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
       return;
     }
 
-    navigate('/orders/place', { 
-      state: { 
-        influencerId, 
-        influencerName, 
-        selectedItems 
-      } 
-    });
+    if (hasVisitPromoteSelected) {
+      // For Visit & Promote, trigger review flow
+      navigate('/orders/review', { 
+        state: { 
+          influencerId, 
+          influencerName, 
+          selectedItems,
+          isVisitPromote: true
+        } 
+      });
+    } else {
+      navigate('/orders/place', { 
+        state: { 
+          influencerId, 
+          influencerName, 
+          selectedItems 
+        } 
+      });
+    }
   };
 
-  return (
-    <div className="space-y-8">
-      <Tabs defaultValue="platform" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="platform">Platform Based</TabsTrigger>
-          <TabsTrigger value="custom">Custom Package</TabsTrigger>
-        </TabsList>
+  const selectedPlatformName = selectedPlatform ? 
+    availablePlatforms.find(p => p.id === selectedPlatform)?.name : 
+    'Select Platform';
 
-        <TabsContent value="platform" className="mt-6">
-          <Card className="p-6">
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-medium">Platform Services</h3>
-                <Popover open={platformDropdownOpen} onOpenChange={setPlatformDropdownOpen}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      role="combobox"
-                      aria-expanded={platformDropdownOpen}
-                      className="w-48 justify-between"
-                    >
-                      Select Platforms
-                      <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-48 p-0" align="end">
-                    <div className="p-2 space-y-2">
-                      {availablePlatforms.map((platform) => (
-                        <div key={platform.id} className="flex items-center space-x-2">
-                          <Checkbox
-                            id={platform.id}
-                            checked={selectedPlatforms.includes(platform.id)}
-                            onCheckedChange={() => handlePlatformToggle(platform.id)}
-                          />
-                          <label
-                            htmlFor={platform.id}
-                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+  return (
+    <TooltipProvider>
+      <div className="space-y-8">
+        <Tabs defaultValue="platform" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="platform">Platform Based</TabsTrigger>
+            <TabsTrigger value="custom">Custom Package</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="platform" className="mt-6">
+            <Card className="p-6">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-medium">Platform Services</h3>
+                  <Popover open={platformDropdownOpen} onOpenChange={setPlatformDropdownOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={platformDropdownOpen}
+                        className="w-48 justify-between"
+                      >
+                        {selectedPlatformName}
+                        <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-48 p-0" align="end">
+                      <div className="p-2 space-y-1">
+                        {availablePlatforms.map((platform) => (
+                          <div 
+                            key={platform.id}
+                            className="flex items-center space-x-2 hover:bg-accent rounded-md p-2 cursor-pointer"
+                            onClick={() => handlePlatformSelect(platform.id)}
                           >
-                            {platform.name}
-                          </label>
-                        </div>
-                      ))}
-                    </div>
-                  </PopoverContent>
-                </Popover>
-              </div>
-              
-              {selectedPlatforms.length > 0 && (
-                <div className="flex flex-wrap gap-2">
-                  {selectedPlatforms.map((platformId) => {
-                    const platform = availablePlatforms.find(p => p.id === platformId);
-                    return (
-                      <Badge key={platformId} variant="secondary" className="flex items-center gap-1">
-                        {platform?.name}
-                        <X
-                          className="h-3 w-3 cursor-pointer"
-                          onClick={() => removePlatform(platformId)}
-                        />
-                      </Badge>
-                    );
-                  })}
+                            <span className="text-sm font-medium leading-none">
+                              {platform.name}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </PopoverContent>
+                  </Popover>
                 </div>
-              )}
-              
-              {filteredServices.length > 0 ? (
+                
+                {selectedPlatform && (
+                  <div className="flex flex-wrap gap-2">
+                    <Badge variant="secondary" className="flex items-center gap-1">
+                      {selectedPlatformName}
+                      <X
+                        className="h-3 w-3 cursor-pointer"
+                        onClick={removePlatform}
+                      />
+                    </Badge>
+                  </div>
+                )}
+                
+                {filteredServices.length > 0 ? (
+                  <div className="space-y-3">
+                    {filteredServices.map((service) => (
+                      <div key={service.id} className="flex items-center justify-between py-2 border-b border-gray-100">
+                        <div className="flex items-center gap-3">
+                          <Checkbox 
+                            id={service.id}
+                            checked={selectedItems.includes(service.id)}
+                            onCheckedChange={() => handleCheckboxChange(service.id)}
+                          />
+                          <div className="flex items-center gap-2">
+                            <label htmlFor={service.id} className="text-sm font-medium cursor-pointer">
+                              {service.name}
+                            </label>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+                              </TooltipTrigger>
+                              <TooltipContent className="max-w-xs">
+                                <p className="text-sm">{service.tooltip}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </div>
+                        </div>
+                        <span className="text-sm font-semibold text-primary">{service.price}</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : selectedPlatform ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <p>No order types available for selected platform.</p>
+                    <p className="text-sm mt-1">Try selecting a different platform.</p>
+                  </div>
+                ) : null}
+              </div>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="custom" className="mt-6">
+            <Card className="p-6">
+              <div className="space-y-4">
+                <h3 className="text-lg font-medium">Custom Packages</h3>
+                
                 <div className="space-y-3">
-                  {filteredServices.map((service) => (
-                    <div key={service.id} className="flex items-center justify-between py-2 border-b border-gray-100">
+                  {customPackages.map((pkg) => (
+                    <div key={pkg.id} className="flex items-center justify-between py-2 border-b border-gray-100">
                       <div className="flex items-center gap-3">
                         <Checkbox 
-                          id={service.id}
-                          checked={selectedItems.includes(service.id)}
-                          onCheckedChange={() => handleCheckboxChange(service.id)}
+                          id={pkg.id}
+                          checked={selectedItems.includes(pkg.id)}
+                          onCheckedChange={() => handleCheckboxChange(pkg.id)}
                         />
-                        <label htmlFor={service.id} className="text-sm font-medium cursor-pointer">
-                          {service.name}
-                        </label>
+                        <div>
+                          <label htmlFor={pkg.id} className="text-sm font-medium cursor-pointer block">
+                            {pkg.name}
+                          </label>
+                          <span className="text-xs text-muted-foreground">{pkg.platforms}</span>
+                        </div>
                       </div>
-                      <span className="text-sm font-semibold text-primary">{service.price}</span>
+                      <span className="text-sm font-semibold text-primary">{pkg.price}</span>
                     </div>
                   ))}
                 </div>
-              ) : selectedPlatforms.length > 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
-                  <p>No common order types available for selected platforms.</p>
-                  <p className="text-sm mt-1">Try selecting fewer platforms or different combinations.</p>
-                </div>
-              ) : null}
-            </div>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="custom" className="mt-6">
-          <Card className="p-6">
-            <div className="space-y-4">
-              <h3 className="text-lg font-medium">Custom Packages</h3>
-              
-              <div className="space-y-3">
-                {customPackages.map((pkg) => (
-                  <div key={pkg.id} className="flex items-center justify-between py-2 border-b border-gray-100">
-                    <div className="flex items-center gap-3">
-                      <Checkbox 
-                        id={pkg.id}
-                        checked={selectedItems.includes(pkg.id)}
-                        onCheckedChange={() => handleCheckboxChange(pkg.id)}
-                      />
-                      <div>
-                        <label htmlFor={pkg.id} className="text-sm font-medium cursor-pointer block">
-                          {pkg.name}
-                        </label>
-                        <span className="text-xs text-muted-foreground">{pkg.platforms}</span>
-                      </div>
-                    </div>
-                    <span className="text-sm font-semibold text-primary">{pkg.price}</span>
-                  </div>
-                ))}
               </div>
-            </div>
-          </Card>
-        </TabsContent>
-      </Tabs>
+            </Card>
+          </TabsContent>
+        </Tabs>
 
-      <div className="flex justify-end">
-        <Button 
-          onClick={handleBook}
-          className="px-12"
-        >
-          Book
-        </Button>
+        <div className="flex justify-end">
+          <Button 
+            onClick={handleBook}
+            className="px-12"
+          >
+            {hasVisitPromoteSelected ? 'Send for Review' : 'Book'}
+          </Button>
+        </div>
       </div>
-    </div>
+    </TooltipProvider>
   );
 };
 
