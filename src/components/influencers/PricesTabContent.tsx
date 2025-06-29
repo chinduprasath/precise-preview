@@ -83,31 +83,25 @@ const customPackages = [
     id: 'package1', 
     name: 'Brand Boost', 
     platforms: ['instagram', 'facebook'],
-    deliverables: '1 Post on Instagram + 1 Story on Facebook',
     description: 'Perfect for product launches and brand awareness',
     price: '₹899',
-    duration: 'Within 2 days',
     tooltip: 'Includes one main feed post on Instagram and one 24-hour story on Facebook. Content must be provided by business.'
   },
   { 
     id: 'package2', 
     name: 'Social Combo', 
     platforms: ['instagram', 'facebook', 'youtube'],
-    deliverables: '1 Reel on Instagram + 1 Post on Facebook + 1 Short on YouTube',
     description: 'Maximum reach across all major platforms',
     price: '₹1499',
-    duration: 'Within 3 days',
     tooltip: 'Cross-platform promotion with short-form video content on Instagram, standard post on Facebook, and YouTube Short. All content provided by business.'
   },
   { 
     id: 'package3', 
     name: 'Video Power Pack', 
     platforms: ['youtube', 'instagram'],
-    deliverables: '1 YouTube Video + 2 Instagram Stories',
     description: 'Great for detailed product demos and tutorials',
     price: '₹2199',
-    duration: 'Within 5 days',
-    tooltip: 'Includes one full YouTube video (up to 10 minutes) plus two Instagram story posts. Perfect for in-depth product showcases.'
+    tooltip: 'Includes one full YouTube video (up to 10 minutes) plus one Instagram reel post. Perfect for in-depth product showcases.'
   },
 ];
 
@@ -140,7 +134,7 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
   const navigate = useNavigate();
   const { toast } = useToast();
   const [selectedOrderType, setSelectedOrderType] = useState<string>('');
-  const [selectedCustomPackage, setSelectedCustomPackage] = useState<string>(''); // Changed to single string
+  const [selectedCustomPackage, setSelectedCustomPackage] = useState<string>('');
   const [selectedPlatform, setSelectedPlatform] = useState<string>('');
   const [platformDropdownOpen, setPlatformDropdownOpen] = useState(false);
 
@@ -356,13 +350,6 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
                                     <span className="text-xs font-medium capitalize">{platform}</span>
                                   </div>
                                 ))}
-                              </div>
-                              
-                              <div className="space-y-1">
-                                <p className="text-sm"><strong>Deliverables:</strong> {pkg.deliverables}</p>
-                                {pkg.duration && (
-                                  <p className="text-sm"><strong>Delivery:</strong> {pkg.duration}</p>
-                                )}
                               </div>
                             </div>
                           </div>
