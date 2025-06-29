@@ -18,7 +18,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { ChevronDown, X, Info } from 'lucide-react';
+import { ChevronDown, X, Info, Instagram, Facebook, Youtube } from 'lucide-react';
 
 interface PricesTabContentProps {
   influencerId?: string;
@@ -81,21 +81,33 @@ const allPlatformServices = [
 const customPackages = [
   { 
     id: 'package1', 
-    name: 'Packagename-1', 
-    platforms: 'Insta/FB/Youtube',
-    price: '499₹'
+    name: 'Brand Boost', 
+    platforms: ['instagram', 'facebook'],
+    deliverables: '1 Post on Instagram + 1 Story on Facebook',
+    description: 'Perfect for product launches and brand awareness',
+    price: '₹899',
+    duration: 'Within 2 days',
+    tooltip: 'Includes one main feed post on Instagram and one 24-hour story on Facebook. Content must be provided by business.'
   },
   { 
     id: 'package2', 
-    name: 'Packagename-2', 
-    platforms: 'Insta/FB/Youtube',
-    price: '499₹'
+    name: 'Social Combo', 
+    platforms: ['instagram', 'facebook', 'youtube'],
+    deliverables: '1 Reel on Instagram + 1 Post on Facebook + 1 Short on YouTube',
+    description: 'Maximum reach across all major platforms',
+    price: '₹1499',
+    duration: 'Within 3 days',
+    tooltip: 'Cross-platform promotion with short-form video content on Instagram, standard post on Facebook, and YouTube Short. All content provided by business.'
   },
   { 
     id: 'package3', 
-    name: 'Packagename-3', 
-    platforms: 'Insta/FB/Youtube',
-    price: '499₹'
+    name: 'Video Power Pack', 
+    platforms: ['youtube', 'instagram'],
+    deliverables: '1 YouTube Video + 2 Instagram Stories',
+    description: 'Great for detailed product demos and tutorials',
+    price: '₹2199',
+    duration: 'Within 5 days',
+    tooltip: 'Includes one full YouTube video (up to 10 minutes) plus two Instagram story posts. Perfect for in-depth product showcases.'
   },
 ];
 
@@ -106,14 +118,29 @@ const availablePlatforms = [
   { id: 'twitter', name: 'Twitter/X' },
 ];
 
+const PlatformIcon = ({ platform }: { platform: string }) => {
+  switch (platform) {
+    case 'instagram':
+      return <Instagram className="h-4 w-4 text-pink-500" />;
+    case 'facebook':
+      return <Facebook className="h-4 w-4 text-blue-600" />;
+    case 'youtube':
+      return <Youtube className="h-4 w-4 text-red-500" />;
+    case 'twitter':
+      return <div className="h-4 w-4 bg-blue-400 rounded-full flex items-center justify-center text-white text-xs font-bold">X</div>;
+    default:
+      return null;
+  }
+};
+
 const PricesTabContent: React.FC<PricesTabContentProps> = ({
   influencerId,
   influencerName,
 }) => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [selectedOrderType, setSelectedOrderType] = useState<string>(''); // Changed from array to single string
-  const [selectedCustomPackages, setSelectedCustomPackages] = useState<string[]>([]);
+  const [selectedOrderType, setSelectedOrderType] = useState<string>('');
+  const [selectedCustomPackage, setSelectedCustomPackage] = useState<string>(''); // Changed to single string
   const [selectedPlatform, setSelectedPlatform] = useState<string>('');
   const [platformDropdownOpen, setPlatformDropdownOpen] = useState(false);
 
@@ -134,12 +161,7 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
   };
 
   const handleCustomPackageChange = (packageId: string) => {
-    setSelectedCustomPackages(prev => {
-      if (prev.includes(packageId)) {
-        return prev.filter(id => id !== packageId);
-      }
-      return [...prev, packageId];
-    });
+    setSelectedCustomPackage(packageId);
   };
 
   const handlePlatformSelect = (platformId: string) => {
@@ -155,7 +177,7 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
 
   const handleBook = () => {
     const hasOrderTypeSelected = selectedOrderType !== '';
-    const hasCustomPackageSelected = selectedCustomPackages.length > 0;
+    const hasCustomPackageSelected = selectedCustomPackage !== '';
     
     if (!hasOrderTypeSelected && !hasCustomPackageSelected) {
       toast({
@@ -171,7 +193,7 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
       selectedItems.push(selectedOrderType);
     }
     if (hasCustomPackageSelected) {
-      selectedItems.push(...selectedCustomPackages);
+      selectedItems.push(selectedCustomPackage);
     }
 
     if (hasVisitPromoteSelected) {
@@ -293,28 +315,64 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
 
           <TabsContent value="custom" className="mt-6">
             <Card className="p-6">
-              <div className="space-y-4">
-                <h3 className="text-lg font-medium">Custom Packages</h3>
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-lg font-medium mb-2">Custom Packages</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Choose a multi-platform promotion package designed by the influencer. These bundles include posts across 2 or more platforms at a fixed price. Content must be provided by the business.
+                  </p>
+                </div>
                 
-                <div className="space-y-3">
-                  {customPackages.map((pkg) => (
-                    <div key={pkg.id} className="flex items-center justify-between py-2 border-b border-gray-100">
-                      <div className="flex items-center gap-3">
-                        <Checkbox 
-                          id={pkg.id}
-                          checked={selectedCustomPackages.includes(pkg.id)}
-                          onCheckedChange={() => handleCustomPackageChange(pkg.id)}
-                        />
-                        <div>
-                          <label htmlFor={pkg.id} className="text-sm font-medium cursor-pointer block">
-                            {pkg.name}
-                          </label>
-                          <span className="text-xs text-muted-foreground">{pkg.platforms}</span>
+                <div className="space-y-4">
+                  <RadioGroup value={selectedCustomPackage} onValueChange={handleCustomPackageChange}>
+                    {customPackages.map((pkg) => (
+                      <div key={pkg.id} className="border rounded-lg p-4 hover:bg-accent/50 transition-colors">
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-start gap-3 flex-1">
+                            <RadioGroupItem value={pkg.id} id={pkg.id} className="mt-1" />
+                            <div className="flex-1 space-y-3">
+                              <div>
+                                <div className="flex items-center gap-2 mb-1">
+                                  <label htmlFor={pkg.id} className="text-base font-semibold cursor-pointer">
+                                    {pkg.name}
+                                  </label>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+                                    </TooltipTrigger>
+                                    <TooltipContent className="max-w-xs">
+                                      <p className="text-sm">{pkg.tooltip}</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </div>
+                                <p className="text-sm text-muted-foreground mb-2">{pkg.description}</p>
+                              </div>
+                              
+                              <div className="flex flex-wrap items-center gap-2">
+                                <span className="text-xs font-medium text-muted-foreground">Platforms:</span>
+                                {pkg.platforms.map((platform) => (
+                                  <div key={platform} className="flex items-center gap-1 bg-secondary px-2 py-1 rounded-md">
+                                    <PlatformIcon platform={platform} />
+                                    <span className="text-xs font-medium capitalize">{platform}</span>
+                                  </div>
+                                ))}
+                              </div>
+                              
+                              <div className="space-y-1">
+                                <p className="text-sm"><strong>Deliverables:</strong> {pkg.deliverables}</p>
+                                {pkg.duration && (
+                                  <p className="text-sm"><strong>Delivery:</strong> {pkg.duration}</p>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="text-right ml-4">
+                            <span className="text-lg font-bold text-primary">{pkg.price}</span>
+                          </div>
                         </div>
                       </div>
-                      <span className="text-sm font-semibold text-primary">{pkg.price}</span>
-                    </div>
-                  ))}
+                    ))}
+                  </RadioGroup>
                 </div>
               </div>
             </Card>
