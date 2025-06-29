@@ -1,22 +1,19 @@
+
 import React, { useState, useMemo, useCallback, useRef } from "react";
-import { Instagram, Facebook, Youtube, Twitter, Paperclip, Check, Clock, Upload, X, Loader2, Tag, FileText } from "lucide-react";
+import { Instagram, Facebook, Youtube, Twitter, Paperclip, Check, Clock, Upload, X, Loader2, Tag, FileText, Calendar } from "lucide-react";
 import Layout from '@/components/layout/Layout';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { format, parse } from "date-fns";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { format } from "date-fns";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { Switch } from "@/components/ui/switch";
 import { toast } from "@/hooks/use-toast";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { ScheduleSelector } from "@/components/orders/ScheduleSelector";
+import { DateTimePicker } from "@/components/reach/DateTimePicker";
 import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const influencerMock = {
   avatar: "https://picsum.photos/id/64/100/100",
@@ -30,33 +27,12 @@ const influencerMock = {
   ],
 };
 
-const affiliatePlatforms = [
-  { name: "Instagram", id: "instagram", icon: <Instagram className="w-5 h-5 text-social-instagram" />, color: "bg-gradient-to-br from-[#f9ce34] via-[#ee2a7b] to-[#6228d7] text-white" },
-  { name: "Facebook", id: "facebook", icon: <Facebook className="w-5 h-5 text-social-facebook" />, color: "bg-[#1877f2] text-white" },
-  { name: "YouTube", id: "youtube", icon: <Youtube className="w-5 h-5 text-social-youtube" />, color: "bg-[#ff0000] text-white" },
-  { name: "Twitter", id: "twitter", icon: <Twitter className="w-5 h-5 text-social-twitter" />, color: "bg-[#1da1f2] text-white" },
+const socialPlatforms = [
+  { id: 'instagram', name: 'Instagram', icon: <Instagram className="w-5 h-5" />, color: 'text-pink-500' },
+  { id: 'facebook', name: 'Facebook', icon: <Facebook className="w-5 h-5" />, color: 'text-blue-600' },
+  { id: 'youtube', name: 'YouTube', icon: <Youtube className="w-5 h-5" />, color: 'text-red-500' },
+  { id: 'twitter', name: 'Twitter', icon: <Twitter className="w-5 h-5" />, color: 'text-blue-400' },
 ];
-
-const generateTimeSlots = () => {
-  const slots = [];
-  for (let hour = 9; hour <= 18; hour++) {
-    for (let minute of [0, 30]) {
-      if (hour === 18 && minute === 30) continue;
-      
-      const period = hour < 12 ? 'AM' : 'PM';
-      const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour;
-      const formattedMinute = minute === 0 ? '00' : minute;
-      
-      slots.push({
-        label: `${displayHour}:${formattedMinute} ${period}`,
-        value: `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`
-      });
-    }
-  }
-  return slots;
-};
-
-const timeSlots = generateTimeSlots();
 
 const availableCoupons = {
   "WELCOME10": { discount: 80, type: "fixed" },
@@ -71,17 +47,20 @@ interface TimeSelection {
 }
 
 export default function PlaceOrderPage() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  
+  // Get order details from navigation state
+  const orderDetails = location.state || {};
+  const { influencerName = "Gary Vaynerchuk", selectedItems = [], isVisitPromote = false } = orderDetails;
+  
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
   const [affiliateLink, setAffiliateLink] = useState("");
   const [affiliateLinkError, setAffiliateLinkError] = useState("");
-  const [customMessage, setCustomMessage] = useState("");
-  const [customMessageError, setCustomMessageError] = useState("");
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
-  const [selectedTime, setSelectedTime] = useState<TimeSelection>({
-    hour: '',
-    minute: '',
-    period: ''
-  });
+  const [description, setDescription] = useState("");
+  const [descriptionError, setDescriptionError] = useState("");
+  const [selectedDateTime, setSelectedDateTime] = useState<Date | undefined>(undefined);
+  const [pages, setPages] = useState("");
   const [files, setFiles] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [couponCode, setCouponCode] = useState("");
@@ -97,7 +76,7 @@ export default function PlaceOrderPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const dropAreaRef = useRef<HTMLDivElement>(null);
 
-  const packageName = "Packagename-1: Insta/FB/Youtube";
+  const packageName = selectedItems.length > 0 ? selectedItems[0] : "Selected Package";
   const packagePrice = 800;
   const platformFee = 99;
   
@@ -122,9 +101,9 @@ export default function PlaceOrderPage() {
     }
   };
 
-  const validateCustomMessage = (message: string) => {
+  const validateDescription = (message: string) => {
     if (message.length > 500) {
-      return "Message must be less than 500 characters";
+      return "Description must be less than 500 characters";
     }
     return "";
   };
@@ -139,8 +118,12 @@ export default function PlaceOrderPage() {
     return "";
   };
 
-  const handlePlatformChange = (values: string[]) => {
-    setSelectedPlatforms(values);
+  const handlePlatformToggle = (platformId: string) => {
+    setSelectedPlatforms(prev => 
+      prev.includes(platformId) 
+        ? prev.filter(id => id !== platformId)
+        : [...prev, platformId]
+    );
   };
 
   const handleAffiliateLinkChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -149,16 +132,16 @@ export default function PlaceOrderPage() {
     setAffiliateLinkError(validateAffiliateLink(link));
   };
 
-  const handleCustomMessageChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const message = e.target.value;
-    setCustomMessage(message);
-    setCustomMessageError(validateCustomMessage(message));
+    setDescription(message);
+    setDescriptionError(validateDescription(message));
   };
 
   const handleContentDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const description = e.target.value;
-    setContentDescription(description);
-    setContentDescriptionError(validateContentDescription(description));
+    const desc = e.target.value;
+    setContentDescription(desc);
+    setContentDescriptionError(validateContentDescription(desc));
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -262,14 +245,14 @@ export default function PlaceOrderPage() {
     e.preventDefault();
     
     const linkError = validateAffiliateLink(affiliateLink);
-    const messageError = validateCustomMessage(customMessage);
-    const descriptionError = validateContentDescription(contentDescription);
+    const messageError = validateDescription(description);
+    const descError = validateContentDescription(contentDescription);
     
     setAffiliateLinkError(linkError);
-    setCustomMessageError(messageError);
-    setContentDescriptionError(descriptionError);
+    setDescriptionError(messageError);
+    setContentDescriptionError(descError);
     
-    if (linkError || messageError || descriptionError) {
+    if (linkError || messageError || descError) {
       toast({
         title: "Form Error",
         description: "Please fix the errors in the form",
@@ -306,10 +289,10 @@ export default function PlaceOrderPage() {
       return;
     }
     
-    if (!selectedDate || !selectedTime.hour || !selectedTime.minute || !selectedTime.period) {
+    if (!selectedDateTime) {
       toast({
         title: "Missing Selection",
-        description: "Please select both date and time",
+        description: "Please select date and time",
         variant: "destructive"
       });
       return;
@@ -325,9 +308,9 @@ export default function PlaceOrderPage() {
       console.log({
         platforms: selectedPlatforms,
         affiliateLink,
-        customMessage,
-        selectedDate: selectedDate ? format(selectedDate, "PPP") : undefined,
-        selectedTime,
+        description,
+        selectedDateTime: selectedDateTime ? format(selectedDateTime, "PPP p") : undefined,
+        pages,
         contentSubmissionMethod,
         files: contentSubmissionMethod === 'upload' ? files.map((f) => f.name) : [],
         contentDescription: contentSubmissionMethod === 'describe' ? contentDescription : '',
@@ -336,8 +319,6 @@ export default function PlaceOrderPage() {
       });
     }, 1500);
   };
-
-  const navigate = useNavigate();
 
   return (
     <Layout>
@@ -375,76 +356,14 @@ export default function PlaceOrderPage() {
               </CardContent>
             </Card>
             
+            {/* Order Type Display */}
             <div className="space-y-4">
               <Label className="text-base font-semibold flex items-center gap-2">
-                <svg 
-                  xmlns="http://www.w3.org/2000/svg" 
-                  className="w-5 h-5 text-primary/80" 
-                  fill="none" 
-                  viewBox="0 0 24 24" 
-                  stroke="currentColor"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                </svg>
-                Affiliate Platforms
+                <Check className="w-5 h-5 text-primary/80" />
+                Selected Order
               </Label>
-              
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {affiliatePlatforms.map((platform) => (
-                  <div
-                    key={platform.id}
-                    className={cn(
-                      "relative cursor-pointer rounded-lg overflow-hidden transition-all",
-                      selectedPlatforms.includes(platform.id) 
-                        ? "ring-2 ring-primary ring-offset-2 dark:ring-offset-background" 
-                        : "opacity-70 hover:opacity-100"
-                    )}
-                    onClick={() => {
-                      if (selectedPlatforms.includes(platform.id)) {
-                        setSelectedPlatforms(selectedPlatforms.filter(id => id !== platform.id));
-                      } else {
-                        setSelectedPlatforms([...selectedPlatforms, platform.id]);
-                      }
-                    }}
-                  >
-                    <div className={cn(
-                      "flex items-center gap-2 p-3 transition-all",
-                      platform.color
-                    )}>
-                      {platform.icon}
-                      <span className="font-medium text-sm">{platform.name}</span>
-                      
-                      {selectedPlatforms.includes(platform.id) && (
-                        <div className="absolute top-1 right-1 w-4 h-4 bg-white rounded-full flex items-center justify-center">
-                          <Check className="w-3 h-3 text-primary" />
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-              
-              <div>
-                <Label 
-                  htmlFor="affiliate-link" 
-                  className={cn(
-                    "text-sm mb-1.5 block",
-                    affiliateLinkError && "text-destructive"
-                  )}
-                >
-                  Affiliate Link {affiliateLinkError && `(${affiliateLinkError})`}
-                </Label>
-                <Input
-                  id="affiliate-link"
-                  placeholder="https://example.com/your-affiliate-link"
-                  className={cn(
-                    "transition-all focus-visible:ring-primary",
-                    affiliateLinkError && "border-destructive focus-visible:ring-destructive"
-                  )}
-                  value={affiliateLink}
-                  onChange={handleAffiliateLinkChange}
-                  onBlur={() => setAffiliateLinkError(validateAffiliateLink(affiliateLink))}
-                />
+              <div className="bg-accent/50 p-4 rounded-lg border">
+                <p className="font-medium">Order Type: {packageName} (Platform Based)</p>
               </div>
             </div>
             
@@ -591,40 +510,103 @@ export default function PlaceOrderPage() {
               <div className="space-y-4">
                 <Label className="text-base font-semibold flex items-center gap-2">
                   <Clock className="w-5 h-5 text-primary/80" />
-                  Schedule
+                  Select Date & Time
                 </Label>
                 
-                <ScheduleSelector
-                  selectedDate={selectedDate}
-                  setSelectedDate={setSelectedDate}
-                  selectedTime={selectedTime}
-                  setSelectedTime={setSelectedTime}
+                <DateTimePicker
+                  value={selectedDateTime}
+                  onChange={setSelectedDateTime}
+                  label=""
+                  placeholder="Pick a date and time"
                 />
               </div>
               
               <div className="space-y-4 pt-4 border-t border-border">
                 <Label 
-                  htmlFor="custom-message" 
+                  htmlFor="description" 
                   className={cn(
                     "text-base font-semibold block",
-                    customMessageError && "text-destructive"
+                    descriptionError && "text-destructive"
                   )}
                 >
-                  Custom Message {customMessageError && `(${customMessageError})`}
+                  Description {descriptionError && `(${descriptionError})`}
                 </Label>
                 <Textarea
-                  id="custom-message"
+                  id="description"
                   placeholder="Add any specific instructions or details about your request..."
                   className={cn(
                     "min-h-[100px] resize-none transition-all focus-visible:ring-primary",
-                    customMessageError && "border-destructive focus-visible:ring-destructive"
+                    descriptionError && "border-destructive focus-visible:ring-destructive"
                   )}
-                  value={customMessage}
-                  onChange={handleCustomMessageChange}
-                  onBlur={() => setCustomMessageError(validateCustomMessage(customMessage))}
+                  value={description}
+                  onChange={handleDescriptionChange}
+                  onBlur={() => setDescriptionError(validateDescription(description))}
                 />
                 <div className="mt-1 text-xs text-right text-muted-foreground">
-                  {customMessage.length}/500 characters
+                  {description.length}/500 characters
+                </div>
+              </div>
+
+              <div className="space-y-4 pt-4 border-t border-border">
+                <Label 
+                  htmlFor="affiliate-link" 
+                  className={cn(
+                    "text-sm mb-1.5 block",
+                    affiliateLinkError && "text-destructive"
+                  )}
+                >
+                  Affiliate Link {affiliateLinkError && `(${affiliateLinkError})`}
+                </Label>
+                <Input
+                  id="affiliate-link"
+                  placeholder="https://example.com/your-affiliate-link"
+                  className={cn(
+                    "transition-all focus-visible:ring-primary",
+                    affiliateLinkError && "border-destructive focus-visible:ring-destructive"
+                  )}
+                  value={affiliateLink}
+                  onChange={handleAffiliateLinkChange}
+                  onBlur={() => setAffiliateLinkError(validateAffiliateLink(affiliateLink))}
+                />
+              </div>
+
+              <div className="space-y-4 pt-4 border-t border-border">
+                <Label className="text-base font-semibold">Pages & Platforms</Label>
+                
+                <div className="flex gap-4 items-center">
+                  <div className="flex-1">
+                    <Label htmlFor="pages" className="text-sm mb-1.5 block">Pages</Label>
+                    <Input
+                      id="pages"
+                      type="number"
+                      placeholder="Number of pages"
+                      value={pages}
+                      onChange={(e) => setPages(e.target.value)}
+                      min="1"
+                    />
+                  </div>
+                  
+                  <div className="flex-1">
+                    <Label className="text-sm mb-1.5 block">Platforms</Label>
+                    <div className="flex gap-2">
+                      {socialPlatforms.map(platform => (
+                        <button
+                          key={platform.id}
+                          type="button"
+                          onClick={() => handlePlatformToggle(platform.id)}
+                          className={cn(
+                            "p-2 rounded-lg border transition-all",
+                            selectedPlatforms.includes(platform.id)
+                              ? "bg-primary text-primary-foreground border-primary"
+                              : "bg-background border-border hover:bg-accent",
+                            platform.color
+                          )}
+                        >
+                          {platform.icon}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
               
@@ -681,63 +663,95 @@ export default function PlaceOrderPage() {
                 <h3 className="text-lg font-semibold">Order Summary</h3>
               </CardHeader>
               <CardContent className="pb-4">
-                {contentSubmissionMethod === 'upload' ? (
-                  <div className="space-y-1.5">
-                    <div className="flex justify-between">
-                      <span className="text-sm">{packageName}</span>
-                      <span className="font-medium">{packagePrice}₹</span>
-                    </div>
-                    
-                    <div className="flex justify-between text-sm">
-                      <span className={cn(
-                        "transition-all",
-                        appliedCoupon ? "text-primary" : "text-muted-foreground"
-                      )}>
-                        Coupon Discount
-                      </span>
-                      <span className={cn(
-                        appliedCoupon ? "text-primary font-medium" : "text-muted-foreground"
-                      )}>
-                        {couponDiscount ? `-${couponDiscount}₹` : "—"}
-                      </span>
-                    </div>
-                    
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Platform Fee</span>
-                      <span className="text-muted-foreground">{platformFee}₹</span>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <h4 className="font-medium text-sm">Order Breakdown</h4>
+                    <div className="space-y-1 text-sm text-muted-foreground">
+                      <div className="flex justify-between">
+                        <span>Influencer:</span>
+                        <span className="font-medium text-foreground">{influencerName}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Order Type:</span>
+                        <span className="font-medium text-foreground">{packageName}</span>
+                      </div>
+                      {selectedPlatforms.length > 0 && (
+                        <div className="flex justify-between">
+                          <span>Platforms:</span>
+                          <span className="font-medium text-foreground">
+                            {selectedPlatforms.map(id => 
+                              socialPlatforms.find(p => p.id === id)?.name
+                            ).join(', ')}
+                          </span>
+                        </div>
+                      )}
+                      {selectedDateTime && (
+                        <div className="flex justify-between">
+                          <span>Scheduled:</span>
+                          <span className="font-medium text-foreground">
+                            {format(selectedDateTime, "MMM dd, yyyy 'at' h:mm a")}
+                          </span>
+                        </div>
+                      )}
+                      {pages && (
+                        <div className="flex justify-between">
+                          <span>Pages:</span>
+                          <span className="font-medium text-foreground">{pages}</span>
+                        </div>
+                      )}
                     </div>
                   </div>
-                ) : (
-                  <div className="space-y-4">
-                    <div className="flex justify-between">
-                      <span className="text-sm font-semibold">{packageName}</span>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm font-medium">Posting Fee (Fixed):</span>
-                        <span className="font-bold">₹800</span>
+
+                  {contentSubmissionMethod === 'upload' ? (
+                    <div className="space-y-1.5 pt-2 border-t">
+                      <div className="flex justify-between">
+                        <span className="text-sm">Base Package</span>
+                        <span className="font-medium">{packagePrice}₹</span>
                       </div>
                       
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm">Custom Content Creation Fee:</span>
-                        <span className="bg-amber-100 dark:bg-amber-900/20 text-amber-800 dark:text-amber-200 px-2 py-1 rounded-md text-xs font-medium">
-                          To be quoted
+                      <div className="flex justify-between text-sm">
+                        <span className={cn(
+                          "transition-all",
+                          appliedCoupon ? "text-primary" : "text-muted-foreground"
+                        )}>
+                          Coupon Discount
+                        </span>
+                        <span className={cn(
+                          appliedCoupon ? "text-primary font-medium" : "text-muted-foreground"
+                        )}>
+                          {couponDiscount ? `-${couponDiscount}₹` : "—"}
                         </span>
                       </div>
-                    </div>
-                    
-                    <div className="bg-gray-50 dark:bg-gray-900/20 p-3 rounded-md border">
-                      <div className="text-sm text-muted-foreground">
-                        <strong>Note:</strong> Your request will be reviewed by the influencer. A custom quote for content creation will be shared based on your description. Once approved, the final total will be calculated.
+                      
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Platform Fee</span>
+                        <span className="text-muted-foreground">{platformFee}₹</span>
                       </div>
                     </div>
-                    
-                    <div className="text-sm font-medium text-purple-700 dark:text-purple-300">
-                      <strong>Estimated Range:</strong> ₹800 (base) + ₹0 – ₹700 (content) = <span className="font-bold">₹800 – ₹1,500</span>
+                  ) : (
+                    <div className="space-y-4 pt-2 border-t">
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm font-medium">Posting Fee (Fixed):</span>
+                          <span className="font-bold">₹800</span>
+                        </div>
+                        
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm">Custom Content Creation Fee:</span>
+                          <span className="bg-amber-100 dark:bg-amber-900/20 text-amber-800 dark:text-amber-200 px-2 py-1 rounded-md text-xs font-medium">
+                            To be quoted
+                          </span>
+                        </div>
+                      </div>
+                      
+                      <div className="bg-gray-50 dark:bg-gray-900/20 p-3 rounded-md border">
+                        <div className="text-sm text-muted-foreground">
+                          <strong>Note:</strong> Your request will be reviewed by the influencer. A custom quote for content creation will be shared based on your description.
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
+                </div>
               </CardContent>
               
               {contentSubmissionMethod === 'upload' && (
