@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
@@ -111,8 +112,9 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
 }) => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [selectedItems, setSelectedItems] = useState<string[]>([]);
-  const [selectedPlatform, setSelectedPlatform] = useState<string>(''); // Changed to single platform
+  const [selectedOrderType, setSelectedOrderType] = useState<string>(''); // Changed from array to single string
+  const [selectedCustomPackages, setSelectedCustomPackages] = useState<string[]>([]);
+  const [selectedPlatform, setSelectedPlatform] = useState<string>('');
   const [platformDropdownOpen, setPlatformDropdownOpen] = useState(false);
 
   // Filter services based on selected platform (single selection)
@@ -127,12 +129,16 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
     );
   }, [selectedPlatform]);
 
-  const handleCheckboxChange = (itemId: string) => {
-    setSelectedItems(prev => {
-      if (prev.includes(itemId)) {
-        return prev.filter(id => id !== itemId);
+  const handleOrderTypeChange = (orderTypeId: string) => {
+    setSelectedOrderType(orderTypeId);
+  };
+
+  const handleCustomPackageChange = (packageId: string) => {
+    setSelectedCustomPackages(prev => {
+      if (prev.includes(packageId)) {
+        return prev.filter(id => id !== packageId);
       }
-      return [...prev, itemId];
+      return [...prev, packageId];
     });
   };
 
@@ -145,16 +151,27 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
     setSelectedPlatform('');
   };
 
-  const hasVisitPromoteSelected = selectedItems.includes('visit-promote');
+  const hasVisitPromoteSelected = selectedOrderType === 'visit-promote';
 
   const handleBook = () => {
-    if (selectedItems.length === 0) {
+    const hasOrderTypeSelected = selectedOrderType !== '';
+    const hasCustomPackageSelected = selectedCustomPackages.length > 0;
+    
+    if (!hasOrderTypeSelected && !hasCustomPackageSelected) {
       toast({
         title: "No items selected",
         description: "Please select at least one service or package",
         variant: "destructive"
       });
       return;
+    }
+
+    const selectedItems = [];
+    if (hasOrderTypeSelected) {
+      selectedItems.push(selectedOrderType);
+    }
+    if (hasCustomPackageSelected) {
+      selectedItems.push(...selectedCustomPackages);
     }
 
     if (hasVisitPromoteSelected) {
@@ -240,31 +257,29 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
                 
                 {filteredServices.length > 0 ? (
                   <div className="space-y-3">
-                    {filteredServices.map((service) => (
-                      <div key={service.id} className="flex items-center justify-between py-2 border-b border-gray-100">
-                        <div className="flex items-center gap-3">
-                          <Checkbox 
-                            id={service.id}
-                            checked={selectedItems.includes(service.id)}
-                            onCheckedChange={() => handleCheckboxChange(service.id)}
-                          />
-                          <div className="flex items-center gap-2">
-                            <label htmlFor={service.id} className="text-sm font-medium cursor-pointer">
-                              {service.name}
-                            </label>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Info className="h-4 w-4 text-muted-foreground cursor-help" />
-                              </TooltipTrigger>
-                              <TooltipContent className="max-w-xs">
-                                <p className="text-sm">{service.tooltip}</p>
-                              </TooltipContent>
-                            </Tooltip>
+                    <RadioGroup value={selectedOrderType} onValueChange={handleOrderTypeChange}>
+                      {filteredServices.map((service) => (
+                        <div key={service.id} className="flex items-center justify-between py-2 border-b border-gray-100">
+                          <div className="flex items-center gap-3">
+                            <RadioGroupItem value={service.id} id={service.id} />
+                            <div className="flex items-center gap-2">
+                              <label htmlFor={service.id} className="text-sm font-medium cursor-pointer">
+                                {service.name}
+                              </label>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+                                </TooltipTrigger>
+                                <TooltipContent className="max-w-xs">
+                                  <p className="text-sm">{service.tooltip}</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </div>
                           </div>
+                          <span className="text-sm font-semibold text-primary">{service.price}</span>
                         </div>
-                        <span className="text-sm font-semibold text-primary">{service.price}</span>
-                      </div>
-                    ))}
+                      ))}
+                    </RadioGroup>
                   </div>
                 ) : selectedPlatform ? (
                   <div className="text-center py-8 text-muted-foreground">
@@ -287,8 +302,8 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
                       <div className="flex items-center gap-3">
                         <Checkbox 
                           id={pkg.id}
-                          checked={selectedItems.includes(pkg.id)}
-                          onCheckedChange={() => handleCheckboxChange(pkg.id)}
+                          checked={selectedCustomPackages.includes(pkg.id)}
+                          onCheckedChange={() => handleCustomPackageChange(pkg.id)}
                         />
                         <div>
                           <label htmlFor={pkg.id} className="text-sm font-medium cursor-pointer block">
