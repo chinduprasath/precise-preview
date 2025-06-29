@@ -83,31 +83,28 @@ const customPackages = [
     id: 'package1', 
     name: 'Brand Boost', 
     platforms: ['instagram', 'facebook'],
-    deliverables: '1 Post on Instagram + 1 Story on Facebook',
     description: 'Perfect for product launches and brand awareness',
     price: '₹899',
     duration: 'Within 2 days',
-    tooltip: 'Includes one main feed post on Instagram and one 24-hour story on Facebook. Content must be provided by business.'
+    tooltip: 'Includes one main feed post on Instagram and one standard post on Facebook. Content must be provided by business.'
   },
   { 
     id: 'package2', 
     name: 'Social Combo', 
     platforms: ['instagram', 'facebook', 'youtube'],
-    deliverables: '1 Reel on Instagram + 1 Post on Facebook + 1 Short on YouTube',
     description: 'Maximum reach across all major platforms',
     price: '₹1499',
     duration: 'Within 3 days',
-    tooltip: 'Cross-platform promotion with short-form video content on Instagram, standard post on Facebook, and YouTube Short. All content provided by business.'
+    tooltip: 'Cross-platform promotion with one post each on Instagram, Facebook, and YouTube. All content provided by business.'
   },
   { 
     id: 'package3', 
     name: 'Video Power Pack', 
     platforms: ['youtube', 'instagram'],
-    deliverables: '1 YouTube Video + 2 Instagram Stories',
     description: 'Great for detailed product demos and tutorials',
     price: '₹2199',
     duration: 'Within 5 days',
-    tooltip: 'Includes one full YouTube video (up to 10 minutes) plus two Instagram story posts. Perfect for in-depth product showcases.'
+    tooltip: 'Includes one YouTube video and one Instagram post. Perfect for in-depth product showcases with visual appeal.'
   },
 ];
 
@@ -358,12 +355,11 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
                                 ))}
                               </div>
                               
-                              <div className="space-y-1">
-                                <p className="text-sm"><strong>Deliverables:</strong> {pkg.deliverables}</p>
-                                {pkg.duration && (
+                              {pkg.duration && (
+                                <div>
                                   <p className="text-sm"><strong>Delivery:</strong> {pkg.duration}</p>
-                                )}
-                              </div>
+                                </div>
+                              )}
                             </div>
                           </div>
                           <div className="text-right ml-4">
