@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useCallback, useRef } from "react";
-import { Instagram, Facebook, Youtube, Twitter, Paperclip, Check, Clock, Upload, X, Loader2, Tag, FileText, Calendar } from "lucide-react";
+import { Instagram, Facebook, Youtube, Twitter, Paperclip, Check, Clock, Upload, X, Loader2, Tag, FileText, Calendar, ArrowLeft, Sparkles } from "lucide-react";
 import Layout from '@/components/layout/Layout';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,7 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import DateTimePicker from "@/components/reach/DateTimePicker";
 import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -39,15 +40,23 @@ const availableCoupons = {
   "SAVE15": { discount: 15, type: "percentage" },
 };
 
-const contentTypes = [
-  "Post (Image/Video)",
-  "Reels / Shorts", 
-  "Story",
-  "Polls",
-  "In-Video Promotion",
-  "Promotion",
-  "Visit and Promotion"
-];
+const contentTypesByOrder = {
+  "Platform Based": [
+    "Post (Image/Video)",
+    "Reels/Shorts", 
+    "Story",
+    "Polls"
+  ],
+  "Custom Package": [
+    "In-Video Promotion",
+    "Promotion", 
+    "Visit and Promotion"
+  ]
+};
+
+const suggestedHashtags = ["#fashion", "#giveaway", "#trending", "#lifestyle", "#brand"];
+const suggestedProfiles = ["@brandname", "@companyofficial", "@yourstore"];
+const suggestedEmojis = ["🔥", "✨", "💯", "🎉", "👑", "💖"];
 
 export default function PlaceOrderPage() {
   const location = useLocation();
@@ -75,12 +84,18 @@ export default function PlaceOrderPage() {
   const [contentDescription, setContentDescription] = useState("");
   const [contentDescriptionError, setContentDescriptionError] = useState("");
 
+  // New states for dropdowns
+  const [selectedOrderType, setSelectedOrderType] = useState<string>("Platform Based");
+  const [selectedContent, setSelectedContent] = useState<string>("Post (Image/Video)");
+  const [selectedSinglePlatform, setSelectedSinglePlatform] = useState<string>("instagram");
+  const [isAiEnhancing, setIsAiEnhancing] = useState(false);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const dropAreaRef = useRef<HTMLDivElement>(null);
 
   const packageName = selectedItems.length > 0 ? selectedItems[0] : "Selected Package";
   const orderType = packageName.includes("Instagram") || packageName.includes("Facebook") || packageName.includes("YouTube") || packageName.includes("Twitter") ? "Platform Based" : "Custom Package";
-  const contentType = contentTypes[Math.floor(Math.random() * contentTypes.length)]; // This should come from actual selection
+  const contentType = contentTypesByOrder[orderType as keyof typeof contentTypesByOrder][0]; // default first content type for orderType
   const packagePrice = 800;
   const platformFee = 99;
   
@@ -122,12 +137,28 @@ export default function PlaceOrderPage() {
     return "";
   };
 
+  const handleOrderTypeChange = (orderType: string) => {
+    setSelectedOrderType(orderType);
+    // Reset content to first option of new order type
+    const newContentOptions = contentTypesByOrder[orderType as keyof typeof contentTypesByOrder];
+    setSelectedContent(newContentOptions[0]);
+  };
+
   const handlePlatformToggle = (platformId: string) => {
     setSelectedPlatforms(prev => 
       prev.includes(platformId) 
         ? prev.filter(id => id !== platformId)
         : [...prev, platformId]
     );
+    
+    // Add platform hashtag to description
+    const platformName = socialPlatforms.find(p => p.id === platformId)?.name;
+    if (platformName && !selectedPlatforms.includes(platformId)) {
+      const hashtag = `#${platformName}`;
+      if (!description.includes(hashtag)) {
+        setDescription(prev => prev ? `${prev} ${hashtag}` : hashtag);
+      }
+    }
   };
 
   const handleAffiliateLinkChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -245,6 +276,35 @@ export default function PlaceOrderPage() {
     }
   };
 
+  const handleAiEnhance = async () => {
+    if (!description.trim() || description.length < 10) {
+      toast({
+        title: "Insufficient Content",
+        description: "Please enter at least 10 characters for AI enhancement",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsAiEnhancing(true);
+    
+    // Simulate AI enhancement
+    setTimeout(() => {
+      const enhancedText = `🔥 ${description} ✨ Don't miss out on this amazing opportunity! #trending #exclusive #limitedtime 💯 Tag a friend who needs to see this! 👇`;
+      setDescription(enhancedText);
+      setIsAiEnhancing(false);
+      toast({
+        title: "Text Enhanced",
+        description: "Your description has been enhanced using AI!",
+        variant: "default"
+      });
+    }, 2000);
+  };
+
+  const getTextContainsItem = (text: string, item: string) => {
+    return text.toLowerCase().includes(item.toLowerCase());
+  };
+
   const handleSendRequest = (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -326,6 +386,17 @@ export default function PlaceOrderPage() {
   return (
     <Layout>
       <div className="flex-1 flex justify-center px-4 py-10 md:py-16 max-w-7xl mx-auto w-full">
+        {/* Back Navigation */}
+        <Button
+          variant="ghost"
+          size="sm"
+          className="absolute top-20 left-4 z-10"
+          onClick={() => navigate(-1)}
+        >
+          <ArrowLeft className="w-4 h-4 mr-1" />
+          Back
+        </Button>
+
         <div className="w-full flex flex-col lg:flex-row gap-8">
           <div className="flex-1 flex flex-col gap-7">
             <Card className="rounded-xl overflow-hidden border-0 shadow-md bg-white dark:bg-card">
@@ -359,21 +430,60 @@ export default function PlaceOrderPage() {
               </CardContent>
             </Card>
             
-            {/* Updated Selected Order Display */}
+            {/* Updated Selected Order Section with Dropdowns */}
             <div className="space-y-4">
               <Label className="text-base font-semibold flex items-center gap-2">
                 <Check className="w-5 h-5 text-primary/80" />
                 Selected Order
               </Label>
               <Card className="p-4 border border-border">
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="font-medium">Order Type:</span>
-                    <span className="text-foreground">{orderType}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="font-medium">Content:</span>
-                    <span className="text-foreground">{contentType}</span>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium">Order Type</Label>
+                      <Select value={selectedOrderType} onValueChange={handleOrderTypeChange}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Platform Based">Platform Based</SelectItem>
+                          <SelectItem value="Custom Package">Custom Package</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium">Content</Label>
+                      <Select value={selectedContent} onValueChange={setSelectedContent}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {contentTypesByOrder[selectedOrderType as keyof typeof contentTypesByOrder].map((content) => (
+                            <SelectItem key={content} value={content}>{content}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium">Platform</Label>
+                      <Select value={selectedSinglePlatform} onValueChange={setSelectedSinglePlatform}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {socialPlatforms.map((platform) => (
+                            <SelectItem key={platform.id} value={platform.id}>
+                              <div className="flex items-center gap-2">
+                                <span className={platform.color}>{platform.icon}</span>
+                                {platform.name}
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
                 </div>
               </Card>
@@ -533,27 +643,111 @@ export default function PlaceOrderPage() {
                 />
               </div>
               
+              {/* Enhanced Description Section */}
               <div className="space-y-4 pt-4 border-t border-border">
-                <Label 
-                  htmlFor="description" 
-                  className={cn(
-                    "text-base font-semibold block",
-                    descriptionError && "text-destructive"
-                  )}
-                >
-                  Description {descriptionError && `(${descriptionError})`}
-                </Label>
-                <Textarea
-                  id="description"
-                  placeholder="Add any specific instructions or details about your request..."
-                  className={cn(
-                    "min-h-[100px] resize-none transition-all focus-visible:ring-primary",
-                    descriptionError && "border-destructive focus-visible:ring-destructive"
-                  )}
-                  value={description}
-                  onChange={handleDescriptionChange}
-                  onBlur={() => setDescriptionError(validateDescription(description))}
-                />
+                <div className="flex justify-between items-center">
+                  <Label 
+                    htmlFor="description" 
+                    className={cn(
+                      "text-base font-semibold",
+                      descriptionError && "text-destructive"
+                    )}
+                  >
+                    Description {descriptionError && `(${descriptionError})`}
+                  </Label>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 px-2"
+                    onClick={handleAiEnhance}
+                    disabled={isAiEnhancing}
+                  >
+                    {isAiEnhancing ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Sparkles className="w-4 h-4" />
+                    )}
+                  </Button>
+                </div>
+                
+                <div className="relative">
+                  <Textarea
+                    id="description"
+                    placeholder="Add any specific instructions or details about your request..."
+                    className={cn(
+                      "min-h-[120px] resize-none transition-all focus-visible:ring-primary",
+                      descriptionError && "border-destructive focus-visible:ring-destructive"
+                    )}
+                    value={description}
+                    onChange={handleDescriptionChange}
+                    onBlur={() => setDescriptionError(validateDescription(description))}
+                  />
+                  
+                  {/* Smart Suggestions */}
+                  <div className="mt-3 space-y-2">
+                    <div className="text-xs text-muted-foreground mb-1">Suggestions:</div>
+                    
+                    <div className="space-y-1">
+                      <div className="flex flex-wrap gap-1">
+                        <span className="text-xs text-muted-foreground">Hashtags:</span>
+                        {suggestedHashtags.map((tag) => (
+                          <span
+                            key={tag}
+                            className={cn(
+                              "text-xs px-2 py-1 rounded-md",
+                              getTextContainsItem(description, tag)
+                                ? "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
+                                : "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400"
+                            )}
+                          >
+                            {getTextContainsItem(description, tag) && "✅ "}{tag}
+                          </span>
+                        ))}
+                      </div>
+                      
+                      <div className="flex flex-wrap gap-1">
+                        <span className="text-xs text-muted-foreground">Profiles:</span>
+                        {suggestedProfiles.map((profile) => (
+                          <span
+                            key={profile}
+                            className={cn(
+                              "text-xs px-2 py-1 rounded-md",
+                              getTextContainsItem(description, profile)
+                                ? "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
+                                : "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400"
+                            )}
+                          >
+                            {getTextContainsItem(description, profile) && "✅ "}{profile}
+                          </span>
+                        ))}
+                      </div>
+                      
+                      <div className="flex flex-wrap gap-1">
+                        <span className="text-xs text-muted-foreground">Emojis:</span>
+                        {suggestedEmojis.map((emoji) => (
+                          <span
+                            key={emoji}
+                            className={cn(
+                              "text-xs px-2 py-1 rounded-md cursor-pointer",
+                              getTextContainsItem(description, emoji)
+                                ? "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
+                                : "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400"
+                            )}
+                            onClick={() => {
+                              if (!getTextContainsItem(description, emoji)) {
+                                setDescription(prev => prev ? `${prev} ${emoji}` : emoji);
+                              }
+                            }}
+                          >
+                            {getTextContainsItem(description, emoji) && "✅ "}{emoji}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
                 <div className="mt-1 text-xs text-right text-muted-foreground">
                   {description.length}/500 characters
                 </div>
@@ -668,11 +862,11 @@ export default function PlaceOrderPage() {
                     <div className="space-y-1 text-sm text-muted-foreground">
                       <div className="flex justify-between">
                         <span>Type:</span>
-                        <span className="font-medium text-foreground">{orderType}</span>
+                        <span className="font-medium text-foreground">{selectedOrderType}</span>
                       </div>
                       <div className="flex justify-between">
                         <span>Content:</span>
-                        <span className="font-medium text-foreground">{contentType}</span>
+                        <span className="font-medium text-foreground">{selectedContent}</span>
                       </div>
                       {selectedPlatforms.length > 0 && (
                         <div className="flex justify-between">
