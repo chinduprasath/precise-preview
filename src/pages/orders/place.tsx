@@ -39,11 +39,15 @@ const availableCoupons = {
   "SAVE15": { discount: 15, type: "percentage" },
 };
 
-interface TimeSelection {
-  hour: string;
-  minute: string;
-  period: string;
-}
+const contentTypes = [
+  "Post (Image/Video)",
+  "Reels / Shorts", 
+  "Story",
+  "Polls",
+  "In-Video Promotion",
+  "Promotion",
+  "Visit and Promotion"
+];
 
 export default function PlaceOrderPage() {
   const location = useLocation();
@@ -59,7 +63,6 @@ export default function PlaceOrderPage() {
   const [description, setDescription] = useState("");
   const [descriptionError, setDescriptionError] = useState("");
   const [selectedDateTime, setSelectedDateTime] = useState<Date | undefined>(undefined);
-  const [pages, setPages] = useState("");
   const [files, setFiles] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [couponCode, setCouponCode] = useState("");
@@ -76,6 +79,8 @@ export default function PlaceOrderPage() {
   const dropAreaRef = useRef<HTMLDivElement>(null);
 
   const packageName = selectedItems.length > 0 ? selectedItems[0] : "Selected Package";
+  const orderType = packageName.includes("Instagram") || packageName.includes("Facebook") || packageName.includes("YouTube") || packageName.includes("Twitter") ? "Platform Based" : "Custom Package";
+  const contentType = contentTypes[Math.floor(Math.random() * contentTypes.length)]; // This should come from actual selection
   const packagePrice = 800;
   const platformFee = 99;
   
@@ -309,7 +314,6 @@ export default function PlaceOrderPage() {
         affiliateLink,
         description,
         selectedDateTime: selectedDateTime ? format(selectedDateTime, "PPP p") : undefined,
-        pages,
         contentSubmissionMethod,
         files: contentSubmissionMethod === 'upload' ? files.map((f) => f.name) : [],
         contentDescription: contentSubmissionMethod === 'describe' ? contentDescription : '',
@@ -355,15 +359,24 @@ export default function PlaceOrderPage() {
               </CardContent>
             </Card>
             
-            {/* Order Type Display */}
+            {/* Updated Selected Order Display */}
             <div className="space-y-4">
               <Label className="text-base font-semibold flex items-center gap-2">
                 <Check className="w-5 h-5 text-primary/80" />
                 Selected Order
               </Label>
-              <div className="bg-accent/50 p-4 rounded-lg border">
-                <p className="font-medium">Order Type: {packageName} (Platform Based)</p>
-              </div>
+              <Card className="p-4 border border-border">
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="font-medium">Order Type:</span>
+                    <span className="text-foreground">{orderType}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-medium">Content:</span>
+                    <span className="text-foreground">{contentType}</span>
+                  </div>
+                </div>
+              </Card>
             </div>
             
             <div className="space-y-4">
@@ -569,42 +582,28 @@ export default function PlaceOrderPage() {
                 />
               </div>
 
+              {/* Updated Pages & Platforms Section */}
               <div className="space-y-4 pt-4 border-t border-border">
-                <Label className="text-base font-semibold">Pages & Platforms</Label>
-                
-                <div className="flex gap-4 items-center">
-                  <div className="flex-1">
-                    <Label htmlFor="pages" className="text-sm mb-1.5 block">Pages</Label>
-                    <Input
-                      id="pages"
-                      type="number"
-                      placeholder="Number of pages"
-                      value={pages}
-                      onChange={(e) => setPages(e.target.value)}
-                      min="1"
-                    />
-                  </div>
+                <div className="flex justify-between items-center">
+                  <Label className="text-base font-semibold">Pages</Label>
                   
-                  <div className="flex-1">
-                    <Label className="text-sm mb-1.5 block">Platforms</Label>
-                    <div className="flex gap-2">
-                      {socialPlatforms.map(platform => (
-                        <button
-                          key={platform.id}
-                          type="button"
-                          onClick={() => handlePlatformToggle(platform.id)}
-                          className={cn(
-                            "p-2 rounded-lg border transition-all",
-                            selectedPlatforms.includes(platform.id)
-                              ? "bg-primary text-primary-foreground border-primary"
-                              : "bg-background border-border hover:bg-accent",
-                            platform.color
-                          )}
-                        >
-                          {platform.icon}
-                        </button>
-                      ))}
-                    </div>
+                  <div className="flex gap-2">
+                    {socialPlatforms.map(platform => (
+                      <button
+                        key={platform.id}
+                        type="button"
+                        onClick={() => handlePlatformToggle(platform.id)}
+                        className={cn(
+                          "p-2 rounded-lg border transition-all",
+                          selectedPlatforms.includes(platform.id)
+                            ? "bg-primary text-primary-foreground border-primary"
+                            : "bg-background border-border hover:bg-accent",
+                          platform.color
+                        )}
+                      >
+                        {platform.icon}
+                      </button>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -657,6 +656,7 @@ export default function PlaceOrderPage() {
               </div>
             </div>
             
+            {/* Updated Order Summary */}
             <Card className="mt-auto">
               <CardHeader className="pb-3">
                 <h3 className="text-lg font-semibold">Order Summary</h3>
@@ -664,15 +664,15 @@ export default function PlaceOrderPage() {
               <CardContent className="pb-4">
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <h4 className="font-medium text-sm">Order Breakdown</h4>
+                    <h4 className="font-medium text-sm">Order Details</h4>
                     <div className="space-y-1 text-sm text-muted-foreground">
                       <div className="flex justify-between">
-                        <span>Influencer:</span>
-                        <span className="font-medium text-foreground">{influencerName}</span>
+                        <span>Type:</span>
+                        <span className="font-medium text-foreground">{orderType}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span>Order Type:</span>
-                        <span className="font-medium text-foreground">{packageName}</span>
+                        <span>Content:</span>
+                        <span className="font-medium text-foreground">{contentType}</span>
                       </div>
                       {selectedPlatforms.length > 0 && (
                         <div className="flex justify-between">
@@ -684,30 +684,11 @@ export default function PlaceOrderPage() {
                           </span>
                         </div>
                       )}
-                      {selectedDateTime && (
-                        <div className="flex justify-between">
-                          <span>Scheduled:</span>
-                          <span className="font-medium text-foreground">
-                            {format(selectedDateTime, "MMM dd, yyyy 'at' h:mm a")}
-                          </span>
-                        </div>
-                      )}
-                      {pages && (
-                        <div className="flex justify-between">
-                          <span>Pages:</span>
-                          <span className="font-medium text-foreground">{pages}</span>
-                        </div>
-                      )}
                     </div>
                   </div>
 
                   {contentSubmissionMethod === 'upload' ? (
                     <div className="space-y-1.5 pt-2 border-t">
-                      <div className="flex justify-between">
-                        <span className="text-sm">Base Package</span>
-                        <span className="font-medium">{packagePrice}₹</span>
-                      </div>
-                      
                       <div className="flex justify-between text-sm">
                         <span className={cn(
                           "transition-all",
