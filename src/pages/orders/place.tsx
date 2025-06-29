@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo, useCallback, useRef } from "react";
 import { Instagram, Facebook, Youtube, Twitter, Paperclip, Check, Clock, Upload, X, Loader2, Tag, FileText, Calendar } from "lucide-react";
 import Layout from '@/components/layout/Layout';
@@ -11,7 +10,7 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { DateTimePicker } from "@/components/reach/DateTimePicker";
+import DateTimePicker from "@/components/reach/DateTimePicker";
 import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useNavigate, useLocation } from "react-router-dom";
 
