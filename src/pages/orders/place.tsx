@@ -67,7 +67,12 @@ const generateDynamicHashtags = (text: string) => {
   }).slice(0, 5);
 };
 
-const businessProfiles = ["@brandname", "@companyofficial", "@yourstore", "@businessofficial"];
+const businessProfiles = [
+  { handle: "@brandname", platform: "instagram", icon: <Instagram className="w-4 h-4 text-pink-500" /> },
+  { handle: "@companyofficial", platform: "facebook", icon: <Facebook className="w-4 h-4 text-blue-600" /> },
+  { handle: "@yourstore", platform: "youtube", icon: <Youtube className="w-4 h-4 text-red-500" /> },
+  { handle: "@businessofficial", platform: "twitter", icon: <Twitter className="w-4 h-4 text-blue-400" /> },
+];
 
 const generateContextualEmojis = (text: string) => {
   const lowerText = text.toLowerCase();
@@ -105,7 +110,6 @@ export default function PlaceOrderPage() {
   const orderDetails = location.state || {};
   const { influencerName = "Gary Vaynerchuk", selectedItems = [], isVisitPromote = false } = orderDetails;
   
-  const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
   const [affiliateLink, setAffiliateLink] = useState("");
   const [affiliateLinkError, setAffiliateLinkError] = useState("");
   const [description, setDescription] = useState("");
@@ -185,23 +189,6 @@ export default function PlaceOrderPage() {
     // Reset content to first option of new order type
     const newContentOptions = contentTypesByOrder[orderType as keyof typeof contentTypesByOrder];
     setSelectedContent(newContentOptions[0]);
-  };
-
-  const handlePlatformToggle = (platformId: string) => {
-    setSelectedPlatforms(prev => 
-      prev.includes(platformId) 
-        ? prev.filter(id => id !== platformId)
-        : [...prev, platformId]
-    );
-    
-    // Add platform hashtag to description
-    const platformName = socialPlatforms.find(p => p.id === platformId)?.name;
-    if (platformName && !selectedPlatforms.includes(platformId)) {
-      const hashtag = `#${platformName}`;
-      if (!description.includes(hashtag)) {
-        setDescription(prev => prev ? `${prev} ${hashtag}` : hashtag);
-      }
-    }
   };
 
   const handleAffiliateLinkChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -367,15 +354,6 @@ export default function PlaceOrderPage() {
       });
       return;
     }
-    
-    if (selectedPlatforms.length === 0) {
-      toast({
-        title: "Missing Selection",
-        description: "Please select at least one platform",
-        variant: "destructive"
-      });
-      return;
-    }
 
     // Validate content submission based on method
     if (contentSubmissionMethod === 'upload' && files.length === 0) {
@@ -413,7 +391,9 @@ export default function PlaceOrderPage() {
       setShowThankYouDialog(true);
       
       console.log({
-        platforms: selectedPlatforms,
+        orderType: selectedOrderType,
+        content: selectedContent,
+        platform: selectedSinglePlatform,
         affiliateLink,
         description,
         selectedDateTime: selectedDateTime ? format(selectedDateTime, "PPP p") : undefined,
@@ -431,20 +411,20 @@ export default function PlaceOrderPage() {
       <div className="flex-1 flex justify-center px-4 py-10 md:py-16 max-w-7xl mx-auto w-full">
         <div className="w-full flex flex-col lg:flex-row gap-8">
           <div className="flex-1 flex flex-col gap-7">
-            <Card className="rounded-xl overflow-hidden border-0 shadow-md bg-white dark:bg-card relative">
-              {/* Back Button - moved inside the card */}
-              <Button
-                variant="ghost"
-                size="sm"
-                className="absolute top-4 left-4 z-10 bg-white/80 hover:bg-white dark:bg-gray-800/80 dark:hover:bg-gray-800"
-                onClick={() => navigate(-1)}
-              >
-                <ArrowLeft className="w-4 h-4 mr-1" />
-                Back
-              </Button>
+            {/* Back Button - moved above the card */}
+            <Button
+              variant="ghost"
+              size="sm"
+              className="self-start bg-white/80 hover:bg-white dark:bg-gray-800/80 dark:hover:bg-gray-800"
+              onClick={() => navigate(-1)}
+            >
+              <ArrowLeft className="w-4 h-4 mr-1" />
+              Back
+            </Button>
 
+            <Card className="rounded-xl overflow-hidden border-0 shadow-md bg-white dark:bg-card">
               <CardContent className="p-0">
-                <div className="bg-gradient-to-r from-[#9b87f5]/90 to-[#7E69AB]/90 p-5 pt-16 flex items-center gap-4 text-white">
+                <div className="bg-gradient-to-r from-[#9b87f5]/90 to-[#7E69AB]/90 p-5 flex items-center gap-4 text-white">
                   <div className="relative">
                     <img
                       src={influencerMock.avatar}
@@ -473,64 +453,60 @@ export default function PlaceOrderPage() {
               </CardContent>
             </Card>
             
-            {/* Updated Selected Order Section with Dropdowns */}
+            {/* Updated Selected Order Section with Single Row Layout */}
             <div className="space-y-4">
               <Label className="text-base font-semibold flex items-center gap-2">
                 <Check className="w-5 h-5 text-primary/80" />
                 Selected Order
               </Label>
               <Card className="p-4 border border-border">
-                <div className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label className="text-sm font-medium">Order Type</Label>
-                      <Select value={selectedOrderType} onValueChange={handleOrderTypeChange}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Platform Based">Platform Based</SelectItem>
-                          <SelectItem value="Custom Package">Custom Package</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label className="text-sm font-medium">Content</Label>
-                      <Select value={selectedContent} onValueChange={setSelectedContent}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {contentTypesByOrder[selectedOrderType as keyof typeof contentTypesByOrder].map((content) => (
-                            <SelectItem key={content} value={content}>{content}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium">Order Type</Label>
+                    <Select value={selectedOrderType} onValueChange={handleOrderTypeChange}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Platform Based">Platform Based</SelectItem>
+                        <SelectItem value="Custom Package">Custom Package</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                   
-                  {/* Only show Platform dropdown for Platform Based orders */}
-                  {selectedOrderType === "Platform Based" && (
-                    <div className="space-y-2">
-                      <Label className="text-sm font-medium">Platform</Label>
-                      <Select value={selectedSinglePlatform} onValueChange={setSelectedSinglePlatform}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {socialPlatforms.map((platform) => (
-                            <SelectItem key={platform.id} value={platform.id}>
-                              <div className="flex items-center gap-2">
-                                <span className={platform.color}>{platform.icon}</span>
-                                {platform.name}
-                              </div>
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  )}
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium">Content</Label>
+                    <Select value={selectedContent} onValueChange={setSelectedContent}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {contentTypesByOrder[selectedOrderType as keyof typeof contentTypesByOrder].map((content) => (
+                          <SelectItem key={content} value={content}>{content}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  {/* Show Platform dropdown for all orders */}
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium">Platform</Label>
+                    <Select value={selectedSinglePlatform} onValueChange={setSelectedSinglePlatform}>
+                      <SelectTrigger className="w-32 h-8 text-xs">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {socialPlatforms.map((platform) => (
+                          <SelectItem key={platform.id} value={platform.id}>
+                            <div className="flex items-center gap-2">
+                              <span className={platform.color}>{platform.icon}</span>
+                              {platform.name}
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
               </Card>
             </div>
@@ -764,20 +740,21 @@ export default function PlaceOrderPage() {
                         <span className="text-xs text-muted-foreground">Profiles:</span>
                         {businessProfiles.map((profile) => (
                           <span
-                            key={profile}
+                            key={profile.handle}
                             className={cn(
-                              "text-xs px-2 py-1 rounded-md cursor-pointer transition-colors",
-                              getTextContainsItem(description, profile)
+                              "text-xs px-2 py-1 rounded-md cursor-pointer transition-colors flex items-center gap-1",
+                              getTextContainsItem(description, profile.handle)
                                 ? "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
                                 : "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400 hover:bg-gray-200"
                             )}
                             onClick={() => {
-                              if (!getTextContainsItem(description, profile)) {
-                                setDescription(prev => prev ? `${prev} ${profile}` : profile);
+                              if (!getTextContainsItem(description, profile.handle)) {
+                                setDescription(prev => prev ? `${prev} ${profile.handle}` : profile.handle);
                               }
                             }}
                           >
-                            {getTextContainsItem(description, profile) && "✅ "}{profile}
+                            {profile.icon}
+                            {getTextContainsItem(description, profile.handle) && "✅ "}{profile.handle}
                           </span>
                         ))}
                       </div>
@@ -834,32 +811,6 @@ export default function PlaceOrderPage() {
                   onBlur={() => setAffiliateLinkError(validateAffiliateLink(affiliateLink))}
                 />
               </div>
-
-              {/* Updated Pages & Platforms Section */}
-              <div className="space-y-4 pt-4 border-t border-border">
-                <div className="flex justify-between items-center">
-                  <Label className="text-base font-semibold">Pages</Label>
-                  
-                  <div className="flex gap-2">
-                    {socialPlatforms.map(platform => (
-                      <button
-                        key={platform.id}
-                        type="button"
-                        onClick={() => handlePlatformToggle(platform.id)}
-                        className={cn(
-                          "p-2 rounded-lg border transition-all",
-                          selectedPlatforms.includes(platform.id)
-                            ? "bg-primary text-primary-foreground border-primary"
-                            : "bg-background border-border hover:bg-accent",
-                          platform.color
-                        )}
-                      >
-                        {platform.icon}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
               
               <div className="space-y-4 pt-4 border-t border-border">
                 <Label className="text-base font-semibold flex items-center gap-2">
@@ -909,7 +860,7 @@ export default function PlaceOrderPage() {
               </div>
             </div>
             
-            {/* Updated Order Summary */}
+            {/* Updated Order Summary with Platform Selection */}
             <Card className="mt-auto">
               <CardHeader className="pb-3">
                 <h3 className="text-lg font-semibold">Order Summary</h3>
@@ -927,16 +878,24 @@ export default function PlaceOrderPage() {
                         <span>Content:</span>
                         <span className="font-medium text-foreground">{selectedContent}</span>
                       </div>
-                      {selectedPlatforms.length > 0 && (
-                        <div className="flex justify-between">
-                          <span>Platforms:</span>
-                          <span className="font-medium text-foreground">
-                            {selectedPlatforms.map(id => 
-                              socialPlatforms.find(p => p.id === id)?.name
-                            ).join(', ')}
-                          </span>
-                        </div>
-                      )}
+                      <div className="flex justify-between items-center">
+                        <span>Platform:</span>
+                        <Select value={selectedSinglePlatform} onValueChange={setSelectedSinglePlatform}>
+                          <SelectTrigger className="w-32 h-8 text-xs">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {socialPlatforms.map((platform) => (
+                              <SelectItem key={platform.id} value={platform.id}>
+                                <div className="flex items-center gap-2">
+                                  <span className={platform.color}>{platform.icon}</span>
+                                  {platform.name}
+                                </div>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
                     </div>
                   </div>
 
