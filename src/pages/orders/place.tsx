@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo, useCallback, useRef } from "react";
 import { Instagram, Facebook, Youtube, Twitter, Clock, ArrowLeft } from "lucide-react";
 import Layout from '@/components/layout/Layout';
@@ -15,7 +14,6 @@ import { Label } from "@/components/ui/label";
 // Import new components
 import InfluencerProfileCard from '@/components/orders/place/InfluencerProfileCard';
 import OrderTypeSelector from '@/components/orders/place/OrderTypeSelector';
-import ContentSubmissionSelector from '@/components/orders/place/ContentSubmissionSelector';
 import FileUploader from '@/components/orders/place/FileUploader';
 import ContentDescriptionInput from '@/components/orders/place/ContentDescriptionInput';
 import DescriptionInput from '@/components/orders/place/DescriptionInput';
@@ -132,8 +130,7 @@ export default function PlaceOrderPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showThankYouDialog, setShowThankYouDialog] = useState(false);
   
-  // New states for content input option
-  const [contentSubmissionMethod, setContentSubmissionMethod] = useState<'upload' | 'describe'>('upload');
+  // Content description state
   const [contentDescription, setContentDescription] = useState("");
   const [contentDescriptionError, setContentDescriptionError] = useState("");
 
@@ -182,9 +179,6 @@ export default function PlaceOrderPage() {
   };
 
   const validateContentDescription = (description: string) => {
-    if (contentSubmissionMethod === 'describe' && !description.trim()) {
-      return "Content description is required";
-    }
     if (description.length > 500) {
       return "Description must be less than 500 characters";
     }
@@ -303,49 +297,6 @@ export default function PlaceOrderPage() {
     });
   };
 
-  const handleContentMethodChange = (method: 'upload' | 'describe') => {
-    setContentSubmissionMethod(method);
-    // Clear any validation errors when switching methods
-    if (method === 'upload') {
-      setContentDescriptionError("");
-    } else {
-      setFiles([]);
-    }
-  };
-
-  const handleAiEnhance = async () => {
-    if (!description.trim() || description.length < 10) {
-      toast({
-        title: "Insufficient Content",
-        description: "Please enter at least 10 characters for AI enhancement",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    setIsAiEnhancing(true);
-    
-    // Simulate AI enhancement
-    setTimeout(() => {
-      const enhancedText = `🔥 ${description} ✨ Don't miss out on this amazing opportunity! #trending #exclusive #limitedtime 💯 Tag a friend who needs to see this! 👇`;
-      setDescription(enhancedText);
-      setIsAiEnhancing(false);
-      toast({
-        title: "Text Enhanced",
-        description: "Your description has been enhanced using AI!",
-        variant: "default"
-      });
-    }, 2000);
-  };
-
-  const getTextContainsItem = (text: string, item: string) => {
-    return text.toLowerCase().includes(item.toLowerCase());
-  };
-
-  const handleSuggestionClick = (suggestion: string) => {
-    setDescription(prev => prev ? `${prev} ${suggestion}` : suggestion);
-  };
-
   const handleSendRequest = (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -366,20 +317,11 @@ export default function PlaceOrderPage() {
       return;
     }
 
-    // Validate content submission based on method
-    if (contentSubmissionMethod === 'upload' && files.length === 0) {
+    // Validate that either content description or files are provided
+    if (!contentDescription.trim() && files.length === 0) {
       toast({
         title: "Missing Content",
-        description: "Please upload content files or switch to describe content option",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    if (contentSubmissionMethod === 'describe' && !contentDescription.trim()) {
-      toast({
-        title: "Missing Content",
-        description: "Please provide a description or switch to upload files option",
+        description: "Please provide either a content description or upload files",
         variant: "destructive"
       });
       return;
@@ -408,11 +350,10 @@ export default function PlaceOrderPage() {
         affiliateLink,
         description,
         selectedDateTime: selectedDateTime ? format(selectedDateTime, "PPP p") : undefined,
-        contentSubmissionMethod,
-        files: contentSubmissionMethod === 'upload' ? files.map((f) => f.name) : [],
-        contentDescription: contentSubmissionMethod === 'describe' ? contentDescription : '',
+        files: files.map((f) => f.name),
+        contentDescription,
         appliedCoupon,
-        total: contentSubmissionMethod === 'upload' ? total : 'To be quoted'
+        total
       });
     }, 1500);
   };
@@ -453,31 +394,24 @@ export default function PlaceOrderPage() {
                 isCustomPackage={selectedOrderType === "Custom Package"}
               />
               
-              {/* Combined Content Details and Upload Section */}
+              {/* Combined Content Details and Upload Section - Always show both */}
               <div className="space-y-6">
-                <ContentSubmissionSelector
-                  contentSubmissionMethod={contentSubmissionMethod}
-                  onContentMethodChange={handleContentMethodChange}
+                <ContentDescriptionInput
+                  contentDescription={contentDescription}
+                  contentDescriptionError={contentDescriptionError}
+                  onContentDescriptionChange={handleContentDescriptionChange}
+                  onBlur={() => setContentDescriptionError(validateContentDescription(contentDescription))}
                 />
                 
-                {contentSubmissionMethod === 'upload' ? (
-                  <FileUploader
-                    files={files}
-                    isUploading={isUploading}
-                    onFileChange={handleFileChange}
-                    onRemoveFile={removeFile}
-                    onDragOver={handleDragOver}
-                    onDragLeave={handleDragLeave}
-                    onDrop={handleDrop}
-                  />
-                ) : (
-                  <ContentDescriptionInput
-                    contentDescription={contentDescription}
-                    contentDescriptionError={contentDescriptionError}
-                    onContentDescriptionChange={handleContentDescriptionChange}
-                    onBlur={() => setContentDescriptionError(validateContentDescription(contentDescription))}
-                  />
-                )}
+                <FileUploader
+                  files={files}
+                  isUploading={isUploading}
+                  onFileChange={handleFileChange}
+                  onRemoveFile={removeFile}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                />
               </div>
             </div>
             
@@ -548,7 +482,7 @@ export default function PlaceOrderPage() {
                 selectedOrderType={selectedOrderType}
                 selectedContent={selectedContent}
                 selectedSinglePlatform={selectedSinglePlatform}
-                contentSubmissionMethod={contentSubmissionMethod}
+                contentSubmissionMethod="upload"
                 packagePrice={packagePrice}
                 platformFee={platformFee}
                 couponDiscount={couponDiscount}
@@ -572,19 +506,9 @@ export default function PlaceOrderPage() {
               Thank You!
             </AlertDialogTitle>
             <AlertDialogDescription className="text-center space-y-2">
-              {contentSubmissionMethod === 'upload' ? (
-                <>
-                  <p>Request has been sent to influencer successfully.</p>
-                  <p>The post will be automatically scheduled and published on the influencer's page.</p>
-                  <p>Once the posting is completed, you can track the results on the Reach page.</p>
-                </>
-              ) : (
-                <>
-                  <p>Your request for quote has been sent to the influencer successfully.</p>
-                  <p>The influencer will review your content requirements and provide a custom quote.</p>
-                  <p>You'll receive a notification once the quote is ready for review.</p>
-                </>
-              )}
+              <p>Request has been sent to influencer successfully.</p>
+              <p>The post will be automatically scheduled and published on the influencer's page.</p>
+              <p>Once the posting is completed, you can track the results on the Reach page.</p>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="sm:space-x-4">
