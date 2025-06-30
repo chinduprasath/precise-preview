@@ -49,10 +49,13 @@ const availableCoupons = {
 
 const contentTypesByOrder = {
   "Platform Based": [
-    "Post (Image/Video)",
+    "Post Image/Video",
     "Reels/Shorts", 
-    "Story",
-    "Polls"
+    "Story (Image/Video)",
+    "In-Video Promotion (<10 min)",
+    "Promotions (>10 min)",
+    "Polls",
+    "Visit & Promote"
   ],
   "Custom Package": [
     "In-Video Promotion",
@@ -136,7 +139,7 @@ export default function PlaceOrderPage() {
 
   // New states for dropdowns
   const [selectedOrderType, setSelectedOrderType] = useState<string>("Platform Based");
-  const [selectedContent, setSelectedContent] = useState<string>("Post (Image/Video)");
+  const [selectedContent, setSelectedContent] = useState<string>("Post Image/Video");
   const [selectedSinglePlatform, setSelectedSinglePlatform] = useState<string>("instagram");
   const [isAiEnhancing, setIsAiEnhancing] = useState(false);
 
@@ -158,8 +161,9 @@ export default function PlaceOrderPage() {
   const total = packagePrice - couponDiscount + platformFee;
 
   const validateAffiliateLink = (link: string) => {
+    // Make affiliate link optional - no validation required if empty
     if (!link.trim()) {
-      return "Affiliate link is required";
+      return "";
     }
     
     try {
@@ -415,7 +419,7 @@ export default function PlaceOrderPage() {
 
   return (
     <Layout>
-      <div className="flex-1 flex justify-center px-4 py-10 md:py-16 max-w-7xl mx-auto w-full">
+      <div className="flex-1 flex justify-center px-4 py-6 max-w-7xl mx-auto w-full">
         <div className="w-full flex flex-col gap-6">
           {/* Back Button - positioned above the two-column layout */}
           <Button
@@ -449,29 +453,32 @@ export default function PlaceOrderPage() {
                 isCustomPackage={selectedOrderType === "Custom Package"}
               />
               
-              <ContentSubmissionSelector
-                contentSubmissionMethod={contentSubmissionMethod}
-                onContentMethodChange={handleContentMethodChange}
-              />
-              
-              {contentSubmissionMethod === 'upload' ? (
-                <FileUploader
-                  files={files}
-                  isUploading={isUploading}
-                  onFileChange={handleFileChange}
-                  onRemoveFile={removeFile}
-                  onDragOver={handleDragOver}
-                  onDragLeave={handleDragLeave}
-                  onDrop={handleDrop}
+              {/* Combined Content Details and Upload Section */}
+              <div className="space-y-6">
+                <ContentSubmissionSelector
+                  contentSubmissionMethod={contentSubmissionMethod}
+                  onContentMethodChange={handleContentMethodChange}
                 />
-              ) : (
-                <ContentDescriptionInput
-                  contentDescription={contentDescription}
-                  contentDescriptionError={contentDescriptionError}
-                  onContentDescriptionChange={handleContentDescriptionChange}
-                  onBlur={() => setContentDescriptionError(validateContentDescription(contentDescription))}
-                />
-              )}
+                
+                {contentSubmissionMethod === 'upload' ? (
+                  <FileUploader
+                    files={files}
+                    isUploading={isUploading}
+                    onFileChange={handleFileChange}
+                    onRemoveFile={removeFile}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                  />
+                ) : (
+                  <ContentDescriptionInput
+                    contentDescription={contentDescription}
+                    contentDescriptionError={contentDescriptionError}
+                    onContentDescriptionChange={handleContentDescriptionChange}
+                    onBlur={() => setContentDescriptionError(validateContentDescription(contentDescription))}
+                  />
+                )}
+              </div>
             </div>
             
             {/* Column 2 - Right side */}
@@ -514,7 +521,7 @@ export default function PlaceOrderPage() {
                     affiliateLinkError && "text-destructive"
                   )}
                 >
-                  Affiliate Link {affiliateLinkError && `(${affiliateLinkError})`}
+                  Affiliate Link (Optional) {affiliateLinkError && `(${affiliateLinkError})`}
                 </Label>
                 <Input
                   id="affiliate-link"
