@@ -210,6 +210,25 @@ export default function PlaceOrderPage() {
     setContentDescriptionError(validateContentDescription(desc));
   };
 
+  const handleAiEnhance = () => {
+    setIsAiEnhancing(true);
+    // Simulate AI enhancement
+    setTimeout(() => {
+      const enhancedText = description + " ✨ Enhanced with trending hashtags and engaging content suggestions!";
+      setDescription(enhancedText);
+      setIsAiEnhancing(false);
+      toast({
+        title: "AI Enhancement Complete",
+        description: "Your description has been enhanced with AI suggestions!",
+        variant: "default"
+      });
+    }, 2000);
+  };
+
+  const handleSuggestionClick = (suggestion: string) => {
+    setDescription(prev => prev + (prev ? " " : "") + suggestion);
+  };
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       setIsUploading(true);
@@ -360,7 +379,7 @@ export default function PlaceOrderPage() {
 
   return (
     <Layout>
-      <div className="flex-1 flex justify-center px-4 py-6 max-w-7xl mx-auto w-full">
+      <div className="flex-1 flex justify-center px-4 py-4 max-w-7xl mx-auto w-full">
         <div className="w-full flex flex-col gap-6">
           {/* Back Button - positioned above the two-column layout */}
           <Button
