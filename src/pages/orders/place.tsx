@@ -1,5 +1,6 @@
+
 import React, { useState, useMemo, useCallback, useRef } from "react";
-import { Instagram, Facebook, Youtube, Twitter, Clock, ArrowLeft } from "lucide-react";
+import { Instagram, Facebook, Youtube, Twitter, Clock, ArrowLeft, FileText } from "lucide-react";
 import Layout from '@/components/layout/Layout';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -413,8 +414,13 @@ export default function PlaceOrderPage() {
                 isCustomPackage={selectedOrderType === "Custom Package"}
               />
               
-              {/* Combined Content Details and Upload Section - Always show both */}
+              {/* Combined Content Details and Upload Section with heading */}
               <div className="space-y-6">
+                <Label className="text-base font-semibold flex items-center gap-2">
+                  <FileText className="w-5 h-5 text-primary/80" />
+                  How would you like to provide the content?
+                </Label>
+                
                 <ContentDescriptionInput
                   contentDescription={contentDescription}
                   contentDescriptionError={contentDescriptionError}
