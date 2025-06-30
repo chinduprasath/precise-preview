@@ -54,9 +54,48 @@ const contentTypesByOrder = {
   ]
 };
 
-const suggestedHashtags = ["#fashion", "#giveaway", "#trending", "#lifestyle", "#brand"];
-const suggestedProfiles = ["@brandname", "@companyofficial", "@yourstore"];
-const suggestedEmojis = ["🔥", "✨", "💯", "🎉", "👑", "💖"];
+// Dynamic suggestions based on description content
+const generateDynamicHashtags = (text: string) => {
+  const keywords = text.toLowerCase().split(/\s+/);
+  const trendingHashtags = ["#trending", "#viral", "#fashion", "#lifestyle", "#brand", "#giveaway", "#sale", "#new", "#exclusive", "#limited"];
+  
+  // Filter hashtags based on content relevance
+  return trendingHashtags.filter(tag => {
+    const tagWord = tag.substring(1);
+    return keywords.some(word => word.includes(tagWord) || tagWord.includes(word)) || 
+           Math.random() > 0.6; // Add some randomness for trending tags
+  }).slice(0, 5);
+};
+
+const businessProfiles = ["@brandname", "@companyofficial", "@yourstore", "@businessofficial"];
+
+const generateContextualEmojis = (text: string) => {
+  const lowerText = text.toLowerCase();
+  const emojiMap = {
+    'sale': ['🛍️', '💰', '🏷️'],
+    'new': ['✨', '🆕', '🎉'],
+    'fashion': ['👗', '💄', '👠'],
+    'food': ['🍕', '🍰', '🥗'],
+    'tech': ['📱', '💻', '⚡'],
+    'fitness': ['💪', '🏃‍♀️', '🏋️'],
+    'travel': ['✈️', '🌍', '📸'],
+    'beauty': ['💄', '✨', '💅'],
+    'love': ['❤️', '💖', '😍'],
+  };
+  
+  let contextualEmojis = [];
+  for (const [keyword, emojis] of Object.entries(emojiMap)) {
+    if (lowerText.includes(keyword)) {
+      contextualEmojis.push(...emojis);
+    }
+  }
+  
+  // Add general popular emojis
+  const popularEmojis = ["🔥", "✨", "💯", "🎉", "👑", "💖"];
+  contextualEmojis.push(...popularEmojis);
+  
+  return [...new Set(contextualEmojis)].slice(0, 6);
+};
 
 export default function PlaceOrderPage() {
   const location = useLocation();
@@ -92,6 +131,10 @@ export default function PlaceOrderPage() {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const dropAreaRef = useRef<HTMLDivElement>(null);
+
+  // Dynamic suggestions based on current description
+  const dynamicHashtags = useMemo(() => generateDynamicHashtags(description), [description]);
+  const contextualEmojis = useMemo(() => generateContextualEmojis(description), [description]);
 
   const packageName = selectedItems.length > 0 ? selectedItems[0] : "Selected Package";
   const orderType = packageName.includes("Instagram") || packageName.includes("Facebook") || packageName.includes("YouTube") || packageName.includes("Twitter") ? "Platform Based" : "Custom Package";
@@ -386,22 +429,22 @@ export default function PlaceOrderPage() {
   return (
     <Layout>
       <div className="flex-1 flex justify-center px-4 py-10 md:py-16 max-w-7xl mx-auto w-full">
-        {/* Back Navigation */}
-        <Button
-          variant="ghost"
-          size="sm"
-          className="absolute top-20 left-4 z-10"
-          onClick={() => navigate(-1)}
-        >
-          <ArrowLeft className="w-4 h-4 mr-1" />
-          Back
-        </Button>
-
         <div className="w-full flex flex-col lg:flex-row gap-8">
           <div className="flex-1 flex flex-col gap-7">
-            <Card className="rounded-xl overflow-hidden border-0 shadow-md bg-white dark:bg-card">
+            <Card className="rounded-xl overflow-hidden border-0 shadow-md bg-white dark:bg-card relative">
+              {/* Back Button - moved inside the card */}
+              <Button
+                variant="ghost"
+                size="sm"
+                className="absolute top-4 left-4 z-10 bg-white/80 hover:bg-white dark:bg-gray-800/80 dark:hover:bg-gray-800"
+                onClick={() => navigate(-1)}
+              >
+                <ArrowLeft className="w-4 h-4 mr-1" />
+                Back
+              </Button>
+
               <CardContent className="p-0">
-                <div className="bg-gradient-to-r from-[#9b87f5]/90 to-[#7E69AB]/90 p-5 flex items-center gap-4 text-white">
+                <div className="bg-gradient-to-r from-[#9b87f5]/90 to-[#7E69AB]/90 p-5 pt-16 flex items-center gap-4 text-white">
                   <div className="relative">
                     <img
                       src={influencerMock.avatar}
@@ -438,7 +481,7 @@ export default function PlaceOrderPage() {
               </Label>
               <Card className="p-4 border border-border">
                 <div className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label className="text-sm font-medium">Order Type</Label>
                       <Select value={selectedOrderType} onValueChange={handleOrderTypeChange}>
@@ -465,7 +508,10 @@ export default function PlaceOrderPage() {
                         </SelectContent>
                       </Select>
                     </div>
-                    
+                  </div>
+                  
+                  {/* Only show Platform dropdown for Platform Based orders */}
+                  {selectedOrderType === "Platform Based" && (
                     <div className="space-y-2">
                       <Label className="text-sm font-medium">Platform</Label>
                       <Select value={selectedSinglePlatform} onValueChange={setSelectedSinglePlatform}>
@@ -484,7 +530,7 @@ export default function PlaceOrderPage() {
                         </SelectContent>
                       </Select>
                     </div>
-                  </div>
+                  )}
                 </div>
               </Card>
             </div>
@@ -643,7 +689,7 @@ export default function PlaceOrderPage() {
                 />
               </div>
               
-              {/* Enhanced Description Section */}
+              {/* Enhanced Description Section with AI icon inside */}
               <div className="space-y-4 pt-4 border-t border-border">
                 <div className="flex justify-between items-center">
                   <Label 
@@ -655,20 +701,6 @@ export default function PlaceOrderPage() {
                   >
                     Description {descriptionError && `(${descriptionError})`}
                   </Label>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 px-2"
-                    onClick={handleAiEnhance}
-                    disabled={isAiEnhancing}
-                  >
-                    {isAiEnhancing ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : (
-                      <Sparkles className="w-4 h-4" />
-                    )}
-                  </Button>
                 </div>
                 
                 <div className="relative">
@@ -676,7 +708,7 @@ export default function PlaceOrderPage() {
                     id="description"
                     placeholder="Add any specific instructions or details about your request..."
                     className={cn(
-                      "min-h-[120px] resize-none transition-all focus-visible:ring-primary",
+                      "min-h-[120px] resize-none transition-all focus-visible:ring-primary pr-12",
                       descriptionError && "border-destructive focus-visible:ring-destructive"
                     )}
                     value={description}
@@ -684,22 +716,44 @@ export default function PlaceOrderPage() {
                     onBlur={() => setDescriptionError(validateDescription(description))}
                   />
                   
-                  {/* Smart Suggestions */}
+                  {/* AI Generate Button inside text area */}
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="absolute top-2 right-2 h-8 w-8 p-0"
+                    onClick={handleAiEnhance}
+                    disabled={isAiEnhancing}
+                    title="Enhance with AI"
+                  >
+                    {isAiEnhancing ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Sparkles className="w-4 h-4" />
+                    )}
+                  </Button>
+                  
+                  {/* Enhanced Smart Suggestions */}
                   <div className="mt-3 space-y-2">
-                    <div className="text-xs text-muted-foreground mb-1">Suggestions:</div>
+                    <div className="text-xs text-muted-foreground mb-1">Smart Suggestions:</div>
                     
                     <div className="space-y-1">
                       <div className="flex flex-wrap gap-1">
                         <span className="text-xs text-muted-foreground">Hashtags:</span>
-                        {suggestedHashtags.map((tag) => (
+                        {dynamicHashtags.map((tag) => (
                           <span
                             key={tag}
                             className={cn(
-                              "text-xs px-2 py-1 rounded-md",
+                              "text-xs px-2 py-1 rounded-md cursor-pointer transition-colors",
                               getTextContainsItem(description, tag)
                                 ? "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
-                                : "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400"
+                                : "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400 hover:bg-gray-200"
                             )}
+                            onClick={() => {
+                              if (!getTextContainsItem(description, tag)) {
+                                setDescription(prev => prev ? `${prev} ${tag}` : tag);
+                              }
+                            }}
                           >
                             {getTextContainsItem(description, tag) && "✅ "}{tag}
                           </span>
@@ -708,15 +762,20 @@ export default function PlaceOrderPage() {
                       
                       <div className="flex flex-wrap gap-1">
                         <span className="text-xs text-muted-foreground">Profiles:</span>
-                        {suggestedProfiles.map((profile) => (
+                        {businessProfiles.map((profile) => (
                           <span
                             key={profile}
                             className={cn(
-                              "text-xs px-2 py-1 rounded-md",
+                              "text-xs px-2 py-1 rounded-md cursor-pointer transition-colors",
                               getTextContainsItem(description, profile)
                                 ? "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
-                                : "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400"
+                                : "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400 hover:bg-gray-200"
                             )}
+                            onClick={() => {
+                              if (!getTextContainsItem(description, profile)) {
+                                setDescription(prev => prev ? `${prev} ${profile}` : profile);
+                              }
+                            }}
                           >
                             {getTextContainsItem(description, profile) && "✅ "}{profile}
                           </span>
@@ -725,14 +784,14 @@ export default function PlaceOrderPage() {
                       
                       <div className="flex flex-wrap gap-1">
                         <span className="text-xs text-muted-foreground">Emojis:</span>
-                        {suggestedEmojis.map((emoji) => (
+                        {contextualEmojis.map((emoji) => (
                           <span
                             key={emoji}
                             className={cn(
-                              "text-xs px-2 py-1 rounded-md cursor-pointer",
+                              "text-xs px-2 py-1 rounded-md cursor-pointer transition-colors",
                               getTextContainsItem(description, emoji)
                                 ? "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
-                                : "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400"
+                                : "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400 hover:bg-gray-200"
                             )}
                             onClick={() => {
                               if (!getTextContainsItem(description, emoji)) {
