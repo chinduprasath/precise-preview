@@ -19,6 +19,7 @@ interface OrderTypeSelectorProps {
     icon: React.ReactNode;
     color: string;
   }>;
+  isCustomPackage?: boolean;
 }
 
 const OrderTypeSelector: React.FC<OrderTypeSelectorProps> = ({
@@ -30,6 +31,7 @@ const OrderTypeSelector: React.FC<OrderTypeSelectorProps> = ({
   onPlatformChange,
   contentTypesByOrder,
   socialPlatforms,
+  isCustomPackage = false,
 }) => {
   return (
     <div className="space-y-4">
@@ -66,26 +68,30 @@ const OrderTypeSelector: React.FC<OrderTypeSelectorProps> = ({
             </Select>
           </div>
           
-          {selectedOrderType !== "Custom Package" && (
-            <div className="space-y-2">
-              <Label className="text-sm font-medium">Platform</Label>
-              <Select value={selectedSinglePlatform} onValueChange={onPlatformChange}>
-                <SelectTrigger className="w-32 h-8 text-xs">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {socialPlatforms.map((platform) => (
-                    <SelectItem key={platform.id} value={platform.id}>
-                      <div className="flex items-center gap-2">
-                        <span className={platform.color}>{platform.icon}</span>
-                        {platform.name}
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          )}
+          <div className="space-y-2">
+            <Label className="text-sm font-medium">Platform</Label>
+            <Select 
+              value={selectedSinglePlatform} 
+              onValueChange={onPlatformChange}
+              disabled={isCustomPackage}
+            >
+              <SelectTrigger 
+                className={`w-32 h-8 text-xs ${isCustomPackage ? 'opacity-50 cursor-not-allowed' : ''}`}
+              >
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {socialPlatforms.map((platform) => (
+                  <SelectItem key={platform.id} value={platform.id}>
+                    <div className="flex items-center gap-2">
+                      <span className={platform.color}>{platform.icon}</span>
+                      {platform.name}
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </Card>
     </div>

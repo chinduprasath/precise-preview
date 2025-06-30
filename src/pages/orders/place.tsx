@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo, useCallback, useRef } from "react";
 import { Instagram, Facebook, Youtube, Twitter, Clock, ArrowLeft } from "lucide-react";
 import Layout from '@/components/layout/Layout';
@@ -415,71 +416,81 @@ export default function PlaceOrderPage() {
   return (
     <Layout>
       <div className="flex-1 flex justify-center px-4 py-10 md:py-16 max-w-7xl mx-auto w-full">
-        <div className="w-full flex flex-col lg:flex-row gap-8">
-          <div className="flex-1 flex flex-col gap-7">
-            {/* Back Button - moved above the card */}
-            <Button
-              variant="ghost"
-              size="sm"
-              className="self-start bg-white/80 hover:bg-white dark:bg-gray-800/80 dark:hover:bg-gray-800"
-              onClick={() => navigate(-1)}
-            >
-              <ArrowLeft className="w-4 h-4 mr-1" />
-              Back
-            </Button>
+        <div className="w-full flex flex-col gap-6">
+          {/* Back Button - positioned above the two-column layout */}
+          <Button
+            variant="ghost"
+            size="sm"
+            className="self-start bg-white/80 hover:bg-white dark:bg-gray-800/80 dark:hover:bg-gray-800"
+            onClick={() => navigate(-1)}
+          >
+            <ArrowLeft className="w-4 h-4 mr-1" />
+            Back
+          </Button>
 
-            <InfluencerProfileCard influencer={influencerMock} />
-            
-            <OrderTypeSelector
-              selectedOrderType={selectedOrderType}
-              selectedContent={selectedContent}
-              selectedSinglePlatform={selectedSinglePlatform}
-              onOrderTypeChange={handleOrderTypeChange}
-              onContentChange={setSelectedContent}
-              onPlatformChange={setSelectedSinglePlatform}
-              contentTypesByOrder={contentTypesByOrder}
-              socialPlatforms={socialPlatforms}
-            />
-            
-            <ContentSubmissionSelector
-              contentSubmissionMethod={contentSubmissionMethod}
-              onContentMethodChange={handleContentMethodChange}
-            />
-            
-            {contentSubmissionMethod === 'upload' ? (
-              <FileUploader
-                files={files}
-                isUploading={isUploading}
-                onFileChange={handleFileChange}
-                onRemoveFile={removeFile}
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
+          {/* Two-column layout */}
+          <div className="flex flex-col lg:flex-row gap-8">
+            {/* Column 1 - Left side */}
+            <div className="flex-1 flex flex-col gap-7">
+              {/* Influencer Card - aligned to match height of Date & Time section */}
+              <div className="flex flex-col gap-6 min-h-[200px]">
+                <InfluencerProfileCard influencer={influencerMock} />
+              </div>
+              
+              <OrderTypeSelector
+                selectedOrderType={selectedOrderType}
+                selectedContent={selectedContent}
+                selectedSinglePlatform={selectedSinglePlatform}
+                onOrderTypeChange={handleOrderTypeChange}
+                onContentChange={setSelectedContent}
+                onPlatformChange={setSelectedSinglePlatform}
+                contentTypesByOrder={contentTypesByOrder}
+                socialPlatforms={socialPlatforms}
+                isCustomPackage={selectedOrderType === "Custom Package"}
               />
-            ) : (
-              <ContentDescriptionInput
-                contentDescription={contentDescription}
-                contentDescriptionError={contentDescriptionError}
-                onContentDescriptionChange={handleContentDescriptionChange}
-                onBlur={() => setContentDescriptionError(validateContentDescription(contentDescription))}
+              
+              <ContentSubmissionSelector
+                contentSubmissionMethod={contentSubmissionMethod}
+                onContentMethodChange={handleContentMethodChange}
               />
-            )}
-          </div>
-          
-          <div className="flex-1 flex flex-col gap-6">
-            <div className="space-y-6">
-              <div className="space-y-4">
-                <Label className="text-base font-semibold flex items-center gap-2">
-                  <Clock className="w-5 h-5 text-primary/80" />
-                  Select Date & Time
-                </Label>
-                
-                <DateTimePicker
-                  value={selectedDateTime}
-                  onChange={setSelectedDateTime}
-                  label=""
-                  placeholder="Pick a date and time"
+              
+              {contentSubmissionMethod === 'upload' ? (
+                <FileUploader
+                  files={files}
+                  isUploading={isUploading}
+                  onFileChange={handleFileChange}
+                  onRemoveFile={removeFile}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
                 />
+              ) : (
+                <ContentDescriptionInput
+                  contentDescription={contentDescription}
+                  contentDescriptionError={contentDescriptionError}
+                  onContentDescriptionChange={handleContentDescriptionChange}
+                  onBlur={() => setContentDescriptionError(validateContentDescription(contentDescription))}
+                />
+              )}
+            </div>
+            
+            {/* Column 2 - Right side */}
+            <div className="flex-1 flex flex-col gap-6">
+              {/* Date & Time section - aligned to match height of Influencer Card */}
+              <div className="space-y-6 min-h-[200px] flex flex-col justify-center">
+                <div className="space-y-4">
+                  <Label className="text-base font-semibold flex items-center gap-2">
+                    <Clock className="w-5 h-5 text-primary/80" />
+                    Select Date & Time
+                  </Label>
+                  
+                  <DateTimePicker
+                    value={selectedDateTime}
+                    onChange={setSelectedDateTime}
+                    label=""
+                    placeholder="Pick a date and time"
+                  />
+                </div>
               </div>
               
               <DescriptionInput
@@ -525,23 +536,24 @@ export default function PlaceOrderPage() {
                 onCouponApply={handleCouponApply}
                 onRemoveCoupon={removeCoupon}
               />
+              
+              <OrderSummary
+                selectedOrderType={selectedOrderType}
+                selectedContent={selectedContent}
+                selectedSinglePlatform={selectedSinglePlatform}
+                contentSubmissionMethod={contentSubmissionMethod}
+                packagePrice={packagePrice}
+                platformFee={platformFee}
+                couponDiscount={couponDiscount}
+                appliedCoupon={appliedCoupon}
+                total={total}
+                isSubmitting={isSubmitting}
+                socialPlatforms={socialPlatforms}
+                onPlatformChange={setSelectedSinglePlatform}
+                onSendRequest={handleSendRequest}
+                isCustomPackage={selectedOrderType === "Custom Package"}
+              />
             </div>
-            
-            <OrderSummary
-              selectedOrderType={selectedOrderType}
-              selectedContent={selectedContent}
-              selectedSinglePlatform={selectedSinglePlatform}
-              contentSubmissionMethod={contentSubmissionMethod}
-              packagePrice={packagePrice}
-              platformFee={platformFee}
-              couponDiscount={couponDiscount}
-              appliedCoupon={appliedCoupon}
-              total={total}
-              isSubmitting={isSubmitting}
-              socialPlatforms={socialPlatforms}
-              onPlatformChange={setSelectedSinglePlatform}
-              onSendRequest={handleSendRequest}
-            />
           </div>
         </div>
       </div>

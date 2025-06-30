@@ -25,6 +25,7 @@ interface OrderSummaryProps {
   }>;
   onPlatformChange: (platform: string) => void;
   onSendRequest: (e: React.FormEvent) => void;
+  isCustomPackage?: boolean;
 }
 
 const OrderSummary: React.FC<OrderSummaryProps> = ({
@@ -41,6 +42,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
   socialPlatforms,
   onPlatformChange,
   onSendRequest,
+  isCustomPackage = false,
 }) => {
   return (
     <Card className="mt-auto">
@@ -60,26 +62,30 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
                 <span>Content:</span>
                 <span className="font-medium text-foreground">{selectedContent}</span>
               </div>
-              {selectedOrderType !== "Custom Package" && (
-                <div className="flex justify-between items-center">
-                  <span>Platform:</span>
-                  <Select value={selectedSinglePlatform} onValueChange={onPlatformChange}>
-                    <SelectTrigger className="w-32 h-8 text-xs">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {socialPlatforms.map((platform) => (
-                        <SelectItem key={platform.id} value={platform.id}>
-                          <div className="flex items-center gap-2">
-                            <span className={platform.color}>{platform.icon}</span>
-                            {platform.name}
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
+              <div className="flex justify-between items-center">
+                <span>Platform:</span>
+                <Select 
+                  value={selectedSinglePlatform} 
+                  onValueChange={onPlatformChange}
+                  disabled={isCustomPackage}
+                >
+                  <SelectTrigger 
+                    className={`w-32 h-8 text-xs ${isCustomPackage ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  >
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {socialPlatforms.map((platform) => (
+                      <SelectItem key={platform.id} value={platform.id}>
+                        <div className="flex items-center gap-2">
+                          <span className={platform.color}>{platform.icon}</span>
+                          {platform.name}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
 
