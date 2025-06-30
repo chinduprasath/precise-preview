@@ -1,19 +1,25 @@
 import React, { useState, useMemo, useCallback, useRef } from "react";
-import { Instagram, Facebook, Youtube, Twitter, Paperclip, Check, Clock, Upload, X, Loader2, Tag, FileText, Calendar, ArrowLeft, Sparkles } from "lucide-react";
+import { Instagram, Facebook, Youtube, Twitter, Clock, ArrowLeft } from "lucide-react";
 import Layout from '@/components/layout/Layout';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { format } from "date-fns";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
-import { toast } from "@/hooks/use-toast";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import DateTimePicker from "@/components/reach/DateTimePicker";
 import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useNavigate, useLocation } from "react-router-dom";
+import { toast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
+import { Label } from "@/components/ui/label";
+
+// Import new components
+import InfluencerProfileCard from '@/components/orders/place/InfluencerProfileCard';
+import OrderTypeSelector from '@/components/orders/place/OrderTypeSelector';
+import ContentSubmissionSelector from '@/components/orders/place/ContentSubmissionSelector';
+import FileUploader from '@/components/orders/place/FileUploader';
+import ContentDescriptionInput from '@/components/orders/place/ContentDescriptionInput';
+import DescriptionInput from '@/components/orders/place/DescriptionInput';
+import CouponSection from '@/components/orders/place/CouponSection';
+import OrderSummary from '@/components/orders/place/OrderSummary';
 
 const influencerMock = {
   avatar: "https://picsum.photos/id/64/100/100",
@@ -133,16 +139,12 @@ export default function PlaceOrderPage() {
   const [selectedSinglePlatform, setSelectedSinglePlatform] = useState<string>("instagram");
   const [isAiEnhancing, setIsAiEnhancing] = useState(false);
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const dropAreaRef = useRef<HTMLDivElement>(null);
 
   // Dynamic suggestions based on current description
   const dynamicHashtags = useMemo(() => generateDynamicHashtags(description), [description]);
   const contextualEmojis = useMemo(() => generateContextualEmojis(description), [description]);
 
-  const packageName = selectedItems.length > 0 ? selectedItems[0] : "Selected Package";
-  const orderType = packageName.includes("Instagram") || packageName.includes("Facebook") || packageName.includes("YouTube") || packageName.includes("Twitter") ? "Platform Based" : "Custom Package";
-  const contentType = contentTypesByOrder[orderType as keyof typeof contentTypesByOrder][0]; // default first content type for orderType
   const packagePrice = 800;
   const platformFee = 99;
   
@@ -335,6 +337,10 @@ export default function PlaceOrderPage() {
     return text.toLowerCase().includes(item.toLowerCase());
   };
 
+  const handleSuggestionClick = (suggestion: string) => {
+    setDescription(prev => prev ? `${prev} ${suggestion}` : suggestion);
+  };
+
   const handleSendRequest = (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -422,230 +428,41 @@ export default function PlaceOrderPage() {
               Back
             </Button>
 
-            <Card className="rounded-xl overflow-hidden border-0 shadow-md bg-white dark:bg-card">
-              <CardContent className="p-0">
-                <div className="bg-gradient-to-r from-[#9b87f5]/90 to-[#7E69AB]/90 p-5 flex items-center gap-4 text-white">
-                  <div className="relative">
-                    <img
-                      src={influencerMock.avatar}
-                      alt="Influencer Avatar"
-                      className="w-16 h-16 rounded-full object-cover border-2 border-white shadow-md"
-                    />
-                    <div className="absolute bottom-0 right-0 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
-                  </div>
-                  <div className="flex flex-col">
-                    <h3 className="text-lg font-semibold">{influencerMock.name}</h3>
-                    <p className="text-sm text-white/90">{influencerMock.email}</p>
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-4 divide-x divide-border border-t">
-                  {influencerMock.followers.map((item, idx) => (
-                    <div key={idx} className="p-3 text-center group transition-all hover:bg-accent cursor-default">
-                      <div className="flex justify-center mb-1 group-hover:scale-110 transition-transform">
-                        {item.icon}
-                      </div>
-                      <div className="font-semibold text-sm">{item.value}</div>
-                      <div className="text-xs text-muted-foreground">{item.platform}</div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+            <InfluencerProfileCard influencer={influencerMock} />
             
-            {/* Updated Selected Order Section with Single Row Layout */}
-            <div className="space-y-4">
-              <Label className="text-base font-semibold flex items-center gap-2">
-                <Check className="w-5 h-5 text-primary/80" />
-                Selected Order
-              </Label>
-              <Card className="p-4 border border-border">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="space-y-2">
-                    <Label className="text-sm font-medium">Order Type</Label>
-                    <Select value={selectedOrderType} onValueChange={handleOrderTypeChange}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Platform Based">Platform Based</SelectItem>
-                        <SelectItem value="Custom Package">Custom Package</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label className="text-sm font-medium">Content</Label>
-                    <Select value={selectedContent} onValueChange={setSelectedContent}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {contentTypesByOrder[selectedOrderType as keyof typeof contentTypesByOrder].map((content) => (
-                          <SelectItem key={content} value={content}>{content}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  {/* Show Platform dropdown for all orders */}
-                  <div className="space-y-2">
-                    <Label className="text-sm font-medium">Platform</Label>
-                    <Select value={selectedSinglePlatform} onValueChange={setSelectedSinglePlatform}>
-                      <SelectTrigger className="w-32 h-8 text-xs">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {socialPlatforms.map((platform) => (
-                          <SelectItem key={platform.id} value={platform.id}>
-                            <div className="flex items-center gap-2">
-                              <span className={platform.color}>{platform.icon}</span>
-                              {platform.name}
-                            </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              </Card>
-            </div>
+            <OrderTypeSelector
+              selectedOrderType={selectedOrderType}
+              selectedContent={selectedContent}
+              selectedSinglePlatform={selectedSinglePlatform}
+              onOrderTypeChange={handleOrderTypeChange}
+              onContentChange={setSelectedContent}
+              onPlatformChange={setSelectedSinglePlatform}
+              contentTypesByOrder={contentTypesByOrder}
+              socialPlatforms={socialPlatforms}
+            />
             
-            <div className="space-y-4">
-              <Label className="text-base font-semibold flex items-center gap-2">
-                <FileText className="w-5 h-5 text-primary/80" />
-                How would you like to provide the content?
-              </Label>
-              
-              <RadioGroup 
-                value={contentSubmissionMethod} 
-                onValueChange={(value) => handleContentMethodChange(value as 'upload' | 'describe')}
-                className="space-y-3"
-              >
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="upload" id="upload" />
-                  <Label htmlFor="upload" className="text-sm font-medium cursor-pointer">
-                    Upload Files
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="describe" id="describe" />
-                  <Label htmlFor="describe" className="text-sm font-medium cursor-pointer">
-                    Describe What to Create
-                  </Label>
-                </div>
-              </RadioGroup>
-            </div>
+            <ContentSubmissionSelector
+              contentSubmissionMethod={contentSubmissionMethod}
+              onContentMethodChange={handleContentMethodChange}
+            />
             
             {contentSubmissionMethod === 'upload' ? (
-              <div>
-                <Label className="text-sm mb-3 block">Upload Files</Label>
-                
-                <div
-                  ref={dropAreaRef}
-                  className="border-2 border-dashed border-border rounded-lg p-6 transition-all cursor-pointer hover:bg-accent/30"
-                  onDragOver={handleDragOver}
-                  onDragLeave={handleDragLeave}
-                  onDrop={handleDrop}
-                  onClick={() => fileInputRef.current?.click()}
-                >
-                  <div className="flex flex-col items-center justify-center text-center">
-                    {isUploading ? (
-                      <div className="flex flex-col items-center">
-                        <Loader2 className="h-8 w-8 text-primary animate-spin mb-2" />
-                        <p className="text-sm text-muted-foreground">Uploading files...</p>
-                      </div>
-                    ) : (
-                      <>
-                        <Upload className="h-8 w-8 text-primary mb-2" />
-                        <p className="text-sm font-medium mb-1">Drag & drop files here</p>
-                        <p className="text-xs text-muted-foreground mb-3">or click to browse</p>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          className="text-xs"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            fileInputRef.current?.click();
-                          }}
-                        >
-                          Select Files
-                        </Button>
-                      </>
-                    )}
-                    
-                    <input
-                      ref={fileInputRef}
-                      id="file-upload"
-                      type="file"
-                      multiple
-                      onChange={handleFileChange}
-                      className="hidden"
-                    />
-                  </div>
-                </div>
-                
-                {files.length > 0 && (
-                  <div className="mt-4 space-y-2">
-                    <Label className="text-sm block">Selected Files ({files.length})</Label>
-                    <div className="max-h-40 overflow-y-auto pr-2 space-y-2">
-                      {files.map((file, index) => (
-                        <div 
-                          key={`${file.name}-${index}`}
-                          className="flex items-center justify-between bg-accent/50 p-2 rounded-md text-sm"
-                        >
-                          <div className="flex items-center gap-2 truncate">
-                            <Paperclip className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                            <span className="truncate">{file.name}</span>
-                            <span className="text-xs text-muted-foreground">
-                              ({(file.size / 1024).toFixed(1)} KB)
-                            </span>
-                          </div>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-7 w-7 p-0"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              removeFile(index);
-                            }}
-                          >
-                            <X className="h-4 w-4" />
-                            <span className="sr-only">Remove</span>
-                          </Button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
+              <FileUploader
+                files={files}
+                isUploading={isUploading}
+                onFileChange={handleFileChange}
+                onRemoveFile={removeFile}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+              />
             ) : (
-              <div>
-                <Label 
-                  htmlFor="content-description" 
-                  className={cn(
-                    "text-sm mb-1.5 block",
-                    contentDescriptionError && "text-destructive"
-                  )}
-                >
-                  Content Description {contentDescriptionError && `(${contentDescriptionError})`}
-                </Label>
-                <Textarea
-                  id="content-description"
-                  placeholder="Describe what kind of content you want the influencer to create. E.g., 'Create a video story promoting our eco-friendly shoes. Include discount, brand colors, and a call to action.'"
-                  className={cn(
-                    "min-h-[120px] resize-none transition-all focus-visible:ring-primary",
-                    contentDescriptionError && "border-destructive focus-visible:ring-destructive"
-                  )}
-                  value={contentDescription}
-                  onChange={handleContentDescriptionChange}
-                  onBlur={() => setContentDescriptionError(validateContentDescription(contentDescription))}
-                />
-                <div className="mt-1 text-xs text-right text-muted-foreground">
-                  {contentDescription.length}/500 characters
-                </div>
-              </div>
+              <ContentDescriptionInput
+                contentDescription={contentDescription}
+                contentDescriptionError={contentDescriptionError}
+                onContentDescriptionChange={handleContentDescriptionChange}
+                onBlur={() => setContentDescriptionError(validateContentDescription(contentDescription))}
+              />
             )}
           </div>
           
@@ -665,129 +482,18 @@ export default function PlaceOrderPage() {
                 />
               </div>
               
-              {/* Enhanced Description Section with AI icon inside */}
-              <div className="space-y-4 pt-4 border-t border-border">
-                <div className="flex justify-between items-center">
-                  <Label 
-                    htmlFor="description" 
-                    className={cn(
-                      "text-base font-semibold",
-                      descriptionError && "text-destructive"
-                    )}
-                  >
-                    Description {descriptionError && `(${descriptionError})`}
-                  </Label>
-                </div>
-                
-                <div className="relative">
-                  <Textarea
-                    id="description"
-                    placeholder="Add any specific instructions or details about your request..."
-                    className={cn(
-                      "min-h-[120px] resize-none transition-all focus-visible:ring-primary pr-12",
-                      descriptionError && "border-destructive focus-visible:ring-destructive"
-                    )}
-                    value={description}
-                    onChange={handleDescriptionChange}
-                    onBlur={() => setDescriptionError(validateDescription(description))}
-                  />
-                  
-                  {/* AI Generate Button inside text area */}
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="absolute top-2 right-2 h-8 w-8 p-0"
-                    onClick={handleAiEnhance}
-                    disabled={isAiEnhancing}
-                    title="Enhance with AI"
-                  >
-                    {isAiEnhancing ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : (
-                      <Sparkles className="w-4 h-4" />
-                    )}
-                  </Button>
-                  
-                  {/* Enhanced Smart Suggestions */}
-                  <div className="mt-3 space-y-2">
-                    <div className="text-xs text-muted-foreground mb-1">Smart Suggestions:</div>
-                    
-                    <div className="space-y-1">
-                      <div className="flex flex-wrap gap-1">
-                        <span className="text-xs text-muted-foreground">Hashtags:</span>
-                        {dynamicHashtags.map((tag) => (
-                          <span
-                            key={tag}
-                            className={cn(
-                              "text-xs px-2 py-1 rounded-md cursor-pointer transition-colors",
-                              getTextContainsItem(description, tag)
-                                ? "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
-                                : "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400 hover:bg-gray-200"
-                            )}
-                            onClick={() => {
-                              if (!getTextContainsItem(description, tag)) {
-                                setDescription(prev => prev ? `${prev} ${tag}` : tag);
-                              }
-                            }}
-                          >
-                            {getTextContainsItem(description, tag) && "✅ "}{tag}
-                          </span>
-                        ))}
-                      </div>
-                      
-                      <div className="flex flex-wrap gap-1">
-                        <span className="text-xs text-muted-foreground">Profiles:</span>
-                        {businessProfiles.map((profile) => (
-                          <span
-                            key={profile.handle}
-                            className={cn(
-                              "text-xs px-2 py-1 rounded-md cursor-pointer transition-colors flex items-center gap-1",
-                              getTextContainsItem(description, profile.handle)
-                                ? "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
-                                : "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400 hover:bg-gray-200"
-                            )}
-                            onClick={() => {
-                              if (!getTextContainsItem(description, profile.handle)) {
-                                setDescription(prev => prev ? `${prev} ${profile.handle}` : profile.handle);
-                              }
-                            }}
-                          >
-                            {profile.icon}
-                            {getTextContainsItem(description, profile.handle) && "✅ "}{profile.handle}
-                          </span>
-                        ))}
-                      </div>
-                      
-                      <div className="flex flex-wrap gap-1">
-                        <span className="text-xs text-muted-foreground">Emojis:</span>
-                        {contextualEmojis.map((emoji) => (
-                          <span
-                            key={emoji}
-                            className={cn(
-                              "text-xs px-2 py-1 rounded-md cursor-pointer transition-colors",
-                              getTextContainsItem(description, emoji)
-                                ? "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
-                                : "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400 hover:bg-gray-200"
-                            )}
-                            onClick={() => {
-                              if (!getTextContainsItem(description, emoji)) {
-                                setDescription(prev => prev ? `${prev} ${emoji}` : emoji);
-                              }
-                            }}
-                          >
-                            {getTextContainsItem(description, emoji) && "✅ "}{emoji}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="mt-1 text-xs text-right text-muted-foreground">
-                  {description.length}/500 characters
-                </div>
-              </div>
+              <DescriptionInput
+                description={description}
+                descriptionError={descriptionError}
+                isAiEnhancing={isAiEnhancing}
+                dynamicHashtags={dynamicHashtags}
+                businessProfiles={businessProfiles}
+                contextualEmojis={contextualEmojis}
+                onDescriptionChange={handleDescriptionChange}
+                onBlur={() => setDescriptionError(validateDescription(description))}
+                onAiEnhance={handleAiEnhance}
+                onSuggestionClick={handleSuggestionClick}
+              />
 
               <div className="space-y-4 pt-4 border-t border-border">
                 <Label 
@@ -812,169 +518,30 @@ export default function PlaceOrderPage() {
                 />
               </div>
               
-              <div className="space-y-4 pt-4 border-t border-border">
-                <Label className="text-base font-semibold flex items-center gap-2">
-                  <Tag className="w-5 h-5 text-primary/80" />
-                  Coupon Code
-                </Label>
-                
-                <div className="flex gap-2">
-                  <Input 
-                    placeholder="Enter coupon code"
-                    value={couponCode}
-                    onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                    disabled={!!appliedCoupon}
-                    className="flex-1"
-                  />
-                  {appliedCoupon ? (
-                    <Button
-                      variant="outline"
-                      className="whitespace-nowrap"
-                      onClick={removeCoupon}
-                    >
-                      Remove
-                    </Button>
-                  ) : (
-                    <Button
-                      variant="outline"
-                      className="whitespace-nowrap"
-                      onClick={handleCouponApply}
-                    >
-                      Apply
-                    </Button>
-                  )}
-                </div>
-                
-                {appliedCoupon && (
-                  <div className="text-sm text-primary flex items-center gap-1.5">
-                    <Check className="w-4 h-4" />
-                    <span>
-                      Coupon <span className="font-medium">{appliedCoupon.code}</span> applied: 
-                      {appliedCoupon.type === "percentage" 
-                        ? ` ${appliedCoupon.discount}% off`
-                        : ` ${appliedCoupon.discount}₹ off`
-                      }
-                    </span>
-                  </div>
-                )}
-              </div>
+              <CouponSection
+                couponCode={couponCode}
+                appliedCoupon={appliedCoupon}
+                onCouponCodeChange={setCouponCode}
+                onCouponApply={handleCouponApply}
+                onRemoveCoupon={removeCoupon}
+              />
             </div>
             
-            {/* Updated Order Summary with Platform Selection */}
-            <Card className="mt-auto">
-              <CardHeader className="pb-3">
-                <h3 className="text-lg font-semibold">Order Summary</h3>
-              </CardHeader>
-              <CardContent className="pb-4">
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <h4 className="font-medium text-sm">Order Details</h4>
-                    <div className="space-y-1 text-sm text-muted-foreground">
-                      <div className="flex justify-between">
-                        <span>Type:</span>
-                        <span className="font-medium text-foreground">{selectedOrderType}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Content:</span>
-                        <span className="font-medium text-foreground">{selectedContent}</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span>Platform:</span>
-                        <Select value={selectedSinglePlatform} onValueChange={setSelectedSinglePlatform}>
-                          <SelectTrigger className="w-32 h-8 text-xs">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {socialPlatforms.map((platform) => (
-                              <SelectItem key={platform.id} value={platform.id}>
-                                <div className="flex items-center gap-2">
-                                  <span className={platform.color}>{platform.icon}</span>
-                                  {platform.name}
-                                </div>
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-                  </div>
-
-                  {contentSubmissionMethod === 'upload' ? (
-                    <div className="space-y-1.5 pt-2 border-t">
-                      <div className="flex justify-between text-sm">
-                        <span className={cn(
-                          "transition-all",
-                          appliedCoupon ? "text-primary" : "text-muted-foreground"
-                        )}>
-                          Coupon Discount
-                        </span>
-                        <span className={cn(
-                          appliedCoupon ? "text-primary font-medium" : "text-muted-foreground"
-                        )}>
-                          {couponDiscount ? `-${couponDiscount}₹` : "—"}
-                        </span>
-                      </div>
-                      
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Platform Fee</span>
-                        <span className="text-muted-foreground">{platformFee}₹</span>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="space-y-4 pt-2 border-t">
-                      <div className="space-y-2">
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm font-medium">Posting Fee (Fixed):</span>
-                          <span className="font-bold">₹800</span>
-                        </div>
-                        
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm">Custom Content Creation Fee:</span>
-                          <span className="bg-amber-100 dark:bg-amber-900/20 text-amber-800 dark:text-amber-200 px-2 py-1 rounded-md text-xs font-medium">
-                            To be quoted
-                          </span>
-                        </div>
-                      </div>
-                      
-                      <div className="bg-gray-50 dark:bg-gray-900/20 p-3 rounded-md border">
-                        <div className="text-sm text-muted-foreground">
-                          <strong>Note:</strong> Your request will be reviewed by the influencer. A custom quote for content creation will be shared based on your description.
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-              
-              {contentSubmissionMethod === 'upload' && (
-                <div className="px-6 py-4 bg-muted/30 border-t">
-                  <div className="flex justify-between items-center">
-                    <span className="text-base font-semibold">Total</span>
-                    <span className="text-xl font-bold">{total}₹</span>
-                  </div>
-                </div>
-              )}
-              
-              <CardFooter className="pt-6">
-                <Button
-                  type="button"
-                  className="w-full bg-gradient-to-r from-[#9b87f5] to-[#7E69AB] hover:from-[#8b77e5] hover:to-[#6E59AB] transition-all py-6 text-base"
-                  onClick={handleSendRequest}
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Processing...
-                    </>
-                  ) : contentSubmissionMethod === 'upload' ? (
-                    "Send Request"
-                  ) : (
-                    "Send Request for Quote"
-                  )}
-                </Button>
-              </CardFooter>
-            </Card>
+            <OrderSummary
+              selectedOrderType={selectedOrderType}
+              selectedContent={selectedContent}
+              selectedSinglePlatform={selectedSinglePlatform}
+              contentSubmissionMethod={contentSubmissionMethod}
+              packagePrice={packagePrice}
+              platformFee={platformFee}
+              couponDiscount={couponDiscount}
+              appliedCoupon={appliedCoupon}
+              total={total}
+              isSubmitting={isSubmitting}
+              socialPlatforms={socialPlatforms}
+              onPlatformChange={setSelectedSinglePlatform}
+              onSendRequest={handleSendRequest}
+            />
           </div>
         </div>
       </div>
