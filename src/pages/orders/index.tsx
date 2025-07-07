@@ -10,12 +10,13 @@ import Header from '@/components/layout/Header';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Table, TableHeader, TableRow, TableHead, TableBody, TableCell
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Eye, Filter, RefreshCw, Calendar, Clock, X, FileText, Download } from 'lucide-react';
+import { Eye, Filter, RefreshCw, Calendar, Clock, FileText, Download } from 'lucide-react';
 import DateTimePicker from '@/components/reach/DateTimePicker';
 import { Card } from '@/components/ui/card';
 import FilterDropdown from '@/components/filters/FilterDropdown';
@@ -462,125 +463,117 @@ const OrdersPage = () => {
       
       {/* Order Details Modal */}
       <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent className="sm:max-w-lg max-h-[90vh]">
           <DialogHeader>
-            <DialogTitle className="flex items-center justify-between">
-              Order Details
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={() => setIsDetailOpen(false)}
-                className="h-8 w-8 rounded-full"
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </DialogTitle>
+            <DialogTitle>Order Details</DialogTitle>
           </DialogHeader>
           
           {selectedOrder && (
-            <div className="space-y-6">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm text-muted-foreground">Order ID</p>
-                  <p className="font-medium">{selectedOrder.orderNumber}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Status</p>
-                  <Badge variant={getStatusBadgeVariant(selectedOrder.status)} className="mt-1">
-                    {selectedOrder.status === 'pending_checkout' ? 'Pending' : 'Completed'}
-                  </Badge>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Username</p>
-                  <p className="font-medium">{selectedOrder.username}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Amount</p>
-                  <p className="font-medium">₹{selectedOrder.amount || 0}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Order Date</p>
-                  <p className="font-medium">{formatDateTime(selectedOrder.createdAt)}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Order Type</p>
-                  <p className="font-medium">{selectedOrder.orderType || 'Post'}</p>
-                </div>
-              </div>
-              
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">Scheduled Information</p>
-                <div className="bg-muted p-3 rounded-md space-y-1">
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm">{selectedOrder.scheduledDate || 'Not scheduled'}</span>
+            <ScrollArea className="max-h-[70vh] pr-4">
+              <div className="space-y-6">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Order ID</p>
+                    <p className="font-medium">{selectedOrder.orderNumber}</p>
                   </div>
-                  {selectedOrder.scheduledTime && (
+                  <div>
+                    <p className="text-sm text-muted-foreground">Status</p>
+                    <Badge variant={getStatusBadgeVariant(selectedOrder.status)} className="mt-1">
+                      {selectedOrder.status === 'pending_checkout' ? 'Pending' : 'Completed'}
+                    </Badge>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Username</p>
+                    <p className="font-medium">{selectedOrder.username}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Amount</p>
+                    <p className="font-medium">₹{selectedOrder.amount || 0}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Order Date</p>
+                    <p className="font-medium">{formatDateTime(selectedOrder.createdAt)}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Order Type</p>
+                    <p className="font-medium">{selectedOrder.orderType || 'Post'}</p>
+                  </div>
+                </div>
+                
+                <div>
+                  <p className="text-sm text-muted-foreground mb-1">Scheduled Information</p>
+                  <div className="bg-muted p-3 rounded-md space-y-1">
                     <div className="flex items-center gap-2">
-                      <Clock className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm">{selectedOrder.scheduledTime}</span>
+                      <Calendar className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm">{selectedOrder.scheduledDate || 'Not scheduled'}</span>
                     </div>
-                  )}
-                </div>
-              </div>
-              
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">Product/Service</p>
-                <div className="bg-muted p-3 rounded-md">
-                  <p className="text-sm font-medium">Category: {selectedOrder.category || 'N/A'}</p>
-                  <p className="text-sm mt-1">{selectedOrder.productService || 'N/A'}</p>
-                </div>
-              </div>
-
-              {/* Attached Files Section */}
-              <div>
-                <p className="text-sm text-muted-foreground mb-2">Attached Files</p>
-                <div className="bg-muted p-3 rounded-md">
-                  {getAttachedFiles(selectedOrder).length > 0 ? (
-                    <div className="space-y-2">
-                      {getAttachedFiles(selectedOrder).map((file) => (
-                        <div key={file.id} className="flex items-center justify-between p-2 bg-background rounded border">
-                          <div className="flex items-center gap-2">
-                            <FileText className="h-4 w-4 text-blue-500 flex-shrink-0" />
-                            <div>
-                              <p className="text-sm font-medium truncate">{file.name}</p>
-                              <p className="text-xs text-muted-foreground">{file.size}</p>
-                            </div>
-                          </div>
-                          <Button variant="ghost" size="icon" className="h-8 w-8" title="Download file">
-                            <Download className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-sm text-muted-foreground">No files attached to this order.</p>
-                  )}
-                </div>
-              </div>
-              
-              {selectedOrder.url && (
-                <div>
-                  <p className="text-sm text-muted-foreground mb-1">Media Links</p>
-                  <div className="bg-muted p-3 rounded-md">
-                    <a href={selectedOrder.url} target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline truncate block">
-                      {selectedOrder.url}
-                    </a>
+                    {selectedOrder.scheduledTime && (
+                      <div className="flex items-center gap-2">
+                        <Clock className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-sm">{selectedOrder.scheduledTime}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
-              )}
-              
-              <div className="flex justify-end gap-3 pt-4">
-                {selectedOrder.status === 'pending_checkout' ? (
-                  <>
-                    <Button variant="outline" onClick={() => handleReject(selectedOrder)}>Reject</Button>
-                    <Button onClick={() => handleCheckout(selectedOrder)}>Checkout</Button>
-                  </>
-                ) : (
-                  <Button onClick={() => handleUpdate(selectedOrder)}>Update Order</Button>
+                
+                <div>
+                  <p className="text-sm text-muted-foreground mb-1">Product/Service</p>
+                  <div className="bg-muted p-3 rounded-md">
+                    <p className="text-sm font-medium">Category: {selectedOrder.category || 'N/A'}</p>
+                    <p className="text-sm mt-1">{selectedOrder.productService || 'N/A'}</p>
+                  </div>
+                </div>
+
+                {/* Attached Files Section */}
+                <div>
+                  <p className="text-sm text-muted-foreground mb-2">Attached Files</p>
+                  <div className="bg-muted p-3 rounded-md">
+                    {getAttachedFiles(selectedOrder).length > 0 ? (
+                      <div className="space-y-2">
+                        {getAttachedFiles(selectedOrder).map((file) => (
+                          <div key={file.id} className="flex items-center justify-between p-2 bg-background rounded border">
+                            <div className="flex items-center gap-2">
+                              <FileText className="h-4 w-4 text-blue-500 flex-shrink-0" />
+                              <div>
+                                <p className="text-sm font-medium truncate">{file.name}</p>
+                                <p className="text-xs text-muted-foreground">{file.size}</p>
+                              </div>
+                            </div>
+                            <Button variant="ghost" size="icon" className="h-8 w-8" title="Download file">
+                              <Download className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-muted-foreground">No files attached to this order.</p>
+                    )}
+                  </div>
+                </div>
+                
+                {selectedOrder.url && (
+                  <div>
+                    <p className="text-sm text-muted-foreground mb-1">Media Links</p>
+                    <div className="bg-muted p-3 rounded-md">
+                      <a href={selectedOrder.url} target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline truncate block">
+                        {selectedOrder.url}
+                      </a>
+                    </div>
+                  </div>
                 )}
+                
+                <div className="flex justify-end gap-3 pt-4">
+                  {selectedOrder.status === 'pending_checkout' ? (
+                    <>
+                      <Button variant="outline" onClick={() => handleReject(selectedOrder)}>Reject</Button>
+                      <Button onClick={() => handleCheckout(selectedOrder)}>Checkout</Button>
+                    </>
+                  ) : (
+                    <Button onClick={() => handleUpdate(selectedOrder)}>Update Order</Button>
+                  )}
+                </div>
               </div>
-            </div>
+            </ScrollArea>
           )}
         </DialogContent>
       </Dialog>
