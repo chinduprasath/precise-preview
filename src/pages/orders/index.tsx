@@ -340,17 +340,6 @@ const OrdersPage = () => {
                               </TableCell>
                               <TableCell className="text-right space-x-2">
                                 <Button 
-                                  variant="outline" 
-                                  size="sm" 
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleViewDetails(order);
-                                  }}
-                                >
-                                  <Eye className="h-4 w-4 mr-1" />
-                                  View
-                                </Button>
-                                <Button 
                                   variant="destructive" 
                                   size="sm"
                                   onClick={(e) => {
@@ -425,18 +414,7 @@ const OrdersPage = () => {
                               <TableCell>
                                 <Badge variant="success">Completed</Badge>
                               </TableCell>
-                              <TableCell className="text-right space-x-2">
-                                <Button 
-                                  variant="outline" 
-                                  size="sm" 
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleViewDetails(order);
-                                  }}
-                                >
-                                  <Eye className="h-4 w-4 mr-1" />
-                                  View
-                                </Button>
+                              <TableCell className="text-right">
                                 <Button 
                                   variant="default" 
                                   size="sm"
