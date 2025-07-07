@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
@@ -16,7 +15,7 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Eye, Filter, RefreshCw, Calendar, Clock, X } from 'lucide-react';
+import { Eye, Filter, RefreshCw, Calendar, Clock, X, FileText, Download } from 'lucide-react';
 import DateTimePicker from '@/components/reach/DateTimePicker';
 import { Card } from '@/components/ui/card';
 import FilterDropdown from '@/components/filters/FilterDropdown';
@@ -73,7 +72,7 @@ const OrdersPage = () => {
         scheduledTime: item.scheduled_time,
         category: item.category,
         productService: item.product_service,
-        orderType: item.order_type || 'post', // Default to 'post' if not specified
+        orderType: item.order_type || 'post',
         businessVerified: item.business_verified,
         username: item.username,
         amount: item.amount,
@@ -88,18 +87,15 @@ const OrdersPage = () => {
 
   const orders = (apiOrders && apiOrders.length > 0) ? apiOrders : orderData;
 
-  // Filter orders based on all applied filters
   const filteredOrders = React.useMemo(() => {
     let filtered = [...orders];
 
-    // Filter by status based on active tab
     if (activeTab === 'pending') {
       filtered = filtered.filter(order => order.status === 'pending_checkout');
     } else {
       filtered = filtered.filter(order => order.status === 'completed');
     }
 
-    // Apply date range filter
     if (startDate) {
       filtered = filtered.filter(order => {
         const orderDate = parseISO(order.createdAt);
@@ -114,13 +110,11 @@ const OrdersPage = () => {
       });
     }
 
-    // Apply status filter (if different from tab)
     if (statusFilter && ((statusFilter === 'pending_checkout' && activeTab !== 'pending') || 
         (statusFilter === 'completed' && activeTab !== 'completed'))) {
       filtered = filtered.filter(order => order.status === statusFilter);
     }
 
-    // Apply order type filter
     if (orderTypeFilter) {
       filtered = filtered.filter(order => order.orderType === orderTypeFilter);
     }
@@ -180,7 +174,21 @@ const OrdersPage = () => {
     }
   };
 
-  // Check if user is an influencer (in a real app, this would check the user's type)
+  // Mock attached files for demonstration
+  const getAttachedFiles = (order: Order) => {
+    // In a real app, this would come from the order data
+    // For now, we'll simulate some files based on order type
+    const mockFiles = [
+      { id: '1', name: 'product-image.jpg', type: 'image/jpeg', size: '2.4 MB' },
+      { id: '2', name: 'brand-guidelines.pdf', type: 'application/pdf', size: '1.2 MB' },
+      { id: '3', name: 'content-brief.docx', type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', size: '456 KB' }
+    ];
+    
+    // Return a subset based on order ID to simulate variety
+    const orderIdNum = parseInt(order.id) || 1;
+    return mockFiles.slice(0, (orderIdNum % 3) + 1);
+  };
+
   const isInfluencer = localStorage.getItem('userType') === 'influencer';
 
   return (
@@ -521,6 +529,33 @@ const OrdersPage = () => {
                 <div className="bg-muted p-3 rounded-md">
                   <p className="text-sm font-medium">Category: {selectedOrder.category || 'N/A'}</p>
                   <p className="text-sm mt-1">{selectedOrder.productService || 'N/A'}</p>
+                </div>
+              </div>
+
+              {/* Attached Files Section */}
+              <div>
+                <p className="text-sm text-muted-foreground mb-2">Attached Files</p>
+                <div className="bg-muted p-3 rounded-md">
+                  {getAttachedFiles(selectedOrder).length > 0 ? (
+                    <div className="space-y-2">
+                      {getAttachedFiles(selectedOrder).map((file) => (
+                        <div key={file.id} className="flex items-center justify-between p-2 bg-background rounded border">
+                          <div className="flex items-center gap-2">
+                            <FileText className="h-4 w-4 text-blue-500 flex-shrink-0" />
+                            <div>
+                              <p className="text-sm font-medium truncate">{file.name}</p>
+                              <p className="text-xs text-muted-foreground">{file.size}</p>
+                            </div>
+                          </div>
+                          <Button variant="ghost" size="icon" className="h-8 w-8" title="Download file">
+                            <Download className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">No files attached to this order.</p>
+                  )}
                 </div>
               </div>
               
