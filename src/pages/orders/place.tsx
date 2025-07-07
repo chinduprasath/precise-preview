@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo, useCallback, useRef } from "react";
 import { Instagram, Facebook, Youtube, Twitter, Clock, ArrowLeft, FileText } from "lucide-react";
 import Layout from '@/components/layout/Layout';
@@ -11,6 +10,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 // Import new components
 import InfluencerProfileCard from '@/components/orders/place/InfluencerProfileCard';
@@ -20,6 +20,8 @@ import ContentDescriptionInput from '@/components/orders/place/ContentDescriptio
 import DescriptionInput from '@/components/orders/place/DescriptionInput';
 import CouponSection from '@/components/orders/place/CouponSection';
 import OrderSummary from '@/components/orders/place/OrderSummary';
+import UploadFilesTab from '@/components/orders/place/UploadFilesTab';
+import ProvideContentTab from '@/components/orders/place/ProvideContentTab';
 
 const influencerMock = {
   avatar: "https://picsum.photos/id/64/100/100",
@@ -142,6 +144,12 @@ export default function PlaceOrderPage() {
   const [isAiEnhancing, setIsAiEnhancing] = useState(false);
 
   const dropAreaRef = useRef<HTMLDivElement>(null);
+
+  // New state for tabs
+  const [activeTab, setActiveTab] = useState("upload-files");
+  const [notesDescription, setNotesDescription] = useState("");
+  const [referenceFiles, setReferenceFiles] = useState<File[]>([]);
+  const [isUploadingReference, setIsUploadingReference] = useState(false);
 
   // Dynamic suggestions based on current description
   const dynamicHashtags = useMemo(() => generateDynamicHashtags(description), [description]);
@@ -274,6 +282,20 @@ export default function PlaceOrderPage() {
         setIsUploading(false);
       }, 1000);
     }
+  };
+
+  const handleReferenceFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setIsUploadingReference(true);
+      setTimeout(() => {
+        setReferenceFiles(Array.from(e.target.files || []));
+        setIsUploadingReference(false);
+      }, 1000);
+    }
+  };
+
+  const removeReferenceFile = (index: number) => {
+    setReferenceFiles(referenceFiles.filter((_, i) => i !== index));
   };
 
   const handleCouponApply = () => {
@@ -414,29 +436,56 @@ export default function PlaceOrderPage() {
                 isCustomPackage={selectedOrderType === "Custom Package"}
               />
               
-              {/* Combined Content Details and Upload Section with heading */}
+              {/* Tabs Section with heading */}
               <div className="space-y-6">
                 <Label className="text-base font-semibold flex items-center gap-2">
                   <FileText className="w-5 h-5 text-primary/80" />
                   How would you like to provide the content?
                 </Label>
                 
-                <ContentDescriptionInput
-                  contentDescription={contentDescription}
-                  contentDescriptionError={contentDescriptionError}
-                  onContentDescriptionChange={handleContentDescriptionChange}
-                  onBlur={() => setContentDescriptionError(validateContentDescription(contentDescription))}
-                />
-                
-                <FileUploader
-                  files={files}
-                  isUploading={isUploading}
-                  onFileChange={handleFileChange}
-                  onRemoveFile={removeFile}
-                  onDragOver={handleDragOver}
-                  onDragLeave={handleDragLeave}
-                  onDrop={handleDrop}
-                />
+                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                  <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="upload-files">Upload Files</TabsTrigger>
+                    <TabsTrigger value="provide-content">Provide Content</TabsTrigger>
+                  </TabsList>
+                  
+                  <TabsContent value="upload-files" className="space-y-6 mt-6">
+                    <UploadFilesTab
+                      description={description}
+                      descriptionError={descriptionError}
+                      isAiEnhancing={isAiEnhancing}
+                      dynamicHashtags={dynamicHashtags}
+                      businessProfiles={businessProfiles}
+                      contextualEmojis={contextualEmojis}
+                      files={files}
+                      isUploading={isUploading}
+                      notesDescription={notesDescription}
+                      onDescriptionChange={handleDescriptionChange}
+                      onDescriptionBlur={() => setDescriptionError(validateDescription(description))}
+                      onAiEnhance={handleAiEnhance}
+                      onSuggestionClick={handleSuggestionClick}
+                      onFileChange={handleFileChange}
+                      onRemoveFile={removeFile}
+                      onDragOver={handleDragOver}
+                      onDragLeave={handleDragLeave}
+                      onDrop={handleDrop}
+                      onNotesChange={(e) => setNotesDescription(e.target.value)}
+                    />
+                  </TabsContent>
+                  
+                  <TabsContent value="provide-content" className="space-y-6 mt-6">
+                    <ProvideContentTab
+                      contentDescription={contentDescription}
+                      contentDescriptionError={contentDescriptionError}
+                      referenceFiles={referenceFiles}
+                      isUploadingReference={isUploadingReference}
+                      onContentDescriptionChange={handleContentDescriptionChange}
+                      onContentDescriptionBlur={() => setContentDescriptionError(validateContentDescription(contentDescription))}
+                      onReferenceFileChange={handleReferenceFileChange}
+                      onRemoveReferenceFile={removeReferenceFile}
+                    />
+                  </TabsContent>
+                </Tabs>
               </div>
             </div>
             
@@ -459,19 +508,6 @@ export default function PlaceOrderPage() {
                 </div>
               </div>
               
-              <DescriptionInput
-                description={description}
-                descriptionError={descriptionError}
-                isAiEnhancing={isAiEnhancing}
-                dynamicHashtags={dynamicHashtags}
-                businessProfiles={businessProfiles}
-                contextualEmojis={contextualEmojis}
-                onDescriptionChange={handleDescriptionChange}
-                onBlur={() => setDescriptionError(validateDescription(description))}
-                onAiEnhance={handleAiEnhance}
-                onSuggestionClick={handleSuggestionClick}
-              />
-
               <div className="space-y-4 pt-4 border-t border-border">
                 <Label 
                   htmlFor="affiliate-link" 
