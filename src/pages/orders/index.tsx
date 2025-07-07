@@ -338,27 +338,29 @@ const OrdersPage = () => {
                                   {order.status === 'pending_checkout' ? 'Pending' : 'Completed'}
                                 </Badge>
                               </TableCell>
-                              <TableCell className="text-right space-x-2">
-                                <Button 
-                                  variant="destructive" 
-                                  size="sm"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleReject(order);
-                                  }}
-                                >
-                                  Reject
-                                </Button>
-                                <Button 
-                                  variant="default" 
-                                  size="sm"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleCheckout(order);
-                                  }}
-                                >
-                                  Checkout
-                                </Button>
+                              <TableCell className="text-right">
+                                <div className="flex justify-end gap-2">
+                                  <Button 
+                                    variant="destructive" 
+                                    size="sm"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleReject(order);
+                                    }}
+                                  >
+                                    Reject
+                                  </Button>
+                                  <Button 
+                                    variant="default" 
+                                    size="sm"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleCheckout(order);
+                                    }}
+                                  >
+                                    Checkout
+                                  </Button>
+                                </div>
                               </TableCell>
                             </TableRow>
                           ))}
