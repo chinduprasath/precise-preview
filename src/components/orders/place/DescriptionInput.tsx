@@ -5,7 +5,6 @@ import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import SmartSuggestions from './SmartSuggestions';
 
 interface DescriptionInputProps {
   description: string;
@@ -78,14 +77,6 @@ const DescriptionInput: React.FC<DescriptionInputProps> = ({
             <Sparkles className="w-4 h-4" />
           )}
         </Button>
-        
-        <SmartSuggestions
-          dynamicHashtags={dynamicHashtags}
-          businessProfiles={businessProfiles}
-          contextualEmojis={contextualEmojis}
-          description={description}
-          onSuggestionClick={onSuggestionClick}
-        />
       </div>
       
       <div className="mt-1 text-xs text-right text-muted-foreground">
