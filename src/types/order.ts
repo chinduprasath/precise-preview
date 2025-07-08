@@ -1,6 +1,34 @@
 
 export type OrderStatus = 'pending' | 'completed' | 'rejected' | 'new' | 'pending_checkout';
 
+export type OrderContentType = 'upload_files' | 'provided_content' | 'polls' | 'visit_promote';
+
+export interface PollQuestion {
+  id: string;
+  question: string;
+  options: string[];
+}
+
+export interface VisitDetails {
+  preferredDates?: string[];
+  timeSlot?: string;
+  location?: string;
+  offers?: {
+    food?: boolean;
+    travel?: boolean;
+    stay?: boolean;
+    other?: string[];
+  };
+}
+
+export interface OrderContent {
+  type: OrderContentType;
+  files?: { id: string; name: string; type: string; size: string; url?: string }[];
+  description?: string;
+  polls?: PollQuestion[];
+  visitDetails?: VisitDetails;
+}
+
 export interface Order {
   id: string;
   orderNumber: string;
@@ -17,6 +45,7 @@ export interface Order {
   amount?: number;
   createdAt: string;
   updatedAt: string;
+  content?: OrderContent; // Dynamic content based on order type
 }
 
 export interface CouponCode {

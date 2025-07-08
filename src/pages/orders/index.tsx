@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { format, parse, isAfter, isBefore, parseISO } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
-import { Order, OrderStatus } from '@/types/order';
+import { Order, OrderStatus, OrderContentType } from '@/types/order';
 import { orderData } from '@/data/orders';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
@@ -11,14 +11,16 @@ import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Table, TableHeader, TableRow, TableHead, TableBody, TableCell
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Eye, Filter, RefreshCw, Calendar, Clock, FileText, Download } from 'lucide-react';
+import { Eye, Filter, RefreshCw, Calendar, Clock, FileText, Download, Upload, BarChart, MapPin, Edit, X, ShoppingCart } from 'lucide-react';
 import DateTimePicker from '@/components/reach/DateTimePicker';
-import { Card } from '@/components/ui/card';
 import FilterDropdown from '@/components/filters/FilterDropdown';
 
 // Define order types
@@ -43,6 +45,9 @@ const OrdersPage = () => {
   const [activeTab, setActiveTab] = useState<'pending' | 'completed'>('pending');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [isModifyMode, setIsModifyMode] = useState(false);
+  const [modifyPrice, setModifyPrice] = useState('');
+  const [modifyDate, setModifyDate] = useState('');
   
   // Filter states
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
@@ -175,6 +180,94 @@ const OrdersPage = () => {
     }
   };
 
+  // Helper functions for content type display
+  const getContentTypeIcon = (type: OrderContentType) => {
+    switch(type) {
+      case 'upload_files':
+        return <Upload className="w-4 h-4" />;
+      case 'provided_content':
+        return <FileText className="w-4 h-4" />;
+      case 'polls':
+        return <BarChart className="w-4 h-4" />;
+      case 'visit_promote':
+        return <MapPin className="w-4 h-4" />;
+      default:
+        return <FileText className="w-4 h-4" />;
+    }
+  };
+
+  const getContentTypeLabel = (type: OrderContentType) => {
+    switch(type) {
+      case 'upload_files':
+        return 'Uploaded Files';
+      case 'provided_content':
+        return 'Provided Content';
+      case 'polls':
+        return 'Poll Details';
+      case 'visit_promote':
+        return 'Visit & Promote Details';
+      default:
+        return 'Content';
+    }
+  };
+
+  // Generate dummy content for testing
+  const getDummyContent = (order: Order) => {
+    const orderIdNum = parseInt(order.id) || 1;
+    const contentTypes: OrderContentType[] = ['upload_files', 'provided_content', 'polls', 'visit_promote'];
+    const selectedType = contentTypes[orderIdNum % contentTypes.length];
+
+    switch(selectedType) {
+      case 'upload_files':
+        return {
+          type: 'upload_files' as OrderContentType,
+          files: [
+            { id: '1', name: 'brand-logo.jpg', type: 'image/jpeg', size: '2.4 MB', url: '#' },
+            { id: '2', name: 'product-catalog.pdf', type: 'application/pdf', size: '5.1 MB', url: '#' },
+            { id: '3', name: 'content-brief.docx', type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', size: '456 KB', url: '#' }
+          ]
+        };
+      case 'provided_content':
+        return {
+          type: 'provided_content' as OrderContentType,
+          description: 'Create engaging content showcasing our new summer collection. Focus on lifestyle shots with natural lighting. Include call-to-action for our seasonal sale (20% off). Target audience: young professionals aged 25-35. Brand tone: trendy, approachable, and sustainable.'
+        };
+      case 'polls':
+        return {
+          type: 'polls' as OrderContentType,
+          polls: [
+            {
+              id: '1',
+              question: 'What\'s your favorite season for fashion?',
+              options: ['Spring', 'Summer', 'Fall', 'Winter']
+            },
+            {
+              id: '2',
+              question: 'Which style do you prefer?',
+              options: ['Casual', 'Formal', 'Streetwear', 'Bohemian']
+            }
+          ]
+        };
+      case 'visit_promote':
+        return {
+          type: 'visit_promote' as OrderContentType,
+          visitDetails: {
+            preferredDates: ['2024-03-15', '2024-03-16', '2024-03-17'],
+            timeSlot: '10:00 AM - 2:00 PM',
+            location: 'Flagship Store, Mumbai - Bandra West, Plot 123, Linking Road',
+            offers: {
+              food: true,
+              travel: true,
+              stay: false,
+              other: ['Free merchandise worth ₹2000', 'VIP store tour', 'Meet with brand ambassador']
+            }
+          }
+        };
+      default:
+        return undefined;
+    }
+  };
+
   // Mock attached files for demonstration
   const getAttachedFiles = (order: Order) => {
     // In a real app, this would come from the order data
@@ -188,6 +281,29 @@ const OrdersPage = () => {
     // Return a subset based on order ID to simulate variety
     const orderIdNum = parseInt(order.id) || 1;
     return mockFiles.slice(0, (orderIdNum % 3) + 1);
+  };
+
+  const handleModify = () => {
+    setIsModifyMode(true);
+    if (selectedOrder) {
+      setModifyPrice(selectedOrder.amount?.toString() || '');
+      setModifyDate(selectedOrder.scheduledDate || '');
+    }
+  };
+
+  const handleSaveModification = () => {
+    toast({
+      title: "Order Modified",
+      description: "Order details have been updated successfully.",
+    });
+    setIsModifyMode(false);
+    setIsDetailOpen(false);
+  };
+
+  const handleCancelModification = () => {
+    setIsModifyMode(false);
+    setModifyPrice('');
+    setModifyDate('');
   };
 
   const isInfluencer = localStorage.getItem('userType') === 'influencer';
@@ -441,119 +557,320 @@ const OrdersPage = () => {
         </main>
       </div>
       
-      {/* Order Details Modal */}
-      <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
-        <DialogContent className="sm:max-w-lg max-h-[90vh]">
+      {/* Enhanced Order Details Modal */}
+      <Dialog open={isDetailOpen} onOpenChange={(open) => {
+        setIsDetailOpen(open);
+        if (!open) {
+          setIsModifyMode(false);
+          setModifyPrice('');
+          setModifyDate('');
+        }
+      }}>
+        <DialogContent className="sm:max-w-5xl max-h-[95vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Order Details</DialogTitle>
+            <DialogTitle className="text-2xl">Order Details</DialogTitle>
           </DialogHeader>
           
           {selectedOrder && (
-            <ScrollArea className="max-h-[70vh] pr-4">
-              <div className="space-y-6">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Order ID</p>
-                    <p className="font-medium">{selectedOrder.orderNumber}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Status</p>
-                    <Badge variant={getStatusBadgeVariant(selectedOrder.status)} className="mt-1">
-                      {selectedOrder.status === 'pending_checkout' ? 'Pending' : 'Completed'}
-                    </Badge>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Username</p>
-                    <p className="font-medium">{selectedOrder.username}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Amount</p>
-                    <p className="font-medium">₹{selectedOrder.amount || 0}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Order Date</p>
-                    <p className="font-medium">{formatDateTime(selectedOrder.createdAt)}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Order Type</p>
-                    <p className="font-medium">{selectedOrder.orderType || 'Post'}</p>
-                  </div>
-                </div>
-                
-                <div>
-                  <p className="text-sm text-muted-foreground mb-1">Scheduled Information</p>
-                  <div className="bg-muted p-3 rounded-md space-y-1">
-                    <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm">{selectedOrder.scheduledDate || 'Not scheduled'}</span>
+            <div className="space-y-6">
+              {/* Order Information Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Order Information</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="flex justify-between">
+                      <span className="font-medium">Order ID:</span>
+                      <span>{selectedOrder.orderNumber}</span>
                     </div>
-                    {selectedOrder.scheduledTime && (
-                      <div className="flex items-center gap-2">
-                        <Clock className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-sm">{selectedOrder.scheduledTime}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
+                    <div className="flex justify-between">
+                      <span className="font-medium">Status:</span>
+                      <Badge variant={getStatusBadgeVariant(selectedOrder.status)}>
+                        {selectedOrder.status === 'pending_checkout' ? 'Pending' : 'Completed'}
+                      </Badge>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="font-medium">Username:</span>
+                      <span>{selectedOrder.username}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="font-medium">Order Type:</span>
+                      <span className="capitalize">{selectedOrder.orderType || 'Post'}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="font-medium">Order Date:</span>
+                      <span>{formatDateTime(selectedOrder.createdAt)}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="font-medium">Amount:</span>
+                      {isModifyMode ? (
+                        <div className="flex items-center gap-2">
+                          <span>₹</span>
+                          <Input
+                            type="number"
+                            value={modifyPrice}
+                            onChange={(e) => setModifyPrice(e.target.value)}
+                            className="w-20 h-8"
+                            min="0"
+                          />
+                        </div>
+                      ) : (
+                        <span className="font-semibold text-lg">₹{selectedOrder.amount || 0}</span>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
                 
-                <div>
-                  <p className="text-sm text-muted-foreground mb-1">Product/Service</p>
-                  <div className="bg-muted p-3 rounded-md">
-                    <p className="text-sm font-medium">Category: {selectedOrder.category || 'N/A'}</p>
-                    <p className="text-sm mt-1">{selectedOrder.productService || 'N/A'}</p>
-                  </div>
-                </div>
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Schedule & Product</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="font-medium">Scheduled Date:</span>
+                      {isModifyMode ? (
+                        <Input
+                          type="date"
+                          value={modifyDate}
+                          onChange={(e) => setModifyDate(e.target.value)}
+                          className="w-32 h-8"
+                        />
+                      ) : (
+                        <span>{selectedOrder.scheduledDate || 'Not scheduled'}</span>
+                      )}
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="font-medium">Scheduled Time:</span>
+                      <span>{selectedOrder.scheduledTime || 'Not set'}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="font-medium">Category:</span>
+                      <span>{selectedOrder.category || 'N/A'}</span>
+                    </div>
+                    <div>
+                      <span className="font-medium">Product/Service:</span>
+                      <p className="text-sm mt-1 text-muted-foreground">{selectedOrder.productService || 'N/A'}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
 
-                {/* Attached Files Section */}
-                <div>
-                  <p className="text-sm text-muted-foreground mb-2">Attached Files</p>
-                  <div className="bg-muted p-3 rounded-md">
-                    {getAttachedFiles(selectedOrder).length > 0 ? (
-                      <div className="space-y-2">
-                        {getAttachedFiles(selectedOrder).map((file) => (
-                          <div key={file.id} className="flex items-center justify-between p-2 bg-background rounded border">
-                            <div className="flex items-center gap-2">
-                              <FileText className="h-4 w-4 text-blue-500 flex-shrink-0" />
-                              <div>
-                                <p className="text-sm font-medium truncate">{file.name}</p>
-                                <p className="text-xs text-muted-foreground">{file.size}</p>
+              {/* Dynamic Content Type Display */}
+              {(() => {
+                const dummyContent = getDummyContent(selectedOrder);
+                const contentType = dummyContent?.type;
+                
+                if (!dummyContent || !contentType) return null;
+
+                return (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg flex items-center gap-2">
+                        {getContentTypeIcon(contentType)}
+                        {getContentTypeLabel(contentType)}
+                        <Badge variant="outline" className="ml-2 text-xs">
+                          {contentType.replace('_', ' ').toUpperCase()}
+                        </Badge>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      {/* Upload Files Content */}
+                      {contentType === 'upload_files' && dummyContent.files && (
+                        <div className="space-y-3">
+                          <p className="text-sm text-muted-foreground">Uploaded Media & Documents:</p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            {dummyContent.files.map((file) => (
+                              <div key={file.id} className="flex items-center justify-between p-3 bg-muted rounded-lg border">
+                                <div className="flex items-center gap-3">
+                                  {file.type.startsWith('image/') ? (
+                                    <div className="w-10 h-10 bg-blue-100 rounded flex items-center justify-center">
+                                      <Upload className="h-5 w-5 text-blue-600" />
+                                    </div>
+                                  ) : (
+                                    <div className="w-10 h-10 bg-gray-100 rounded flex items-center justify-center">
+                                      <FileText className="h-5 w-5 text-gray-600" />
+                                    </div>
+                                  )}
+                                  <div>
+                                    <p className="font-medium text-sm">{file.name}</p>
+                                    <p className="text-xs text-muted-foreground">{file.size}</p>
+                                  </div>
+                                </div>
+                                <Button variant="ghost" size="sm">
+                                  <Download className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Provided Content */}
+                      {contentType === 'provided_content' && dummyContent.description && (
+                        <div className="space-y-3">
+                          <p className="text-sm text-muted-foreground">Content Brief:</p>
+                          <div className="p-4 bg-muted rounded-lg">
+                            <p className="text-sm leading-relaxed">{dummyContent.description}</p>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Polls Content */}
+                      {contentType === 'polls' && dummyContent.polls && (
+                        <div className="space-y-4">
+                          <p className="text-sm text-muted-foreground">Poll Questions for Twitter:</p>
+                          {dummyContent.polls.map((poll, index) => (
+                            <div key={poll.id} className="p-4 bg-muted rounded-lg space-y-3">
+                              <div className="flex items-center gap-2">
+                                <Badge variant="secondary" className="text-xs">Poll {index + 1}</Badge>
+                                <p className="font-medium">{poll.question}</p>
+                              </div>
+                              <div className="grid grid-cols-2 gap-2">
+                                {poll.options.map((option, optIndex) => (
+                                  <div key={optIndex} className="flex items-center gap-2 p-2 bg-background rounded border">
+                                    <div className="w-2 h-2 bg-primary rounded-full"></div>
+                                    <span className="text-sm">{option}</span>
+                                  </div>
+                                ))}
                               </div>
                             </div>
-                            <Button variant="ghost" size="icon" className="h-8 w-8" title="Download file">
-                              <Download className="h-4 w-4" />
-                            </Button>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Visit & Promote Content */}
+                      {contentType === 'visit_promote' && dummyContent.visitDetails && (
+                        <div className="space-y-4">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {dummyContent.visitDetails.preferredDates && (
+                              <div>
+                                <p className="text-sm font-medium text-muted-foreground mb-2">Preferred Dates:</p>
+                                <div className="space-y-1">
+                                  {dummyContent.visitDetails.preferredDates.map((date, index) => (
+                                    <div key={index} className="flex items-center gap-2 text-sm">
+                                      <Calendar className="h-4 w-4 text-muted-foreground" />
+                                      <span>{format(new Date(date), 'MMM dd, yyyy')}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                            
+                            {dummyContent.visitDetails.timeSlot && (
+                              <div>
+                                <p className="text-sm font-medium text-muted-foreground mb-2">Time Slot:</p>
+                                <div className="flex items-center gap-2 text-sm">
+                                  <Clock className="h-4 w-4 text-muted-foreground" />
+                                  <span>{dummyContent.visitDetails.timeSlot}</span>
+                                </div>
+                              </div>
+                            )}
                           </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="text-sm text-muted-foreground">No files attached to this order.</p>
-                    )}
-                  </div>
-                </div>
-                
-                {selectedOrder.url && (
-                  <div>
-                    <p className="text-sm text-muted-foreground mb-1">Media Links</p>
-                    <div className="bg-muted p-3 rounded-md">
-                      <a href={selectedOrder.url} target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline truncate block">
-                        {selectedOrder.url}
-                      </a>
-                    </div>
-                  </div>
-                )}
-                
-                <div className="flex justify-end gap-3 pt-4">
+
+                          {dummyContent.visitDetails.location && (
+                            <div>
+                              <p className="text-sm font-medium text-muted-foreground mb-2">Location:</p>
+                              <div className="flex items-start gap-2 p-3 bg-background rounded border">
+                                <MapPin className="h-4 w-4 text-muted-foreground mt-0.5" />
+                                <span className="text-sm">{dummyContent.visitDetails.location}</span>
+                              </div>
+                            </div>
+                          )}
+
+                          {dummyContent.visitDetails.offers && (
+                            <div>
+                              <p className="text-sm font-medium text-muted-foreground mb-2">Offers Included:</p>
+                              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-3">
+                                {dummyContent.visitDetails.offers.food && (
+                                  <Badge variant="outline" className="justify-center">🍽️ Food</Badge>
+                                )}
+                                {dummyContent.visitDetails.offers.travel && (
+                                  <Badge variant="outline" className="justify-center">✈️ Travel</Badge>
+                                )}
+                                {dummyContent.visitDetails.offers.stay && (
+                                  <Badge variant="outline" className="justify-center">🏨 Stay</Badge>
+                                )}
+                              </div>
+                              {dummyContent.visitDetails.offers.other && dummyContent.visitDetails.offers.other.length > 0 && (
+                                <div>
+                                  <p className="text-xs text-muted-foreground mb-1">Additional Offers:</p>
+                                  <div className="space-y-1">
+                                    {dummyContent.visitDetails.offers.other.map((offer, index) => (
+                                      <div key={index} className="text-sm p-2 bg-background rounded border">
+                                        • {offer}
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                );
+              })()}
+
+              {/* Action Buttons */}
+              <Card>
+                <CardContent className="pt-6">
                   {selectedOrder.status === 'pending_checkout' ? (
-                    <>
-                      <Button variant="outline" onClick={() => handleReject(selectedOrder)}>Reject</Button>
-                      <Button onClick={() => handleCheckout(selectedOrder)}>Checkout</Button>
-                    </>
+                    <div className="flex justify-end gap-3">
+                      {isModifyMode ? (
+                        <>
+                          <Button variant="outline" onClick={handleCancelModification}>
+                            <X className="w-4 h-4 mr-2" />
+                            Cancel
+                          </Button>
+                          <Button onClick={handleSaveModification}>
+                            <Edit className="w-4 h-4 mr-2" />
+                            Save Changes
+                          </Button>
+                        </>
+                      ) : (
+                        <>
+                          <Button 
+                            variant="destructive" 
+                            onClick={() => {
+                              handleReject(selectedOrder);
+                              setIsDetailOpen(false);
+                            }}
+                          >
+                            <X className="w-4 h-4 mr-2" />
+                            Reject
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            onClick={handleModify}
+                          >
+                            <Edit className="w-4 h-4 mr-2" />
+                            Modify
+                          </Button>
+                          <Button 
+                            onClick={() => {
+                              handleCheckout(selectedOrder);
+                              setIsDetailOpen(false);
+                            }}
+                          >
+                            <ShoppingCart className="w-4 h-4 mr-2" />
+                            Checkout
+                          </Button>
+                        </>
+                      )}
+                    </div>
                   ) : (
-                    <Button onClick={() => handleUpdate(selectedOrder)}>Update Order</Button>
+                    <div className="flex justify-end">
+                      <Button onClick={() => handleUpdate(selectedOrder)}>
+                        <Edit className="w-4 h-4 mr-2" />
+                        Update Order
+                      </Button>
+                    </div>
                   )}
-                </div>
-              </div>
-            </ScrollArea>
+                </CardContent>
+              </Card>
+            </div>
           )}
         </DialogContent>
       </Dialog>
