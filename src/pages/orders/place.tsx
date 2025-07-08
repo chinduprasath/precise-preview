@@ -25,6 +25,7 @@ import OrderSummary from '@/components/orders/place/OrderSummary';
 import UploadFilesTab from '@/components/orders/place/UploadFilesTab';
 import ProvideContentTab from '@/components/orders/place/ProvideContentTab';
 import VisitPromoteTab from '@/components/orders/place/VisitPromoteTab';
+import PollContentTab from '@/components/orders/place/PollContentTab';
 
 const influencerMock = {
   avatar: "https://picsum.photos/id/64/100/100",
@@ -442,6 +443,11 @@ export default function PlaceOrderPage() {
               {/* Conditional Content Section */}
               {selectedContent === "Visit & Promote" ? (
                 <VisitPromoteTab
+                  onSendRequest={handleSendRequest}
+                  isSubmitting={isSubmitting}
+                />
+              ) : selectedContent === "Polls" ? (
+                <PollContentTab
                   onSendRequest={handleSendRequest}
                   isSubmitting={isSubmitting}
                 />
