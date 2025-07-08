@@ -22,6 +22,7 @@ import CouponSection from '@/components/orders/place/CouponSection';
 import OrderSummary from '@/components/orders/place/OrderSummary';
 import UploadFilesTab from '@/components/orders/place/UploadFilesTab';
 import ProvideContentTab from '@/components/orders/place/ProvideContentTab';
+import VisitPromoteTab from '@/components/orders/place/VisitPromoteTab';
 
 const influencerMock = {
   avatar: "https://picsum.photos/id/64/100/100",
@@ -436,57 +437,64 @@ export default function PlaceOrderPage() {
                 isCustomPackage={selectedOrderType === "Custom Package"}
               />
               
-              {/* Tabs Section with heading */}
-              <div className="space-y-6">
-                <Label className="text-base font-semibold flex items-center gap-2">
-                  <FileText className="w-5 h-5 text-primary/80" />
-                  How would you like to provide the content?
-                </Label>
-                
-                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                  <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="upload-files">Upload Files</TabsTrigger>
-                    <TabsTrigger value="provide-content">Provide Content</TabsTrigger>
-                  </TabsList>
+              {/* Conditional Content Section */}
+              {selectedContent === "Visit & Promote" ? (
+                <VisitPromoteTab
+                  onSendRequest={handleSendRequest}
+                  isSubmitting={isSubmitting}
+                />
+              ) : (
+                <div className="space-y-6">
+                  <Label className="text-base font-semibold flex items-center gap-2">
+                    <FileText className="w-5 h-5 text-primary/80" />
+                    How would you like to provide the content?
+                  </Label>
                   
-                  <TabsContent value="upload-files" className="space-y-6 mt-6">
-                    <UploadFilesTab
-                      description={description}
-                      descriptionError={descriptionError}
-                      isAiEnhancing={isAiEnhancing}
-                      dynamicHashtags={dynamicHashtags}
-                      businessProfiles={businessProfiles}
-                      contextualEmojis={contextualEmojis}
-                      files={files}
-                      isUploading={isUploading}
-                      notesDescription={notesDescription}
-                      onDescriptionChange={handleDescriptionChange}
-                      onDescriptionBlur={() => setDescriptionError(validateDescription(description))}
-                      onAiEnhance={handleAiEnhance}
-                      onSuggestionClick={handleSuggestionClick}
-                      onFileChange={handleFileChange}
-                      onRemoveFile={removeFile}
-                      onDragOver={handleDragOver}
-                      onDragLeave={handleDragLeave}
-                      onDrop={handleDrop}
-                      onNotesChange={(e) => setNotesDescription(e.target.value)}
-                    />
-                  </TabsContent>
-                  
-                  <TabsContent value="provide-content" className="space-y-6 mt-6">
-                    <ProvideContentTab
-                      contentDescription={contentDescription}
-                      contentDescriptionError={contentDescriptionError}
-                      referenceFiles={referenceFiles}
-                      isUploadingReference={isUploadingReference}
-                      onContentDescriptionChange={handleContentDescriptionChange}
-                      onContentDescriptionBlur={() => setContentDescriptionError(validateContentDescription(contentDescription))}
-                      onReferenceFileChange={handleReferenceFileChange}
-                      onRemoveReferenceFile={removeReferenceFile}
-                    />
-                  </TabsContent>
-                </Tabs>
-              </div>
+                  <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                    <TabsList className="grid w-full grid-cols-2">
+                      <TabsTrigger value="upload-files">Upload Files</TabsTrigger>
+                      <TabsTrigger value="provide-content">Provide Content</TabsTrigger>
+                    </TabsList>
+                    
+                    <TabsContent value="upload-files" className="space-y-6 mt-6">
+                      <UploadFilesTab
+                        description={description}
+                        descriptionError={descriptionError}
+                        isAiEnhancing={isAiEnhancing}
+                        dynamicHashtags={dynamicHashtags}
+                        businessProfiles={businessProfiles}
+                        contextualEmojis={contextualEmojis}
+                        files={files}
+                        isUploading={isUploading}
+                        notesDescription={notesDescription}
+                        onDescriptionChange={handleDescriptionChange}
+                        onDescriptionBlur={() => setDescriptionError(validateDescription(description))}
+                        onAiEnhance={handleAiEnhance}
+                        onSuggestionClick={handleSuggestionClick}
+                        onFileChange={handleFileChange}
+                        onRemoveFile={removeFile}
+                        onDragOver={handleDragOver}
+                        onDragLeave={handleDragLeave}
+                        onDrop={handleDrop}
+                        onNotesChange={(e) => setNotesDescription(e.target.value)}
+                      />
+                    </TabsContent>
+                    
+                    <TabsContent value="provide-content" className="space-y-6 mt-6">
+                      <ProvideContentTab
+                        contentDescription={contentDescription}
+                        contentDescriptionError={contentDescriptionError}
+                        referenceFiles={referenceFiles}
+                        isUploadingReference={isUploadingReference}
+                        onContentDescriptionChange={handleContentDescriptionChange}
+                        onContentDescriptionBlur={() => setContentDescriptionError(validateContentDescription(contentDescription))}
+                        onReferenceFileChange={handleReferenceFileChange}
+                        onRemoveReferenceFile={removeReferenceFile}
+                      />
+                    </TabsContent>
+                  </Tabs>
+                </div>
+              )}
             </div>
             
             {/* Column 2 - Right side */}
@@ -539,22 +547,24 @@ export default function PlaceOrderPage() {
                 onRemoveCoupon={removeCoupon}
               />
               
-              <OrderSummary
-                selectedOrderType={selectedOrderType}
-                selectedContent={selectedContent}
-                selectedSinglePlatform={selectedSinglePlatform}
-                contentSubmissionMethod="upload"
-                packagePrice={packagePrice}
-                platformFee={platformFee}
-                couponDiscount={couponDiscount}
-                appliedCoupon={appliedCoupon}
-                total={total}
-                isSubmitting={isSubmitting}
-                socialPlatforms={socialPlatforms}
-                onPlatformChange={setSelectedSinglePlatform}
-                onSendRequest={handleSendRequest}
-                isCustomPackage={selectedOrderType === "Custom Package"}
-              />
+              {selectedContent !== "Visit & Promote" && (
+                <OrderSummary
+                  selectedOrderType={selectedOrderType}
+                  selectedContent={selectedContent}
+                  selectedSinglePlatform={selectedSinglePlatform}
+                  contentSubmissionMethod="upload"
+                  packagePrice={packagePrice}
+                  platformFee={platformFee}
+                  couponDiscount={couponDiscount}
+                  appliedCoupon={appliedCoupon}
+                  total={total}
+                  isSubmitting={isSubmitting}
+                  socialPlatforms={socialPlatforms}
+                  onPlatformChange={setSelectedSinglePlatform}
+                  onSendRequest={handleSendRequest}
+                  isCustomPackage={selectedOrderType === "Custom Package"}
+                />
+              )}
             </div>
           </div>
         </div>
