@@ -1,5 +1,7 @@
+
+
 import React, { useState, useMemo, useCallback, useRef } from "react";
-import { Instagram, Facebook, Youtube, Twitter, Clock, ArrowLeft, FileText, Loader2, Plus, X } from "lucide-react";
+import { Instagram, Facebook, Youtube, Twitter, Clock, ArrowLeft, FileText, Loader2 } from "lucide-react";
 import Layout from '@/components/layout/Layout';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,7 +13,6 @@ import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
 
 // Import new components
 import InfluencerProfileCard from '@/components/orders/place/InfluencerProfileCard';
@@ -123,8 +124,7 @@ export default function PlaceOrderPage() {
   const orderDetails = location.state || {};
   const { influencerName = "Gary Vaynerchuk", selectedItems = [], isVisitPromote = false } = orderDetails;
   
-  const [affiliateLinks, setAffiliateLinks] = useState<string[]>([]);
-  const [currentAffiliateLink, setCurrentAffiliateLink] = useState("");
+  const [affiliateLink, setAffiliateLink] = useState("");
   const [affiliateLinkError, setAffiliateLinkError] = useState("");
   const [description, setDescription] = useState("");
   const [descriptionError, setDescriptionError] = useState("");
@@ -140,11 +140,10 @@ export default function PlaceOrderPage() {
   const [contentDescription, setContentDescription] = useState("");
   const [contentDescriptionError, setContentDescriptionError] = useState("");
 
-  // Updated states for multi-select platforms
+  // New states for dropdowns
   const [selectedOrderType, setSelectedOrderType] = useState<string>("Platform Based");
   const [selectedContent, setSelectedContent] = useState<string>("Post Image/Video");
   const [selectedSinglePlatform, setSelectedSinglePlatform] = useState<string>("instagram");
-  const [selectedMultiplePlatforms, setSelectedMultiplePlatforms] = useState<string[]>(["instagram"]);
   const [isAiEnhancing, setIsAiEnhancing] = useState(false);
 
   const dropAreaRef = useRef<HTMLDivElement>(null);
@@ -205,54 +204,10 @@ export default function PlaceOrderPage() {
     setSelectedContent(newContentOptions[0]);
   };
 
-  const handleAffiliateLink = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAffiliateLinkChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const link = e.target.value;
-    setCurrentAffiliateLink(link);
+    setAffiliateLink(link);
     setAffiliateLinkError(validateAffiliateLink(link));
-  };
-
-  const addAffiliateLink = () => {
-    if (!currentAffiliateLink.trim()) {
-      toast({
-        title: "Error",
-        description: "Please enter a valid affiliate link",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    const linkError = validateAffiliateLink(currentAffiliateLink);
-    if (linkError) {
-      setAffiliateLinkError(linkError);
-      return;
-    }
-
-    if (affiliateLinks.length >= 3) {
-      toast({
-        title: "Maximum Links Reached",
-        description: "You can only add up to 3 affiliate links",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    setAffiliateLinks([...affiliateLinks, currentAffiliateLink]);
-    setCurrentAffiliateLink("");
-    setAffiliateLinkError("");
-  };
-
-  const removeAffiliateLink = (index: number) => {
-    setAffiliateLinks(affiliateLinks.filter((_, i) => i !== index));
-  };
-
-  const handlePlatformToggle = (platformId: string) => {
-    setSelectedMultiplePlatforms(prev => {
-      if (prev.includes(platformId)) {
-        return prev.filter(id => id !== platformId);
-      } else {
-        return [...prev, platformId];
-      }
-    });
   };
 
   const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -390,13 +345,15 @@ export default function PlaceOrderPage() {
   const handleSendRequest = (e: React.FormEvent) => {
     e.preventDefault();
     
+    const linkError = validateAffiliateLink(affiliateLink);
     const messageError = validateDescription(description);
     const descError = validateContentDescription(contentDescription);
     
+    setAffiliateLinkError(linkError);
     setDescriptionError(messageError);
     setContentDescriptionError(descError);
     
-    if (messageError || descError) {
+    if (linkError || messageError || descError) {
       toast({
         title: "Form Error",
         description: "Please fix the errors in the form",
@@ -434,8 +391,8 @@ export default function PlaceOrderPage() {
       console.log({
         orderType: selectedOrderType,
         content: selectedContent,
-        platforms: selectedContent === "Visit & Promote" ? selectedMultiplePlatforms : [selectedSinglePlatform],
-        affiliateLinks,
+        platform: selectedSinglePlatform,
+        affiliateLink,
         description,
         selectedDateTime: selectedDateTime ? format(selectedDateTime, "PPP p") : undefined,
         files: files.map((f) => f.name),
@@ -445,8 +402,6 @@ export default function PlaceOrderPage() {
       });
     }, 1500);
   };
-
-  const isVisitPromote = selectedContent === "Visit & Promote";
 
   return (
     <Layout>
@@ -476,15 +431,12 @@ export default function PlaceOrderPage() {
                 selectedOrderType={selectedOrderType}
                 selectedContent={selectedContent}
                 selectedSinglePlatform={selectedSinglePlatform}
-                selectedMultiplePlatforms={selectedMultiplePlatforms}
                 onOrderTypeChange={handleOrderTypeChange}
                 onContentChange={setSelectedContent}
                 onPlatformChange={setSelectedSinglePlatform}
-                onMultiplePlatformsChange={setSelectedMultiplePlatforms}
                 contentTypesByOrder={contentTypesByOrder}
                 socialPlatforms={socialPlatforms}
                 isCustomPackage={selectedOrderType === "Custom Package"}
-                isVisitPromote={isVisitPromote}
               />
               
               {/* Conditional Content Section */}
@@ -568,62 +520,28 @@ export default function PlaceOrderPage() {
                     </div>
                   </div>
 
-                  {/* Affiliate Links section for Visit & Promote */}
+                  {/* Affiliate Link section for Visit & Promote */}
                   <div className="space-y-4 pt-4 border-t border-border">
-                    <Label className="text-sm mb-1.5 block">
-                      Affiliate Links (Optional)
+                    <Label 
+                      htmlFor="affiliate-link" 
+                      className={cn(
+                        "text-sm mb-1.5 block",
+                        affiliateLinkError && "text-destructive"
+                      )}
+                    >
+                      Affiliate Link (Optional) {affiliateLinkError && `(${affiliateLinkError})`}
                     </Label>
-                    
-                    <div className="flex gap-2">
-                      <Input
-                        placeholder="https://example.com/your-affiliate-link"
-                        className={cn(
-                          "transition-all focus-visible:ring-primary",
-                          affiliateLinkError && "border-destructive focus-visible:ring-destructive"
-                        )}
-                        value={currentAffiliateLink}
-                        onChange={handleAffiliateLink}
-                        disabled={affiliateLinks.length >= 3}
-                      />
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        onClick={addAffiliateLink}
-                        disabled={!currentAffiliateLink.trim() || affiliateLinks.length >= 3}
-                        className="shrink-0"
-                      >
-                        <Plus className="w-4 h-4" />
-                      </Button>
-                    </div>
-                    
-                    {affiliateLinkError && (
-                      <p className="text-sm text-destructive">{affiliateLinkError}</p>
-                    )}
-                    
-                    {affiliateLinks.length >= 3 && (
-                      <p className="text-sm text-amber-600">Maximum 3 links allowed</p>
-                    )}
-                    
-                    {/* Display added affiliate links */}
-                    {affiliateLinks.length > 0 && (
-                      <div className="space-y-2">
-                        {affiliateLinks.map((link, index) => (
-                          <div key={index} className="flex items-center gap-2 p-2 bg-gray-50 rounded-md">
-                            <span className="text-sm flex-1 truncate">{link}</span>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => removeAffiliateLink(index)}
-                              className="h-6 w-6 shrink-0"
-                            >
-                              <X className="w-3 h-3" />
-                            </Button>
-                          </div>
-                        ))}
-                      </div>
-                    )}
+                    <Input
+                      id="affiliate-link"
+                      placeholder="https://example.com/your-affiliate-link"
+                      className={cn(
+                        "transition-all focus-visible:ring-primary",
+                        affiliateLinkError && "border-destructive focus-visible:ring-destructive"
+                      )}
+                      value={affiliateLink}
+                      onChange={handleAffiliateLinkChange}
+                      onBlur={() => setAffiliateLinkError(validateAffiliateLink(affiliateLink))}
+                    />
                   </div>
 
                   {/* Coupon Section for Visit & Promote */}
@@ -652,19 +570,11 @@ export default function PlaceOrderPage() {
                         </div>
                         <div className="flex justify-between items-center">
                           <span>Platform:</span>
-                          <div className="flex items-center gap-1 flex-wrap">
-                            {selectedMultiplePlatforms.map((platformId, index) => {
-                              const platform = socialPlatforms.find(p => p.id === platformId);
-                              return (
-                                <div key={platformId} className="flex items-center gap-1">
-                                  {platform?.icon}
-                                  <span className="font-medium text-foreground text-xs">
-                                    {platform?.name}
-                                  </span>
-                                  {index < selectedMultiplePlatforms.length - 1 && <span className="text-muted-foreground">,</span>}
-                                </div>
-                              );
-                            })}
+                          <div className="flex items-center gap-2">
+                            {socialPlatforms.find(p => p.id === selectedSinglePlatform)?.icon}
+                            <span className="font-medium text-foreground">
+                              {socialPlatforms.find(p => p.id === selectedSinglePlatform)?.name}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -750,9 +660,9 @@ export default function PlaceOrderPage() {
                         "transition-all focus-visible:ring-primary",
                         affiliateLinkError && "border-destructive focus-visible:ring-destructive"
                       )}
-                      value={currentAffiliateLink}
-                      onChange={handleAffiliateLink}
-                      onBlur={() => setAffiliateLinkError(validateAffiliateLink(currentAffiliateLink))}
+                      value={affiliateLink}
+                      onChange={handleAffiliateLinkChange}
+                      onBlur={() => setAffiliateLinkError(validateAffiliateLink(affiliateLink))}
                     />
                   </div>
                   
@@ -768,7 +678,6 @@ export default function PlaceOrderPage() {
                     selectedOrderType={selectedOrderType}
                     selectedContent={selectedContent}
                     selectedSinglePlatform={selectedSinglePlatform}
-                    selectedMultiplePlatforms={selectedMultiplePlatforms}
                     contentSubmissionMethod="upload"
                     packagePrice={packagePrice}
                     platformFee={platformFee}
@@ -780,7 +689,6 @@ export default function PlaceOrderPage() {
                     onPlatformChange={setSelectedSinglePlatform}
                     onSendRequest={handleSendRequest}
                     isCustomPackage={selectedOrderType === "Custom Package"}
-                    isVisitPromote={isVisitPromote}
                   />
                 </>
               )}
@@ -821,3 +729,4 @@ export default function PlaceOrderPage() {
     </Layout>
   );
 }
+

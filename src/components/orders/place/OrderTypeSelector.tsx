@@ -1,19 +1,17 @@
 
 import React from 'react';
+import { Check } from 'lucide-react';
+import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
-import { cn } from "@/lib/utils";
 
 interface OrderTypeSelectorProps {
   selectedOrderType: string;
   selectedContent: string;
   selectedSinglePlatform: string;
-  selectedMultiplePlatforms: string[];
   onOrderTypeChange: (orderType: string) => void;
   onContentChange: (content: string) => void;
   onPlatformChange: (platform: string) => void;
-  onMultiplePlatformsChange: (platforms: string[]) => void;
   contentTypesByOrder: Record<string, string[]>;
   socialPlatforms: Array<{
     id: string;
@@ -21,117 +19,81 @@ interface OrderTypeSelectorProps {
     icon: React.ReactNode;
     color: string;
   }>;
-  isCustomPackage: boolean;
-  isVisitPromote: boolean;
+  isCustomPackage?: boolean;
 }
 
 const OrderTypeSelector: React.FC<OrderTypeSelectorProps> = ({
   selectedOrderType,
   selectedContent,
   selectedSinglePlatform,
-  selectedMultiplePlatforms,
   onOrderTypeChange,
   onContentChange,
   onPlatformChange,
-  onMultiplePlatformsChange,
   contentTypesByOrder,
   socialPlatforms,
-  isCustomPackage,
-  isVisitPromote,
+  isCustomPackage = false,
 }) => {
-  const handlePlatformToggle = (platformId: string) => {
-    const updatedPlatforms = selectedMultiplePlatforms.includes(platformId)
-      ? selectedMultiplePlatforms.filter(id => id !== platformId)
-      : [...selectedMultiplePlatforms, platformId];
-    
-    onMultiplePlatformsChange(updatedPlatforms);
-  };
-
   return (
-    <div className="space-y-6">
-      {/* Order Type Selection */}
-      <div className="space-y-4">
-        <Label className="text-base font-semibold">Order Type</Label>
-        <Select value={selectedOrderType} onValueChange={onOrderTypeChange}>
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Select order type" />
-          </SelectTrigger>
-          <SelectContent>
-            {Object.keys(contentTypesByOrder).map((orderType) => (
-              <SelectItem key={orderType} value={orderType}>
-                {orderType}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      {/* Content Selection */}
-      <div className="space-y-4">
-        <Label className="text-base font-semibold">Content Type</Label>
-        <Select value={selectedContent} onValueChange={onContentChange}>
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Select content type" />
-          </SelectTrigger>
-          <SelectContent>
-            {contentTypesByOrder[selectedOrderType as keyof typeof contentTypesByOrder]?.map((content) => (
-              <SelectItem key={content} value={content}>
-                {content}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      {/* Platform Selection */}
-      <div className="space-y-4">
-        <Label className="text-base font-semibold">
-          {isVisitPromote ? "Platforms (Multi-select)" : "Platform"}
-        </Label>
-        
-        {isVisitPromote ? (
-          /* Multi-select for Visit & Promote */
-          <div className="space-y-3">
-            {socialPlatforms.map((platform) => (
-              <div key={platform.id} className="flex items-center space-x-3">
-                <Checkbox
-                  id={platform.id}
-                  checked={selectedMultiplePlatforms.includes(platform.id)}
-                  onCheckedChange={() => handlePlatformToggle(platform.id)}
-                />
-                <label
-                  htmlFor={platform.id}
-                  className="flex items-center gap-2 cursor-pointer"
-                >
-                  <span className={platform.color}>{platform.icon}</span>
-                  <span className="font-medium">{platform.name}</span>
-                </label>
-              </div>
-            ))}
+    <div className="space-y-4">
+      <Label className="text-base font-semibold flex items-center gap-2">
+        <Check className="w-5 h-5 text-primary/80" />
+        Selected Order
+      </Label>
+      <Card className="p-4 border border-border">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="space-y-2">
+            <Label className="text-sm font-medium">Order Type</Label>
+            <Select value={selectedOrderType} onValueChange={onOrderTypeChange}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Platform Based">Platform Based</SelectItem>
+                <SelectItem value="Custom Package">Custom Package</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-        ) : (
-          /* Single select for other content types */
-          <Select 
-            value={selectedSinglePlatform} 
-            onValueChange={onPlatformChange}
-            disabled={isCustomPackage}
-          >
-            <SelectTrigger className={cn("w-full", isCustomPackage && "opacity-50 cursor-not-allowed")}>
-              <SelectValue placeholder="Select platform" />
-            </SelectTrigger>
-            <SelectContent>
-              {socialPlatforms.map((platform) => (
-                <SelectItem key={platform.id} value={platform.id}>
-                  <div className="flex items-center gap-2">
-                    <span className={platform.color}>{platform.icon}</span>
-                    {platform.name}
-                  </div>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        )}
-      </div>
+          
+          <div className="space-y-2">
+            <Label className="text-sm font-medium">Content</Label>
+            <Select value={selectedContent} onValueChange={onContentChange}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {contentTypesByOrder[selectedOrderType].map((content) => (
+                  <SelectItem key={content} value={content}>{content}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div className="space-y-2">
+            <Label className="text-sm font-medium">Platform</Label>
+            <Select 
+              value={selectedSinglePlatform} 
+              onValueChange={onPlatformChange}
+              disabled={isCustomPackage}
+            >
+              <SelectTrigger 
+                className={`w-32 h-8 text-xs ${isCustomPackage ? 'opacity-50 cursor-not-allowed' : ''}`}
+              >
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {socialPlatforms.map((platform) => (
+                  <SelectItem key={platform.id} value={platform.id}>
+                    <div className="flex items-center gap-2">
+                      <span className={platform.color}>{platform.icon}</span>
+                      {platform.name}
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      </Card>
     </div>
   );
 };

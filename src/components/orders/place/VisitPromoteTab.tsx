@@ -27,7 +27,6 @@ const VisitPromoteTab: React.FC<VisitPromoteTabProps> = ({
     timeSlot: 'Flexible',
     venueName: '',
     fullAddress: '',
-    googleMapsLink: '',
     landmarkInfo: '',
     travelReimbursement: false,
     travelAmount: '',
@@ -176,16 +175,6 @@ const VisitPromoteTab: React.FC<VisitPromoteTabProps> = ({
                 className="min-h-[80px]"
                 value={formData.fullAddress}
                 onChange={(e) => handleInputChange('fullAddress', e.target.value)}
-              />
-            </div>
-            <div>
-              <Label htmlFor="google-maps-link" className="text-sm mb-2 block">Google Maps Link</Label>
-              <Input
-                id="google-maps-link"
-                type="url"
-                placeholder="https://maps.google.com/..."
-                value={formData.googleMapsLink}
-                onChange={(e) => handleInputChange('googleMapsLink', e.target.value)}
               />
             </div>
             <div>
