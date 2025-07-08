@@ -10,6 +10,7 @@ interface OrderSummaryProps {
   selectedOrderType: string;
   selectedContent: string;
   selectedSinglePlatform: string;
+  selectedMultiplePlatforms?: string[];
   contentSubmissionMethod: 'upload' | 'describe';
   packagePrice: number;
   platformFee: number;
@@ -26,12 +27,14 @@ interface OrderSummaryProps {
   onPlatformChange: (platform: string) => void;
   onSendRequest: (e: React.FormEvent) => void;
   isCustomPackage?: boolean;
+  isVisitPromote?: boolean;
 }
 
 const OrderSummary: React.FC<OrderSummaryProps> = ({
   selectedOrderType,
   selectedContent,
   selectedSinglePlatform,
+  selectedMultiplePlatforms = [],
   contentSubmissionMethod,
   packagePrice,
   platformFee,
@@ -43,6 +46,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
   onPlatformChange,
   onSendRequest,
   isCustomPackage = false,
+  isVisitPromote = false,
 }) => {
   return (
     <Card className="mt-auto">
@@ -64,27 +68,44 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
               </div>
               <div className="flex justify-between items-center">
                 <span>Platform:</span>
-                <Select 
-                  value={selectedSinglePlatform} 
-                  onValueChange={onPlatformChange}
-                  disabled={isCustomPackage}
-                >
-                  <SelectTrigger 
-                    className={`w-32 h-8 text-xs ${isCustomPackage ? 'opacity-50 cursor-not-allowed' : ''}`}
-                  >
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {socialPlatforms.map((platform) => (
-                      <SelectItem key={platform.id} value={platform.id}>
-                        <div className="flex items-center gap-2">
-                          <span className={platform.color}>{platform.icon}</span>
-                          {platform.name}
+                {isVisitPromote ? (
+                  <div className="flex items-center gap-1 flex-wrap">
+                    {selectedMultiplePlatforms.map((platformId, index) => {
+                      const platform = socialPlatforms.find(p => p.id === platformId);
+                      return (
+                        <div key={platformId} className="flex items-center gap-1">
+                          <span className={platform?.color}>{platform?.icon}</span>
+                          <span className="font-medium text-foreground text-xs">
+                            {platform?.name}
+                          </span>
+                          {index < selectedMultiplePlatforms.length - 1 && <span className="text-muted-foreground">,</span>}
                         </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <Select 
+                    value={selectedSinglePlatform} 
+                    onValueChange={onPlatformChange}
+                    disabled={isCustomPackage}
+                  >
+                    <SelectTrigger 
+                      className={`w-32 h-8 text-xs ${isCustomPackage ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    >
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {socialPlatforms.map((platform) => (
+                        <SelectItem key={platform.id} value={platform.id}>
+                          <div className="flex items-center gap-2">
+                            <span className={platform.color}>{platform.icon}</span>
+                            {platform.name}
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
               </div>
             </div>
           </div>
