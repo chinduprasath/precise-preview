@@ -46,7 +46,7 @@ const ServiceRequests: React.FC<ServiceRequestsProps> = ({ requests, onPayReques
                     <div>
                       <h4 className="font-medium text-foreground">{request.influencerName}</h4>
                       <p className="text-sm text-muted-foreground">
-                        {request.serviceType.charAt(0).toUpperCase() + request.serviceType.slice(1)} on {request.platform.charAt(0).toUpperCase() + request.platform.slice(1)}
+                         {request.serviceType.charAt(0).toUpperCase() + request.serviceType.slice(1)} on {Array.isArray(request.platform) ? request.platform.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(', ') : request.platform.charAt(0).toUpperCase() + request.platform.slice(1)}
                       </p>
                     </div>
                     <div>
@@ -83,7 +83,7 @@ const ServiceRequests: React.FC<ServiceRequestsProps> = ({ requests, onPayReques
                     <div>
                       <h4 className="font-medium text-foreground">{request.influencerName}</h4>
                       <p className="text-sm text-muted-foreground">
-                        {request.serviceType.charAt(0).toUpperCase() + request.serviceType.slice(1)} on {request.platform.charAt(0).toUpperCase() + request.platform.slice(1)}
+                        {request.serviceType.charAt(0).toUpperCase() + request.serviceType.slice(1)} on {Array.isArray(request.platform) ? request.platform.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(', ') : request.platform.charAt(0).toUpperCase() + request.platform.slice(1)}
                       </p>
                     </div>
                     <div>

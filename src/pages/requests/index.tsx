@@ -3,11 +3,14 @@ import React, { useState, useEffect } from 'react';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { 
   Table, TableBody, TableCell, TableHead, 
   TableHeader, TableRow 
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
 import { 
   Dialog, DialogContent, DialogHeader, 
   DialogTitle, DialogDescription 
@@ -16,10 +19,10 @@ import {
   Tabs, TabsList, TabsTrigger, TabsContent 
 } from '@/components/ui/tabs';
 import DateTimePicker from '@/components/reach/DateTimePicker';
-import { InfluencerRequest, RequestStatus, ServiceType } from '@/types/request';
+import { InfluencerRequest, RequestStatus, ServiceType, ContentType } from '@/types/request';
 import { useToast } from '@/components/ui/use-toast';
 import { useNavigate } from 'react-router-dom';
-import { Check, X, ChevronDown, Filter } from 'lucide-react';
+import { Check, X, ChevronDown, Filter, FileText, Upload, BarChart, MapPin, Edit } from 'lucide-react';
 import FilterDropdown from '@/components/filters/FilterDropdown';
 import { format } from 'date-fns';
 
@@ -30,6 +33,7 @@ const RequestsPage = () => {
   const [selectedRequest, setSelectedRequest] = useState<InfluencerRequest | null>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('pending');
+  const [customPrice, setCustomPrice] = useState<string>('');
   
   // Filters
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
@@ -72,7 +76,11 @@ const RequestsPage = () => {
         status: 'pending',
         dateRequested: '2023-03-01T06:25:23.000Z',
         createdAt: '2023-03-01T06:25:23.000Z',
-        updatedAt: '2023-03-01T06:25:23.000Z'
+        updatedAt: '2023-03-01T06:25:23.000Z',
+        content: {
+          type: 'upload_files',
+          files: ['fashion-brief.pdf', 'brand-guidelines.jpg']
+        }
       },
       {
         id: '2',
@@ -87,7 +95,11 @@ const RequestsPage = () => {
         status: 'pending',
         dateRequested: '2023-03-02T10:15:00.000Z',
         createdAt: '2023-03-02T10:15:00.000Z',
-        updatedAt: '2023-03-02T10:15:00.000Z'
+        updatedAt: '2023-03-02T10:15:00.000Z',
+        content: {
+          type: 'provided_content',
+          description: 'Create engaging reels showcasing our new product line with lifestyle shots and product features.'
+        }
       },
       {
         id: '3',
@@ -96,13 +108,28 @@ const RequestsPage = () => {
         influencerId: 'i1',
         influencerName: 'Alex',
         serviceType: 'story',
-        platform: 'instagram',
+        platform: 'twitter',
         description: 'Tech Product Review',
         price: 600,
         status: 'pending',
         dateRequested: '2023-03-03T12:30:00.000Z',
         createdAt: '2023-03-03T12:30:00.000Z',
-        updatedAt: '2023-03-03T12:30:00.000Z'
+        updatedAt: '2023-03-03T12:30:00.000Z',
+        content: {
+          type: 'polls',
+          polls: [
+            {
+              id: '1',
+              question: 'Which tech feature do you value most?',
+              options: ['Battery Life', 'Camera Quality', 'Performance', 'Design']
+            },
+            {
+              id: '2',
+              question: "What's your budget range for smartphones?",
+              options: ['Under $300', '$300-600', '$600-1000', 'Above $1000']
+            }
+          ]
+        }
       },
       {
         id: '4',
@@ -111,13 +138,25 @@ const RequestsPage = () => {
         influencerId: 'i1',
         influencerName: 'Alex',
         serviceType: 'video',
-        platform: 'youtube',
-        description: 'New Smartphone Unboxing',
+        platform: ['instagram', 'youtube'],
+        description: 'Visit our flagship store and create content showcasing the experience',
         price: 1200,
         status: 'approved',
         dateRequested: '2023-03-04T14:45:00.000Z',
         createdAt: '2023-03-04T14:45:00.000Z',
-        updatedAt: '2023-03-04T14:45:00.000Z'
+        updatedAt: '2023-03-04T14:45:00.000Z',
+        content: {
+          type: 'visit_promote',
+          visitPromote: {
+            venueName: 'TechHub Flagship Store',
+            fullAddress: '123 Innovation Street, Tech District, Mumbai 400001',
+            googleMapsLink: 'https://maps.google.com/tech-hub-store',
+            affiliateLinks: [
+              'https://techhub.com/ref/influencer123',
+              'https://deals.techhub.com/special-offer'
+            ]
+          }
+        }
       },
       {
         id: '5',
@@ -303,6 +342,83 @@ const RequestsPage = () => {
         return <Badge variant="outline" className="bg-purple-100 text-purple-800">Completed</Badge>;
       default:
         return <Badge variant="outline">Unknown</Badge>;
+    }
+  };
+
+  const formatPlatforms = (platform: string | string[]) => {
+    if (Array.isArray(platform)) {
+      return platform.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(', ');
+    }
+    return platform.charAt(0).toUpperCase() + platform.slice(1);
+  };
+
+  const getContentTypeIcon = (type: ContentType) => {
+    switch(type) {
+      case 'upload_files':
+        return <Upload className="w-4 h-4" />;
+      case 'provided_content':
+        return <FileText className="w-4 h-4" />;
+      case 'polls':
+        return <BarChart className="w-4 h-4" />;
+      case 'visit_promote':
+        return <MapPin className="w-4 h-4" />;
+      default:
+        return <FileText className="w-4 h-4" />;
+    }
+  };
+
+  const getContentTypeLabel = (type: ContentType) => {
+    switch(type) {
+      case 'upload_files':
+        return 'Upload Files';
+      case 'provided_content':
+        return 'Provided Content';
+      case 'polls':
+        return 'Polls';
+      case 'visit_promote':
+        return 'Visit & Promote';
+      default:
+        return 'Unknown';
+    }
+  };
+
+  const handleModifyRequest = () => {
+    toast({
+      title: "Modification Request Sent",
+      description: "Your modification request has been sent to the business.",
+    });
+    setIsDetailsOpen(false);
+  };
+
+  const handleAcceptWithCustomPrice = () => {
+    if (!customPrice || parseInt(customPrice) <= 0) {
+      toast({
+        title: "Invalid Price",
+        description: "Please enter a valid price.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (selectedRequest) {
+      const updatedRequests = requests.map(request => 
+        request.id === selectedRequest.id 
+          ? { 
+              ...request, 
+              status: 'approved' as RequestStatus, 
+              price: parseInt(customPrice),
+              updatedAt: new Date().toISOString() 
+            } 
+          : request
+      );
+      
+      setRequests(updatedRequests);
+      toast({
+        title: "Request Accepted",
+        description: `Request accepted with custom price ₹${customPrice}.`,
+      });
+      setIsDetailsOpen(false);
+      setCustomPrice('');
     }
   };
 
@@ -664,7 +780,7 @@ const RequestsPage = () => {
             
             {/* Order Detail Modal */}
             <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
-              <DialogContent className="sm:max-w-2xl">
+              <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle className="text-2xl">Order Request Details</DialogTitle>
                   <DialogDescription>
@@ -673,90 +789,313 @@ const RequestsPage = () => {
                 </DialogHeader>
                 
                 {selectedRequest && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <h3 className="text-lg font-semibold mb-2">Order Information</h3>
-                      <div className="space-y-2">
-                        <div className="flex justify-between">
-                          <span className="font-medium">Order ID:</span>
-                          <span>{selectedRequest.id.substring(0, 8)}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="font-medium">Created:</span>
-                          <span>{formatRequestDate(selectedRequest.createdAt)}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="font-medium">Scheduled:</span>
-                          <span>{selectedRequest.dateRequested ? formatRequestDate(selectedRequest.dateRequested) : 'Not scheduled'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="font-medium">Status:</span>
-                          <span>{getStatusBadge(selectedRequest.status)}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="font-medium">Service Type:</span>
-                          <span>{getServiceTypeLabel(selectedRequest.serviceType)}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="font-medium">Platform:</span>
-                          <span className="capitalize">{selectedRequest.platform}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="font-medium">Amount:</span>
-                          <span className="font-semibold">₹{selectedRequest.price}</span>
-                        </div>
-                      </div>
-                      
-                      <h3 className="text-lg font-semibold mt-6 mb-2">Description</h3>
-                      <p className="text-gray-700">{selectedRequest.description}</p>
-                    </div>
-                    
-                    <div>
-                      <h3 className="text-lg font-semibold mb-2">Business Information</h3>
-                      <div className="space-y-2">
-                        <div className="flex justify-between">
-                          <span className="font-medium">Username:</span>
-                          <span>{selectedRequest.businessName}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="font-medium">Business ID:</span>
-                          <span>{selectedRequest.businessId.substring(0, 8)}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="font-medium">Status:</span>
-                          <Badge variant="outline" className="bg-blue-50 text-blue-600">Verified</Badge>
-                        </div>
-                      </div>
-                      
-                      {selectedRequest.status === 'pending' && (
-                        <div className="mt-8">
-                          <h3 className="text-lg font-semibold mb-4">Actions</h3>
-                          <div className="flex space-x-4">
-                            <Button 
-                              variant="outline" 
-                              className="border-red-200 text-red-600 hover:bg-red-50 flex-1"
-                              onClick={() => {
-                                handleRejectRequest(selectedRequest.id);
-                                setIsDetailsOpen(false);
-                              }}
-                            >
-                              <X className="w-4 h-4 mr-2" />
-                              Reject Request
-                            </Button>
-                            <Button 
-                              className="flex-1"
-                              onClick={() => {
-                                handleAcceptRequest(selectedRequest.id);
-                                setIsDetailsOpen(false);
-                              }}
-                            >
-                              <Check className="w-4 h-4 mr-2" />
-                              Accept Request
-                            </Button>
+                  <div className="space-y-6">
+                    {/* Order Information Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <Card>
+                        <CardContent className="p-4">
+                          <h3 className="text-lg font-semibold mb-4">Order Information</h3>
+                          <div className="space-y-3">
+                            <div className="flex justify-between">
+                              <span className="font-medium">Order ID:</span>
+                              <span>{selectedRequest.id.substring(0, 8)}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="font-medium">Created:</span>
+                              <span>{formatRequestDate(selectedRequest.createdAt)}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="font-medium">Scheduled:</span>
+                              <span>{selectedRequest.dateRequested ? formatRequestDate(selectedRequest.dateRequested) : 'Not scheduled'}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="font-medium">Status:</span>
+                              <span>{getStatusBadge(selectedRequest.status)}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="font-medium">Service Type:</span>
+                              <span>{getServiceTypeLabel(selectedRequest.serviceType)}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="font-medium">Platform:</span>
+                              <span className="capitalize">{formatPlatforms(selectedRequest.platform)}</span>
+                            </div>
+                            {selectedRequest.content && (
+                              <div className="flex justify-between">
+                                <span className="font-medium">Content Type:</span>
+                                <div className="flex items-center gap-2">
+                                  {getContentTypeIcon(selectedRequest.content.type)}
+                                  <span>{getContentTypeLabel(selectedRequest.content.type)}</span>
+                                </div>
+                              </div>
+                            )}
+                            <div className="flex justify-between">
+                              <span className="font-medium">Amount:</span>
+                              <span className="font-semibold text-lg">₹{selectedRequest.price}</span>
+                            </div>
                           </div>
-                        </div>
-                      )}
+                        </CardContent>
+                      </Card>
+                      
+                      <Card>
+                        <CardContent className="p-4">
+                          <h3 className="text-lg font-semibold mb-4">Business Information</h3>
+                          <div className="space-y-3">
+                            <div className="flex justify-between">
+                              <span className="font-medium">Username:</span>
+                              <span>{selectedRequest.businessName}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="font-medium">Business ID:</span>
+                              <span>{selectedRequest.businessId.substring(0, 8)}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="font-medium">Status:</span>
+                              <Badge variant="outline" className="bg-blue-50 text-blue-600">Verified</Badge>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
                     </div>
+
+                    {/* Description */}
+                    <Card>
+                      <CardContent className="p-4">
+                        <h3 className="text-lg font-semibold mb-3">Description</h3>
+                        <p className="text-gray-700">{selectedRequest.description}</p>
+                      </CardContent>
+                    </Card>
+
+                    {/* Dynamic Content Based on Type */}
+                    {selectedRequest.content && (
+                      <Card>
+                        <CardContent className="p-4">
+                          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                            {getContentTypeIcon(selectedRequest.content.type)}
+                            {getContentTypeLabel(selectedRequest.content.type)} Content
+                          </h3>
+                          
+                          {/* Upload Files Content */}
+                          {selectedRequest.content.type === 'upload_files' && selectedRequest.content.files && (
+                            <div className="space-y-3">
+                              <p className="text-sm text-gray-600">Submitted Files:</p>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                {selectedRequest.content.files.map((file, index) => (
+                                  <div key={index} className="flex items-center gap-2 p-2 bg-gray-50 rounded">
+                                    <Upload className="w-4 h-4 text-gray-500" />
+                                    <span className="text-sm">{file}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Provided Content */}
+                          {selectedRequest.content.type === 'provided_content' && selectedRequest.content.description && (
+                            <div className="space-y-3">
+                              <p className="text-sm text-gray-600">Content Details:</p>
+                              <div className="p-3 bg-gray-50 rounded">
+                                <p className="text-sm">{selectedRequest.content.description}</p>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Polls Content */}
+                          {selectedRequest.content.type === 'polls' && selectedRequest.content.polls && (
+                            <div className="space-y-4">
+                              <p className="text-sm text-gray-600">Poll Questions:</p>
+                              {selectedRequest.content.polls.map((poll, index) => (
+                                <div key={poll.id} className="p-3 bg-gray-50 rounded">
+                                  <p className="font-medium mb-2">Poll {index + 1}: {poll.question}</p>
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                    {poll.options.map((option, optIndex) => (
+                                      <div key={optIndex} className="text-sm text-gray-600">
+                                        • {option}
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+
+                          {/* Visit & Promote Content */}
+                          {selectedRequest.content.type === 'visit_promote' && selectedRequest.content.visitPromote && (
+                            <div className="space-y-4">
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {selectedRequest.content.visitPromote.venueName && (
+                                  <div>
+                                    <p className="text-sm font-medium text-gray-600">Venue Name:</p>
+                                    <p className="text-sm">{selectedRequest.content.visitPromote.venueName}</p>
+                                  </div>
+                                )}
+                                {selectedRequest.content.visitPromote.fullAddress && (
+                                  <div>
+                                    <p className="text-sm font-medium text-gray-600">Address:</p>
+                                    <p className="text-sm">{selectedRequest.content.visitPromote.fullAddress}</p>
+                                  </div>
+                                )}
+                              </div>
+                              {selectedRequest.content.visitPromote.googleMapsLink && (
+                                <div>
+                                  <p className="text-sm font-medium text-gray-600">Google Maps Link:</p>
+                                  <a 
+                                    href={selectedRequest.content.visitPromote.googleMapsLink} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="text-sm text-blue-600 hover:underline"
+                                  >
+                                    {selectedRequest.content.visitPromote.googleMapsLink}
+                                  </a>
+                                </div>
+                              )}
+                              {selectedRequest.content.visitPromote.affiliateLinks && selectedRequest.content.visitPromote.affiliateLinks.length > 0 && (
+                                <div>
+                                  <p className="text-sm font-medium text-gray-600 mb-2">Affiliate Links:</p>
+                                  <div className="space-y-1">
+                                    {selectedRequest.content.visitPromote.affiliateLinks.map((link, index) => (
+                                      <a 
+                                        key={index}
+                                        href={link} 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className="block text-sm text-blue-600 hover:underline"
+                                      >
+                                        {link}
+                                      </a>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
+                    )}
+
+                    {/* Actions Section */}
+                    {selectedRequest.status === 'pending' && (
+                      <Card>
+                        <CardContent className="p-4">
+                          {/* Upload Files & Polls - Simple Accept/Reject */}
+                          {selectedRequest.content && (selectedRequest.content.type === 'upload_files' || selectedRequest.content.type === 'polls') && (
+                            <div>
+                              <h3 className="text-lg font-semibold mb-4">Actions</h3>
+                              <div className="flex gap-4">
+                                <Button 
+                                  variant="outline" 
+                                  className="border-red-200 text-red-600 hover:bg-red-50 flex-1"
+                                  onClick={() => {
+                                    handleRejectRequest(selectedRequest.id);
+                                    setIsDetailsOpen(false);
+                                  }}
+                                >
+                                  <X className="w-4 h-4 mr-2" />
+                                  Reject Request
+                                </Button>
+                                <Button 
+                                  className="flex-1"
+                                  onClick={() => {
+                                    handleAcceptRequest(selectedRequest.id);
+                                    setIsDetailsOpen(false);
+                                  }}
+                                >
+                                  <Check className="w-4 h-4 mr-2" />
+                                  Accept Request
+                                </Button>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Provided Content & Visit Promote - Price Input + 3 Actions */}
+                          {selectedRequest.content && (selectedRequest.content.type === 'provided_content' || selectedRequest.content.type === 'visit_promote') && (
+                            <div className="space-y-4">
+                              <h3 className="text-lg font-semibold">Actions</h3>
+                              
+                              {/* Custom Price Input */}
+                              <div className="space-y-2">
+                                <Label htmlFor="custom-price">Your Price (₹)</Label>
+                                <div className="relative">
+                                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">₹</span>
+                                  <Input
+                                    id="custom-price"
+                                    type="number"
+                                    placeholder="Enter your price"
+                                    value={customPrice}
+                                    onChange={(e) => setCustomPrice(e.target.value)}
+                                    className="pl-8"
+                                    min="0"
+                                  />
+                                </div>
+                              </div>
+
+                              {/* Action Buttons */}
+                              <div className="flex gap-3">
+                                <Button 
+                                  variant="outline" 
+                                  className="border-yellow-200 text-yellow-700 hover:bg-yellow-50 flex-1"
+                                  onClick={handleModifyRequest}
+                                >
+                                  <Edit className="w-4 h-4 mr-2" />
+                                  Modify
+                                </Button>
+                                <Button 
+                                  variant="outline" 
+                                  className="border-red-200 text-red-600 hover:bg-red-50 flex-1"
+                                  onClick={() => {
+                                    handleRejectRequest(selectedRequest.id);
+                                    setIsDetailsOpen(false);
+                                  }}
+                                >
+                                  <X className="w-4 h-4 mr-2" />
+                                  Reject
+                                </Button>
+                                <Button 
+                                  className="flex-1"
+                                  onClick={customPrice ? handleAcceptWithCustomPrice : () => {
+                                    handleAcceptRequest(selectedRequest.id);
+                                    setIsDetailsOpen(false);
+                                  }}
+                                >
+                                  <Check className="w-4 h-4 mr-2" />
+                                  Accept
+                                </Button>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Fallback for requests without content */}
+                          {!selectedRequest.content && (
+                            <div>
+                              <h3 className="text-lg font-semibold mb-4">Actions</h3>
+                              <div className="flex gap-4">
+                                <Button 
+                                  variant="outline" 
+                                  className="border-red-200 text-red-600 hover:bg-red-50 flex-1"
+                                  onClick={() => {
+                                    handleRejectRequest(selectedRequest.id);
+                                    setIsDetailsOpen(false);
+                                  }}
+                                >
+                                  <X className="w-4 h-4 mr-2" />
+                                  Reject Request
+                                </Button>
+                                <Button 
+                                  className="flex-1"
+                                  onClick={() => {
+                                    handleAcceptRequest(selectedRequest.id);
+                                    setIsDetailsOpen(false);
+                                  }}
+                                >
+                                  <Check className="w-4 h-4 mr-2" />
+                                  Accept Request
+                                </Button>
+                              </div>
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
+                    )}
                   </div>
                 )}
               </DialogContent>

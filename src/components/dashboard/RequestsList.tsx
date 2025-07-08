@@ -48,7 +48,7 @@ const RequestsList: React.FC<RequestsListProps> = ({ requests, onApprove, onReje
                       <div>
                         <h4 className="font-medium">{request.businessName}</h4>
                         <p className="text-sm text-gray-500">
-                          {request.serviceType.charAt(0).toUpperCase() + request.serviceType.slice(1)} on {request.platform.charAt(0).toUpperCase() + request.platform.slice(1)}
+                         {request.serviceType.charAt(0).toUpperCase() + request.serviceType.slice(1)} on {Array.isArray(request.platform) ? request.platform.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(', ') : request.platform.charAt(0).toUpperCase() + request.platform.slice(1)}
                         </p>
                       </div>
                       <div>
@@ -95,7 +95,7 @@ const RequestsList: React.FC<RequestsListProps> = ({ requests, onApprove, onReje
                     <div>
                       <h4 className="font-medium">{request.businessName}</h4>
                       <p className="text-sm text-gray-500">
-                        {request.serviceType.charAt(0).toUpperCase() + request.serviceType.slice(1)} on {request.platform.charAt(0).toUpperCase() + request.platform.slice(1)}
+                        {request.serviceType.charAt(0).toUpperCase() + request.serviceType.slice(1)} on {Array.isArray(request.platform) ? request.platform.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(', ') : request.platform.charAt(0).toUpperCase() + request.platform.slice(1)}
                       </p>
                     </div>
                     <div>
