@@ -121,7 +121,7 @@ export default function PlaceOrderPage() {
   
   // Get order details from navigation state
   const orderDetails = location.state || {};
-  const { influencerName = "Gary Vaynerchuk", selectedItems = [], isVisitPromote = false } = orderDetails;
+  const { influencerName = "Gary Vaynerchuk", selectedItems = [] } = orderDetails;
   
   const [affiliateLinks, setAffiliateLinks] = useState<string[]>([]);
   const [currentAffiliateLink, setCurrentAffiliateLink] = useState("");
@@ -434,7 +434,7 @@ export default function PlaceOrderPage() {
       console.log({
         orderType: selectedOrderType,
         content: selectedContent,
-        platforms: selectedContent === "Visit & Promote" ? selectedMultiplePlatforms : [selectedSinglePlatform],
+        platforms: isVisitPromote ? selectedMultiplePlatforms : [selectedSinglePlatform],
         affiliateLinks,
         description,
         selectedDateTime: selectedDateTime ? format(selectedDateTime, "PPP p") : undefined,
@@ -488,7 +488,7 @@ export default function PlaceOrderPage() {
               />
               
               {/* Conditional Content Section */}
-              {selectedContent === "Visit & Promote" ? (
+              {isVisitPromote ? (
                 <VisitPromoteTab
                   onSendRequest={handleSendRequest}
                   isSubmitting={isSubmitting}
@@ -549,7 +549,7 @@ export default function PlaceOrderPage() {
             
             {/* Column 2 - Right side */}
             <div className="flex-1 flex flex-col gap-6">
-              {selectedContent === "Visit & Promote" ? (
+              {isVisitPromote ? (
                 <>
                   {/* Date & Time section for Visit & Promote */}
                   <div className="space-y-6">
@@ -636,83 +636,24 @@ export default function PlaceOrderPage() {
                   />
 
                   {/* Order Summary for Visit & Promote */}
-                  <div className="bg-white border rounded-lg p-6 space-y-4">
-                    <h3 className="text-lg font-semibold">Order Summary</h3>
-                    
-                    <div className="space-y-2">
-                      <h4 className="font-medium text-sm">Order Details</h4>
-                      <div className="space-y-1 text-sm text-muted-foreground">
-                        <div className="flex justify-between">
-                          <span>Type:</span>
-                          <span className="font-medium text-foreground">{selectedOrderType}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Content:</span>
-                          <span className="font-medium text-foreground">{selectedContent}</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span>Platform:</span>
-                          <div className="flex items-center gap-1 flex-wrap">
-                            {selectedMultiplePlatforms.map((platformId, index) => {
-                              const platform = socialPlatforms.find(p => p.id === platformId);
-                              return (
-                                <div key={platformId} className="flex items-center gap-1">
-                                  {platform?.icon}
-                                  <span className="font-medium text-foreground text-xs">
-                                    {platform?.name}
-                                  </span>
-                                  {index < selectedMultiplePlatforms.length - 1 && <span className="text-muted-foreground">,</span>}
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="space-y-1.5 pt-2 border-t">
-                      <div className="flex justify-between text-sm">
-                        <span className={cn(
-                          "transition-all",
-                          appliedCoupon ? "text-primary" : "text-muted-foreground"
-                        )}>
-                          Coupon Discount
-                        </span>
-                        <span className={cn(
-                          appliedCoupon ? "text-primary font-medium" : "text-muted-foreground"
-                        )}>
-                          {couponDiscount ? `−${couponDiscount}₹` : "—"}
-                        </span>
-                      </div>
-                      
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Platform Fee</span>
-                        <span className="text-muted-foreground">{platformFee}₹</span>
-                      </div>
-                    </div>
-
-                    <div className="flex justify-between items-center pt-2 border-t">
-                      <span className="text-base font-semibold">Total</span>
-                      <span className="text-xl font-bold">{total}₹</span>
-                    </div>
-                  </div>
-
-                  {/* Send Request Button for Visit & Promote */}
-                  <Button
-                    type="button"
-                    className="w-full bg-gradient-to-r from-[#9b87f5] to-[#7E69AB] hover:from-[#8b77e5] hover:to-[#6E59AB] transition-all py-6 text-base"
-                    onClick={handleSendRequest}
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Processing...
-                      </>
-                    ) : (
-                      "Send Request"
-                    )}
-                  </Button>
+                  <OrderSummary
+                    selectedOrderType={selectedOrderType}
+                    selectedContent={selectedContent}
+                    selectedSinglePlatform={selectedSinglePlatform}
+                    selectedMultiplePlatforms={selectedMultiplePlatforms}
+                    contentSubmissionMethod="upload"
+                    packagePrice={packagePrice}
+                    platformFee={platformFee}
+                    couponDiscount={couponDiscount}
+                    appliedCoupon={appliedCoupon}
+                    total={total}
+                    isSubmitting={isSubmitting}
+                    socialPlatforms={socialPlatforms}
+                    onPlatformChange={setSelectedSinglePlatform}
+                    onSendRequest={handleSendRequest}
+                    isCustomPackage={selectedOrderType === "Custom Package"}
+                    isVisitPromote={isVisitPromote}
+                  />
                 </>
               ) : (
                 <>
