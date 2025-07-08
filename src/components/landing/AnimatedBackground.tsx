@@ -75,7 +75,7 @@ const AnimatedBackground = () => {
           size: Math.random() * 16 + 20, // 20-36px
           duration: Math.random() * 40 + 20, // 20-60s
           delay: Math.random() * 10, // 0-10s delay
-          opacity: Math.random() * 0.06 + 0.04, // 4-10% opacity
+          opacity: Math.random() * 0.03 + 0.02, // 2-5% opacity
           layer,
           direction: Math.random() * 360, // random direction in degrees
           distance: Math.random() * 30 + 15, // 15-45px movement distance
