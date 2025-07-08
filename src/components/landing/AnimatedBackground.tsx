@@ -10,6 +10,7 @@ interface FloatingIcon {
   duration: number;
   delay: number;
   opacity: number;
+  direction: 'up' | 'down' | 'left' | 'right';
 }
 
 const AnimatedBackground = () => {
@@ -20,20 +21,23 @@ const AnimatedBackground = () => {
     Instagram, Youtube, Twitter, Smartphone, Link2
   ];
 
+  const directions = ['up', 'down', 'left', 'right'] as const;
+
   useEffect(() => {
     const generateIcons = () => {
       const newIcons: FloatingIcon[] = [];
       
-      for (let i = 0; i < 15; i++) {
+      for (let i = 0; i < 20; i++) {
         newIcons.push({
           id: i,
           Icon: iconComponents[Math.floor(Math.random() * iconComponents.length)],
-          x: Math.random() * 100,
-          y: Math.random() * 100,
-          size: Math.random() * 16 + 16, // 16-32px
-          duration: Math.random() * 20 + 15, // 15-35s
-          delay: Math.random() * 10, // 0-10s delay
-          opacity: Math.random() * 0.1 + 0.05, // 5-15% opacity
+          x: Math.random() * 90 + 5, // 5-95% to avoid edges
+          y: Math.random() * 90 + 5, // 5-95% to avoid edges
+          size: Math.random() * 12 + 20, // 20-32px
+          duration: Math.random() * 15 + 20, // 20-35s
+          delay: Math.random() * 5, // 0-5s delay
+          opacity: Math.random() * 0.15 + 0.1, // 10-25% opacity
+          direction: directions[Math.floor(Math.random() * directions.length)],
         });
       }
       
@@ -44,30 +48,38 @@ const AnimatedBackground = () => {
   }, []);
 
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+    <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
       {/* Semi-transparent overlay for better text readability */}
-      <div className="absolute inset-0 bg-background/10 dark:bg-background/20" />
+      <div className="absolute inset-0 bg-background/5 dark:bg-background/10" />
       
       {icons.map((icon) => (
         <div
           key={icon.id}
-          className="absolute animate-float-random"
+          className={`absolute transition-all duration-1000 ease-in-out ${
+            icon.direction === 'up' ? 'animate-float-up' :
+            icon.direction === 'down' ? 'animate-float-down' :
+            icon.direction === 'left' ? 'animate-float-left' :
+            'animate-float-right'
+          }`}
           style={{
             left: `${icon.x}%`,
             top: `${icon.y}%`,
             animationDuration: `${icon.duration}s`,
             animationDelay: `${icon.delay}s`,
             opacity: icon.opacity,
+            transform: 'translate(-50%, -50%)',
           }}
         >
-          <icon.Icon 
-            size={icon.size} 
-            className="text-primary drop-shadow-sm animate-pulse-slow" 
-            style={{
-              animationDuration: `${icon.duration * 0.5}s`,
-              animationDelay: `${icon.delay * 0.5}s`,
-            }}
-          />
+          <div className="animate-pulse-subtle">
+            <icon.Icon 
+              size={icon.size} 
+              className="text-primary/60 dark:text-primary/40 drop-shadow-sm" 
+              style={{
+                animationDuration: `${icon.duration * 0.7}s`,
+                animationDelay: `${icon.delay * 0.3}s`,
+              }}
+            />
+          </div>
         </div>
       ))}
     </div>
