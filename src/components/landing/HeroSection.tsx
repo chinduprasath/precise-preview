@@ -3,13 +3,15 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, User } from 'lucide-react';
+import AnimatedBackground from './AnimatedBackground';
 
 const HeroSection = () => {
   const navigate = useNavigate();
 
   return (
-    <section className="px-4 py-20 md:py-32 bg-gradient-to-r from-primary-foreground to-background dark:from-gray-900 dark:to-background">
-      <div className="max-w-7xl mx-auto">
+    <section className="relative px-4 py-20 md:py-32 bg-gradient-to-r from-primary-foreground to-background dark:from-gray-900 dark:to-background overflow-hidden">
+      <AnimatedBackground />
+      <div className="relative z-10 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <div className="space-y-6">
             <h1 className="text-4xl font-bold md:text-5xl opacity-0 animate-fadeInUp">
