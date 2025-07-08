@@ -500,44 +500,104 @@ export default function PlaceOrderPage() {
             {/* Column 2 - Right side */}
             <div className="flex-1 flex flex-col gap-6">
               {/* Date & Time section - aligned to match height of Influencer Card */}
-              <div className="space-y-6 min-h-[200px] flex flex-col justify-center">
-                <div className="space-y-4">
-                  <Label className="text-base font-semibold flex items-center gap-2">
-                    <Clock className="w-5 h-5 text-primary/80" />
-                    Select Date & Time
-                  </Label>
+              {selectedContent !== "Visit & Promote" && (
+                <div className="space-y-6 min-h-[200px] flex flex-col justify-center">
+                  <div className="space-y-4">
+                    <Label className="text-base font-semibold flex items-center gap-2">
+                      <Clock className="w-5 h-5 text-primary/80" />
+                      Select Date & Time
+                    </Label>
+                    
+                    <DateTimePicker
+                      value={selectedDateTime}
+                      onChange={setSelectedDateTime}
+                      label=""
+                      placeholder="Pick a date and time"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Order Summary for Visit & Promote */}
+              {selectedContent === "Visit & Promote" && (
+                <div className="bg-white border rounded-lg p-6 space-y-4">
+                  <h3 className="text-lg font-semibold">Order Summary</h3>
                   
-                  <DateTimePicker
-                    value={selectedDateTime}
-                    onChange={setSelectedDateTime}
-                    label=""
-                    placeholder="Pick a date and time"
+                  <div className="space-y-2">
+                    <h4 className="font-medium text-sm">Order Details</h4>
+                    <div className="space-y-1 text-sm text-muted-foreground">
+                      <div className="flex justify-between">
+                        <span>Type:</span>
+                        <span className="font-medium text-foreground">{selectedOrderType}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Content:</span>
+                        <span className="font-medium text-foreground">{selectedContent}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span>Platform:</span>
+                        <div className="flex items-center gap-2">
+                          {socialPlatforms.find(p => p.id === selectedSinglePlatform)?.icon}
+                          <span className="font-medium text-foreground">
+                            {socialPlatforms.find(p => p.id === selectedSinglePlatform)?.name}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5 pt-2 border-t">
+                    <div className="flex justify-between text-sm">
+                      <span className={cn(
+                        "transition-all",
+                        appliedCoupon ? "text-primary" : "text-muted-foreground"
+                      )}>
+                        Coupon Discount
+                      </span>
+                      <span className={cn(
+                        appliedCoupon ? "text-primary font-medium" : "text-muted-foreground"
+                      )}>
+                        {couponDiscount ? `−${couponDiscount}₹` : "—"}
+                      </span>
+                    </div>
+                    
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Platform Fee</span>
+                      <span className="text-muted-foreground">{platformFee}₹</span>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-between items-center pt-2 border-t">
+                    <span className="text-base font-semibold">Total</span>
+                    <span className="text-xl font-bold">{total}₹</span>
+                  </div>
+                </div>
+              )}
+              
+              {selectedContent !== "Visit & Promote" && (
+                <div className="space-y-4 pt-4 border-t border-border">
+                  <Label 
+                    htmlFor="affiliate-link" 
+                    className={cn(
+                      "text-sm mb-1.5 block",
+                      affiliateLinkError && "text-destructive"
+                    )}
+                  >
+                    Affiliate Link (Optional) {affiliateLinkError && `(${affiliateLinkError})`}
+                  </Label>
+                  <Input
+                    id="affiliate-link"
+                    placeholder="https://example.com/your-affiliate-link"
+                    className={cn(
+                      "transition-all focus-visible:ring-primary",
+                      affiliateLinkError && "border-destructive focus-visible:ring-destructive"
+                    )}
+                    value={affiliateLink}
+                    onChange={handleAffiliateLinkChange}
+                    onBlur={() => setAffiliateLinkError(validateAffiliateLink(affiliateLink))}
                   />
                 </div>
-              </div>
-              
-              <div className="space-y-4 pt-4 border-t border-border">
-                <Label 
-                  htmlFor="affiliate-link" 
-                  className={cn(
-                    "text-sm mb-1.5 block",
-                    affiliateLinkError && "text-destructive"
-                  )}
-                >
-                  Affiliate Link (Optional) {affiliateLinkError && `(${affiliateLinkError})`}
-                </Label>
-                <Input
-                  id="affiliate-link"
-                  placeholder="https://example.com/your-affiliate-link"
-                  className={cn(
-                    "transition-all focus-visible:ring-primary",
-                    affiliateLinkError && "border-destructive focus-visible:ring-destructive"
-                  )}
-                  value={affiliateLink}
-                  onChange={handleAffiliateLinkChange}
-                  onBlur={() => setAffiliateLinkError(validateAffiliateLink(affiliateLink))}
-                />
-              </div>
+              )}
               
               <CouponSection
                 couponCode={couponCode}
@@ -564,6 +624,25 @@ export default function PlaceOrderPage() {
                   onSendRequest={handleSendRequest}
                   isCustomPackage={selectedOrderType === "Custom Package"}
                 />
+              )}
+
+              {/* Send Request Button for Visit & Promote */}
+              {selectedContent === "Visit & Promote" && (
+                <Button
+                  type="button"
+                  className="w-full bg-gradient-to-r from-[#9b87f5] to-[#7E69AB] hover:from-[#8b77e5] hover:to-[#6E59AB] transition-all py-6 text-base"
+                  onClick={handleSendRequest}
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Processing...
+                    </>
+                  ) : (
+                    "Send Request"
+                  )}
+                </Button>
               )}
             </div>
           </div>

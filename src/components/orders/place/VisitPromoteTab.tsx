@@ -1,14 +1,17 @@
+
 import React, { useState } from 'react';
-import { Calendar, MapPin, Gift, FileText, Users, Clock } from 'lucide-react';
+import { Calendar, MapPin, Gift, FileText, Users, Clock, CalendarDays } from 'lucide-react';
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ChevronDown } from 'lucide-react';
 import { cn } from "@/lib/utils";
+import { format } from "date-fns";
 
 interface VisitPromoteTabProps {
   onSendRequest: (e: React.FormEvent) => void;
@@ -39,6 +42,9 @@ const VisitPromoteTab: React.FC<VisitPromoteTabProps> = ({
     specialGuidelines: '',
   });
 
+  const [selectedDates, setSelectedDates] = useState<Date[]>([]);
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+
   const [expandedSections, setExpandedSections] = useState({
     basicInfo: true,
     location: false,
@@ -61,6 +67,25 @@ const VisitPromoteTab: React.FC<VisitPromoteTabProps> = ({
     }));
   };
 
+  const handleDateSelect = (date: Date | undefined) => {
+    if (date) {
+      setSelectedDates(prev => {
+        const dateExists = prev.some(d => d.toDateString() === date.toDateString());
+        if (dateExists) {
+          return prev.filter(d => d.toDateString() !== date.toDateString());
+        } else {
+          return [...prev, date];
+        }
+      });
+    }
+  };
+
+  const formatSelectedDates = () => {
+    if (selectedDates.length === 0) return "Select preferred dates";
+    if (selectedDates.length === 1) return format(selectedDates[0], "PPP");
+    return `${selectedDates.length} dates selected`;
+  };
+
   return (
     <div className="space-y-6">
       <div className="text-center p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border">
@@ -79,28 +104,46 @@ const VisitPromoteTab: React.FC<VisitPromoteTabProps> = ({
             <ChevronDown className={cn("w-4 h-4 transition-transform", expandedSections.basicInfo && "rotate-180")} />
           </CollapsibleTrigger>
           <CollapsibleContent className="mt-3 space-y-4 px-4">
-            <div>
-              <Label htmlFor="preferred-dates" className="text-sm mb-2 block">Preferred Visit Dates</Label>
-              <Input
-                id="preferred-dates"
-                placeholder="e.g., Jan 15-20, 2024 or specific dates"
-                value={formData.preferredDates}
-                onChange={(e) => handleInputChange('preferredDates', e.target.value)}
-              />
-            </div>
-            <div>
-              <Label htmlFor="time-slot" className="text-sm mb-2 block">Preferred Time Slot</Label>
-              <select 
-                id="time-slot"
-                className="w-full p-2 border border-input rounded-md bg-background"
-                value={formData.timeSlot}
-                onChange={(e) => handleInputChange('timeSlot', e.target.value)}
-              >
-                <option value="Morning">Morning</option>
-                <option value="Afternoon">Afternoon</option>
-                <option value="Evening">Evening</option>
-                <option value="Flexible">Flexible</option>
-              </select>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="preferred-dates" className="text-sm mb-2 block">Preferred Visit Dates</Label>
+                <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        selectedDates.length === 0 && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarDays className="mr-2 h-4 w-4" />
+                      {formatSelectedDates()}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <CalendarComponent
+                      mode="multiple"
+                      selected={selectedDates}
+                      onSelect={(dates) => setSelectedDates(dates || [])}
+                      className="pointer-events-auto"
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+              <div>
+                <Label htmlFor="time-slot" className="text-sm mb-2 block">Preferred Time Slot</Label>
+                <select 
+                  id="time-slot"
+                  className="w-full p-2 border border-input rounded-md bg-background"
+                  value={formData.timeSlot}
+                  onChange={(e) => handleInputChange('timeSlot', e.target.value)}
+                >
+                  <option value="Morning">Morning</option>
+                  <option value="Afternoon">Afternoon</option>
+                  <option value="Evening">Evening</option>
+                  <option value="Flexible">Flexible</option>
+                </select>
+              </div>
             </div>
           </CollapsibleContent>
         </Collapsible>
@@ -301,23 +344,6 @@ const VisitPromoteTab: React.FC<VisitPromoteTabProps> = ({
             </div>
           </CollapsibleContent>
         </Collapsible>
-      </div>
-
-      {/* Action Buttons */}
-      <div className="flex gap-3 pt-4">
-        <Button variant="outline" className="flex-1">
-          Preview Summary
-        </Button>
-        <Button variant="outline" className="flex-1">
-          Save as Draft
-        </Button>
-        <Button 
-          onClick={onSendRequest}
-          disabled={isSubmitting}
-          className="flex-1"
-        >
-          {isSubmitting ? "Sending..." : "Send Request"}
-        </Button>
       </div>
     </div>
   );
