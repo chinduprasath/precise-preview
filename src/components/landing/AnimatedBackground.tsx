@@ -27,16 +27,16 @@ const AnimatedBackground = () => {
     const generateIcons = () => {
       const newIcons: FloatingIcon[] = [];
       
-      for (let i = 0; i < 20; i++) {
+      for (let i = 0; i < 35; i++) {
         newIcons.push({
           id: i,
           Icon: iconComponents[Math.floor(Math.random() * iconComponents.length)],
           x: Math.random() * 90 + 5, // 5-95% to avoid edges
           y: Math.random() * 90 + 5, // 5-95% to avoid edges
-          size: Math.random() * 12 + 20, // 20-32px
+          size: Math.random() * 12 + 18, // 18-30px
           duration: Math.random() * 15 + 20, // 20-35s
           delay: Math.random() * 5, // 0-5s delay
-          opacity: Math.random() * 0.15 + 0.1, // 10-25% opacity
+          opacity: Math.random() * 0.25 + 0.2, // 20-45% opacity
           direction: directions[Math.floor(Math.random() * directions.length)],
         });
       }
@@ -73,7 +73,7 @@ const AnimatedBackground = () => {
           <div className="animate-pulse-subtle">
             <icon.Icon 
               size={icon.size} 
-              className="text-primary/60 dark:text-primary/40 drop-shadow-sm" 
+              className="text-primary/80 dark:text-primary/60 drop-shadow-sm" 
               style={{
                 animationDuration: `${icon.duration * 0.7}s`,
                 animationDelay: `${icon.delay * 0.3}s`,
