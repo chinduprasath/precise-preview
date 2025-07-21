@@ -3,6 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Users, User } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface UserWithOrders {
   id: string;
@@ -20,6 +21,8 @@ interface TopUsersProps {
 }
 
 const TopUsers: React.FC<TopUsersProps> = ({ users, title, isLoading = false, userType }) => {
+  const navigate = useNavigate();
+  
   const getInitials = (name: string) => {
     return name
       .split(' ')
@@ -27,6 +30,10 @@ const TopUsers: React.FC<TopUsersProps> = ({ users, title, isLoading = false, us
       .join('')
       .toUpperCase()
       .substring(0, 2);
+  };
+
+  const handleUserClick = (userId: string) => {
+    navigate(`/profile/${userType}/${userId}`);
   };
 
   return (
@@ -57,14 +64,18 @@ const TopUsers: React.FC<TopUsersProps> = ({ users, title, isLoading = false, us
         ) : users.length > 0 ? (
           <div className="space-y-4">
             {users.map(user => (
-              <div key={user.id} className="flex items-center justify-between">
+              <div 
+                key={user.id} 
+                className="flex items-center justify-between cursor-pointer hover:bg-muted/50 rounded-lg p-2 -m-2 transition-colors"
+                onClick={() => handleUserClick(user.id)}
+              >
                 <div className="flex items-center space-x-3">
                   <Avatar>
                     <AvatarImage src={user.profileImage} alt={user.name} />
                     <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
                   </Avatar>
                   <div>
-                    <p className="text-sm font-medium text-foreground">{user.name}</p>
+                    <p className="text-sm font-medium text-foreground hover:text-primary">{user.name}</p>
                     <p className="text-xs text-muted-foreground">@{user.username}</p>
                   </div>
                 </div>
