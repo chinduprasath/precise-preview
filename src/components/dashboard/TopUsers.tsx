@@ -33,7 +33,12 @@ const TopUsers: React.FC<TopUsersProps> = ({ users, title, isLoading = false, us
   };
 
   const handleUserClick = (userId: string) => {
-    navigate(`/profile/${userType}/${userId}`);
+    // Navigate to existing account pages instead of dynamic profile routes
+    if (userType === 'influencer') {
+      navigate('/account/influencer');
+    } else if (userType === 'business') {
+      navigate('/account/business');
+    }
   };
 
   return (

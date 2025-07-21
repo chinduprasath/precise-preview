@@ -53,7 +53,6 @@ import ContactPage from "./pages/contact";
 import PricingPage from "./pages/pricing";
 import AdminReportsPage from "./pages/admin/reports/AdminReportsPage";
 import WishlistPage from "./pages/wishlist";
-import UserProfile from "./pages/profile/[userType]/[userId]";
 
 function App() {
   const queryClient = new QueryClient({
@@ -128,7 +127,6 @@ function App() {
                 <Route path="/account/business" element={<BusinessProfile />} />
                 <Route path="/account/influencer" element={<InfluencerProfile />} />
                 <Route path="/account/admin" element={<AdminProfile />} />
-                <Route path="/profile/:userType/:userId" element={<UserProfile />} />
                 <Route path="/account/influencerprofile" element={<Navigate to={`/account/${localStorage.getItem("userType") || "business"}`} replace />} />
                 <Route path="/account/settings" element={<SettingsPage />} />
                 <Route path="/billing" element={<BillingPage />} />
