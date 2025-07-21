@@ -85,7 +85,8 @@ const customPackages = [
     platforms: ['instagram', 'facebook'],
     description: 'Perfect for product launches and brand awareness',
     price: '₹899',
-    tooltip: 'Includes one main feed post on Instagram and one 24-hour story on Facebook. Content must be provided by business.'
+    tooltip: 'Includes one main feed post on Instagram and one 24-hour story on Facebook. Content must be provided by business.',
+    serviceTypes: ['Post Image/Video', 'Story']
   },
   { 
     id: 'package2', 
@@ -93,7 +94,8 @@ const customPackages = [
     platforms: ['instagram', 'facebook', 'youtube'],
     description: 'Maximum reach across all major platforms',
     price: '₹1499',
-    tooltip: 'Cross-platform promotion with short-form video content on Instagram, standard post on Facebook, and YouTube Short. All content provided by business.'
+    tooltip: 'Cross-platform promotion with short-form video content on Instagram, standard post on Facebook, and YouTube Short. All content provided by business.',
+    serviceTypes: ['Reels/Shorts', 'In-Video Promotion']
   },
   { 
     id: 'package3', 
@@ -101,7 +103,8 @@ const customPackages = [
     platforms: ['youtube', 'instagram'],
     description: 'Great for detailed product demos and tutorials',
     price: '₹2199',
-    tooltip: 'Includes one full YouTube video (up to 10 minutes) plus one Instagram reel post. Perfect for in-depth product showcases.'
+    tooltip: 'Includes one full YouTube video (up to 10 minutes) plus one Instagram reel post. Perfect for in-depth product showcases.',
+    serviceTypes: ['In-Video Promotion', 'Detailed Product Demo']
   },
 ];
 
@@ -320,7 +323,7 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
                 <div className="space-y-4">
                   <RadioGroup value={selectedCustomPackage} onValueChange={handleCustomPackageChange}>
                     {customPackages.map((pkg) => (
-                      <div key={pkg.id} className="border rounded-lg p-4 hover:bg-accent/50 transition-colors">
+                      <div key={pkg.id} className="border rounded-lg p-4 hover:bg-accent/50 transition-colors relative">
                         <div className="flex items-start justify-between">
                           <div className="flex items-start gap-3 flex-1">
                             <RadioGroupItem value={pkg.id} id={pkg.id} className="mt-1" />
@@ -355,6 +358,24 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
                           </div>
                           <div className="text-right ml-4">
                             <span className="text-lg font-bold text-primary">{pkg.price}</span>
+                          </div>
+                        </div>
+                        
+                        {/* Service Types Section - Bottom Right */}
+                        <div className="absolute bottom-3 right-3">
+                          <div className="text-right">
+                            <div className="text-xs font-medium text-muted-foreground mb-1">Includes</div>
+                            <div className="flex flex-wrap gap-1 justify-end">
+                              {pkg.serviceTypes.map((serviceType, index) => (
+                                <Badge 
+                                  key={index} 
+                                  variant="outline" 
+                                  className="text-xs px-2 py-0.5 bg-background/80 border-muted-foreground/20"
+                                >
+                                  {serviceType}
+                                </Badge>
+                              ))}
+                            </div>
                           </div>
                         </div>
                       </div>
