@@ -677,29 +677,42 @@ const OrdersPage = () => {
                     <CardContent>
                       {/* Upload Files Content */}
                       {contentType === 'upload_files' && dummyContent.files && (
-                        <div className="space-y-3">
-                          <p className="text-sm text-muted-foreground">Uploaded Media & Documents:</p>
+                        <div className="space-y-4">
+                          <div className="flex items-center gap-2">
+                            <Upload className="h-4 w-4 text-muted-foreground" />
+                            <p className="text-sm font-medium text-muted-foreground">Uploaded Files</p>
+                            <Button variant="outline" size="sm" className="ml-auto text-xs">
+                              UPLOAD FILES
+                            </Button>
+                          </div>
+                          
+                          <div className="text-sm text-muted-foreground mb-3">
+                            Uploaded Media & Documents:
+                          </div>
+                          
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                             {dummyContent.files.map((file) => (
-                              <div key={file.id} className="flex items-center justify-between p-3 bg-muted rounded-lg border">
-                                <div className="flex items-center gap-3">
-                                  {file.type.startsWith('image/') ? (
-                                    <div className="w-10 h-10 bg-blue-100 rounded flex items-center justify-center">
-                                      <Upload className="h-5 w-5 text-blue-600" />
+                              <div key={file.id} className="relative bg-accent/30 rounded-lg p-4 border border-border hover:bg-accent/50 transition-colors">
+                                <div className="flex items-start justify-between">
+                                  <div className="flex items-center gap-3 flex-1">
+                                    <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                      {file.type.startsWith('image/') ? (
+                                        <Upload className="h-6 w-6 text-primary" />
+                                      ) : file.name.toLowerCase().includes('.pdf') ? (
+                                        <FileText className="h-6 w-6 text-red-500" />
+                                      ) : (
+                                        <FileText className="h-6 w-6 text-blue-500" />
+                                      )}
                                     </div>
-                                  ) : (
-                                    <div className="w-10 h-10 bg-gray-100 rounded flex items-center justify-center">
-                                      <FileText className="h-5 w-5 text-gray-600" />
+                                    <div className="min-w-0 flex-1">
+                                      <p className="font-medium text-sm truncate">{file.name}</p>
+                                      <p className="text-xs text-muted-foreground">{file.size}</p>
                                     </div>
-                                  )}
-                                  <div>
-                                    <p className="font-medium text-sm">{file.name}</p>
-                                    <p className="text-xs text-muted-foreground">{file.size}</p>
                                   </div>
+                                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0 flex-shrink-0">
+                                    <Download className="h-4 w-4" />
+                                  </Button>
                                 </div>
-                                <Button variant="ghost" size="sm">
-                                  <Download className="h-4 w-4" />
-                                </Button>
                               </div>
                             ))}
                           </div>
