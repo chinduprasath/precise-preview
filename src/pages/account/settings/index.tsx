@@ -446,7 +446,6 @@ const Settings = () => {
                           <Instagram className="h-6 w-6 text-pink-500" />
                         </div>
                         <div className="flex-1">
-                          <h3 className="font-medium">Instagram</h3>
                           <Input 
                             value={socialMediaSettings.instagram.url || 'No URL set yet'} 
                             readOnly 
@@ -488,7 +487,6 @@ const Settings = () => {
                           <Facebook className="h-6 w-6 text-blue-600" />
                         </div>
                         <div className="flex-1">
-                          <h3 className="font-medium">Facebook</h3>
                           <Input 
                             value={socialMediaSettings.facebook.url || 'No URL set yet'} 
                             readOnly 
@@ -530,7 +528,6 @@ const Settings = () => {
                           <Youtube className="h-6 w-6 text-red-600" />
                         </div>
                         <div className="flex-1">
-                          <h3 className="font-medium">YouTube</h3>
                           <Input 
                             value={socialMediaSettings.youtube.url || 'No URL set yet'} 
                             readOnly 
@@ -572,7 +569,6 @@ const Settings = () => {
                           <Twitter className="h-6 w-6 text-blue-400" />
                         </div>
                         <div className="flex-1">
-                          <h3 className="font-medium">Twitter</h3>
                           <Input 
                             value={socialMediaSettings.twitter.url || 'No URL set yet'} 
                             readOnly 
