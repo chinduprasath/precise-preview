@@ -8,7 +8,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Eye, EyeOff, User, Lock, Bell, Globe, Shield, LogOut, Instagram, Facebook, Youtube, Twitter, Link } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Eye, EyeOff, User, Lock, Bell, Globe, Shield, LogOut, Instagram, Facebook, Youtube, Twitter, Link, X, Info, Clock } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 const Settings = () => {
   const navigate = useNavigate();
@@ -17,13 +21,33 @@ const Settings = () => {
   const [userType, setUserType] = useState<string>('business');
   const [showPassword, setShowPassword] = useState(false);
   const [autoScheduling, setAutoScheduling] = useState(false);
-  const [socialMediaEditing, setSocialMediaEditing] = useState<{
-    [key: string]: boolean;
+  const [socialMediaModal, setSocialMediaModal] = useState<{
+    isOpen: boolean;
+    platform: string;
   }>({
-    instagram: false,
-    facebook: false,
-    youtube: false,
-    twitter: false
+    isOpen: false,
+    platform: ''
+  });
+  
+  const [modalFormData, setModalFormData] = useState({
+    url: '',
+    preferredDays: [] as string[],
+    fromTime: '',
+    toTime: ''
+  });
+  
+  const [socialMediaSettings, setSocialMediaSettings] = useState<{
+    [key: string]: {
+      url: string;
+      preferredDays: string[];
+      fromTime: string;
+      toTime: string;
+    }
+  }>({
+    instagram: { url: '', preferredDays: [], fromTime: '', toTime: '' },
+    facebook: { url: '', preferredDays: [], fromTime: '', toTime: '' },
+    youtube: { url: '', preferredDays: [], fromTime: '', toTime: '' },
+    twitter: { url: '', preferredDays: [], fromTime: '', toTime: '' }
   });
   const [formData, setFormData] = useState({
     fullName: '',
@@ -95,16 +119,54 @@ const Settings = () => {
       }
     }));
   };
-  const toggleEditMode = (platform: string) => {
-    setSocialMediaEditing(prev => ({
-      ...prev,
-      [platform]: !prev[platform]
-    }));
+  // Modal functions
+  const timeOptions = Array.from({ length: 48 }, (_, i) => {
+    const hour = Math.floor(i / 2);
+    const minute = i % 2 === 0 ? '00' : '30';
+    const ampm = hour < 12 ? 'AM' : 'PM';
+    const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+    return `${displayHour}:${minute} ${ampm}`;
+  });
+
+  const dayOptions = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+  const openEditModal = (platform: string) => {
+    const settings = socialMediaSettings[platform];
+    setModalFormData({
+      url: settings.url,
+      preferredDays: settings.preferredDays,
+      fromTime: settings.fromTime,
+      toTime: settings.toTime
+    });
+    setSocialMediaModal({ isOpen: true, platform });
   };
-  const handleSaveSocialMedia = (platform: string) => {
-    // Here you would save the social media URL to a database
-    toast.success(`${platform.charAt(0).toUpperCase() + platform.slice(1)} URL updated successfully`);
-    toggleEditMode(platform);
+
+  const closeModal = () => {
+    setSocialMediaModal({ isOpen: false, platform: '' });
+    setModalFormData({ url: '', preferredDays: [], fromTime: '', toTime: '' });
+  };
+
+  const handleModalSave = () => {
+    setSocialMediaSettings(prev => ({
+      ...prev,
+      [socialMediaModal.platform]: {
+        url: modalFormData.url,
+        preferredDays: modalFormData.preferredDays,
+        fromTime: modalFormData.fromTime,
+        toTime: modalFormData.toTime
+      }
+    }));
+    toast.success(`${socialMediaModal.platform.charAt(0).toUpperCase() + socialMediaModal.platform.slice(1)} settings updated successfully`);
+    closeModal();
+  };
+
+  const handleDayToggle = (day: string) => {
+    setModalFormData(prev => ({
+      ...prev,
+      preferredDays: prev.preferredDays.includes(day)
+        ? prev.preferredDays.filter(d => d !== day)
+        : [...prev.preferredDays, day]
+    }));
   };
   const handleConnectSocialMedia = (platform: string) => {
     // In a real app, this would initiate the OAuth flow
@@ -376,69 +438,278 @@ const Settings = () => {
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <div className="space-y-4">
+                  <div className="space-y-6">
                     {/* Instagram */}
-                    <div className="flex items-center gap-4">
-                      <div className="flex items-center justify-center w-10 h-10 bg-pink-100 rounded-full">
-                        <Instagram className="h-6 w-6 text-pink-500" />
+                    <div className="border rounded-lg p-4">
+                      <div className="flex items-center gap-4 mb-3">
+                        <div className="flex items-center justify-center w-10 h-10 bg-pink-100 rounded-full">
+                          <Instagram className="h-6 w-6 text-pink-500" />
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="font-medium">Instagram</h3>
+                          <Input 
+                            value={socialMediaSettings.instagram.url || 'No URL set yet'} 
+                            readOnly 
+                            className="mt-1 bg-gray-50" 
+                            placeholder="No URL / Timing set yet"
+                          />
+                        </div>
+                        <div className="flex gap-2">
+                          <Button variant="outline" onClick={() => openEditModal('instagram')}>
+                            Edit
+                          </Button>
+                          {userType === 'influencer' && (
+                            <Button variant="secondary" onClick={() => handleConnectSocialMedia('instagram')} className="flex items-center gap-1">
+                              <Link className="h-4 w-4" />
+                              Connect
+                            </Button>
+                          )}
+                        </div>
                       </div>
-                      <div className="flex-1 flex items-center gap-2">
-                        <Input value={formData.socialMedia.instagram} onChange={e => handleSocialMediaChange('instagram', e.target.value)} placeholder="Instagram Profile URL" disabled={!socialMediaEditing.instagram} className="flex-1" />
-                        {socialMediaEditing.instagram ? <Button onClick={() => handleSaveSocialMedia('instagram')}>Save</Button> : <Button variant="outline" onClick={() => toggleEditMode('instagram')}>Edit</Button>}
-                        {userType === 'influencer' && <Button variant="secondary" onClick={() => handleConnectSocialMedia('instagram')} className="flex items-center gap-1">
-                            <Link className="h-4 w-4" />
-                            Connect
-                          </Button>}
-                      </div>
+                      {(socialMediaSettings.instagram.preferredDays.length > 0 || socialMediaSettings.instagram.fromTime) && (
+                        <div className="flex flex-wrap gap-2">
+                          {socialMediaSettings.instagram.preferredDays.map(day => (
+                            <Badge key={day} variant="secondary">{day.slice(0, 3)}</Badge>
+                          ))}
+                          {socialMediaSettings.instagram.fromTime && socialMediaSettings.instagram.toTime && (
+                            <Badge variant="outline" className="flex items-center gap-1">
+                              <Clock className="h-3 w-3" />
+                              {socialMediaSettings.instagram.fromTime} - {socialMediaSettings.instagram.toTime}
+                            </Badge>
+                          )}
+                        </div>
+                      )}
                     </div>
                     
                     {/* Facebook */}
-                    <div className="flex items-center gap-4">
-                      <div className="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-full">
-                        <Facebook className="h-6 w-6 text-blue-600" />
+                    <div className="border rounded-lg p-4">
+                      <div className="flex items-center gap-4 mb-3">
+                        <div className="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-full">
+                          <Facebook className="h-6 w-6 text-blue-600" />
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="font-medium">Facebook</h3>
+                          <Input 
+                            value={socialMediaSettings.facebook.url || 'No URL set yet'} 
+                            readOnly 
+                            className="mt-1 bg-gray-50" 
+                            placeholder="No URL / Timing set yet"
+                          />
+                        </div>
+                        <div className="flex gap-2">
+                          <Button variant="outline" onClick={() => openEditModal('facebook')}>
+                            Edit
+                          </Button>
+                          {userType === 'influencer' && (
+                            <Button variant="secondary" onClick={() => handleConnectSocialMedia('facebook')} className="flex items-center gap-1">
+                              <Link className="h-4 w-4" />
+                              Connect
+                            </Button>
+                          )}
+                        </div>
                       </div>
-                      <div className="flex-1 flex items-center gap-2">
-                        <Input value={formData.socialMedia.facebook} onChange={e => handleSocialMediaChange('facebook', e.target.value)} placeholder="Facebook Profile URL" disabled={!socialMediaEditing.facebook} className="flex-1" />
-                        {socialMediaEditing.facebook ? <Button onClick={() => handleSaveSocialMedia('facebook')}>Save</Button> : <Button variant="outline" onClick={() => toggleEditMode('facebook')}>Edit</Button>}
-                        {userType === 'influencer' && <Button variant="secondary" onClick={() => handleConnectSocialMedia('facebook')} className="flex items-center gap-1">
-                            <Link className="h-4 w-4" />
-                            Connect
-                          </Button>}
-                      </div>
+                      {(socialMediaSettings.facebook.preferredDays.length > 0 || socialMediaSettings.facebook.fromTime) && (
+                        <div className="flex flex-wrap gap-2">
+                          {socialMediaSettings.facebook.preferredDays.map(day => (
+                            <Badge key={day} variant="secondary">{day.slice(0, 3)}</Badge>
+                          ))}
+                          {socialMediaSettings.facebook.fromTime && socialMediaSettings.facebook.toTime && (
+                            <Badge variant="outline" className="flex items-center gap-1">
+                              <Clock className="h-3 w-3" />
+                              {socialMediaSettings.facebook.fromTime} - {socialMediaSettings.facebook.toTime}
+                            </Badge>
+                          )}
+                        </div>
+                      )}
                     </div>
                     
                     {/* YouTube */}
-                    <div className="flex items-center gap-4">
-                      <div className="flex items-center justify-center w-10 h-10 bg-red-100 rounded-full">
-                        <Youtube className="h-6 w-6 text-red-600" />
+                    <div className="border rounded-lg p-4">
+                      <div className="flex items-center gap-4 mb-3">
+                        <div className="flex items-center justify-center w-10 h-10 bg-red-100 rounded-full">
+                          <Youtube className="h-6 w-6 text-red-600" />
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="font-medium">YouTube</h3>
+                          <Input 
+                            value={socialMediaSettings.youtube.url || 'No URL set yet'} 
+                            readOnly 
+                            className="mt-1 bg-gray-50" 
+                            placeholder="No URL / Timing set yet"
+                          />
+                        </div>
+                        <div className="flex gap-2">
+                          <Button variant="outline" onClick={() => openEditModal('youtube')}>
+                            Edit
+                          </Button>
+                          {userType === 'influencer' && (
+                            <Button variant="secondary" onClick={() => handleConnectSocialMedia('youtube')} className="flex items-center gap-1">
+                              <Link className="h-4 w-4" />
+                              Connect
+                            </Button>
+                          )}
+                        </div>
                       </div>
-                      <div className="flex-1 flex items-center gap-2">
-                        <Input value={formData.socialMedia.youtube} onChange={e => handleSocialMediaChange('youtube', e.target.value)} placeholder="YouTube Channel URL" disabled={!socialMediaEditing.youtube} className="flex-1" />
-                        {socialMediaEditing.youtube ? <Button onClick={() => handleSaveSocialMedia('youtube')}>Save</Button> : <Button variant="outline" onClick={() => toggleEditMode('youtube')}>Edit</Button>}
-                        {userType === 'influencer' && <Button variant="secondary" onClick={() => handleConnectSocialMedia('youtube')} className="flex items-center gap-1">
-                            <Link className="h-4 w-4" />
-                            Connect
-                          </Button>}
-                      </div>
+                      {(socialMediaSettings.youtube.preferredDays.length > 0 || socialMediaSettings.youtube.fromTime) && (
+                        <div className="flex flex-wrap gap-2">
+                          {socialMediaSettings.youtube.preferredDays.map(day => (
+                            <Badge key={day} variant="secondary">{day.slice(0, 3)}</Badge>
+                          ))}
+                          {socialMediaSettings.youtube.fromTime && socialMediaSettings.youtube.toTime && (
+                            <Badge variant="outline" className="flex items-center gap-1">
+                              <Clock className="h-3 w-3" />
+                              {socialMediaSettings.youtube.fromTime} - {socialMediaSettings.youtube.toTime}
+                            </Badge>
+                          )}
+                        </div>
+                      )}
                     </div>
                     
                     {/* Twitter */}
-                    <div className="flex items-center gap-4">
-                      <div className="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-full">
-                        <Twitter className="h-6 w-6 text-blue-400" />
+                    <div className="border rounded-lg p-4">
+                      <div className="flex items-center gap-4 mb-3">
+                        <div className="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-full">
+                          <Twitter className="h-6 w-6 text-blue-400" />
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="font-medium">Twitter</h3>
+                          <Input 
+                            value={socialMediaSettings.twitter.url || 'No URL set yet'} 
+                            readOnly 
+                            className="mt-1 bg-gray-50" 
+                            placeholder="No URL / Timing set yet"
+                          />
+                        </div>
+                        <div className="flex gap-2">
+                          <Button variant="outline" onClick={() => openEditModal('twitter')}>
+                            Edit
+                          </Button>
+                          {userType === 'influencer' && (
+                            <Button variant="secondary" onClick={() => handleConnectSocialMedia('twitter')} className="flex items-center gap-1">
+                              <Link className="h-4 w-4" />
+                              Connect
+                            </Button>
+                          )}
+                        </div>
                       </div>
-                      <div className="flex-1 flex items-center gap-2">
-                        <Input value={formData.socialMedia.twitter} onChange={e => handleSocialMediaChange('twitter', e.target.value)} placeholder="Twitter Profile URL" disabled={!socialMediaEditing.twitter} className="flex-1" />
-                        {socialMediaEditing.twitter ? <Button onClick={() => handleSaveSocialMedia('twitter')}>Save</Button> : <Button variant="outline" onClick={() => toggleEditMode('twitter')}>Edit</Button>}
-                        {userType === 'influencer' && <Button variant="secondary" onClick={() => handleConnectSocialMedia('twitter')} className="flex items-center gap-1">
-                            <Link className="h-4 w-4" />
-                            Connect
-                          </Button>}
-                      </div>
+                      {(socialMediaSettings.twitter.preferredDays.length > 0 || socialMediaSettings.twitter.fromTime) && (
+                        <div className="flex flex-wrap gap-2">
+                          {socialMediaSettings.twitter.preferredDays.map(day => (
+                            <Badge key={day} variant="secondary">{day.slice(0, 3)}</Badge>
+                          ))}
+                          {socialMediaSettings.twitter.fromTime && socialMediaSettings.twitter.toTime && (
+                            <Badge variant="outline" className="flex items-center gap-1">
+                              <Clock className="h-3 w-3" />
+                              {socialMediaSettings.twitter.fromTime} - {socialMediaSettings.twitter.toTime}
+                            </Badge>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </CardContent>
               </Card>
+              
+              {/* Edit Social Media Modal */}
+              <Dialog open={socialMediaModal.isOpen} onOpenChange={closeModal}>
+                <DialogContent className="max-w-md">
+                  <DialogHeader>
+                    <DialogTitle className="flex items-center gap-2">
+                      Edit Social Media Settings 
+                      <span className="capitalize">({socialMediaModal.platform})</span>
+                    </DialogTitle>
+                  </DialogHeader>
+                  
+                  <div className="space-y-6">
+                    {/* Profile URL */}
+                    <div className="space-y-2">
+                      <Label htmlFor="profileUrl">Profile URL</Label>
+                      <Input
+                        id="profileUrl"
+                        value={modalFormData.url}
+                        onChange={(e) => setModalFormData(prev => ({ ...prev, url: e.target.value }))}
+                        placeholder={`Enter your ${socialMediaModal.platform} Profile URL`}
+                      />
+                    </div>
+                    
+                    {/* Preferred Days */}
+                    <div className="space-y-3">
+                      <Label>Preferred Days</Label>
+                      <div className="grid grid-cols-2 gap-2">
+                        {dayOptions.map(day => (
+                          <div key={day} className="flex items-center space-x-2">
+                            <Checkbox
+                              id={day}
+                              checked={modalFormData.preferredDays.includes(day)}
+                              onCheckedChange={() => handleDayToggle(day)}
+                            />
+                            <Label htmlFor={day} className="text-sm">{day}</Label>
+                          </div>
+                        ))}
+                      </div>
+                      {modalFormData.preferredDays.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mt-2">
+                          {modalFormData.preferredDays.map(day => (
+                            <Badge key={day} variant="secondary">{day.slice(0, 3)}</Badge>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Preferred Time */}
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <Label>Preferred Time</Label>
+                        <Info className="h-4 w-4 text-gray-400" />
+                        <span className="text-xs text-gray-500">Used for Auto Scheduling (IST)</span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <Label htmlFor="fromTime" className="text-sm">From Time</Label>
+                          <Select value={modalFormData.fromTime} onValueChange={(value) => setModalFormData(prev => ({ ...prev, fromTime: value }))}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select time" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {timeOptions.map(time => (
+                                <SelectItem key={time} value={time}>{time}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label htmlFor="toTime" className="text-sm">To Time</Label>
+                          <Select value={modalFormData.toTime} onValueChange={(value) => setModalFormData(prev => ({ ...prev, toTime: value }))}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select time" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {timeOptions.map(time => (
+                                <SelectItem key={time} value={time}>{time}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                      {modalFormData.fromTime && modalFormData.toTime && (
+                        <Badge variant="outline" className="flex items-center gap-1 w-fit">
+                          <Clock className="h-3 w-3" />
+                          {modalFormData.fromTime} - {modalFormData.toTime}
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <DialogFooter>
+                    <Button variant="outline" onClick={closeModal}>
+                      Cancel
+                    </Button>
+                    <Button onClick={handleModalSave}>
+                      Save
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             </TabsContent>
           </Tabs>
         </div>
