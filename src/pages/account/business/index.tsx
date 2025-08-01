@@ -165,21 +165,25 @@ const BusinessProfile = () => {
             </div>
 
             <div className="pt-16 px-4 pb-6">
-              <h1 className="text-2xl font-bold text-foreground">{user?.email?.split('@')[0] || 'Username'}</h1>
-              <p className="text-muted-foreground">{user?.email || 'username@gmail.com'}</p>
-              
-              <div className="flex gap-3 mt-4">
-                <div className="flex items-center justify-center w-10 h-10 rounded-full bg-pink-500/10 hover:bg-pink-500/20 transition-colors cursor-pointer">
-                  <Instagram className="h-5 w-5 text-pink-500" />
+              <div className="flex items-start justify-between">
+                <div>
+                  <h1 className="text-2xl font-bold text-foreground">{user?.email?.split('@')[0] || 'Username'}</h1>
+                  <p className="text-muted-foreground">{user?.email || 'username@gmail.com'}</p>
                 </div>
-                <div className="flex items-center justify-center w-10 h-10 rounded-full bg-blue-600/10 hover:bg-blue-600/20 transition-colors cursor-pointer">
-                  <Facebook className="h-5 w-5 text-blue-600" />
-                </div>
-                <div className="flex items-center justify-center w-10 h-10 rounded-full bg-red-600/10 hover:bg-red-600/20 transition-colors cursor-pointer">
-                  <Youtube className="h-5 w-5 text-red-600" />
-                </div>
-                <div className="flex items-center justify-center w-10 h-10 rounded-full bg-blue-400/10 hover:bg-blue-400/20 transition-colors cursor-pointer">
-                  <Twitter className="h-5 w-5 text-blue-400" />
+                
+                <div className="flex gap-3">
+                  <div className="flex items-center justify-center w-10 h-10 rounded-full bg-pink-500/10 hover:bg-pink-500/20 transition-colors cursor-pointer">
+                    <Instagram className="h-5 w-5 text-pink-500" />
+                  </div>
+                  <div className="flex items-center justify-center w-10 h-10 rounded-full bg-blue-600/10 hover:bg-blue-600/20 transition-colors cursor-pointer">
+                    <Facebook className="h-5 w-5 text-blue-600" />
+                  </div>
+                  <div className="flex items-center justify-center w-10 h-10 rounded-full bg-red-600/10 hover:bg-red-600/20 transition-colors cursor-pointer">
+                    <Youtube className="h-5 w-5 text-red-600" />
+                  </div>
+                  <div className="flex items-center justify-center w-10 h-10 rounded-full bg-blue-400/10 hover:bg-blue-400/20 transition-colors cursor-pointer">
+                    <Twitter className="h-5 w-5 text-blue-400" />
+                  </div>
                 </div>
               </div>
 
