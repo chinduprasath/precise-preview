@@ -1,11 +1,1 @@
-
 project_id = "zdzgmhkbzfogkmusuiet"
-
-[functions.add-funds]
-verify_jwt = true
-
-[functions.request-withdrawal]
-verify_jwt = true
-
-[functions.process-withdrawal]
-verify_jwt = true
