@@ -454,15 +454,13 @@ const Settings = () => {
                           />
                         </div>
                         <div className="flex gap-2">
+                          <Button variant="secondary" onClick={() => handleConnectSocialMedia('instagram')} className="flex items-center gap-1">
+                            <Link className="h-4 w-4" />
+                            Connect
+                          </Button>
                           <Button variant="outline" onClick={() => openEditModal('instagram')}>
                             Edit
                           </Button>
-                          {userType === 'influencer' && (
-                            <Button variant="secondary" onClick={() => handleConnectSocialMedia('instagram')} className="flex items-center gap-1">
-                              <Link className="h-4 w-4" />
-                              Connect
-                            </Button>
-                          )}
                         </div>
                       </div>
                       {(socialMediaSettings.instagram.preferredDays.length > 0 || socialMediaSettings.instagram.fromTime) && (
@@ -495,15 +493,13 @@ const Settings = () => {
                           />
                         </div>
                         <div className="flex gap-2">
+                          <Button variant="secondary" onClick={() => handleConnectSocialMedia('facebook')} className="flex items-center gap-1">
+                            <Link className="h-4 w-4" />
+                            Connect
+                          </Button>
                           <Button variant="outline" onClick={() => openEditModal('facebook')}>
                             Edit
                           </Button>
-                          {userType === 'influencer' && (
-                            <Button variant="secondary" onClick={() => handleConnectSocialMedia('facebook')} className="flex items-center gap-1">
-                              <Link className="h-4 w-4" />
-                              Connect
-                            </Button>
-                          )}
                         </div>
                       </div>
                       {(socialMediaSettings.facebook.preferredDays.length > 0 || socialMediaSettings.facebook.fromTime) && (
@@ -536,15 +532,13 @@ const Settings = () => {
                           />
                         </div>
                         <div className="flex gap-2">
+                          <Button variant="secondary" onClick={() => handleConnectSocialMedia('youtube')} className="flex items-center gap-1">
+                            <Link className="h-4 w-4" />
+                            Connect
+                          </Button>
                           <Button variant="outline" onClick={() => openEditModal('youtube')}>
                             Edit
                           </Button>
-                          {userType === 'influencer' && (
-                            <Button variant="secondary" onClick={() => handleConnectSocialMedia('youtube')} className="flex items-center gap-1">
-                              <Link className="h-4 w-4" />
-                              Connect
-                            </Button>
-                          )}
                         </div>
                       </div>
                       {(socialMediaSettings.youtube.preferredDays.length > 0 || socialMediaSettings.youtube.fromTime) && (
@@ -577,15 +571,13 @@ const Settings = () => {
                           />
                         </div>
                         <div className="flex gap-2">
+                          <Button variant="secondary" onClick={() => handleConnectSocialMedia('twitter')} className="flex items-center gap-1">
+                            <Link className="h-4 w-4" />
+                            Connect
+                          </Button>
                           <Button variant="outline" onClick={() => openEditModal('twitter')}>
                             Edit
                           </Button>
-                          {userType === 'influencer' && (
-                            <Button variant="secondary" onClick={() => handleConnectSocialMedia('twitter')} className="flex items-center gap-1">
-                              <Link className="h-4 w-4" />
-                              Connect
-                            </Button>
-                          )}
                         </div>
                       </div>
                       {(socialMediaSettings.twitter.preferredDays.length > 0 || socialMediaSettings.twitter.fromTime) && (

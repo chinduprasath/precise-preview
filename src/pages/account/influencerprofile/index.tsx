@@ -6,6 +6,8 @@ import { Card } from '@/components/ui/card';
 import { Instagram, Facebook, Youtube, Twitter } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { LineChart } from '@/components/ui/line-chart';
+import ServicesTabContent from '@/components/influencers/ServicesTabContent';
+import PricesTabContent from '@/components/influencers/PricesTabContent';
 
 interface SocialStats {
   platform: string;
@@ -21,14 +23,6 @@ interface NetworkStats {
   color: string;
 }
 
-interface ContentCard {
-  id: string;
-  thumbnail: string;
-  likes: number;
-  views: number;
-  shares: number;
-  price?: number;
-}
 
 const InfluencerProfilePage = () => {
   const navigate = useNavigate();
@@ -71,56 +65,6 @@ const InfluencerProfilePage = () => {
     },
   ];
 
-  const contentCards: ContentCard[] = [
-    {
-      id: '1',
-      thumbnail: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff',
-      likes: 200000,
-      views: 500000,
-      shares: 15000,
-      price: 5000
-    },
-    {
-      id: '2',
-      thumbnail: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30',
-      likes: 150000,
-      views: 400000,
-      shares: 12000,
-      price: 4500
-    },
-    {
-      id: '3',
-      thumbnail: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e',
-      likes: 180000,
-      views: 450000,
-      shares: 13500,
-      price: 4800
-    },
-    {
-      id: '4',
-      thumbnail: 'https://images.unsplash.com/photo-1503602642458-232111445657',
-      likes: 160000,
-      views: 420000,
-      shares: 11000,
-      price: 4200
-    },
-    {
-      id: '5',
-      thumbnail: 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f',
-      likes: 190000,
-      views: 480000,
-      shares: 14000,
-      price: 5200
-    },
-    {
-      id: '6',
-      thumbnail: 'https://images.unsplash.com/photo-1525904097878-94fb15835963',
-      likes: 170000,
-      views: 430000,
-      shares: 12500,
-      price: 4700
-    }
-  ];
 
   React.useEffect(() => {
     const checkUser = async () => {
@@ -232,42 +176,11 @@ const InfluencerProfilePage = () => {
                 </TabsList>
 
                 <TabsContent value="services" className="mt-0">
-                  <div className="grid grid-cols-3 gap-4">
-                    {contentCards.map((card) => (
-                      <div key={card.id} className="rounded-lg overflow-hidden shadow-sm border">
-                        <img src={card.thumbnail} alt="" className="w-full h-40 object-cover" />
-                        <div className="p-3 bg-white">
-                          <div className="flex justify-between text-sm">
-                            <span>❤️ {formatNumber(card.likes)}</span>
-                            <span>👁️ {formatNumber(card.views)}</span>
-                            <span>↗️ {formatNumber(card.shares)}</span>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                  <ServicesTabContent influencerId={user?.id} influencerName={user?.email?.split('@')[0] || 'Username'} />
                 </TabsContent>
 
                 <TabsContent value="prices" className="mt-0">
-                  <div className="grid grid-cols-3 gap-4">
-                    {contentCards.map((card) => (
-                      <div key={card.id} className="rounded-lg overflow-hidden shadow-sm border">
-                        <div className="relative">
-                          <img src={card.thumbnail} alt="" className="w-full h-40 object-cover" />
-                          <div className="absolute top-2 right-2 bg-white px-2 py-1 rounded-full text-sm font-medium">
-                            ₹{formatNumber(card.price || 0)}
-                          </div>
-                        </div>
-                        <div className="p-3 bg-white">
-                          <div className="flex justify-between text-sm">
-                            <span>❤️ {formatNumber(card.likes)}</span>
-                            <span>👁️ {formatNumber(card.views)}</span>
-                            <span>↗️ {formatNumber(card.shares)}</span>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                  <PricesTabContent influencerId={user?.id} influencerName={user?.email?.split('@')[0] || 'Username'} />
                 </TabsContent>
               </Tabs>
             </Card>

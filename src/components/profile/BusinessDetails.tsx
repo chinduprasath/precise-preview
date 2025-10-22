@@ -93,18 +93,6 @@ const BusinessDetails: React.FC<BusinessDetailsProps> = ({
       <Card className="overflow-hidden">
         
       </Card>
-
-      {/* Images Section */}
-      <Card className="overflow-hidden">
-        <CardContent className="p-4">
-          <h2 className="text-lg font-bold mb-3">Images</h2>
-          <div className="grid grid-cols-3 gap-2">
-            {[1, 2, 3, 4, 5, 6].map(item => <div key={item} className="overflow-hidden rounded-md bg-gray-100 aspect-square">
-                <img src={`https://images.unsplash.com/photo-${1560000000000 + item * 100000}?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80`} alt={`Business image ${item}`} className="w-full h-full object-cover" />
-              </div>)}
-          </div>
-        </CardContent>
-      </Card>
     </div>;
 };
 export default BusinessDetails;

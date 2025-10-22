@@ -358,6 +358,9 @@ const InfluencersPage = () => {
                         
                         {selectedInfluencer.niche && <div className="flex items-center gap-2 mt-1">
                             <span className="text-sm text-muted-foreground">{selectedInfluencer.niche.name}</span>
+                            {selectedInfluencer.city && selectedInfluencer.state && (
+                              <span className="text-sm text-muted-foreground">• {selectedInfluencer.city.name}, {selectedInfluencer.state.name}</span>
+                            )}
                             <Button variant="ghost" size="icon" onClick={handleShareInfluencer} className="h-6 w-6">
                               <Share2 className="h-3 w-3" />
                             </Button>

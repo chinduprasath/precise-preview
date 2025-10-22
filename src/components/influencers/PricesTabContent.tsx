@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -13,12 +13,24 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { ChevronDown, X, Info, Instagram, Facebook, Youtube } from 'lucide-react';
+import { ChevronDown, X, Info, Instagram, Facebook, Youtube, Edit, Plus, Eye, EyeOff } from 'lucide-react';
 
 interface PricesTabContentProps {
   influencerId?: string;
@@ -130,27 +142,122 @@ const PlatformIcon = ({ platform }: { platform: string }) => {
   }
 };
 
+// Custom MultiSelect Component
+interface MultiSelectProps {
+  options: Array<{ id: string; name: string; icon?: React.ReactNode }>;
+  selectedValues: string[];
+  onSelectionChange: (values: string[]) => void;
+  placeholder: string;
+  className?: string;
+}
+
+const MultiSelect: React.FC<MultiSelectProps> = ({
+  options,
+  selectedValues,
+  onSelectionChange,
+  placeholder,
+  className = ""
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleToggle = (value: string) => {
+    if (selectedValues.includes(value)) {
+      onSelectionChange(selectedValues.filter(v => v !== value));
+    } else {
+      onSelectionChange([...selectedValues, value]);
+    }
+  };
+
+  const selectedOptions = options.filter(option => selectedValues.includes(option.id));
+  const displayText = selectedOptions.length > 0 
+    ? `${selectedOptions.length} selected` 
+    : placeholder;
+
+  return (
+    <div className={`relative ${className}`}>
+      <Popover open={isOpen} onOpenChange={setIsOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            role="combobox"
+            aria-expanded={isOpen}
+            className="w-full justify-between"
+          >
+            {displayText}
+            <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-full p-0" align="start">
+          <div className="p-2 space-y-1 max-h-60 overflow-y-auto">
+            {options.map((option) => (
+              <div 
+                key={option.id}
+                className="flex items-center space-x-2 hover:bg-accent rounded-md p-2 cursor-pointer"
+                onClick={() => handleToggle(option.id)}
+              >
+                <Checkbox
+                  checked={selectedValues.includes(option.id)}
+                  onChange={() => {}} // Handled by onClick
+                />
+                <div className="flex items-center gap-2">
+                  {option.icon}
+                  <span className="text-sm font-medium leading-none">
+                    {option.name}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </PopoverContent>
+      </Popover>
+    </div>
+  );
+};
+
 const PricesTabContent: React.FC<PricesTabContentProps> = ({
   influencerId,
   influencerName,
 }) => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const isAccountInfluencer = location.pathname.startsWith('/account/influencer');
   const { toast } = useToast();
   const [selectedOrderType, setSelectedOrderType] = useState<string>('');
   const [selectedCustomPackage, setSelectedCustomPackage] = useState<string>('');
   const [selectedPlatform, setSelectedPlatform] = useState<string>('');
   const [platformDropdownOpen, setPlatformDropdownOpen] = useState(false);
+  const [isPlatformEditOpen, setIsPlatformEditOpen] = useState(false);
+  const [isCustomEditOpen, setIsCustomEditOpen] = useState(false);
+  const [arePlatformPricesHidden, setArePlatformPricesHidden] = useState(false);
+  const [platformEditSelected, setPlatformEditSelected] = useState<Record<string, boolean>>({});
+  const [editableCustomPackages, setEditableCustomPackages] = useState(customPackages);
+  const [isAddCustomOpen, setIsAddCustomOpen] = useState(false);
+  const [newCustomPackage, setNewCustomPackage] = useState({
+    title: '',
+    tagline: '',
+    platforms: [] as string[],
+    services: [] as string[],
+    price: ''
+  });
+  
+  // Platform-specific pricing state
+  const [platformPricing, setPlatformPricing] = useState<Record<string, Record<string, string>>>(() => {
+    const initialPricing: Record<string, Record<string, string>> = {};
+    allPlatformServices.forEach(service => {
+      initialPricing[service.id] = {};
+      service.platforms.forEach(platform => {
+        initialPricing[service.id][platform] = service.price;
+      });
+    });
+    return initialPricing;
+  });
 
   // Filter services based on selected platform (single selection)
   const filteredServices = useMemo(() => {
-    if (!selectedPlatform) {
-      return allPlatformServices;
-    }
-
-    // Show only services that are available on the selected platform
-    return allPlatformServices.filter(service => 
-      service.platforms.includes(selectedPlatform)
-    );
+    const base = selectedPlatform
+      ? allPlatformServices.filter(service => service.platforms.includes(selectedPlatform))
+      : allPlatformServices;
+    return base;
   }, [selectedPlatform]);
 
   const handleOrderTypeChange = (orderTypeId: string) => {
@@ -168,6 +275,71 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
 
   const removePlatform = () => {
     setSelectedPlatform('');
+  };
+
+  const handlePlatformPriceUpdate = (serviceId: string, platform: string, newPrice: string) => {
+    setPlatformPricing(prev => ({
+      ...prev,
+      [serviceId]: {
+        ...prev[serviceId],
+        [platform]: newPrice
+      }
+    }));
+  };
+
+  const handleCustomPackagePriceUpdate = (packageId: string, newPrice: string) => {
+    setEditableCustomPackages(prev => 
+      prev.map(pkg => 
+        pkg.id === packageId 
+          ? { ...pkg, price: newPrice }
+          : pkg
+      )
+    );
+  };
+
+  const handleAddCustomPackage = () => {
+    if (!newCustomPackage.title || !newCustomPackage.price) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in the title and price fields.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const newPackage = {
+      id: `package${Date.now()}`,
+      name: newCustomPackage.title,
+      platforms: newCustomPackage.platforms,
+      description: newCustomPackage.tagline,
+      price: newCustomPackage.price,
+      tooltip: newCustomPackage.tagline,
+      serviceTypes: newCustomPackage.services
+    };
+
+    setEditableCustomPackages(prev => [...prev, newPackage]);
+    setNewCustomPackage({
+      title: '',
+      tagline: '',
+      platforms: [],
+      services: [],
+      price: ''
+    });
+    setIsAddCustomOpen(false);
+    
+    toast({
+      title: "Package Added",
+      description: "Your custom package has been added successfully.",
+    });
+  };
+
+  const handleSavePrices = () => {
+    // Here you would typically save to a database or API
+    toast({
+      title: "Prices Updated",
+      description: "Your service prices have been successfully updated.",
+    });
+    setIsEditModalOpen(false);
   };
 
   const hasVisitPromoteSelected = selectedOrderType === 'visit-promote';
@@ -221,6 +393,7 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
   return (
     <TooltipProvider>
       <div className="space-y-8">
+
         <Tabs defaultValue="platform" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="platform">Platform Based</TabsTrigger>
@@ -232,7 +405,8 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <h3 className="text-lg font-medium">Platform Services</h3>
-                  <Popover open={platformDropdownOpen} onOpenChange={setPlatformDropdownOpen}>
+                  <div className="flex items-center gap-2">
+                    <Popover open={platformDropdownOpen} onOpenChange={setPlatformDropdownOpen}>
                     <PopoverTrigger asChild>
                       <Button
                         variant="outline"
@@ -259,7 +433,34 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
                         ))}
                       </div>
                     </PopoverContent>
-                  </Popover>
+                    </Popover>
+                    {isAccountInfluencer && (
+                      <>
+                        <Button variant="outline" onClick={() => setIsPlatformEditOpen(true)}>
+                          Edit
+                        </Button>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button variant="outline" className="flex items-center gap-2">
+                              <Eye className="h-4 w-4" />
+                              {arePlatformPricesHidden ? 'Unhide' : 'Hide'}
+                              <ChevronDown className="h-4 w-4" />
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-44 p-0" align="end">
+                            <div className="p-1">
+                              <button className="w-full text-left px-3 py-2 hover:bg-accent rounded-md text-sm"
+                                onClick={() => setArePlatformPricesHidden(true)}
+                              >Hide</button>
+                              <button className="w-full text-left px-3 py-2 hover:bg-accent rounded-md text-sm"
+                                onClick={() => setArePlatformPricesHidden(false)}
+                              >Unhide</button>
+                            </div>
+                          </PopoverContent>
+                        </Popover>
+                      </>
+                    )}
+                  </div>
                 </div>
                 
                 {selectedPlatform && (
@@ -295,7 +496,7 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
                               </Tooltip>
                             </div>
                           </div>
-                          <span className="text-sm font-semibold text-primary">{service.price}</span>
+                          <span className="text-sm font-semibold text-primary">{arePlatformPricesHidden ? '******' : service.price}</span>
                         </div>
                       ))}
                     </RadioGroup>
@@ -308,13 +509,81 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
                 ) : null}
               </div>
             </Card>
+            {/* Platform Edit Dialog */}
+            <Dialog open={isPlatformEditOpen} onOpenChange={setIsPlatformEditOpen}>
+              <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>Edit Platform Based Prices</DialogTitle>
+                  <DialogDescription>Update prices for each platform per service.</DialogDescription>
+                </DialogHeader>
+                <div className="border rounded-lg overflow-hidden">
+                  <table className="w-full">
+                    <thead className="bg-muted">
+                      <tr>
+                        <th className="text-left p-4 font-medium">Services</th>
+                        <th className="text-center p-4 font-medium">Instagram</th>
+                        <th className="text-center p-4 font-medium">Facebook</th>
+                        <th className="text-center p-4 font-medium">YouTube</th>
+                        <th className="text-center p-4 font-medium">Twitter</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {allPlatformServices.map((service) => (
+                        <tr key={service.id} className="border-t align-top">
+                          <td className="p-4">
+                            <div className="flex items-start gap-3">
+                              <Checkbox
+                                checked={!!platformEditSelected[service.id]}
+                                onCheckedChange={(checked) => setPlatformEditSelected(prev => ({ ...prev, [service.id]: !!checked }))}
+                              />
+                              <div>
+                                <div className="font-medium">{service.name}</div>
+                                <div className="text-sm text-muted-foreground">{service.tooltip}</div>
+                              </div>
+                            </div>
+                          </td>
+                          {availablePlatforms.map((platform) => (
+                            <td key={platform.id} className="p-4 text-center">
+                              {service.platforms.includes(platform.id) ? (
+                                <Input
+                                  value={arePlatformPricesHidden ? '******' : (platformPricing[service.id]?.[platform.id] || '')}
+                                  onChange={(e) => handlePlatformPriceUpdate(service.id, platform.id, e.target.value)}
+                                  className="w-24 text-center"
+                                  placeholder="₹499"
+                                />
+                              ) : (
+                                <span className="text-muted-foreground text-sm">-</span>
+                              )}
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setIsPlatformEditOpen(false)}>Close</Button>
+                  <Button onClick={handleSavePrices}>Update Prices</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </TabsContent>
 
           <TabsContent value="custom" className="mt-6">
             <Card className="p-6">
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-lg font-medium mb-2">Custom Packages</h3>
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-lg font-medium">Custom Packages</h3>
+                    {isAccountInfluencer && (
+                      <div className="flex items-center gap-2">
+                        <Button variant="outline" onClick={() => setIsCustomEditOpen(true)}>Edit</Button>
+                        <Button variant="outline" onClick={() => setIsAddCustomOpen(true)} className="flex items-center gap-2">
+                          <Plus className="h-4 w-4" /> Add
+                        </Button>
+                      </div>
+                    )}
+                  </div>
                   <p className="text-sm text-muted-foreground">
                     Choose a multi-platform promotion package designed by the influencer. These bundles include posts across 2 or more platforms at a fixed price. Content must be provided by the business.
                   </p>
@@ -322,7 +591,7 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
                 
                 <div className="space-y-4">
                   <RadioGroup value={selectedCustomPackage} onValueChange={handleCustomPackageChange}>
-                    {customPackages.map((pkg) => (
+                    {editableCustomPackages.map((pkg) => (
                       <div key={pkg.id} className="border rounded-lg p-4 hover:bg-accent/50 transition-colors relative">
                         <div className="flex items-start justify-between">
                           <div className="flex items-start gap-3 flex-1">
@@ -384,6 +653,104 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
                 </div>
               </div>
             </Card>
+            {/* Custom Packages Edit Dialog */}
+            <Dialog open={isCustomEditOpen} onOpenChange={setIsCustomEditOpen}>
+              <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>Edit Custom Packages</DialogTitle>
+                  <DialogDescription>Update package titles, platforms, services and price.</DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4">
+                  {editableCustomPackages.map((pkg) => (
+                    <div key={pkg.id} className="p-4 border rounded-lg">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <Label>Title</Label>
+                          <Input value={pkg.name} onChange={(e) => setEditableCustomPackages(prev => prev.map(p => p.id === pkg.id ? { ...p, name: e.target.value } : p))} />
+                        </div>
+                        <div>
+                          <Label>Price</Label>
+                          <Input value={pkg.price} onChange={(e) => handleCustomPackagePriceUpdate(pkg.id, e.target.value)} />
+                        </div>
+                      </div>
+                      <div className="mt-3">
+                        <Label>Description</Label>
+                        <Input value={pkg.description} onChange={(e) => setEditableCustomPackages(prev => prev.map(p => p.id === pkg.id ? { ...p, description: e.target.value } : p))} />
+                      </div>
+                      <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <Label>Platforms</Label>
+                          <MultiSelect
+                            options={availablePlatforms.map(platform => ({ id: platform.id, name: platform.name, icon: <PlatformIcon platform={platform.id} /> }))}
+                            selectedValues={pkg.platforms}
+                            onSelectionChange={(values) => setEditableCustomPackages(prev => prev.map(p => p.id === pkg.id ? { ...p, platforms: values } : p))}
+                            placeholder="Select platforms"
+                          />
+                        </div>
+                        <div>
+                          <Label>Services</Label>
+                          <MultiSelect
+                            options={allPlatformServices.map(service => ({ id: service.id, name: service.name }))}
+                            selectedValues={pkg.serviceTypes as any}
+                            onSelectionChange={(values) => setEditableCustomPackages(prev => prev.map(p => p.id === pkg.id ? { ...p, serviceTypes: values as any } : p))}
+                            placeholder="Select services"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setIsCustomEditOpen(false)}>Close</Button>
+                  <Button onClick={handleSavePrices}>Update Packages</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+            {/* Add Custom Package Dialog */}
+            <Dialog open={isAddCustomOpen} onOpenChange={setIsAddCustomOpen}>
+              <DialogContent className="max-w-2xl">
+                <DialogHeader>
+                  <DialogTitle>Add Custom Package</DialogTitle>
+                  <DialogDescription>Create a new bundle with platforms, services and a price.</DialogDescription>
+                </DialogHeader>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="new-title">Title</Label>
+                    <Input id="new-title" value={newCustomPackage.title} onChange={(e) => setNewCustomPackage(prev => ({ ...prev, title: e.target.value }))} placeholder="Brand Boost" />
+                  </div>
+                  <div>
+                    <Label htmlFor="new-price">Price</Label>
+                    <Input id="new-price" value={newCustomPackage.price} onChange={(e) => setNewCustomPackage(prev => ({ ...prev, price: e.target.value }))} placeholder="₹999" />
+                  </div>
+                  <div className="md:col-span-2">
+                    <Label htmlFor="new-desc">Description</Label>
+                    <Input id="new-desc" value={newCustomPackage.tagline} onChange={(e) => setNewCustomPackage(prev => ({ ...prev, tagline: e.target.value }))} placeholder="Perfect for launches" />
+                  </div>
+                  <div>
+                    <Label>Platforms</Label>
+                    <MultiSelect
+                      options={availablePlatforms.map(platform => ({ id: platform.id, name: platform.name, icon: <PlatformIcon platform={platform.id} /> }))}
+                      selectedValues={newCustomPackage.platforms}
+                      onSelectionChange={(values) => setNewCustomPackage(prev => ({ ...prev, platforms: values }))}
+                      placeholder="Select platforms"
+                    />
+                  </div>
+                  <div>
+                    <Label>Services</Label>
+                    <MultiSelect
+                      options={allPlatformServices.map(service => ({ id: service.id, name: service.name }))}
+                      selectedValues={newCustomPackage.services}
+                      onSelectionChange={(values) => setNewCustomPackage(prev => ({ ...prev, services: values }))}
+                      placeholder="Select services"
+                    />
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setIsAddCustomOpen(false)}>Close</Button>
+                  <Button onClick={handleAddCustomPackage}>Save</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </TabsContent>
         </Tabs>
 

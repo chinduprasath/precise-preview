@@ -44,6 +44,19 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
   onSendRequest,
   isCustomPackage = false,
 }) => {
+  // Calculate GST (18%)
+  const gstAmount = Math.round((packagePrice - couponDiscount + platformFee) * 0.18);
+  const totalWithGST = packagePrice - couponDiscount + platformFee + gstAmount;
+  
+  // Get platform names as text
+  const getPlatformText = () => {
+    if (isCustomPackage) {
+      return "Facebook,Instagram,Youtube,Twitter";
+    }
+    const platform = socialPlatforms.find(p => p.id === selectedSinglePlatform);
+    return platform ? platform.name : selectedSinglePlatform;
+  };
+
   return (
     <Card className="mt-auto">
       <CardHeader className="pb-3">
@@ -51,6 +64,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
       </CardHeader>
       <CardContent className="pb-4">
         <div className="space-y-4">
+          {/* Order Details Section */}
           <div className="space-y-2">
             <h4 className="font-medium text-sm">Order Details</h4>
             <div className="space-y-1 text-sm text-muted-foreground">
@@ -60,90 +74,53 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
               </div>
               <div className="flex justify-between">
                 <span>Content:</span>
-                <span className="font-medium text-foreground">{selectedContent}</span>
+                <span className="font-medium text-foreground">{selectedContent} (30 sec)</span>
               </div>
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between">
                 <span>Platform:</span>
-                <Select 
-                  value={selectedSinglePlatform} 
-                  onValueChange={onPlatformChange}
-                  disabled={isCustomPackage}
-                >
-                  <SelectTrigger 
-                    className={`w-32 h-8 text-xs ${isCustomPackage ? 'opacity-50 cursor-not-allowed' : ''}`}
-                  >
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {socialPlatforms.map((platform) => (
-                      <SelectItem key={platform.id} value={platform.id}>
-                        <div className="flex items-center gap-2">
-                          <span className={platform.color}>{platform.icon}</span>
-                          {platform.name}
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <span className="font-medium text-foreground">{getPlatformText()}</span>
               </div>
             </div>
           </div>
 
-          {contentSubmissionMethod === 'upload' ? (
-            <div className="space-y-1.5 pt-2 border-t">
-              <div className="flex justify-between text-sm">
-                <span className={cn(
-                  "transition-all",
-                  appliedCoupon ? "text-primary" : "text-muted-foreground"
-                )}>
-                  Coupon Discount
-                </span>
-                <span className={cn(
-                  appliedCoupon ? "text-primary font-medium" : "text-muted-foreground"
-                )}>
-                  {couponDiscount ? `-${couponDiscount}₹` : "—"}
-                </span>
-              </div>
-              
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Platform Fee</span>
-                <span className="text-muted-foreground">{platformFee}₹</span>
-              </div>
+          {/* Divider */}
+          <hr className="border-gray-200" />
+
+          {/* Cost Breakdown Section */}
+          <div className="space-y-1.5">
+            <div className="flex justify-between text-sm">
+              <span>Base Price:</span>
+              <span>₹{packagePrice}</span>
             </div>
-          ) : (
-            <div className="space-y-4 pt-2 border-t">
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium">Posting Fee (Fixed):</span>
-                  <span className="font-bold">₹800</span>
-                </div>
-                
-                <div className="flex justify-between items-center">
-                  <span className="text-sm">Custom Content Creation Fee:</span>
-                  <span className="bg-amber-100 dark:bg-amber-900/20 text-amber-800 dark:text-amber-200 px-2 py-1 rounded-md text-xs font-medium">
-                    To be quoted
-                  </span>
-                </div>
-              </div>
-              
-              <div className="bg-gray-50 dark:bg-gray-900/20 p-3 rounded-md border">
-                <div className="text-sm text-muted-foreground">
-                  <strong>Note:</strong> Your request will be reviewed by the influencer. A custom quote for content creation will be shared based on your description.
-                </div>
-              </div>
+            <div className="flex justify-between text-sm">
+              <span>Platform Fee:</span>
+              <span>₹{platformFee}</span>
             </div>
-          )}
+            <div className="flex justify-between text-sm">
+              <span>Coupon Discount:</span>
+              <span className={couponDiscount > 0 ? "text-green-600" : ""}>
+                - ₹{couponDiscount}
+              </span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span>GST (18%):</span>
+              <span>₹{gstAmount}</span>
+            </div>
+          </div>
+
+          {/* Divider */}
+          <hr className="border-gray-200" />
+
+          {/* Total Section */}
+          <div className="flex justify-between items-center">
+            <span className="text-base font-semibold">Total (Inclusive of taxes):</span>
+            <span className="text-xl font-bold">₹{totalWithGST}</span>
+          </div>
+
+          {/* Divider */}
+          <hr className="border-gray-200" />
         </div>
       </CardContent>
-      
-      {contentSubmissionMethod === 'upload' && (
-        <div className="px-6 py-4 bg-muted/30 border-t">
-          <div className="flex justify-between items-center">
-            <span className="text-base font-semibold">Total</span>
-            <span className="text-xl font-bold">{total}₹</span>
-          </div>
-        </div>
-      )}
       
       <CardFooter className="pt-6">
         <Button
@@ -157,10 +134,8 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               Processing...
             </>
-          ) : contentSubmissionMethod === 'upload' ? (
-            "Send Request"
           ) : (
-            "Send Request for Quote"
+            "Send Request"
           )}
         </Button>
       </CardFooter>

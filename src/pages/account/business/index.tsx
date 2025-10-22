@@ -9,6 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import BusinessDetails from '@/components/profile/BusinessDetails';
 import BusinessServicesTab from '@/components/profile/BusinessServicesTab';
 import BusinessDataTab from '@/components/profile/BusinessDataTab';
+import BusinessGalleryTab from '@/components/profile/BusinessGalleryTab';
 import BusinessEditModal from '@/components/profile/BusinessEditModal';
 
 const BusinessProfile = () => {
@@ -203,9 +204,10 @@ const BusinessProfile = () => {
                 <div className="md:w-2/3 flex-grow">
                   <Tabs defaultValue="services" className="w-full">
                     <div className="border-b border-border mb-6">
-                      <TabsList className="grid w-full grid-cols-2">
+                      <TabsList className="grid w-full grid-cols-3">
                         <TabsTrigger value="services">Services</TabsTrigger>
                         <TabsTrigger value="data">Data</TabsTrigger>
+                        <TabsTrigger value="gallery">Gallery</TabsTrigger>
                       </TabsList>
                     </div>
                     
@@ -215,6 +217,10 @@ const BusinessProfile = () => {
                     
                     <TabsContent value="data" className="mt-0">
                       <BusinessDataTab />
+                    </TabsContent>
+                    
+                    <TabsContent value="gallery" className="mt-0">
+                      <BusinessGalleryTab />
                     </TabsContent>
                   </Tabs>
                 </div>
