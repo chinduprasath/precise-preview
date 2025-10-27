@@ -29,8 +29,81 @@ const BusinessWalletPage = () => {
   const [totalSpent, setTotalSpent] = useState(0);
   const [totalWithdrawn, setTotalWithdrawn] = useState(0);
 
+  // Add dummy data for demonstration
+  const dummyTransactions: Transaction[] = [
+    {
+      id: '1',
+      amount: 5000,
+      transaction_type: 'deposit',
+      description: 'Added funds to wallet',
+      created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+      balance_after: 5000,
+      metadata: {}
+    },
+    {
+      id: '2',
+      amount: 1500,
+      transaction_type: 'order_payment',
+      description: 'Payment for Instagram promotion by @influencer_john',
+      created_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+      balance_after: 3500,
+      metadata: {}
+    },
+    {
+      id: '3',
+      amount: 500,
+      transaction_type: 'refund',
+      description: 'Refund for cancelled order #ORD-2024-001',
+      created_at: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+      balance_after: 4000,
+      metadata: {}
+    },
+    {
+      id: '4',
+      amount: 2000,
+      transaction_type: 'deposit',
+      description: 'Added funds via UPI',
+      created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+      balance_after: 6000,
+      metadata: {}
+    },
+    {
+      id: '5',
+      amount: 800,
+      transaction_type: 'order_payment',
+      description: 'Payment for YouTube video promotion',
+      created_at: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
+      balance_after: 5200,
+      metadata: {}
+    },
+    {
+      id: '6',
+      amount: 300,
+      transaction_type: 'adjustment',
+      description: 'Referral bonus from @sarah_marketing',
+      created_at: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000).toISOString(),
+      balance_after: 5500,
+      metadata: { type: 'referral_bonus' }
+    },
+    {
+      id: '7',
+      amount: 250,
+      transaction_type: 'adjustment',
+      description: 'Sign-up bonus',
+      created_at: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
+      balance_after: 5750,
+      metadata: { type: 'signup_bonus' }
+    }
+  ];
+
   useEffect(() => {
-    fetchWalletData();
+    // Use dummy data for demonstration
+    setTransactions(dummyTransactions);
+    setBalance(3500);
+    setTotalSpent(2300);
+    setTotalWithdrawn(0);
+    setIsLoading(false);
+    // fetchWalletData();
   }, []);
 
   const fetchWalletData = async () => {
@@ -216,6 +289,7 @@ const BusinessWalletPage = () => {
                     <TabsTrigger value="deposits">Deposits</TabsTrigger>
                     <TabsTrigger value="payments">Payments</TabsTrigger>
                     <TabsTrigger value="refunds">Refunds</TabsTrigger>
+                    <TabsTrigger value="bonus">Bonus</TabsTrigger>
                   </TabsList>
                   <div>
                     <Button variant="outline" size="sm" className="ml-auto">
@@ -312,7 +386,131 @@ const BusinessWalletPage = () => {
                   </div>
                 </TabsContent>
 
-                {/* Add similar content for other tabs */}
+                <TabsContent value="payments" className="p-0">
+                  <div className="divide-y">
+                    {isLoading ? (
+                      <div className="flex justify-center items-center p-8">
+                        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+                      </div>
+                    ) : transactions.filter(t => t.transaction_type === 'order_payment').length === 0 ? (
+                      <div className="text-center py-8 text-gray-500">
+                        No payments found.
+                      </div>
+                    ) : (
+                      transactions
+                        .filter(t => t.transaction_type === 'order_payment')
+                        .map((transaction) => (
+                          <div key={transaction.id} className="p-4 hover:bg-gray-50">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center">
+                                <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mr-3">
+                                  <ArrowDown className="w-5 h-5 text-red-500" />
+                                </div>
+                                <div>
+                                  <p className="font-medium">{transaction.description}</p>
+                                  <p className="text-xs text-gray-500">
+                                    {getTimeDifference(transaction.created_at)} • {formatDate(transaction.created_at)}
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <p className="font-bold text-red-600">
+                                  -{formatCurrency(transaction.amount)}
+                                </p>
+                                <p className="text-xs text-gray-500">
+                                  Balance: {formatCurrency(transaction.balance_after)}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        ))
+                    )}
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="refunds" className="p-0">
+                  <div className="divide-y">
+                    {isLoading ? (
+                      <div className="flex justify-center items-center p-8">
+                        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+                      </div>
+                    ) : transactions.filter(t => t.transaction_type === 'refund').length === 0 ? (
+                      <div className="text-center py-8 text-gray-500">
+                        No refunds found.
+                      </div>
+                    ) : (
+                      transactions
+                        .filter(t => t.transaction_type === 'refund')
+                        .map((transaction) => (
+                          <div key={transaction.id} className="p-4 hover:bg-gray-50">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center">
+                                <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mr-3">
+                                  <ArrowUp className="w-5 h-5 text-green-500" />
+                                </div>
+                                <div>
+                                  <p className="font-medium">{transaction.description}</p>
+                                  <p className="text-xs text-gray-500">
+                                    {getTimeDifference(transaction.created_at)} • {formatDate(transaction.created_at)}
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <p className="font-bold text-green-600">
+                                  +{formatCurrency(transaction.amount)}
+                                </p>
+                                <p className="text-xs text-gray-500">
+                                  Balance: {formatCurrency(transaction.balance_after)}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        ))
+                    )}
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="bonus" className="p-0">
+                  <div className="divide-y">
+                    {isLoading ? (
+                      <div className="flex justify-center items-center p-8">
+                        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+                      </div>
+                    ) : transactions.filter(t => t.transaction_type === 'adjustment').length === 0 ? (
+                      <div className="text-center py-8 text-gray-500">
+                        No bonus transactions found.
+                      </div>
+                    ) : (
+                      transactions
+                        .filter(t => t.transaction_type === 'adjustment')
+                        .map((transaction) => (
+                          <div key={transaction.id} className="p-4 hover:bg-gray-50">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center">
+                                <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mr-3">
+                                  <ArrowUp className="w-5 h-5 text-green-500" />
+                                </div>
+                                <div>
+                                  <p className="font-medium">{transaction.description}</p>
+                                  <p className="text-xs text-gray-500">
+                                    {getTimeDifference(transaction.created_at)} • {formatDate(transaction.created_at)}
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <p className="font-bold text-green-600">
+                                  +{formatCurrency(transaction.amount)}
+                                </p>
+                                <p className="text-xs text-gray-500">
+                                  Balance: {formatCurrency(transaction.balance_after)}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        ))
+                    )}
+                  </div>
+                </TabsContent>
               </Tabs>
             </div>
           </div>

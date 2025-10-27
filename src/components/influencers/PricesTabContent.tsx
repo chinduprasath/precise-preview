@@ -339,7 +339,8 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
       title: "Prices Updated",
       description: "Your service prices have been successfully updated.",
     });
-    setIsEditModalOpen(false);
+    setIsPlatformEditOpen(false);
+    setIsCustomEditOpen(false);
   };
 
   const hasVisitPromoteSelected = selectedOrderType === 'visit-promote';
