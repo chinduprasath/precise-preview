@@ -452,7 +452,7 @@ const OffersPage = () => {
                               onClick={() => handleClaimReward(promo.id)}
                             >
                               <Gift className="w-4 h-4 mr-2" />
-                              Reward Claim - Activate 1-Month Pro Subscription
+                              Claim Reward
                             </Button>
                           )}
                         </div>
