@@ -63,9 +63,14 @@ const OffersPage = () => {
   const { toast } = useToast();
   const [userType] = useState(() => localStorage.getItem('userType') || 'business');
   const [activePromotions, setActivePromotions] = useState<UserPromotion[]>(mockUserPromotions);
+  const [urlGenerated, setUrlGenerated] = useState(false);
+  const [generatedUrl, setGeneratedUrl] = useState('');
   
   const generateUniqueUrl = () => {
     const newUrl = `https://inf.co/promo/u${Math.floor(Math.random() * 1000)}/${mockCurrentOffer.title.toLowerCase().replace(/\s+/g, '')}`;
+    
+    setUrlGenerated(true);
+    setGeneratedUrl(newUrl);
     
     toast({
       title: "URL Generated!",
@@ -128,8 +133,28 @@ const OffersPage = () => {
   
   const calculateReward = () => {
     return userType === 'business' 
-      ? '1 month Free Subscription' 
+      ? '1 Month Free Subscription' 
       : 'Commission-Free Withdrawal';
+  };
+  
+  const isOfferActive = () => {
+    const now = new Date();
+    const expiryDate = new Date(mockCurrentOffer.expiresAt);
+    return now < expiryDate;
+  };
+  
+  const handlePlatformShare = (platform: string) => {
+    toast({
+      title: `Opening ${platform}...`,
+      description: `Copy your URL and create a story on ${platform}`,
+    });
+  };
+  
+  const handleClaimReward = (promoId: string) => {
+    toast({
+      title: "Reward Activated!",
+      description: "Your 1-Month Pro Subscription has been activated successfully.",
+    });
   };
   
   const getPlatformIcon = (platform: string) => {
@@ -221,40 +246,116 @@ const OffersPage = () => {
                           <span className="font-medium">7 days</span>
                         </li>
                         <li className="flex justify-between">
-                          <span className="text-gray-600">Required Time Live:</span>
+                          <span className="text-gray-600">Story Duration Requirement:</span>
                           <span className="font-medium">24 hours</span>
                         </li>
                         <li className="flex justify-between">
-                          <span className="text-gray-600">Your Reward:</span>
+                          <span className="text-gray-600">Reward:</span>
                           <span className="font-medium">{calculateReward()}</span>
+                        </li>
+                        <li className="flex justify-between">
+                          <span className="text-gray-600">Campaign Ends On:</span>
+                          <span className="font-medium">{new Date(mockCurrentOffer.expiresAt).toLocaleDateString()}</span>
+                        </li>
+                        <li className="flex justify-between">
+                          <span className="text-gray-600">Status:</span>
+                          <span className="font-medium flex items-center">
+                            {isOfferActive() ? (
+                              <><span className="text-green-500 mr-1">🟢</span> Active</>
+                            ) : (
+                              <><span className="text-red-500 mr-1">🔴</span> Expired</>
+                            )}
+                          </span>
                         </li>
                       </ul>
                     </div>
                     
                     <div>
-                      <h3 className="font-semibold text-lg mb-2">Platform Instructions</h3>
-                      <div className="space-y-2">
-                        <div className="flex items-center p-2 bg-pink-50 rounded">
-                          <Instagram className="w-5 h-5 text-pink-500 mr-2" />
-                          <span>Post as regular post or story with caption</span>
+                      <h3 className="font-semibold text-lg mb-2">📋 Platform Instructions</h3>
+                      <div className="space-y-3">
+                        <div className="p-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg border border-purple-100">
+                          <div className="flex items-start">
+                            <span className="text-xl mr-2">🟣</span>
+                            <div>
+                              <p className="font-semibold text-purple-900">Instagram</p>
+                              <p className="text-sm text-gray-700 mt-1">Post promotional video as Story with caption & tag @InfluenceConnect — keep it live for 24h to earn your reward.</p>
+                            </div>
+                          </div>
                         </div>
-                        <div className="flex items-center p-2 bg-blue-50 rounded">
-                          <Facebook className="w-5 h-5 text-blue-500 mr-2" />
-                          <span>Share as post with caption and tagged page</span>
+                        <div className="p-3 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg border border-blue-100">
+                          <div className="flex items-start">
+                            <span className="text-xl mr-2">🔵</span>
+                            <div>
+                              <p className="font-semibold text-blue-900">Facebook</p>
+                              <p className="text-sm text-gray-700 mt-1">Share as Post or Story with caption & tag @InfluenceConnectOfficial — tracked for 24h automatically.</p>
+                            </div>
+                          </div>
                         </div>
-                        <div className="flex items-center p-2 bg-red-50 rounded">
-                          <Youtube className="w-5 h-5 text-red-500 mr-2" />
-                          <span>Include link in video description</span>
+                        <div className="p-3 bg-gradient-to-r from-sky-50 to-blue-50 rounded-lg border border-sky-100">
+                          <div className="flex items-start">
+                            <span className="text-xl mr-2">🟦</span>
+                            <div>
+                              <p className="font-semibold text-sky-900">Twitter (X)</p>
+                              <p className="text-sm text-gray-700 mt-1">Tweet video link with caption & tag @InfluenceConnect — keep tweet live for 24h.</p>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
                     
-                    <Button 
-                      className="w-full" 
-                      onClick={generateUniqueUrl}
-                    >
-                      <Gift className="w-5 h-5 mr-2" /> Generate Unique URL
-                    </Button>
+                    {!urlGenerated ? (
+                      <Button 
+                        className="w-full" 
+                        onClick={generateUniqueUrl}
+                      >
+                        <Gift className="w-5 h-5 mr-2" /> Generate Unique URL
+                      </Button>
+                    ) : (
+                      <div className="space-y-3">
+                        <div className="bg-gray-100 p-3 rounded-lg">
+                          <p className="text-sm font-medium mb-1">Your Generated URL:</p>
+                          <div className="flex items-center gap-2">
+                            <code className="text-xs bg-white px-2 py-1 rounded flex-1 overflow-x-auto">{generatedUrl}</code>
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => copyToClipboard(generatedUrl)}
+                            >
+                              <Copy className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-3 gap-2">
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            className="flex flex-col items-center py-3 h-auto"
+                            onClick={() => handlePlatformShare('Instagram')}
+                          >
+                            <Instagram className="w-5 h-5 mb-1" />
+                            <span className="text-xs">Instagram Story</span>
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            className="flex flex-col items-center py-3 h-auto"
+                            onClick={() => handlePlatformShare('Facebook')}
+                          >
+                            <Facebook className="w-5 h-5 mb-1" />
+                            <span className="text-xs">Facebook Story</span>
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            className="flex flex-col items-center py-3 h-auto"
+                            onClick={() => handlePlatformShare('Twitter')}
+                          >
+                            <Share2 className="w-5 h-5 mb-1" />
+                            <span className="text-xs">Twitter Story</span>
+                          </Button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </CardContent>
@@ -313,7 +414,7 @@ const OffersPage = () => {
                         </div>
                         
                         <div>
-                          <div className="flex justify-between items-center">
+                          <div className="flex justify-between items-center mb-3">
                             <div>
                               <p className="text-sm text-gray-500">Reward:</p>
                               <p className="font-medium">{calculateReward()}</p>
@@ -327,6 +428,15 @@ const OffersPage = () => {
                               {promo.rewardStatus}
                             </Badge>
                           </div>
+                          {promo.status === 'Live' && promo.rewardStatus === 'Pending' && (
+                            <Button 
+                              className="w-full"
+                              onClick={() => handleClaimReward(promo.id)}
+                            >
+                              <Gift className="w-4 h-4 mr-2" />
+                              🎁 Reward Ready — Click to Activate 1-Month Pro Subscription
+                            </Button>
+                          )}
                         </div>
                       </div>
                     </CardContent>
