@@ -26,24 +26,42 @@ const mockUserPromotions: UserPromotion[] = [
     offerId: '1',
     generatedUrl: 'https://inf.co/promo/u123/summer25',
     platform: 'Instagram',
+    postTime: new Date(Date.now() - 25 * 60 * 60 * 1000).toISOString(),
+    expiryTime: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
+    status: 'Live',
+    timeRemaining: '0h remaining',
+    engagement: {
+      views: 1245,
+      likes: 156,
+      shares: 42,
+      comments: 28,
+      clicks: 93
+    },
+    rewardStatus: 'Pending'
+  },
+  {
+    id: '2',
+    offerId: '1',
+    generatedUrl: 'https://inf.co/promo/u456/summer25',
+    platform: 'Facebook',
     postTime: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
     expiryTime: new Date(Date.now() + 18 * 60 * 60 * 1000).toISOString(),
     status: 'Live',
     timeRemaining: '18h remaining',
     engagement: {
-      views: 245,
-      likes: 56,
-      shares: 12,
-      comments: 8,
-      clicks: 23
+      views: 345,
+      likes: 76,
+      shares: 18,
+      comments: 12,
+      clicks: 34
     },
-    rewardStatus: 'Given'
+    rewardStatus: 'Pending'
   },
   {
-    id: '2',
+    id: '3',
     offerId: '2',
     generatedUrl: 'https://inf.co/promo/u123/spring25',
-    platform: 'Facebook',
+    platform: 'Instagram',
     postTime: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
     expiryTime: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
     status: 'Expired',
@@ -421,20 +439,20 @@ const OffersPage = () => {
                             </div>
                             <Badge 
                               className={promo.rewardStatus === 'Given' 
-                                ? "bg-green-500" 
-                                : "bg-yellow-500"
+                                ? "bg-green-500 hover:bg-green-600" 
+                                : "bg-yellow-500 hover:bg-yellow-600"
                               }
                             >
                               {promo.rewardStatus}
                             </Badge>
                           </div>
-                          {promo.status === 'Live' && promo.rewardStatus === 'Pending' && (
+                          {promo.rewardStatus === 'Pending' && (
                             <Button 
-                              className="w-full"
+                              className="w-full bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90"
                               onClick={() => handleClaimReward(promo.id)}
                             >
                               <Gift className="w-4 h-4 mr-2" />
-                              🎁 Reward Ready — Click to Activate 1-Month Pro Subscription
+                              Reward Claim - Activate 1-Month Pro Subscription
                             </Button>
                           )}
                         </div>
