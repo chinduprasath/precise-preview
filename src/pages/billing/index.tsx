@@ -5,10 +5,14 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Check, Download, Eye, Calendar, CreditCard, Smartphone } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
 
 export const BillingPage = () => {
   const [dateFilter, setDateFilter] = useState('all');
+  const [selectedBilling, setSelectedBilling] = useState<typeof billingHistory[0] | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   // Sample billing history data
   const billingHistory = [
@@ -295,6 +299,10 @@ export const BillingPage = () => {
                             variant="ghost"
                             size="sm"
                             className="h-8 px-3 text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+                            onClick={() => {
+                              setSelectedBilling(item);
+                              setIsDialogOpen(true);
+                            }}
                           >
                             <Eye className="h-4 w-4 mr-1" />
                             View
@@ -318,6 +326,102 @@ export const BillingPage = () => {
           </div>
         </div>
       </div>
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold">Invoice Details</DialogTitle>
+            <DialogDescription>
+              Complete details for invoice {selectedBilling?.invoiceId}
+            </DialogDescription>
+          </DialogHeader>
+          
+          {selectedBilling && (
+            <div className="space-y-6">
+              {/* Invoice Header */}
+              <div className="flex justify-between items-start">
+                <div>
+                  <p className="text-sm text-muted-foreground">Invoice Number</p>
+                  <p className="text-lg font-semibold">{selectedBilling.invoiceId}</p>
+                </div>
+                <div className="text-right">
+                  {getStatusBadge(selectedBilling.status)}
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* Billing Information */}
+              <div className="grid grid-cols-2 gap-6">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground mb-1">Date</p>
+                  <p className="flex items-center gap-2">
+                    <Calendar className="h-4 w-4 text-purple-600" />
+                    {formatDate(selectedBilling.date)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground mb-1">Payment Method</p>
+                  <p className="flex items-center gap-2">
+                    {getPaymentMethodIcon(selectedBilling.paymentMethod)}
+                    {selectedBilling.paymentMethod}
+                  </p>
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* Plan Details */}
+              <div>
+                <p className="text-sm font-medium text-muted-foreground mb-3">Plan Details</p>
+                <div className="bg-muted/50 rounded-lg p-4 space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-sm">Plan</span>
+                    <span className="font-medium">{selectedBilling.plan}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm">Billing Period</span>
+                    <span className="font-medium">Monthly</span>
+                  </div>
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* Amount Breakdown */}
+              <div>
+                <p className="text-sm font-medium text-muted-foreground mb-3">Amount Breakdown</p>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span>Subtotal</span>
+                    <span>{formatCurrency(selectedBilling.amount)}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span>Tax (18% GST)</span>
+                    <span>{formatCurrency(selectedBilling.amount * 0.18)}</span>
+                  </div>
+                  <Separator />
+                  <div className="flex justify-between font-bold text-lg">
+                    <span>Total Amount</span>
+                    <span>{formatCurrency(selectedBilling.amount * 1.18)}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-3 pt-4">
+                <Button className="flex-1" variant="default">
+                  <Download className="h-4 w-4 mr-2" />
+                  Download Invoice
+                </Button>
+                <Button className="flex-1" variant="outline">
+                  Print Invoice
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
