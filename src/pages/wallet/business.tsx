@@ -228,7 +228,7 @@ const BusinessWalletPage = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-background">
       <Sidebar />
       <div className="flex-1 flex flex-col">
         <ConditionalHeader />
@@ -241,7 +241,7 @@ const BusinessWalletPage = () => {
             {/* Wallet Summary */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               <Card className="p-6 shadow-sm">
-                <h3 className="text-sm font-medium text-gray-500">Current Balance</h3>
+                <h3 className="text-sm font-medium text-muted-foreground">Current Balance</h3>
                 <p className="text-3xl font-bold mt-1">{formatCurrency(balance)}</p>
                 <div className="mt-4">
                   <div className="flex items-center gap-2">
@@ -264,24 +264,24 @@ const BusinessWalletPage = () => {
               </Card>
 
               <Card className="p-6 shadow-sm">
-                <h3 className="text-sm font-medium text-gray-500">Total Spent</h3>
+                <h3 className="text-sm font-medium text-muted-foreground">Total Spent</h3>
                 <p className="text-3xl font-bold mt-1">{formatCurrency(totalSpent)}</p>
-                <p className="text-sm text-gray-500 mt-4">
+                <p className="text-sm text-muted-foreground mt-4">
                   From order payments and services
                 </p>
               </Card>
 
               <Card className="p-6 shadow-sm">
-                <h3 className="text-sm font-medium text-gray-500">Total Withdrawn</h3>
+                <h3 className="text-sm font-medium text-muted-foreground">Total Withdrawn</h3>
                 <p className="text-3xl font-bold mt-1">{formatCurrency(totalWithdrawn)}</p>
-                <p className="text-sm text-gray-500 mt-4">
+                <p className="text-sm text-muted-foreground mt-4">
                   Including refunds and adjustments
                 </p>
               </Card>
             </div>
 
             {/* Transactions */}
-            <div className="bg-white shadow-sm rounded-lg">
+            <div className="bg-card shadow-sm rounded-lg">
               <Tabs defaultValue="all">
                 <div className="border-b px-6 py-4 flex justify-between items-center">
                   <TabsList>
@@ -307,20 +307,20 @@ const BusinessWalletPage = () => {
                         <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
                       </div>
                     ) : transactions.length === 0 ? (
-                      <div className="text-center py-8 text-gray-500">
+                      <div className="text-center py-8 text-muted-foreground">
                         No transactions found.
                       </div>
                     ) : (
                       transactions.map((transaction) => (
-                        <div key={transaction.id} className="p-4 hover:bg-gray-50">
+                        <div key={transaction.id} className="p-4 hover:bg-accent">
                           <div className="flex items-center justify-between">
                             <div className="flex items-center">
-                              <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mr-3">
+                              <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center mr-3">
                                 {getTransactionIcon(transaction.transaction_type)}
                               </div>
                               <div>
                                 <p className="font-medium">{transaction.description}</p>
-                                <p className="text-xs text-gray-500">
+                                <p className="text-xs text-muted-foreground">
                                   {getTimeDifference(transaction.created_at)} • {formatDate(transaction.created_at)}
                                 </p>
                               </div>
@@ -333,7 +333,7 @@ const BusinessWalletPage = () => {
                                   ? '+' : '-'}
                                 {formatCurrency(transaction.amount)}
                               </p>
-                              <p className="text-xs text-gray-500">
+                              <p className="text-xs text-muted-foreground">
                                 Balance: {formatCurrency(transaction.balance_after)}
                               </p>
                             </div>
@@ -351,22 +351,22 @@ const BusinessWalletPage = () => {
                         <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
                       </div>
                     ) : transactions.filter(t => t.transaction_type === 'deposit').length === 0 ? (
-                      <div className="text-center py-8 text-gray-500">
+                      <div className="text-center py-8 text-muted-foreground">
                         No deposits found.
                       </div>
                     ) : (
                       transactions
                         .filter(t => t.transaction_type === 'deposit')
                         .map((transaction) => (
-                          <div key={transaction.id} className="p-4 hover:bg-gray-50">
+                          <div key={transaction.id} className="p-4 hover:bg-accent">
                             <div className="flex items-center justify-between">
                               <div className="flex items-center">
-                                <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mr-3">
+                                <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center mr-3">
                                   <ArrowUp className="w-5 h-5 text-green-500" />
                                 </div>
                                 <div>
                                   <p className="font-medium">{transaction.description}</p>
-                                  <p className="text-xs text-gray-500">
+                                  <p className="text-xs text-muted-foreground">
                                     {getTimeDifference(transaction.created_at)} • {formatDate(transaction.created_at)}
                                   </p>
                                 </div>
@@ -375,7 +375,7 @@ const BusinessWalletPage = () => {
                                 <p className="font-bold text-green-600">
                                   +{formatCurrency(transaction.amount)}
                                 </p>
-                                <p className="text-xs text-gray-500">
+                                <p className="text-xs text-muted-foreground">
                                   Balance: {formatCurrency(transaction.balance_after)}
                                 </p>
                               </div>
@@ -393,22 +393,22 @@ const BusinessWalletPage = () => {
                         <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
                       </div>
                     ) : transactions.filter(t => t.transaction_type === 'order_payment').length === 0 ? (
-                      <div className="text-center py-8 text-gray-500">
+                      <div className="text-center py-8 text-muted-foreground">
                         No payments found.
                       </div>
                     ) : (
                       transactions
                         .filter(t => t.transaction_type === 'order_payment')
                         .map((transaction) => (
-                          <div key={transaction.id} className="p-4 hover:bg-gray-50">
+                          <div key={transaction.id} className="p-4 hover:bg-accent">
                             <div className="flex items-center justify-between">
                               <div className="flex items-center">
-                                <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mr-3">
+                                <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center mr-3">
                                   <ArrowDown className="w-5 h-5 text-red-500" />
                                 </div>
                                 <div>
                                   <p className="font-medium">{transaction.description}</p>
-                                  <p className="text-xs text-gray-500">
+                                  <p className="text-xs text-muted-foreground">
                                     {getTimeDifference(transaction.created_at)} • {formatDate(transaction.created_at)}
                                   </p>
                                 </div>
@@ -417,7 +417,7 @@ const BusinessWalletPage = () => {
                                 <p className="font-bold text-red-600">
                                   -{formatCurrency(transaction.amount)}
                                 </p>
-                                <p className="text-xs text-gray-500">
+                                <p className="text-xs text-muted-foreground">
                                   Balance: {formatCurrency(transaction.balance_after)}
                                 </p>
                               </div>
@@ -435,22 +435,22 @@ const BusinessWalletPage = () => {
                         <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
                       </div>
                     ) : transactions.filter(t => t.transaction_type === 'refund').length === 0 ? (
-                      <div className="text-center py-8 text-gray-500">
+                      <div className="text-center py-8 text-muted-foreground">
                         No refunds found.
                       </div>
                     ) : (
                       transactions
                         .filter(t => t.transaction_type === 'refund')
                         .map((transaction) => (
-                          <div key={transaction.id} className="p-4 hover:bg-gray-50">
+                          <div key={transaction.id} className="p-4 hover:bg-accent">
                             <div className="flex items-center justify-between">
                               <div className="flex items-center">
-                                <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mr-3">
+                                <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center mr-3">
                                   <ArrowUp className="w-5 h-5 text-green-500" />
                                 </div>
                                 <div>
                                   <p className="font-medium">{transaction.description}</p>
-                                  <p className="text-xs text-gray-500">
+                                  <p className="text-xs text-muted-foreground">
                                     {getTimeDifference(transaction.created_at)} • {formatDate(transaction.created_at)}
                                   </p>
                                 </div>
@@ -459,7 +459,7 @@ const BusinessWalletPage = () => {
                                 <p className="font-bold text-green-600">
                                   +{formatCurrency(transaction.amount)}
                                 </p>
-                                <p className="text-xs text-gray-500">
+                                <p className="text-xs text-muted-foreground">
                                   Balance: {formatCurrency(transaction.balance_after)}
                                 </p>
                               </div>
@@ -477,22 +477,22 @@ const BusinessWalletPage = () => {
                         <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
                       </div>
                     ) : transactions.filter(t => t.transaction_type === 'adjustment').length === 0 ? (
-                      <div className="text-center py-8 text-gray-500">
+                      <div className="text-center py-8 text-muted-foreground">
                         No bonus transactions found.
                       </div>
                     ) : (
                       transactions
                         .filter(t => t.transaction_type === 'adjustment')
                         .map((transaction) => (
-                          <div key={transaction.id} className="p-4 hover:bg-gray-50">
+                          <div key={transaction.id} className="p-4 hover:bg-accent">
                             <div className="flex items-center justify-between">
                               <div className="flex items-center">
-                                <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mr-3">
+                                <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center mr-3">
                                   <ArrowUp className="w-5 h-5 text-green-500" />
                                 </div>
                                 <div>
                                   <p className="font-medium">{transaction.description}</p>
-                                  <p className="text-xs text-gray-500">
+                                  <p className="text-xs text-muted-foreground">
                                     {getTimeDifference(transaction.created_at)} • {formatDate(transaction.created_at)}
                                   </p>
                                 </div>
@@ -501,7 +501,7 @@ const BusinessWalletPage = () => {
                                 <p className="font-bold text-green-600">
                                   +{formatCurrency(transaction.amount)}
                                 </p>
-                                <p className="text-xs text-gray-500">
+                                <p className="text-xs text-muted-foreground">
                                   Balance: {formatCurrency(transaction.balance_after)}
                                 </p>
                               </div>
