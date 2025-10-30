@@ -125,7 +125,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
       <CardFooter className="pt-6">
         <Button
           type="button"
-          className="w-full bg-gradient-to-r from-[#9b87f5] to-[#7E69AB] hover:from-[#8b77e5] hover:to-[#6E59AB] transition-all py-6 text-base"
+          className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 transition-all py-6 text-base"
           onClick={onSendRequest}
           disabled={isSubmitting}
         >
