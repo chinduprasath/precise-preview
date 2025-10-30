@@ -36,8 +36,8 @@ const InfluencerProfileCard: React.FC<InfluencerProfileCardProps> = ({ influence
           <div className="flex flex-col flex-1">
             <div className="flex items-center gap-2">
               <h3 className="text-lg font-semibold">{influencer.name}</h3>
-              <BadgeCheck className="w-5 h-5 text-white" fill="white" />
-              <Heart className="w-5 h-5 text-white ml-auto cursor-pointer hover:scale-110 transition-transform" />
+              <BadgeCheck className="w-5 h-5 text-blue-400" fill="currentColor" />
+              <Heart className="w-5 h-5 text-white/80 hover:text-red-400 cursor-pointer hover:scale-110 transition-all" />
             </div>
             <p className="text-sm text-white/90">{influencer.category} • {influencer.location}</p>
           </div>
