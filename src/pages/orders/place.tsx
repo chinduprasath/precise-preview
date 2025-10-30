@@ -30,7 +30,8 @@ import PollContentTab from '@/components/orders/place/PollContentTab';
 const influencerMock = {
   avatar: "https://picsum.photos/id/64/100/100",
   name: "Gary Vaynerchuk",
-  email: "garyv@example.com",
+  category: "Digital Marketing",
+  location: "New York, USA",
   followers: [
     { platform: "Instagram", icon: <Instagram className="text-social-instagram w-5 h-5" />, value: "2.3M" },
     { platform: "Facebook", icon: <Facebook className="text-social-facebook w-5 h-5" />, value: "834K" },

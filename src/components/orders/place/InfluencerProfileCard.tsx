@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { BadgeCheck, Heart } from 'lucide-react';
 
 interface FollowerData {
   platform: string;
@@ -10,7 +11,8 @@ interface FollowerData {
 interface InfluencerData {
   avatar: string;
   name: string;
-  email: string;
+  category: string;
+  location: string;
   followers: FollowerData[];
 }
 
@@ -22,7 +24,7 @@ const InfluencerProfileCard: React.FC<InfluencerProfileCardProps> = ({ influence
   return (
     <div className="rounded-xl overflow-hidden border-0 shadow-md bg-white dark:bg-card">
       <div className="p-0">
-        <div className="bg-gradient-to-r from-[#9b87f5]/90 to-[#7E69AB]/90 p-5 flex items-center gap-4 text-white">
+        <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-5 flex items-center gap-4 text-white">
           <div className="relative">
             <img
               src={influencer.avatar}
@@ -31,9 +33,13 @@ const InfluencerProfileCard: React.FC<InfluencerProfileCardProps> = ({ influence
             />
             <div className="absolute bottom-0 right-0 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
           </div>
-          <div className="flex flex-col">
-            <h3 className="text-lg font-semibold">{influencer.name}</h3>
-            <p className="text-sm text-white/90">{influencer.email}</p>
+          <div className="flex flex-col flex-1">
+            <div className="flex items-center gap-2">
+              <h3 className="text-lg font-semibold">{influencer.name}</h3>
+              <BadgeCheck className="w-5 h-5 text-white" fill="white" />
+              <Heart className="w-5 h-5 text-white ml-auto cursor-pointer hover:scale-110 transition-transform" />
+            </div>
+            <p className="text-sm text-white/90">{influencer.category} • {influencer.location}</p>
           </div>
         </div>
         
