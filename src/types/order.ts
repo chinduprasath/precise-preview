@@ -29,6 +29,13 @@ export interface OrderContent {
   visitDetails?: VisitDetails;
 }
 
+export interface SocialMediaLinks {
+  instagram?: string;
+  facebook?: string;
+  youtube?: string;
+  twitter?: string;
+}
+
 export interface Order {
   id: string;
   orderNumber: string;
@@ -46,6 +53,7 @@ export interface Order {
   createdAt: string;
   updatedAt: string;
   content?: OrderContent; // Dynamic content based on order type
+  socialMediaLinks?: SocialMediaLinks; // Social media post URLs
 }
 
 export interface CouponCode {

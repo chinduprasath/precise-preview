@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { format, parse, isAfter, isBefore, parseISO } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
-import { Order, OrderStatus, OrderContentType } from '@/types/order';
+import { Order, OrderStatus, OrderContentType, SocialMediaLinks } from '@/types/order';
 import { orderData } from '@/data/orders';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
@@ -19,7 +19,7 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Eye, Filter, RefreshCw, Calendar, Clock, FileText, Download, Upload, BarChart, MapPin, Edit, X, ShoppingCart } from 'lucide-react';
+import { Eye, Filter, RefreshCw, Calendar, Clock, FileText, Download, Upload, BarChart, MapPin, Edit, X, ShoppingCart, Instagram, Facebook, Youtube, Twitter, ExternalLink } from 'lucide-react';
 import DateTimePicker from '@/components/reach/DateTimePicker';
 import FilterDropdown from '@/components/filters/FilterDropdown';
 
@@ -48,6 +48,7 @@ const OrdersPage = () => {
   const [isModifyMode, setIsModifyMode] = useState(false);
   const [modifyPrice, setModifyPrice] = useState('');
   const [modifyDate, setModifyDate] = useState('');
+  const [socialMediaLinks, setSocialMediaLinks] = useState<SocialMediaLinks>({});
   
   // Filter states
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
@@ -143,14 +144,22 @@ const OrdersPage = () => {
   };
 
   const handleUpdate = (order: Order) => {
+    const updatedOrder = {
+      ...order,
+      socialMediaLinks: socialMediaLinks,
+      updatedAt: new Date().toISOString()
+    };
+    
     toast({
       title: "Update Order",
-      description: `Updating order #${order.orderNumber}`,
+      description: `Order #${order.orderNumber} has been updated successfully`,
     });
+    setIsDetailOpen(false);
   };
 
   const handleViewDetails = (order: Order) => {
     setSelectedOrder(order);
+    setSocialMediaLinks(order.socialMediaLinks || {});
     setIsDetailOpen(true);
   };
 
@@ -292,6 +301,17 @@ const OrdersPage = () => {
   };
 
   const handleSaveModification = () => {
+    if (!selectedOrder) return;
+    
+    const updatedOrder = {
+      ...selectedOrder,
+      amount: parseFloat(modifyPrice) || selectedOrder.amount,
+      scheduledDate: modifyDate || selectedOrder.scheduledDate,
+      socialMediaLinks: socialMediaLinks
+    };
+    
+    setSelectedOrder(updatedOrder);
+    
     toast({
       title: "Order Modified",
       description: "Order details have been updated successfully.",
@@ -304,6 +324,23 @@ const OrdersPage = () => {
     setIsModifyMode(false);
     setModifyPrice('');
     setModifyDate('');
+  };
+  
+  const isValidUrl = (url: string): boolean => {
+    if (!url || url.trim() === '') return true; // Empty is valid
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  const handleSocialMediaLinkChange = (platform: keyof SocialMediaLinks, value: string) => {
+    setSocialMediaLinks(prev => ({
+      ...prev,
+      [platform]: value
+    }));
   };
 
   const isInfluencer = localStorage.getItem('userType') === 'influencer';
@@ -564,6 +601,7 @@ const OrdersPage = () => {
           setIsModifyMode(false);
           setModifyPrice('');
           setModifyDate('');
+          setSocialMediaLinks({});
         }
       }}>
         <DialogContent className="sm:max-w-5xl max-h-[95vh] overflow-y-auto">
@@ -825,6 +863,218 @@ const OrdersPage = () => {
                   </Card>
                 );
               })()}
+
+              {/* Social Media Links Section */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Social Media Links</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Add URLs to the social media posts for this order
+                  </p>
+                  
+                  {/* Instagram */}
+                  <div className="flex items-center gap-3">
+                    <div className={`flex-shrink-0 transition-opacity ${
+                      socialMediaLinks.instagram && isValidUrl(socialMediaLinks.instagram) 
+                        ? 'opacity-100' 
+                        : 'opacity-30'
+                    }`}>
+                      {socialMediaLinks.instagram && isValidUrl(socialMediaLinks.instagram) ? (
+                        <a 
+                          href={socialMediaLinks.instagram} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500 via-pink-500 to-orange-500 hover:opacity-80 transition-opacity"
+                        >
+                          <Instagram className="h-5 w-5 text-white" />
+                        </a>
+                      ) : (
+                        <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-muted">
+                          <Instagram className="h-5 w-5" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <Input
+                        placeholder="https://instagram.com/p/..."
+                        value={socialMediaLinks.instagram || ''}
+                        onChange={(e) => handleSocialMediaLinkChange('instagram', e.target.value)}
+                        className={`${
+                          socialMediaLinks.instagram && !isValidUrl(socialMediaLinks.instagram)
+                            ? 'border-destructive focus-visible:ring-destructive'
+                            : ''
+                        }`}
+                      />
+                      {socialMediaLinks.instagram && !isValidUrl(socialMediaLinks.instagram) && (
+                        <p className="text-xs text-destructive mt-1">Please enter a valid URL</p>
+                      )}
+                    </div>
+                    {socialMediaLinks.instagram && isValidUrl(socialMediaLinks.instagram) && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        asChild
+                      >
+                        <a href={socialMediaLinks.instagram} target="_blank" rel="noopener noreferrer">
+                          <ExternalLink className="h-4 w-4" />
+                        </a>
+                      </Button>
+                    )}
+                  </div>
+
+                  {/* Facebook */}
+                  <div className="flex items-center gap-3">
+                    <div className={`flex-shrink-0 transition-opacity ${
+                      socialMediaLinks.facebook && isValidUrl(socialMediaLinks.facebook) 
+                        ? 'opacity-100' 
+                        : 'opacity-30'
+                    }`}>
+                      {socialMediaLinks.facebook && isValidUrl(socialMediaLinks.facebook) ? (
+                        <a 
+                          href={socialMediaLinks.facebook} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="flex items-center justify-center w-10 h-10 rounded-lg bg-[#1877F2] hover:opacity-80 transition-opacity"
+                        >
+                          <Facebook className="h-5 w-5 text-white" />
+                        </a>
+                      ) : (
+                        <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-muted">
+                          <Facebook className="h-5 w-5" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <Input
+                        placeholder="https://facebook.com/..."
+                        value={socialMediaLinks.facebook || ''}
+                        onChange={(e) => handleSocialMediaLinkChange('facebook', e.target.value)}
+                        className={`${
+                          socialMediaLinks.facebook && !isValidUrl(socialMediaLinks.facebook)
+                            ? 'border-destructive focus-visible:ring-destructive'
+                            : ''
+                        }`}
+                      />
+                      {socialMediaLinks.facebook && !isValidUrl(socialMediaLinks.facebook) && (
+                        <p className="text-xs text-destructive mt-1">Please enter a valid URL</p>
+                      )}
+                    </div>
+                    {socialMediaLinks.facebook && isValidUrl(socialMediaLinks.facebook) && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        asChild
+                      >
+                        <a href={socialMediaLinks.facebook} target="_blank" rel="noopener noreferrer">
+                          <ExternalLink className="h-4 w-4" />
+                        </a>
+                      </Button>
+                    )}
+                  </div>
+
+                  {/* YouTube */}
+                  <div className="flex items-center gap-3">
+                    <div className={`flex-shrink-0 transition-opacity ${
+                      socialMediaLinks.youtube && isValidUrl(socialMediaLinks.youtube) 
+                        ? 'opacity-100' 
+                        : 'opacity-30'
+                    }`}>
+                      {socialMediaLinks.youtube && isValidUrl(socialMediaLinks.youtube) ? (
+                        <a 
+                          href={socialMediaLinks.youtube} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="flex items-center justify-center w-10 h-10 rounded-lg bg-[#FF0000] hover:opacity-80 transition-opacity"
+                        >
+                          <Youtube className="h-5 w-5 text-white" />
+                        </a>
+                      ) : (
+                        <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-muted">
+                          <Youtube className="h-5 w-5" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <Input
+                        placeholder="https://youtube.com/shorts/..."
+                        value={socialMediaLinks.youtube || ''}
+                        onChange={(e) => handleSocialMediaLinkChange('youtube', e.target.value)}
+                        className={`${
+                          socialMediaLinks.youtube && !isValidUrl(socialMediaLinks.youtube)
+                            ? 'border-destructive focus-visible:ring-destructive'
+                            : ''
+                        }`}
+                      />
+                      {socialMediaLinks.youtube && !isValidUrl(socialMediaLinks.youtube) && (
+                        <p className="text-xs text-destructive mt-1">Please enter a valid URL</p>
+                      )}
+                    </div>
+                    {socialMediaLinks.youtube && isValidUrl(socialMediaLinks.youtube) && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        asChild
+                      >
+                        <a href={socialMediaLinks.youtube} target="_blank" rel="noopener noreferrer">
+                          <ExternalLink className="h-4 w-4" />
+                        </a>
+                      </Button>
+                    )}
+                  </div>
+
+                  {/* Twitter */}
+                  <div className="flex items-center gap-3">
+                    <div className={`flex-shrink-0 transition-opacity ${
+                      socialMediaLinks.twitter && isValidUrl(socialMediaLinks.twitter) 
+                        ? 'opacity-100' 
+                        : 'opacity-30'
+                    }`}>
+                      {socialMediaLinks.twitter && isValidUrl(socialMediaLinks.twitter) ? (
+                        <a 
+                          href={socialMediaLinks.twitter} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="flex items-center justify-center w-10 h-10 rounded-lg bg-[#1DA1F2] hover:opacity-80 transition-opacity"
+                        >
+                          <Twitter className="h-5 w-5 text-white" />
+                        </a>
+                      ) : (
+                        <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-muted">
+                          <Twitter className="h-5 w-5" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <Input
+                        placeholder="https://twitter.com/..."
+                        value={socialMediaLinks.twitter || ''}
+                        onChange={(e) => handleSocialMediaLinkChange('twitter', e.target.value)}
+                        className={`${
+                          socialMediaLinks.twitter && !isValidUrl(socialMediaLinks.twitter)
+                            ? 'border-destructive focus-visible:ring-destructive'
+                            : ''
+                        }`}
+                      />
+                      {socialMediaLinks.twitter && !isValidUrl(socialMediaLinks.twitter) && (
+                        <p className="text-xs text-destructive mt-1">Please enter a valid URL</p>
+                      )}
+                    </div>
+                    {socialMediaLinks.twitter && isValidUrl(socialMediaLinks.twitter) && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        asChild
+                      >
+                        <a href={socialMediaLinks.twitter} target="_blank" rel="noopener noreferrer">
+                          <ExternalLink className="h-4 w-4" />
+                        </a>
+                      </Button>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
 
               {/* Action Buttons */}
               <Card>
