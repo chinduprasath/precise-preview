@@ -8,11 +8,33 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Check, Download, Eye, Calendar, CreditCard, Smartphone } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
+import { PaymentMethodForm } from '@/components/billing/PaymentMethodForm';
+import { toast } from '@/components/ui/use-toast';
+
+type PaymentMethod = {
+  id: number;
+  cardNumber: string;
+  cardholderName: string;
+  expirationDate: string;
+  last4: string;
+};
 
 export const BillingPage = () => {
   const [dateFilter, setDateFilter] = useState('all');
   const [selectedBilling, setSelectedBilling] = useState<typeof billingHistory[0] | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isAddCardOpen, setIsAddCardOpen] = useState(false);
+  const [isEditCardOpen, setIsEditCardOpen] = useState(false);
+  const [selectedCard, setSelectedCard] = useState<PaymentMethod | null>(null);
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([
+    {
+      id: 1,
+      cardNumber: "4242424242424242",
+      cardholderName: "John Doe",
+      expirationDate: "12/25",
+      last4: "4242"
+    }
+  ]);
 
   // Sample billing history data
   const billingHistory = [
@@ -100,6 +122,38 @@ export const BillingPage = () => {
       year: 'numeric',
       month: 'short',
       day: 'numeric'
+    });
+  };
+
+  const handleAddCard = (data: any) => {
+    const newCard: PaymentMethod = {
+      id: paymentMethods.length + 1,
+      cardNumber: data.cardNumber,
+      cardholderName: data.cardholderName,
+      expirationDate: data.expirationDate,
+      last4: data.cardNumber.slice(-4)
+    };
+    setPaymentMethods([...paymentMethods, newCard]);
+    setIsAddCardOpen(false);
+    toast({
+      title: "Payment method added",
+      description: "Your card has been added successfully.",
+    });
+  };
+
+  const handleEditCard = (data: any) => {
+    if (!selectedCard) return;
+    
+    setPaymentMethods(paymentMethods.map(card => 
+      card.id === selectedCard.id 
+        ? { ...card, cardholderName: data.cardholderName, expirationDate: data.expirationDate }
+        : card
+    ));
+    setIsEditCardOpen(false);
+    setSelectedCard(null);
+    toast({
+      title: "Payment method updated",
+      description: "Your card details have been updated successfully.",
     });
   };
 
@@ -214,17 +268,36 @@ export const BillingPage = () => {
                 <CardDescription>Manage your payment information</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="flex items-center p-4 border rounded-lg mb-4">
-                  <CreditCard className="h-6 w-6 mr-4" />
-                  <div>
-                    <p className="font-medium">•••• •••• •••• 4242</p>
-                    <p className="text-sm text-muted-foreground">Expires 12/25</p>
-                  </div>
-                  <div className="ml-auto">
-                    <Button variant="ghost" size="sm">Edit</Button>
-                  </div>
+                <div className="space-y-4">
+                  {paymentMethods.map((card) => (
+                    <div key={card.id} className="flex items-center p-4 border rounded-lg">
+                      <CreditCard className="h-6 w-6 mr-4" />
+                      <div>
+                        <p className="font-medium">•••• •••• •••• {card.last4}</p>
+                        <p className="text-sm text-muted-foreground">Expires {card.expirationDate}</p>
+                      </div>
+                      <div className="ml-auto">
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => {
+                            setSelectedCard(card);
+                            setIsEditCardOpen(true);
+                          }}
+                        >
+                          Edit
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                <Button variant="outline" className="mt-2">Add Payment Method</Button>
+                <Button 
+                  variant="outline" 
+                  className="mt-4"
+                  onClick={() => setIsAddCardOpen(true)}
+                >
+                  Add Payment Method
+                </Button>
               </CardContent>
             </Card>
           </div>
@@ -327,6 +400,50 @@ export const BillingPage = () => {
         </div>
       </div>
 
+      {/* Add Payment Method Dialog */}
+      <Dialog open={isAddCardOpen} onOpenChange={setIsAddCardOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Add Payment Method</DialogTitle>
+            <DialogDescription>
+              Enter your card details to add a new payment method
+            </DialogDescription>
+          </DialogHeader>
+          <PaymentMethodForm
+            onSubmit={handleAddCard}
+            onCancel={() => setIsAddCardOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Payment Method Dialog */}
+      <Dialog open={isEditCardOpen} onOpenChange={setIsEditCardOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit Payment Method</DialogTitle>
+            <DialogDescription>
+              Update your card details
+            </DialogDescription>
+          </DialogHeader>
+          {selectedCard && (
+            <PaymentMethodForm
+              isEdit
+              defaultValues={{
+                cardholderName: selectedCard.cardholderName,
+                cardNumber: '•'.repeat(12) + selectedCard.last4,
+                expirationDate: selectedCard.expirationDate,
+              }}
+              onSubmit={handleEditCard}
+              onCancel={() => {
+                setIsEditCardOpen(false);
+                setSelectedCard(null);
+              }}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Invoice Details Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
