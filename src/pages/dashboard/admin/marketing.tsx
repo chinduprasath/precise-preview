@@ -7,7 +7,7 @@ import PostOfferTab from '@/components/admin/marketing/PostOfferTab';
 import MarketingMetricsTab from '@/components/admin/marketing/MarketingMetricsTab';
 
 const MarketingDashboard = () => {
-  const [activeTab, setActiveTab] = useState('post-offer');
+  const [activeTab, setActiveTab] = useState('marketing-metrics');
 
   return (
     <div className="flex h-screen bg-background">
@@ -22,22 +22,22 @@ const MarketingDashboard = () => {
             
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <TabsList className="mb-6 bg-muted">
-                <TabsTrigger value="post-offer" className="flex items-center gap-2">
-                  <Megaphone className="h-4 w-4" />
-                  Post Offer
-                </TabsTrigger>
                 <TabsTrigger value="marketing-metrics" className="flex items-center gap-2">
                   <BarChart3 className="h-4 w-4" />
                   Marketing Metrics
                 </TabsTrigger>
+                <TabsTrigger value="post-offer" className="flex items-center gap-2">
+                  <Megaphone className="h-4 w-4" />
+                  Post Offer
+                </TabsTrigger>
               </TabsList>
-              
-              <TabsContent value="post-offer">
-                <PostOfferTab />
-              </TabsContent>
               
               <TabsContent value="marketing-metrics">
                 <MarketingMetricsTab />
+              </TabsContent>
+              
+              <TabsContent value="post-offer">
+                <PostOfferTab />
               </TabsContent>
             </Tabs>
           </div>

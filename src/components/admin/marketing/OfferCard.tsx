@@ -1,9 +1,10 @@
 import React from 'react';
-import { Instagram, Trash2, Edit2, Save } from 'lucide-react';
+import { Instagram, Facebook, Youtube, Twitter, Trash2, Edit2, Save, Calendar } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
 import {
   Select,
   SelectContent,
@@ -11,6 +12,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { format } from 'date-fns';
+
+export type Platform = 'instagram' | 'youtube' | 'facebook' | 'twitter';
 
 export interface MarketingOffer {
   id: string;
@@ -20,6 +24,8 @@ export interface MarketingOffer {
   duration: number;
   durationUnit: 'hours' | 'days';
   status: 'Active' | 'Inactive' | 'Completed';
+  platforms: Platform[];
+  createdAt: Date;
   isEditing?: boolean;
 }
 
@@ -30,6 +36,22 @@ interface OfferCardProps {
   onToggleEdit: (id: string) => void;
   onSave: (id: string) => void;
 }
+
+const platformIcons: Record<Platform, React.ReactNode> = {
+  instagram: <Instagram className="h-4 w-4" />,
+  youtube: <Youtube className="h-4 w-4" />,
+  facebook: <Facebook className="h-4 w-4" />,
+  twitter: <Twitter className="h-4 w-4" />,
+};
+
+const platformColors: Record<Platform, string> = {
+  instagram: 'bg-gradient-to-br from-pink-500 to-purple-600',
+  youtube: 'bg-red-600',
+  facebook: 'bg-blue-600',
+  twitter: 'bg-sky-500',
+};
+
+const allPlatforms: Platform[] = ['instagram', 'youtube', 'facebook', 'twitter'];
 
 const OfferCard: React.FC<OfferCardProps> = ({
   offer,
@@ -53,16 +75,33 @@ const OfferCard: React.FC<OfferCardProps> = ({
     }
   };
 
+  const togglePlatform = (platform: Platform) => {
+    if (!isEditing) return;
+    const currentPlatforms = offer.platforms || [];
+    const newPlatforms = currentPlatforms.includes(platform)
+      ? currentPlatforms.filter(p => p !== platform)
+      : [...currentPlatforms, platform];
+    onUpdate(offer.id, { platforms: newPlatforms });
+  };
+
   return (
     <Card className="p-4 bg-card border border-border">
       <div className="flex items-start justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <div className="p-2 bg-gradient-to-br from-pink-500 to-purple-600 rounded-lg">
-            <Instagram className="h-5 w-5 text-white" />
+        <div className="flex items-center gap-2 flex-wrap">
+          {/* Platform icons */}
+          <div className="flex gap-1">
+            {(offer.platforms || []).map(platform => (
+              <div key={platform} className={`p-1.5 ${platformColors[platform]} rounded-lg text-white`}>
+                {platformIcons[platform]}
+              </div>
+            ))}
           </div>
           <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(offer.status)}`}>
             {offer.status}
           </span>
+          <Badge variant="outline" className="text-xs">
+            {offer.type}
+          </Badge>
         </div>
         <div className="flex gap-2">
           {isEditing ? (
@@ -95,13 +134,45 @@ const OfferCard: React.FC<OfferCardProps> = ({
         </div>
       </div>
 
+      {/* Date and Time Posted */}
+      <div className="flex items-center gap-2 text-xs text-muted-foreground mb-4">
+        <Calendar className="h-3.5 w-3.5" />
+        <span>Posted: {format(offer.createdAt, 'MMM dd, yyyy')} at {format(offer.createdAt, 'hh:mm a')}</span>
+      </div>
+
       <div className="space-y-4">
+        {/* Platforms Multi-select */}
+        <div>
+          <label className="text-xs text-muted-foreground mb-2 block">Platforms</label>
+          <div className="flex gap-2 flex-wrap">
+            {allPlatforms.map(platform => {
+              const isSelected = (offer.platforms || []).includes(platform);
+              return (
+                <button
+                  key={platform}
+                  type="button"
+                  onClick={() => togglePlatform(platform)}
+                  disabled={!isEditing}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all border ${
+                    isSelected
+                      ? `${platformColors[platform]} text-white border-transparent`
+                      : 'bg-muted text-muted-foreground border-border hover:bg-accent'
+                  } ${!isEditing ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'}`}
+                >
+                  {platformIcons[platform]}
+                  <span className="capitalize">{platform}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
         {/* URL Input + Type Dropdown */}
         <div className="flex gap-2">
           <div className="flex-1">
-            <label className="text-xs text-muted-foreground mb-1 block">Instagram URL</label>
+            <label className="text-xs text-muted-foreground mb-1 block">Post URL</label>
             <Input
-              placeholder="https://instagram.com/p/..."
+              placeholder="https://..."
               value={offer.url}
               onChange={(e) => onUpdate(offer.id, { url: e.target.value })}
               disabled={!isEditing}
