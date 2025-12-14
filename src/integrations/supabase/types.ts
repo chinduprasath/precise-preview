@@ -7,10 +7,10 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "12.2.3 (519615d)"
+    PostgrestVersion: "13.0.5"
   }
   public: {
     Tables: {
@@ -1511,22 +1511,22 @@ export type Database = {
     Functions: {
       process_wallet_transaction: {
         Args: {
-          p_user_id: string
           p_amount: number
-          p_transaction_type: Database["public"]["Enums"]["wallet_transaction_type"]
-          p_reference_id: string
           p_description: string
           p_metadata?: Json
+          p_reference_id: string
+          p_transaction_type: Database["public"]["Enums"]["wallet_transaction_type"]
+          p_user_id: string
         }
         Returns: string
       }
       request_wallet_withdrawal: {
         Args: {
-          p_user_id: string
           p_amount: number
-          p_withdrawal_speed: Database["public"]["Enums"]["withdrawal_speed"]
-          p_payment_method: string
           p_payment_details: Json
+          p_payment_method: string
+          p_user_id: string
+          p_withdrawal_speed: Database["public"]["Enums"]["withdrawal_speed"]
         }
         Returns: string
       }
