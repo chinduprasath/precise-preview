@@ -144,13 +144,24 @@ const MarketingMetricsTab: React.FC = () => {
   
   const [promotions, setPromotions] = useState<UserPromotion[]>(mockPromotionData);
   
-  const refreshData = () => {
-    setPromotions([...mockPromotionData]);
-  };
-  
-  const exportData = () => {
-    alert('Exporting data to CSV... (This would download a file in a real app)');
-  };
+  // Listen for refresh/export events from parent
+  React.useEffect(() => {
+    const handleRefresh = () => {
+      setPromotions([...mockPromotionData]);
+    };
+    
+    const handleExport = () => {
+      alert('Exporting data to CSV... (This would download a file in a real app)');
+    };
+    
+    window.addEventListener('marketing-refresh', handleRefresh);
+    window.addEventListener('marketing-export', handleExport);
+    
+    return () => {
+      window.removeEventListener('marketing-refresh', handleRefresh);
+      window.removeEventListener('marketing-export', handleExport);
+    };
+  }, []);
   
   const filteredPromotions = promotions.filter(promo => {
     if (filters.search && !promo.userName?.toLowerCase().includes(filters.search.toLowerCase())) {
@@ -212,17 +223,7 @@ const MarketingMetricsTab: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Actions */}
-      <div className="flex justify-end gap-2">
-        <Button variant="outline" onClick={refreshData}>
-          <RefreshCw className="w-4 h-4 mr-2" /> Refresh
-        </Button>
-        <Button variant="outline" onClick={exportData}>
-          <FileText className="w-4 h-4 mr-2" /> Export
-        </Button>
-      </div>
-
+    <div className="space-y-4">
       {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         <Card className="p-4 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950/50 dark:to-blue-900/50 border-blue-200 dark:border-blue-800">
