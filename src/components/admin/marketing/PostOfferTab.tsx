@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Plus, Filter, Instagram, Facebook, Youtube, Twitter } from 'lucide-react';
+import { Plus, Instagram, Facebook, Youtube, Twitter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import OfferCard, { MarketingOffer, Platform } from './OfferCard';
+import OfferDialog from './OfferDialog';
 import {
   Select,
   SelectContent,
@@ -10,6 +11,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const allPlatforms: Platform[] = ['instagram', 'youtube', 'facebook', 'twitter'];
 
@@ -31,7 +38,6 @@ const initialOffers: MarketingOffer[] = [
     status: 'Active',
     platforms: ['instagram'],
     createdAt: new Date('2024-12-10T10:30:00'),
-    isEditing: false,
   },
   {
     id: '2',
@@ -43,12 +49,14 @@ const initialOffers: MarketingOffer[] = [
     status: 'Inactive',
     platforms: ['youtube', 'instagram'],
     createdAt: new Date('2024-12-08T14:15:00'),
-    isEditing: false,
   },
 ];
 
 const PostOfferTab: React.FC = () => {
   const [offers, setOffers] = useState<MarketingOffer[]>(initialOffers);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogMode, setDialogMode] = useState<'add' | 'edit'>('add');
+  const [selectedOffer, setSelectedOffer] = useState<MarketingOffer | null>(null);
   
   // Filter states
   const [filterStatus, setFilterStatus] = useState<string>('all');
@@ -56,26 +64,56 @@ const PostOfferTab: React.FC = () => {
   const [filterType, setFilterType] = useState<string>('all');
 
   const handleAddOffer = () => {
-    const newOffer: MarketingOffer = {
-      id: Date.now().toString(),
-      url: '',
-      type: 'Story',
-      message: '',
-      duration: 24,
-      durationUnit: 'hours',
-      status: 'Inactive',
-      platforms: ['instagram'],
-      createdAt: new Date(),
-      isEditing: true,
-    };
-    setOffers([newOffer, ...offers]);
-    toast.info('New offer card added. Fill in the details and save.');
+    setSelectedOffer(null);
+    setDialogMode('add');
+    setDialogOpen(true);
   };
 
-  const handleUpdateOffer = (id: string, updates: Partial<MarketingOffer>) => {
-    setOffers(offers.map(offer => 
-      offer.id === id ? { ...offer, ...updates } : offer
-    ));
+  const handleEditOffer = (id: string) => {
+    const offer = offers.find(o => o.id === id);
+    if (offer) {
+      setSelectedOffer(offer);
+      setDialogMode('edit');
+      setDialogOpen(true);
+    }
+  };
+
+  const handleSaveOffer = (data: Partial<MarketingOffer>) => {
+    if (!data.url?.trim()) {
+      toast.error('Please enter a valid URL');
+      return;
+    }
+    if (!data.message?.trim()) {
+      toast.error('Please enter instructions/message');
+      return;
+    }
+    if (!data.platforms?.length) {
+      toast.error('Please select at least one platform');
+      return;
+    }
+
+    if (dialogMode === 'add') {
+      const newOffer: MarketingOffer = {
+        id: Date.now().toString(),
+        url: data.url || '',
+        type: data.type || 'Story',
+        message: data.message || '',
+        duration: data.duration || 24,
+        durationUnit: data.durationUnit || 'hours',
+        status: data.status || 'Inactive',
+        platforms: data.platforms || ['instagram'],
+        createdAt: new Date(),
+      };
+      setOffers([newOffer, ...offers]);
+      toast.success('Offer added successfully');
+    } else if (selectedOffer) {
+      setOffers(offers.map(offer =>
+        offer.id === selectedOffer.id
+          ? { ...offer, ...data }
+          : offer
+      ));
+      toast.success('Offer updated successfully');
+    }
   };
 
   const handleDeleteOffer = (id: string) => {
@@ -83,37 +121,9 @@ const PostOfferTab: React.FC = () => {
     toast.success('Offer deleted successfully');
   };
 
-  const handleToggleEdit = (id: string) => {
-    setOffers(offers.map(offer => 
-      offer.id === id ? { ...offer, isEditing: !offer.isEditing } : offer
-    ));
-  };
-
-  const handleSaveOffer = (id: string) => {
-    const offer = offers.find(o => o.id === id);
-    if (offer) {
-      if (!offer.url.trim()) {
-        toast.error('Please enter a valid URL');
-        return;
-      }
-      if (!offer.message.trim()) {
-        toast.error('Please enter instructions/message');
-        return;
-      }
-      if (offer.platforms.length === 0) {
-        toast.error('Please select at least one platform');
-        return;
-      }
-    }
-    setOffers(offers.map(offer => 
-      offer.id === id ? { ...offer, isEditing: false } : offer
-    ));
-    toast.success('Offer saved successfully');
-  };
-
   const toggleFilterPlatform = (platform: Platform) => {
-    setFilterPlatforms(prev => 
-      prev.includes(platform) 
+    setFilterPlatforms(prev =>
+      prev.includes(platform)
         ? prev.filter(p => p !== platform)
         : [...prev, platform]
     );
@@ -121,18 +131,12 @@ const PostOfferTab: React.FC = () => {
 
   // Filter offers
   const filteredOffers = offers.filter(offer => {
-    // Status filter
     if (filterStatus !== 'all' && offer.status !== filterStatus) return false;
-    
-    // Platform filter
     if (filterPlatforms.length > 0) {
       const hasMatchingPlatform = filterPlatforms.some(p => offer.platforms.includes(p));
       if (!hasMatchingPlatform) return false;
     }
-    
-    // Type filter
     if (filterType !== 'all' && offer.type !== filterType) return false;
-    
     return true;
   });
 
@@ -156,27 +160,41 @@ const PostOfferTab: React.FC = () => {
             </SelectContent>
           </Select>
 
-          {/* Platform Filter (Multi-select buttons) */}
-          <div className="flex items-center gap-1 p-1 bg-muted rounded-lg">
-            {allPlatforms.map(platform => {
-              const isSelected = filterPlatforms.includes(platform);
-              return (
-                <button
+          {/* Platform Filter (Multi-select dropdown) */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="w-36 justify-start gap-2 bg-background">
+                {filterPlatforms.length > 0 ? (
+                  <>
+                    <div className="flex items-center gap-1">
+                      {filterPlatforms.slice(0, 2).map(p => (
+                        <span key={p} className="text-primary">{platformIcons[p]}</span>
+                      ))}
+                    </div>
+                    <span className="text-xs text-muted-foreground">
+                      {filterPlatforms.length > 2 ? `+${filterPlatforms.length - 2}` : ''}
+                    </span>
+                  </>
+                ) : (
+                  <span className="text-muted-foreground">Platforms</span>
+                )}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-48 bg-popover">
+              {allPlatforms.map(platform => (
+                <DropdownMenuCheckboxItem
                   key={platform}
-                  type="button"
-                  onClick={() => toggleFilterPlatform(platform)}
-                  className={`p-2 rounded-md transition-all ${
-                    isSelected 
-                      ? 'bg-primary text-primary-foreground' 
-                      : 'text-muted-foreground hover:text-foreground hover:bg-background'
-                  }`}
-                  title={platform}
+                  checked={filterPlatforms.includes(platform)}
+                  onCheckedChange={() => toggleFilterPlatform(platform)}
                 >
-                  {platformIcons[platform]}
-                </button>
-              );
-            })}
-          </div>
+                  <span className="flex items-center gap-2 capitalize">
+                    {platformIcons[platform]}
+                    {platform}
+                  </span>
+                </DropdownMenuCheckboxItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           {/* Type Filter */}
           <Select value={filterType} onValueChange={setFilterType}>
@@ -216,14 +234,20 @@ const PostOfferTab: React.FC = () => {
             <OfferCard
               key={offer.id}
               offer={offer}
-              onUpdate={handleUpdateOffer}
+              onEdit={handleEditOffer}
               onDelete={handleDeleteOffer}
-              onToggleEdit={handleToggleEdit}
-              onSave={handleSaveOffer}
             />
           ))}
         </div>
       )}
+
+      <OfferDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        offer={selectedOffer}
+        onSave={handleSaveOffer}
+        mode={dialogMode}
+      />
     </div>
   );
 };
