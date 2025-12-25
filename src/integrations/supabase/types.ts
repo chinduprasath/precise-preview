@@ -866,6 +866,41 @@ export type Database = {
           },
         ]
       }
+      plan_audit_logs: {
+        Row: {
+          action: string
+          changes: Json | null
+          created_at: string | null
+          id: string
+          performed_by: string | null
+          plan_id: string
+        }
+        Insert: {
+          action: string
+          changes?: Json | null
+          created_at?: string | null
+          id?: string
+          performed_by?: string | null
+          plan_id: string
+        }
+        Update: {
+          action?: string
+          changes?: Json | null
+          created_at?: string | null
+          id?: string
+          performed_by?: string | null
+          plan_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "plan_audit_logs_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "subscription_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       post_metrics: {
         Row: {
           click_through_rate: number | null
@@ -1280,6 +1315,72 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      subscription_plans: {
+        Row: {
+          auto_renewal: boolean | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          features: Json | null
+          free_trial_days: number | null
+          id: string
+          is_deleted: boolean | null
+          limits: Json | null
+          monthly_price: number
+          name: string
+          payment_gateway_id: string | null
+          plan_type: string
+          status: string
+          tax_percentage: number
+          updated_at: string | null
+          updated_by: string | null
+          version: number
+          yearly_price: number
+        }
+        Insert: {
+          auto_renewal?: boolean | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          features?: Json | null
+          free_trial_days?: number | null
+          id?: string
+          is_deleted?: boolean | null
+          limits?: Json | null
+          monthly_price?: number
+          name: string
+          payment_gateway_id?: string | null
+          plan_type: string
+          status?: string
+          tax_percentage?: number
+          updated_at?: string | null
+          updated_by?: string | null
+          version?: number
+          yearly_price?: number
+        }
+        Update: {
+          auto_renewal?: boolean | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          features?: Json | null
+          free_trial_days?: number | null
+          id?: string
+          is_deleted?: boolean | null
+          limits?: Json | null
+          monthly_price?: number
+          name?: string
+          payment_gateway_id?: string | null
+          plan_type?: string
+          status?: string
+          tax_percentage?: number
+          updated_at?: string | null
+          updated_by?: string | null
+          version?: number
+          yearly_price?: number
+        }
+        Relationships: []
       }
       user_profiles: {
         Row: {
