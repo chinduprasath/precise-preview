@@ -21,49 +21,8 @@ import {
   Linkedin, Instagram, Image, Bell
 } from "lucide-react";
 import GlobalNotificationsTab from "@/components/admin/GlobalNotificationsTab";
+import SubscriptionPlansTab from "@/components/admin/subscription/SubscriptionPlansTab";
 
-// Sample data for subscription plans
-const samplePlans = [
-  {
-    id: "1",
-    name: "Basic Plan",
-    targetAudience: "Business",
-    monthlyPrice: 999,
-    yearlyPrice: 9990,
-    features: ["Basic analytics", "10 requests/month", "Email support"],
-    trialDays: 14,
-    status: "active",
-    taxPercentage: 18,
-    paymentGatewayId: "price_basic123",
-    autoRenewal: true
-  },
-  {
-    id: "2",
-    name: "Pro Plan",
-    targetAudience: "Business",
-    monthlyPrice: 2999,
-    yearlyPrice: 29990, 
-    features: ["Advanced analytics", "Unlimited requests", "Priority support", "Custom reports"],
-    trialDays: 7,
-    status: "active",
-    taxPercentage: 18,
-    paymentGatewayId: "price_pro123",
-    autoRenewal: true
-  },
-  {
-    id: "3",
-    name: "Influencer Plus",
-    targetAudience: "Influencer",
-    monthlyPrice: 1499,
-    yearlyPrice: 14990,
-    features: ["Campaign insights", "Business connections", "Verification badge"],
-    trialDays: 14,
-    status: "active",
-    taxPercentage: 18,
-    paymentGatewayId: "price_infplus123",
-    autoRenewal: true
-  }
-];
 
 // Form schema for branding settings
 const brandingFormSchema = z.object({
@@ -103,7 +62,6 @@ const globalFormSchema = z.object({
 
 const SiteSettingsPage = () => {
   const [activeTab, setActiveTab] = useState("branding");
-  const [subscriptionPlans, setSubscriptionPlans] = useState(samplePlans);
   
   // Branding form
   const brandingForm = useForm<z.infer<typeof brandingFormSchema>>({
@@ -519,100 +477,7 @@ const SiteSettingsPage = () => {
 
           {/* Subscription Tab */}
           <TabsContent value="subscription" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Subscription Plans</CardTitle>
-                <CardDescription>
-                  Manage subscription plans available to users.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex justify-between items-center mb-6">
-                  <div>
-                    <h3 className="text-lg font-medium">Available Plans</h3>
-                    <p className="text-sm text-muted-foreground">
-                      Create and manage subscription plans.
-                    </p>
-                  </div>
-                  <Button>Add New Plan</Button>
-                </div>
-                
-                <div className="space-y-6">
-                  {subscriptionPlans.map((plan) => (
-                    <div key={plan.id} className="border rounded-lg p-6">
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <h4 className="text-xl font-semibold">{plan.name}</h4>
-                          <p className="text-sm text-muted-foreground">
-                            For {plan.targetAudience}
-                          </p>
-                        </div>
-                        <div className="space-x-2">
-                          <Button variant="outline" size="sm">Edit</Button>
-                          <Button variant="outline" size="sm" className="text-destructive">
-                            Delete
-                          </Button>
-                        </div>
-                      </div>
-                      
-                      <div className="grid grid-cols-2 gap-4 mt-4">
-                        <div>
-                          <p className="text-sm font-medium">Pricing</p>
-                          <div className="flex space-x-4 mt-1">
-                            <p>₹{plan.monthlyPrice}/month</p>
-                            <p>₹{plan.yearlyPrice}/year</p>
-                          </div>
-                        </div>
-                        
-                        <div>
-                          <p className="text-sm font-medium">Free Trial</p>
-                          <p className="mt-1">{plan.trialDays} days</p>
-                        </div>
-                        
-                        <div>
-                          <p className="text-sm font-medium">Status</p>
-                          <div className="mt-1">
-                            <span className={`px-2 py-1 rounded-full text-xs ${
-                              plan.status === 'active' 
-                                ? 'bg-green-100 text-green-800' 
-                                : 'bg-red-100 text-red-800'
-                            }`}>
-                              {plan.status === 'active' ? 'Active' : 'Inactive'}
-                            </span>
-                          </div>
-                        </div>
-                        
-                        <div>
-                          <p className="text-sm font-medium">Tax</p>
-                          <p className="mt-1">{plan.taxPercentage}%</p>
-                        </div>
-                      </div>
-                      
-                      <div className="mt-4">
-                        <p className="text-sm font-medium">Features</p>
-                        <ul className="list-disc pl-5 mt-1 space-y-1">
-                          {plan.features.map((feature, index) => (
-                            <li key={index} className="text-sm">{feature}</li>
-                          ))}
-                        </ul>
-                      </div>
-                      
-                      <div className="mt-4 grid grid-cols-2 gap-4">
-                        <div>
-                          <p className="text-sm font-medium">Payment Gateway ID</p>
-                          <p className="text-sm mt-1 font-mono">{plan.paymentGatewayId}</p>
-                        </div>
-                        
-                        <div>
-                          <p className="text-sm font-medium">Auto-Renewal</p>
-                          <p className="mt-1">{plan.autoRenewal ? 'Enabled' : 'Disabled'}</p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+            <SubscriptionPlansTab />
           </TabsContent>
 
           {/* Other Settings Tab */}
