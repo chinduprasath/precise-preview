@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Copy, Pencil, Trash2 } from 'lucide-react';
-import type { SubscriptionPlan } from './SubscriptionPlanDialog';
+import type { SubscriptionPlan, PlanLimits } from './SubscriptionPlanDialog';
 
 interface SubscriptionPlanCardProps {
   plan: SubscriptionPlan;
@@ -29,6 +29,70 @@ const SubscriptionPlanCard: React.FC<SubscriptionPlanCardProps> = ({
       default:
         return type;
     }
+  };
+
+  const getOrdersDisplay = (limits: PlanLimits) => {
+    if (!limits.orders_per_user_type || limits.orders_per_user_type === 'no_limit') return 'No limit';
+    if (limits.orders_per_user_type === 'upto') return `Upto ${limits.orders_per_user_max}`;
+    if (limits.orders_per_user_type === 'between') return `${limits.orders_per_user_min} – ${limits.orders_per_user_max}`;
+    if (limits.orders_per_user_type === 'above') return `Above ${limits.orders_per_user_max}`;
+    return 'N/A';
+  };
+
+  const getAnalyticsDisplay = (limits: PlanLimits) => {
+    const levelMap: Record<string, string> = {
+      na: 'NA',
+      limited: 'Limited Analytics',
+      advanced: 'Advanced Analytics',
+      full: 'Full Analytics',
+    };
+    return levelMap[limits.analytics_level || 'na'] || 'NA';
+  };
+
+  const getDataFrequencyDisplay = (limits: PlanLimits) => {
+    const freqMap: Record<string, string> = {
+      na: 'NA',
+      every_4_6_hours: 'Every 4-6 hours',
+      every_3_4_hours: 'Every 3-4 hours',
+      realtime: 'Realtime',
+    };
+    return freqMap[limits.data_update_frequency || 'na'] || 'NA';
+  };
+
+  const getReportsDisplay = (limits: PlanLimits) => {
+    const reportsMap: Record<string, string> = {
+      summary: 'Summary reports only',
+      detailed: 'Detailed reports with trends',
+      custom: 'Custom reports',
+    };
+    return reportsMap[limits.reports_type || 'summary'] || 'Summary reports';
+  };
+
+  const getAdTrackingDisplay = (limits: PlanLimits) => {
+    const trackingMap: Record<string, string> = {
+      na: 'NA',
+      limited: 'Limited tracking',
+      advanced: 'Advanced tracking',
+      full: 'Full tracking',
+    };
+    return trackingMap[limits.ad_spend_tracking || 'na'] || 'NA';
+  };
+
+  const getSupportDisplay = (limits: PlanLimits) => {
+    const supportMap: Record<string, string> = {
+      normal: 'Normal Support',
+      email_limited: 'Email + limited chats',
+      priority_email: 'Priority email + chats',
+      priority_24_7: '24/7 Priority',
+    };
+    return supportMap[limits.support_type || 'normal'] || 'Normal Support';
+  };
+
+  const getOutreachDisplay = (limits: PlanLimits) => {
+    const chats = limits.influencer_outreach_chats;
+    if (chats === undefined || chats === 0) return 'NA';
+    if (chats === -1) return 'Unlimited';
+    return `${chats} chats/month`;
   };
 
   return (
@@ -74,8 +138,8 @@ const SubscriptionPlanCard: React.FC<SubscriptionPlanCardProps> = ({
           <div>
             <p className="text-sm font-medium">Pricing</p>
             <div className="flex gap-4 mt-1">
-              <span>₹{plan.monthly_price}/month</span>
-              <span>₹{plan.yearly_price}/year</span>
+              <span>{plan.monthly_price > 0 ? `₹${plan.monthly_price}/month` : 'Pay-as-You-Go'}</span>
+              {plan.yearly_price > 0 && <span>₹{plan.yearly_price}/year</span>}
             </div>
           </div>
 
@@ -116,28 +180,54 @@ const SubscriptionPlanCard: React.FC<SubscriptionPlanCardProps> = ({
 
         {plan.limits && Object.keys(plan.limits).length > 0 && (
           <div className="mt-4">
-            <p className="text-sm font-medium">Limits & Commission</p>
-            <div className="grid grid-cols-2 gap-2 mt-1">
-              {plan.limits.notes_buy_limit !== undefined && (
-                <p className="text-sm">
-                  Notes Buy: <span className="font-medium">{plan.limits.notes_buy_limit}</span>
-                </p>
+            <p className="text-sm font-medium mb-2">Plan Configuration</p>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              <div className="bg-muted/50 rounded-md p-2">
+                <p className="text-xs text-muted-foreground">Orders per User</p>
+                <p className="text-sm font-medium">{getOrdersDisplay(plan.limits)}</p>
+              </div>
+              <div className="bg-muted/50 rounded-md p-2">
+                <p className="text-xs text-muted-foreground">Analytics</p>
+                <p className="text-sm font-medium">{getAnalyticsDisplay(plan.limits)}</p>
+              </div>
+              {plan.limits.analytics_level && plan.limits.analytics_level !== 'na' && (
+                <div className="bg-muted/50 rounded-md p-2">
+                  <p className="text-xs text-muted-foreground">Analytics Duration</p>
+                  <p className="text-sm font-medium">{plan.limits.analytics_duration_days || 0} days</p>
+                </div>
               )}
-              {plan.limits.notes_create_limit !== undefined && (
-                <p className="text-sm">
-                  Notes Create: <span className="font-medium">{plan.limits.notes_create_limit}</span>
-                </p>
-              )}
-              {plan.limits.meetings_booking_limit !== undefined && (
-                <p className="text-sm">
-                  Meetings: <span className="font-medium">{plan.limits.meetings_booking_limit}</span>
-                </p>
-              )}
-              {plan.limits.commission_percentage !== undefined && (
-                <p className="text-sm">
-                  Commission: <span className="font-medium">{plan.limits.commission_percentage}%</span>
-                </p>
-              )}
+              <div className="bg-muted/50 rounded-md p-2">
+                <p className="text-xs text-muted-foreground">Followers Range</p>
+                <p className="text-sm font-medium">{plan.limits.followers_range || 'N/A'}</p>
+              </div>
+              <div className="bg-muted/50 rounded-md p-2">
+                <p className="text-xs text-muted-foreground">Platform Fee</p>
+                <p className="text-sm font-medium">{plan.limits.platform_fee_percentage || 0}%</p>
+              </div>
+              <div className="bg-muted/50 rounded-md p-2">
+                <p className="text-xs text-muted-foreground">Affiliate Links</p>
+                <p className="text-sm font-medium">{plan.limits.affiliate_links ? 'Yes' : 'No'}</p>
+              </div>
+              <div className="bg-muted/50 rounded-md p-2">
+                <p className="text-xs text-muted-foreground">Data Updates</p>
+                <p className="text-sm font-medium">{getDataFrequencyDisplay(plan.limits)}</p>
+              </div>
+              <div className="bg-muted/50 rounded-md p-2">
+                <p className="text-xs text-muted-foreground">Outreach</p>
+                <p className="text-sm font-medium">{getOutreachDisplay(plan.limits)}</p>
+              </div>
+              <div className="bg-muted/50 rounded-md p-2">
+                <p className="text-xs text-muted-foreground">Reports</p>
+                <p className="text-sm font-medium">{getReportsDisplay(plan.limits)}</p>
+              </div>
+              <div className="bg-muted/50 rounded-md p-2">
+                <p className="text-xs text-muted-foreground">Ad Tracking</p>
+                <p className="text-sm font-medium">{getAdTrackingDisplay(plan.limits)}</p>
+              </div>
+              <div className="bg-muted/50 rounded-md p-2">
+                <p className="text-xs text-muted-foreground">Support</p>
+                <p className="text-sm font-medium">{getSupportDisplay(plan.limits)}</p>
+              </div>
             </div>
           </div>
         )}
