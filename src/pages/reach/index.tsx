@@ -10,6 +10,7 @@ import PerformanceMetrics from '@/components/reach/PerformanceMetrics';
 import DemographicChart from '@/components/reach/DemographicChart';
 import ReachViewsChart from '@/components/reach/ReachViewsChart';
 import SegmentedDonutChart from '@/components/reach/SegmentedDonutChart';
+import InfluencerInfoCard from '@/components/reach/InfluencerInfoCard';
 import { 
   mockOrders, 
   platformEngagementData, 
@@ -80,8 +81,8 @@ const ReachPage = () => {
         <Header />
         <main className="flex-1 overflow-auto p-6">
           <div className="max-w-7xl mx-auto space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
-              <div>
+            <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-end">
+              <div className="w-full lg:w-auto lg:min-w-[350px]">
                 <OrderSelector 
                   orders={mockOrders} 
                   selectedOrderId={selectedOrder} 
@@ -89,7 +90,23 @@ const ReachPage = () => {
                   className="w-full"
                 />
               </div>
-              <div className="flex justify-end">
+              
+              <div className="flex-1 w-full lg:w-auto">
+                <InfluencerInfoCard
+                  name="foodieanjali"
+                  category="Food"
+                  location="Mumbai, India"
+                  avatar=""
+                  followers={{
+                    instagram: 320000,
+                    facebook: 150000,
+                    twitter: 45000,
+                    youtube: 200000
+                  }}
+                />
+              </div>
+              
+              <div className="flex justify-end w-full lg:w-auto">
                 <Select value={timeRange} onValueChange={setTimeRange}>
                   <SelectTrigger className="w-[180px]">
                     <SelectValue placeholder="Select time range" />
