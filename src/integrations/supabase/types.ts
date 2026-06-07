@@ -1613,6 +1613,11 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      current_user_role: {
+        Args: never
+        Returns: Database["public"]["Enums"]["user_role"]
+      }
+      is_admin: { Args: { _user_id: string }; Returns: boolean }
       process_wallet_transaction: {
         Args: {
           p_amount: number
