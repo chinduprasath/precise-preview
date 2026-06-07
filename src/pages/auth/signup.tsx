@@ -178,7 +178,7 @@ const SignUpPage = () => {
               <CardDescription>
                 {userType === 'business' && 'Sign up as a Business User'}
                 {userType === 'influencer' && 'Sign up as an Influencer'}
-                {userType === 'admin' && 'Sign up as an Administrator'}
+                
               </CardDescription>
             </CardHeader>
             <form onSubmit={handleSignUp}>
