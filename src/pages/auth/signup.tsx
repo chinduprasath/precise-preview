@@ -22,7 +22,7 @@ import { Building2, User, ArrowLeft } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 
-type UserType = 'business' | 'influencer' | 'admin' | null;
+type UserType = 'business' | 'influencer' | null;
 
 const SignUpPage = () => {
   const [step, setStep] = useState<1 | 2>(1);
