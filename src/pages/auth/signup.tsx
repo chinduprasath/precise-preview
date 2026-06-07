@@ -153,19 +153,6 @@ const SignUpPage = () => {
                 </div>
               </button>
               
-              <button
-                onClick={() => handleUserTypeSelect('admin')}
-                className="flex items-center p-6 bg-card border border-border rounded-xl hover:border-primary hover:shadow-md transition-all text-left"
-                disabled={isLoading}
-              >
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mr-4">
-                  <Shield className="h-6 w-6 text-primary" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-lg">Administrator</h3>
-                  <p className="text-muted-foreground text-sm">Manage platform activities and users</p>
-                </div>
-              </button>
             </div>
             
             <p className="mt-8 text-muted-foreground">
