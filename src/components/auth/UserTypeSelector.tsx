@@ -4,8 +4,8 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 
 interface UserTypeSelectorProps {
-  userType: 'business' | 'influencer';
-  onUserTypeChange: (value: 'business' | 'influencer') => void;
+  userType: 'business' | 'influencer' | 'admin';
+  onUserTypeChange: (value: 'business' | 'influencer' | 'admin') => void;
 }
 
 const UserTypeSelector = ({ userType, onUserTypeChange }: UserTypeSelectorProps) => {
