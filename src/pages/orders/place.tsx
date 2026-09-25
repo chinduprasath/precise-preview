@@ -443,6 +443,33 @@ export default function PlaceOrderPage() {
                 />
               </SectionCard>
 
+              {/* Special flows keep their dedicated forms */}
+              {selectedContent === "Visit & Promote" && (
+                <SectionCard
+                  icon={<FileText className="w-5 h-5" />}
+                  title="Visit & Promote Details"
+                  description="Provide the visit details for this campaign"
+                >
+                  <VisitPromoteTab
+                    onSendRequest={handleSendRequest}
+                    isSubmitting={isSubmitting}
+                  />
+                </SectionCard>
+              )}
+
+              {selectedContent === "Polls" && (
+                <SectionCard
+                  icon={<FileText className="w-5 h-5" />}
+                  title="Poll Details"
+                  description="Set up your poll questions and options"
+                >
+                  <PollContentTab
+                    onSendRequest={handleSendRequest}
+                    isSubmitting={isSubmitting}
+                  />
+                </SectionCard>
+              )}
+
               {/* Content section — Upload Files only, all content shown inline */}
               {!isSpecialFlow && (
                 <SectionCard
