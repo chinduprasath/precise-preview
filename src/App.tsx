@@ -44,6 +44,7 @@ import AdminWalletSettingsPage from "./pages/dashboard/admin/wallet-settings";
 import AdminWalletTransactionsPage from "./pages/dashboard/admin/wallet-transactions";
 import CheckoutPage from "./pages/checkout";
 import PaymentPage from "./pages/payment";
+import OrderConfirmationPage from "./pages/order-confirmation";
 import ServiceOrdersPage from "./pages/dashboard/admin/service-orders";
 import ServiceOrderDetailPage from "./pages/dashboard/admin/service-order-detail";
 import ReportsPage from "./pages/reports";
@@ -138,6 +139,7 @@ function App() {
                 
                 <Route path="/checkout" element={<CheckoutPage />} />
                 <Route path="/payment" element={<PaymentPage />} />
+                <Route path="/order-confirmation" element={<OrderConfirmationPage />} />
                 
                 <Route path="*" element={<NotFound />} />
               </Routes>
