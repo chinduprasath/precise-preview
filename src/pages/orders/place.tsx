@@ -596,6 +596,7 @@ export default function PlaceOrderPage() {
                     onSendRequest={handleSendRequest}
                     isCustomPackage={selectedOrderType === "Custom Package"}
                     formatCurrency={formatCurrency}
+                    showSendButton={!isSpecialFlow}
                   />
                 </div>
               </div>
