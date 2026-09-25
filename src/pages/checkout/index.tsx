@@ -98,7 +98,7 @@ const CheckoutPage = () => {
                     <span className="flex items-center gap-1.5"><BadgeCheck className="h-4 w-4" />Verified creator</span>
                   </div>
                 </div>
-                <Badge variant="secondary" className="w-fit">{order.orderType?.replaceAll('_', ' ') || 'Campaign'}</Badge>
+                <Badge variant="secondary" className="w-fit">{order.orderType?.replace(/_/g, ' ') || 'Campaign'}</Badge>
               </div>
               <Separator className="my-5" />
               <div className="flex flex-col justify-between gap-1 sm:flex-row sm:items-center">
