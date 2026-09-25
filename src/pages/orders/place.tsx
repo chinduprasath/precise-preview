@@ -1,7 +1,5 @@
-
-
-import React, { useState, useMemo, useCallback, useRef } from "react";
-import { Instagram, Facebook, Youtube, Twitter, Clock, ArrowLeft, FileText, Loader2 } from "lucide-react";
+import React, { useState, useMemo, useRef } from "react";
+import { Instagram, Facebook, Youtube, Twitter, Clock, ArrowLeft, FileText, Loader2, Link2, Tag, Sparkles, ShieldCheck } from "lucide-react";
 import Layout from '@/components/layout/Layout';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,18 +10,14 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 // Import new components
 import InfluencerProfileCard from '@/components/orders/place/InfluencerProfileCard';
 import OrderTypeSelector from '@/components/orders/place/OrderTypeSelector';
-import FileUploader from '@/components/orders/place/FileUploader';
-import ContentDescriptionInput from '@/components/orders/place/ContentDescriptionInput';
 import DescriptionInput from '@/components/orders/place/DescriptionInput';
+import FileUploader from '@/components/orders/place/FileUploader';
 import CouponSection from '@/components/orders/place/CouponSection';
 import OrderSummary from '@/components/orders/place/OrderSummary';
-import UploadFilesTab from '@/components/orders/place/UploadFilesTab';
-import ProvideContentTab from '@/components/orders/place/ProvideContentTab';
 import VisitPromoteTab from '@/components/orders/place/VisitPromoteTab';
 import PollContentTab from '@/components/orders/place/PollContentTab';
 
@@ -118,6 +112,36 @@ const generateContextualEmojis = (text: string) => {
   return [...new Set(contextualEmojis)].slice(0, 6);
 };
 
+// Reusable professional section card
+const SectionCard: React.FC<{
+  icon: React.ReactNode;
+  title: string;
+  description?: string;
+  children: React.ReactNode;
+  className?: string;
+}> = ({ icon, title, description, children, className }) => (
+  <section className={cn(
+    "rounded-xl border border-border/60 bg-card shadow-sm overflow-hidden",
+    className
+  )}>
+    <header className="flex items-center gap-3 px-5 py-4 border-b border-border/60 bg-muted/30">
+      <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
+        {icon}
+      </span>
+      <div>
+        <h2 className="text-sm font-semibold tracking-tight">{title}</h2>
+        {description && (
+          <p className="text-xs text-muted-foreground mt-0.5">{description}</p>
+        )}
+      </div>
+    </header>
+    <div className="p-5 space-y-5">{children}</div>
+  </section>
+);
+
+const formatCurrency = (value: number) =>
+  new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(value);
+
 export default function PlaceOrderPage() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -137,10 +161,6 @@ export default function PlaceOrderPage() {
   const [appliedCoupon, setAppliedCoupon] = useState<{code: string, discount: number, type: string} | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showThankYouDialog, setShowThankYouDialog] = useState(false);
-  
-  // Content description state
-  const [contentDescription, setContentDescription] = useState("");
-  const [contentDescriptionError, setContentDescriptionError] = useState("");
 
   // New states for dropdowns
   const [selectedOrderType, setSelectedOrderType] = useState<string>("Platform Based");
@@ -149,12 +169,7 @@ export default function PlaceOrderPage() {
   const [isAiEnhancing, setIsAiEnhancing] = useState(false);
 
   const dropAreaRef = useRef<HTMLDivElement>(null);
-
-  // New state for tabs
-  const [activeTab, setActiveTab] = useState("upload-files");
   const [notesDescription, setNotesDescription] = useState("");
-  const [referenceFiles, setReferenceFiles] = useState<File[]>([]);
-  const [isUploadingReference, setIsUploadingReference] = useState(false);
 
   // Dynamic suggestions based on current description
   const dynamicHashtags = useMemo(() => generateDynamicHashtags(description), [description]);
@@ -192,13 +207,6 @@ export default function PlaceOrderPage() {
     return "";
   };
 
-  const validateContentDescription = (description: string) => {
-    if (description.length > 500) {
-      return "Description must be less than 500 characters";
-    }
-    return "";
-  };
-
   const handleOrderTypeChange = (orderType: string) => {
     setSelectedOrderType(orderType);
     // Reset content to first option of new order type
@@ -216,12 +224,6 @@ export default function PlaceOrderPage() {
     const message = e.target.value;
     setDescription(message);
     setDescriptionError(validateDescription(message));
-  };
-
-  const handleContentDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const desc = e.target.value;
-    setContentDescription(desc);
-    setContentDescriptionError(validateContentDescription(desc));
   };
 
   const handleAiEnhance = () => {
@@ -289,20 +291,6 @@ export default function PlaceOrderPage() {
     }
   };
 
-  const handleReferenceFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      setIsUploadingReference(true);
-      setTimeout(() => {
-        setReferenceFiles(Array.from(e.target.files || []));
-        setIsUploadingReference(false);
-      }, 1000);
-    }
-  };
-
-  const removeReferenceFile = (index: number) => {
-    setReferenceFiles(referenceFiles.filter((_, i) => i !== index));
-  };
-
   const handleCouponApply = () => {
     if (!couponCode.trim()) {
       toast({
@@ -349,13 +337,11 @@ export default function PlaceOrderPage() {
     
     const linkError = validateAffiliateLink(affiliateLink);
     const messageError = validateDescription(description);
-    const descError = validateContentDescription(contentDescription);
     
     setAffiliateLinkError(linkError);
     setDescriptionError(messageError);
-    setContentDescriptionError(descError);
     
-    if (linkError || messageError || descError) {
+    if (linkError || messageError) {
       toast({
         title: "Form Error",
         description: "Please fix the errors in the form",
@@ -364,11 +350,11 @@ export default function PlaceOrderPage() {
       return;
     }
 
-    // Validate that either content description or files are provided
-    if (!contentDescription.trim() && files.length === 0) {
+    // Validate that either description or files are provided
+    if (!description.trim() && files.length === 0) {
       toast({
         title: "Missing Content",
-        description: "Please provide either a content description or upload files",
+        description: "Please provide a description or upload files",
         variant: "destructive"
       });
       return;
@@ -398,289 +384,175 @@ export default function PlaceOrderPage() {
         description,
         selectedDateTime: selectedDateTime ? format(selectedDateTime, "PPP p") : undefined,
         files: files.map((f) => f.name),
-        contentDescription,
+        notesDescription,
         appliedCoupon,
         total
       });
     }, 1500);
   };
 
+  const isSpecialFlow = selectedContent === "Visit & Promote" || selectedContent === "Polls";
+
   return (
     <Layout>
-      <div className="flex-1 flex justify-center px-4 py-4 max-w-7xl mx-auto w-full">
-        <div className="w-full flex flex-col gap-6">
-          {/* Back Button - positioned above the two-column layout */}
-          <Button
-            variant="ghost"
-            size="sm"
-            className="self-start bg-white/80 hover:bg-white dark:bg-gray-800/80 dark:hover:bg-gray-800"
-            onClick={() => navigate(-1)}
-          >
-            <ArrowLeft className="w-4 h-4 mr-1" />
-            Back
-          </Button>
+      <div className="flex-1 bg-muted/40 min-h-full">
+        <div className="max-w-7xl mx-auto w-full px-4 py-6">
+          {/* Page header */}
+          <div className="flex items-start justify-between gap-4 mb-6">
+            <div className="flex items-start gap-3">
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-9 w-9 shrink-0 bg-background"
+                onClick={() => navigate(-1)}
+                aria-label="Go back"
+              >
+                <ArrowLeft className="w-4 h-4" />
+              </Button>
+              <div>
+                <h1 className="text-xl font-semibold tracking-tight">Complete Your Order</h1>
+                <p className="text-sm text-muted-foreground">
+                  Review the details, add your content requirements and send the request to {influencerName}.
+                </p>
+              </div>
+            </div>
+          </div>
 
           {/* Two-column layout */}
-          <div className="flex flex-col lg:flex-row gap-8">
+          <div className="flex flex-col lg:flex-row gap-6 items-start">
             {/* Column 1 - Left side */}
-            <div className="flex-1 flex flex-col gap-7">
-              {/* Influencer Card - aligned to match height of Date & Time section */}
-              <div className="flex flex-col gap-6 min-h-[200px]">
-                <InfluencerProfileCard influencer={influencerMock} />
-              </div>
+            <div className="flex-1 w-full flex flex-col gap-5">
+              {/* Influencer Card */}
+              <InfluencerProfileCard influencer={influencerMock} />
               
-              <OrderTypeSelector
-                selectedOrderType={selectedOrderType}
-                selectedContent={selectedContent}
-                selectedSinglePlatform={selectedSinglePlatform}
-                onOrderTypeChange={handleOrderTypeChange}
-                onContentChange={setSelectedContent}
-                onPlatformChange={setSelectedSinglePlatform}
-                contentTypesByOrder={contentTypesByOrder}
-                socialPlatforms={socialPlatforms}
-                isCustomPackage={selectedOrderType === "Custom Package"}
-              />
-              
-              {/* Conditional Content Section */}
-              {selectedContent === "Visit & Promote" ? (
-                <VisitPromoteTab
-                  onSendRequest={handleSendRequest}
-                  isSubmitting={isSubmitting}
+              <SectionCard
+                icon={<Sparkles className="w-5 h-5" />}
+                title="Selected Order"
+                description="Choose the package type, content format and platform"
+              >
+                <OrderTypeSelector
+                  selectedOrderType={selectedOrderType}
+                  selectedContent={selectedContent}
+                  selectedSinglePlatform={selectedSinglePlatform}
+                  onOrderTypeChange={handleOrderTypeChange}
+                  onContentChange={setSelectedContent}
+                  onPlatformChange={setSelectedSinglePlatform}
+                  contentTypesByOrder={contentTypesByOrder}
+                  socialPlatforms={socialPlatforms}
+                  isCustomPackage={selectedOrderType === "Custom Package"}
                 />
-              ) : selectedContent === "Polls" ? (
-                <PollContentTab
-                  onSendRequest={handleSendRequest}
-                  isSubmitting={isSubmitting}
-                />
-              ) : (
-                <div className="space-y-6">
-                  <Label className="text-base font-semibold flex items-center gap-2">
-                    <FileText className="w-5 h-5 text-primary/80" />
-                    How would you like to provide the content?
-                  </Label>
+              </SectionCard>
+
+              {/* Content section — Upload Files only, all content shown inline */}
+              {!isSpecialFlow && (
+                <SectionCard
+                  icon={<FileText className="w-5 h-5" />}
+                  title="Content Details"
+                  description="Describe your request and attach any reference files"
+                >
+                  <DescriptionInput
+                    description={description}
+                    descriptionError={descriptionError}
+                    isAiEnhancing={isAiEnhancing}
+                    dynamicHashtags={dynamicHashtags}
+                    businessProfiles={businessProfiles}
+                    contextualEmojis={contextualEmojis}
+                    onDescriptionChange={handleDescriptionChange}
+                    onBlur={() => setDescriptionError(validateDescription(description))}
+                    onAiEnhance={handleAiEnhance}
+                    onSuggestionClick={handleSuggestionClick}
+                  />
                   
-                  <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                    <TabsList className="grid w-full grid-cols-2">
-                      <TabsTrigger value="upload-files">Upload Files</TabsTrigger>
-                      <TabsTrigger value="provide-content">Provide Content</TabsTrigger>
-                    </TabsList>
-                    
-                    <TabsContent value="upload-files" className="space-y-6 mt-6">
-                      <UploadFilesTab
-                        description={description}
-                        descriptionError={descriptionError}
-                        isAiEnhancing={isAiEnhancing}
-                        dynamicHashtags={dynamicHashtags}
-                        businessProfiles={businessProfiles}
-                        contextualEmojis={contextualEmojis}
-                        files={files}
-                        isUploading={isUploading}
-                        notesDescription={notesDescription}
-                        onDescriptionChange={handleDescriptionChange}
-                        onDescriptionBlur={() => setDescriptionError(validateDescription(description))}
-                        onAiEnhance={handleAiEnhance}
-                        onSuggestionClick={handleSuggestionClick}
-                        onFileChange={handleFileChange}
-                        onRemoveFile={removeFile}
-                        onDragOver={handleDragOver}
-                        onDragLeave={handleDragLeave}
-                        onDrop={handleDrop}
-                        onNotesChange={(e) => setNotesDescription(e.target.value)}
-                      />
-                    </TabsContent>
-                    
-                    <TabsContent value="provide-content" className="space-y-6 mt-6">
-                      <ProvideContentTab
-                        contentDescription={contentDescription}
-                        contentDescriptionError={contentDescriptionError}
-                        referenceFiles={referenceFiles}
-                        isUploadingReference={isUploadingReference}
-                        onContentDescriptionChange={handleContentDescriptionChange}
-                        onContentDescriptionBlur={() => setContentDescriptionError(validateContentDescription(contentDescription))}
-                        onReferenceFileChange={handleReferenceFileChange}
-                        onRemoveReferenceFile={removeReferenceFile}
-                      />
-                    </TabsContent>
-                  </Tabs>
-                </div>
+                  <FileUploader
+                    files={files}
+                    isUploading={isUploading}
+                    onFileChange={handleFileChange}
+                    onRemoveFile={removeFile}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                  />
+                  
+                  {/* Notes */}
+                  <div className="space-y-2">
+                    <Label htmlFor="notes-description" className="text-sm font-medium">
+                      Notes <span className="text-muted-foreground font-normal">(Optional)</span>
+                    </Label>
+                    <textarea
+                      id="notes-description"
+                      placeholder="Add any additional instructions or notes for the influencer..."
+                      className="w-full min-h-[90px] rounded-lg border border-input bg-background px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring resize-none"
+                      value={notesDescription}
+                      onChange={(e) => setNotesDescription(e.target.value)}
+                      maxLength={300}
+                    />
+                    <div className="text-xs text-right text-muted-foreground">
+                      {notesDescription.length}/300 characters
+                    </div>
+                  </div>
+                </SectionCard>
               )}
             </div>
             
             {/* Column 2 - Right side */}
-            <div className="flex-1 flex flex-col gap-6">
-              {selectedContent === "Visit & Promote" ? (
-                <>
-                  {/* Date & Time section for Visit & Promote */}
-                  <div className="space-y-6">
-                    <div className="space-y-4">
-                      <Label className="text-base font-semibold flex items-center gap-2">
-                        <Clock className="w-5 h-5 text-primary/80" />
-                        Schedule Post - Select Date & Time
-                      </Label>
-                      
-                      <DateTimePicker
-                        value={selectedDateTime}
-                        onChange={setSelectedDateTime}
-                        label=""
-                        placeholder="Pick a date and time"
-                      />
-                    </div>
-                  </div>
+            <aside className="w-full lg:w-[400px] shrink-0 flex flex-col gap-5 lg:sticky lg:top-20">
+              {/* Date & Time */}
+              <SectionCard
+                icon={<Clock className="w-5 h-5" />}
+                title={isSpecialFlow ? "Schedule Post" : "Select Date & Time"}
+                description="When should this go live?"
+              >
+                <DateTimePicker
+                  value={selectedDateTime}
+                  onChange={setSelectedDateTime}
+                  label=""
+                  placeholder="Pick a date and time"
+                />
+              </SectionCard>
 
-                  {/* Affiliate Link section for Visit & Promote */}
-                  <div className="space-y-4 pt-4 border-t border-border">
-                    <Label 
-                      htmlFor="affiliate-link" 
-                      className={cn(
-                        "text-sm mb-1.5 block",
-                        affiliateLinkError && "text-destructive"
-                      )}
-                    >
-                      Affiliate Link (Optional) {affiliateLinkError && `(${affiliateLinkError})`}
-                    </Label>
-                    <Input
-                      id="affiliate-link"
-                      placeholder="https://example.com/your-affiliate-link"
-                      className={cn(
-                        "transition-all focus-visible:ring-primary",
-                        affiliateLinkError && "border-destructive focus-visible:ring-destructive"
-                      )}
-                      value={affiliateLink}
-                      onChange={handleAffiliateLinkChange}
-                      onBlur={() => setAffiliateLinkError(validateAffiliateLink(affiliateLink))}
-                    />
-                  </div>
+              {/* Affiliate Link */}
+              <SectionCard
+                icon={<Link2 className="w-5 h-5" />}
+                title="Affiliate Link"
+                description="Optional — track conversions from this post"
+              >
+                <Input
+                  id="affiliate-link"
+                  placeholder="https://example.com/your-affiliate-link"
+                  className={cn(
+                    "transition-all focus-visible:ring-primary",
+                    affiliateLinkError && "border-destructive focus-visible:ring-destructive"
+                  )}
+                  value={affiliateLink}
+                  onChange={handleAffiliateLinkChange}
+                  onBlur={() => setAffiliateLinkError(validateAffiliateLink(affiliateLink))}
+                />
+                {affiliateLinkError && (
+                  <p className="text-xs text-destructive">{affiliateLinkError}</p>
+                )}
+              </SectionCard>
 
-                  {/* Coupon Section for Visit & Promote */}
-                  <CouponSection
-                    couponCode={couponCode}
-                    appliedCoupon={appliedCoupon}
-                    onCouponCodeChange={setCouponCode}
-                    onCouponApply={handleCouponApply}
-                    onRemoveCoupon={removeCoupon}
-                  />
+              {/* Coupon */}
+              <SectionCard
+                icon={<Tag className="w-5 h-5" />}
+                title="Coupon Code"
+                description="Apply a discount to this order"
+              >
+                <CouponSection
+                  couponCode={couponCode}
+                  appliedCoupon={appliedCoupon}
+                  onCouponCodeChange={setCouponCode}
+                  onCouponApply={handleCouponApply}
+                  onRemoveCoupon={removeCoupon}
+                />
+              </SectionCard>
 
-                  {/* Order Summary for Visit & Promote */}
-                  <div className="bg-white border rounded-lg p-6 space-y-4">
-                    <h3 className="text-lg font-semibold">Order Summary</h3>
-                    
-                    <div className="space-y-2">
-                      <h4 className="font-medium text-sm">Order Details</h4>
-                      <div className="space-y-1 text-sm text-muted-foreground">
-                        <div className="flex justify-between">
-                          <span>Type:</span>
-                          <span className="font-medium text-foreground">{selectedOrderType}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Content:</span>
-                          <span className="font-medium text-foreground">{selectedContent}</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span>Platform:</span>
-                          <div className="flex items-center gap-2">
-                            {socialPlatforms.find(p => p.id === selectedSinglePlatform)?.icon}
-                            <span className="font-medium text-foreground">
-                              {socialPlatforms.find(p => p.id === selectedSinglePlatform)?.name}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="space-y-1.5 pt-2 border-t">
-                      <div className="flex justify-between text-sm">
-                        <span className={cn(
-                          "transition-all",
-                          appliedCoupon ? "text-primary" : "text-muted-foreground"
-                        )}>
-                          Coupon Discount
-                        </span>
-                        <span className={cn(
-                          appliedCoupon ? "text-primary font-medium" : "text-muted-foreground"
-                        )}>
-                          {couponDiscount ? `−${couponDiscount}₹` : "—"}
-                        </span>
-                      </div>
-                      
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Platform Fee</span>
-                        <span className="text-muted-foreground">{platformFee}₹</span>
-                      </div>
-                    </div>
-
-                    <div className="flex justify-between items-center pt-2 border-t">
-                      <span className="text-base font-semibold">Total</span>
-                      <span className="text-xl font-bold">{total}₹</span>
-                    </div>
-                  </div>
-
-                  {/* Send Request Button for Visit & Promote */}
-                  <Button
-                    type="button"
-                    className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 transition-all py-6 text-base"
-                    onClick={handleSendRequest}
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Processing...
-                      </>
-                    ) : (
-                      "Send Request"
-                    )}
-                  </Button>
-                </>
-              ) : (
-                <>
-                  {/* Date & Time section - aligned to match height of Influencer Card */}
-                  <div className="space-y-6 min-h-[200px] flex flex-col justify-center">
-                    <div className="space-y-4">
-                      <Label className="text-base font-semibold flex items-center gap-2">
-                        <Clock className="w-5 h-5 text-primary/80" />
-                        Select Date & Time
-                      </Label>
-                      
-                      <DateTimePicker
-                        value={selectedDateTime}
-                        onChange={setSelectedDateTime}
-                        label=""
-                        placeholder="Pick a date and time"
-                      />
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-4 pt-4 border-t border-border">
-                    <Label 
-                      htmlFor="affiliate-link" 
-                      className={cn(
-                        "text-sm mb-1.5 block",
-                        affiliateLinkError && "text-destructive"
-                      )}
-                    >
-                      Affiliate Link (Optional) {affiliateLinkError && `(${affiliateLinkError})`}
-                    </Label>
-                    <Input
-                      id="affiliate-link"
-                      placeholder="https://example.com/your-affiliate-link"
-                      className={cn(
-                        "transition-all focus-visible:ring-primary",
-                        affiliateLinkError && "border-destructive focus-visible:ring-destructive"
-                      )}
-                      value={affiliateLink}
-                      onChange={handleAffiliateLinkChange}
-                      onBlur={() => setAffiliateLinkError(validateAffiliateLink(affiliateLink))}
-                    />
-                  </div>
-                  
-                  <CouponSection
-                    couponCode={couponCode}
-                    appliedCoupon={appliedCoupon}
-                    onCouponCodeChange={setCouponCode}
-                    onCouponApply={handleCouponApply}
-                    onRemoveCoupon={removeCoupon}
-                  />
-                  
+              {/* Order Summary */}
+              <div className="rounded-xl border border-border/60 bg-card shadow-sm overflow-hidden">
+                <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-5 py-3.5">
+                  <h2 className="text-sm font-semibold text-white tracking-tight">Order Summary</h2>
+                </div>
+                <div className="p-5">
                   <OrderSummary
                     selectedOrderType={selectedOrderType}
                     selectedContent={selectedContent}
@@ -696,10 +568,11 @@ export default function PlaceOrderPage() {
                     onPlatformChange={setSelectedSinglePlatform}
                     onSendRequest={handleSendRequest}
                     isCustomPackage={selectedOrderType === "Custom Package"}
+                    formatCurrency={formatCurrency}
                   />
-                </>
-              )}
-            </div>
+                </div>
+              </div>
+            </aside>
           </div>
         </div>
       </div>
@@ -736,4 +609,3 @@ export default function PlaceOrderPage() {
     </Layout>
   );
 }
-
