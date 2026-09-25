@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { Check } from 'lucide-react';
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
