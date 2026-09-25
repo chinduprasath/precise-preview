@@ -1,16 +1,19 @@
 import React, { useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
-  ArrowLeft, BadgeCheck, CalendarDays, Check, ChevronRight, Clock,
+  ArrowLeft, BadgeCheck, Building2, CalendarDays, Check, ChevronRight, Clock, CreditCard,
   ExternalLink, FileText, LockKeyhole, MapPin, PackageCheck, ReceiptText, ShieldCheck,
-  Tag, Users, X,
+  Smartphone, Tag, Users, WalletCards, X,
 } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Separator } from '@/components/ui/separator';
+import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
 import { calculateCheckoutTotals, formatCheckoutCurrency } from '@/lib/checkout';
 import type { CouponCode, Order } from '@/types/order';
@@ -26,6 +29,8 @@ const SAMPLE_ORDER: Order = {
 };
 
 const VALID_COUPONS: Record<string, number> = { discount20: 20, welcome10: 10 };
+const WALLET_BALANCE = 4500;
+type CheckoutPaymentMethod = 'upi' | 'card' | 'netbanking';
 const DELIVERABLES = [
   '1 dedicated Instagram Reel (30–60 seconds)',
   '2 Instagram Stories with product link sticker',
@@ -40,7 +45,12 @@ const CheckoutPage = () => {
   const order = (location.state?.order as Order | undefined) ?? SAMPLE_ORDER;
   const [couponCode, setCouponCode] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState<CouponCode | null>(null);
+  const [paymentMethod, setPaymentMethod] = useState<CheckoutPaymentMethod>('upi');
+  const [useWallet, setUseWallet] = useState(false);
+  const [upiId, setUpiId] = useState('');
   const totals = useMemo(() => calculateCheckoutTotals(order, appliedCoupon), [order, appliedCoupon]);
+  const walletApplied = useWallet ? Math.min(WALLET_BALANCE, totals.total) : 0;
+  const payableTotal = totals.total - walletApplied;
 
   const applyCoupon = () => {
     const code = couponCode.trim().toLowerCase();
@@ -54,7 +64,11 @@ const CheckoutPage = () => {
   };
 
   const placeOrder = () => navigate('/order-confirmation', {
-    state: { order, totals, orderReference: `ICO-${Date.now().toString().slice(-8)}` },
+    state: {
+      order,
+      totals: { ...totals, total: payableTotal },
+      orderReference: `ICO-${Date.now().toString().slice(-8)}`,
+    },
   });
 
   return (
@@ -130,9 +144,45 @@ const CheckoutPage = () => {
               </ul>
             </Section>
 
+            <Section title="Select payment method" icon={CreditCard} badge="Bank-grade encrypted">
+              <RadioGroup value={paymentMethod} onValueChange={(value) => setPaymentMethod(value as CheckoutPaymentMethod)} className="space-y-3">
+                <PaymentChoice value="upi" title="UPI instant escrow" description="Google Pay, PhonePe, Paytm, BHIM, or any UPI ID" icon={Smartphone} active={paymentMethod === 'upi'}>
+                  {paymentMethod === 'upi' && (
+                    <div className="mt-4 border-t pt-4">
+                      <Label htmlFor="upi-id" className="text-xs font-medium">Virtual Payment Address (VPA / UPI ID)</Label>
+                      <div className="mt-2 flex gap-2">
+                        <Input id="upi-id" placeholder="name@bank" value={upiId} onChange={(event) => setUpiId(event.target.value)} />
+                        <Button type="button" variant="secondary">Verify</Button>
+                      </div>
+                    </div>
+                  )}
+                </PaymentChoice>
+                <PaymentChoice value="card" title="Corporate / personal card" description="Visa, Mastercard, RuPay, Corporate Amex accepted" icon={CreditCard} active={paymentMethod === 'card'} />
+                <PaymentChoice value="netbanking" title="Net banking / corporate NEFT" description="Supports all major Indian banks and corporate portals" icon={Building2} active={paymentMethod === 'netbanking'} />
+              </RadioGroup>
+              <div className="mt-4 flex gap-3 rounded-lg bg-muted/60 p-4 text-xs text-muted-foreground">
+                <ShieldCheck className="h-4 w-4 shrink-0 text-primary" />
+                <span><strong className="text-foreground">100% escrow protection.</strong> Your payment details are encrypted and funds remain protected until campaign approval.</span>
+              </div>
+            </Section>
+
           </div>
 
           <aside className="space-y-4 lg:sticky lg:top-6">
+            <Card className="border-border shadow-sm">
+              <CardContent className="flex items-center justify-between gap-4 p-5">
+                <div className="flex min-w-0 items-center gap-3">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary"><WalletCards className="h-5 w-5" /></span>
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-2"><p className="font-semibold">Influence Connect Wallet</p><Badge variant="secondary" className="text-[10px] text-primary">Instant credit</Badge></div>
+                    <p className="text-xs text-muted-foreground">Available balance: <strong className="text-foreground">{formatCheckoutCurrency(WALLET_BALANCE)}</strong></p>
+                  </div>
+                </div>
+                <Switch checked={useWallet} onCheckedChange={setUseWallet} aria-label="Use Influence Connect Wallet" />
+              </CardContent>
+              {useWallet && <div className="flex justify-between border-t px-5 py-3 text-xs font-medium text-primary"><span>Wallet balance applied</span><span>− {formatCheckoutCurrency(walletApplied)}</span></div>}
+            </Card>
+
             <Card className="border-border shadow-sm">
               <CardHeader className="pb-3"><CardTitle className="text-base">Have a promotional code?</CardTitle></CardHeader>
               <CardContent>
@@ -155,11 +205,12 @@ const CheckoutPage = () => {
                   {totals.discount > 0 && <SummaryRow label={`Discount (${appliedCoupon?.discount}%)`} value={`− ${formatCheckoutCurrency(totals.discount)}`} emphasis />}
                   <SummaryRow label="Platform fee (5%)" value={formatCheckoutCurrency(totals.platformFee)} />
                   <SummaryRow label="GST (18%)" value={formatCheckoutCurrency(totals.tax)} />
+                   {walletApplied > 0 && <SummaryRow label="Wallet credit" value={`− ${formatCheckoutCurrency(walletApplied)}`} emphasis />}
                 </div>
                 <Separator />
                 <div className="flex items-end justify-between rounded-md bg-muted/50 p-4">
                    <div><p className="text-xs font-medium uppercase text-muted-foreground">Order total</p><p className="mt-1 text-xs text-muted-foreground">All taxes included</p></div>
-                  <p className="text-2xl font-bold">{formatCheckoutCurrency(totals.total)}</p>
+                   <p className="text-2xl font-bold">{formatCheckoutCurrency(payableTotal)}</p>
                 </div>
                 <Button size="lg" className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-primary-foreground hover:from-blue-600 hover:to-blue-700" onClick={placeOrder}>
                   Place order <ChevronRight className="ml-2 h-4 w-4" />
@@ -179,6 +230,16 @@ const Section = ({ title, icon: Icon, badge, children }: { title: string; icon: 
 );
 const Detail = ({ icon: Icon, label, value }: { icon: React.ComponentType<{ className?: string }>; label: string; value: string }) => (
   <div className="rounded-md border bg-muted/30 p-3"><p className="text-xs text-muted-foreground">{label}</p><p className="mt-1 flex items-center gap-2 text-sm font-medium"><Icon className="h-4 w-4 shrink-0 text-muted-foreground" />{value}</p></div>
+);
+const PaymentChoice = ({ value, title, description, icon: Icon, active, children }: { value: CheckoutPaymentMethod; title: string; description: string; icon: React.ComponentType<{ className?: string }>; active: boolean; children?: React.ReactNode }) => (
+  <div className={`rounded-lg border p-4 transition-colors ${active ? 'border-primary bg-primary/5 ring-1 ring-primary/20' : 'hover:bg-muted/30'}`}>
+    <Label htmlFor={`method-${value}`} className="flex cursor-pointer items-center gap-3">
+      <RadioGroupItem id={`method-${value}`} value={value} />
+      <Icon className="h-5 w-5 shrink-0 text-primary" />
+      <span className="min-w-0 flex-1"><span className="block text-sm font-semibold capitalize">{title}</span><span className="block text-xs font-normal text-muted-foreground">{description}</span></span>
+    </Label>
+    {children}
+  </div>
 );
 const SummaryRow = ({ label, value, emphasis = false }: { label: string; value: string; emphasis?: boolean }) => <div className="flex justify-between gap-4"><span className="text-muted-foreground">{label}</span><span className={emphasis ? 'font-semibold text-primary' : 'font-semibold'}>{value}</span></div>;
 
