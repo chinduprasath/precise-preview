@@ -35,10 +35,6 @@ const OrderTypeSelector: React.FC<OrderTypeSelectorProps> = ({
 }) => {
   return (
     <div className="space-y-4">
-      <Label className="text-base font-semibold flex items-center gap-2">
-        <Check className="w-5 h-5 text-primary/80" />
-        Selected Order
-      </Label>
       <Card className="p-4 border border-border">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="space-y-2">
