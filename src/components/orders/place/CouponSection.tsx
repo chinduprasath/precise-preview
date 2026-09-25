@@ -21,11 +21,8 @@ const CouponSection: React.FC<CouponSectionProps> = ({
   onRemoveCoupon,
 }) => {
   return (
-    <div className="space-y-4 pt-4 border-t border-border">
-      <Label className="text-base font-semibold flex items-center gap-2">
-        <Tag className="w-5 h-5 text-primary/80" />
-        Coupon Code
-      </Label>
+    <div className="space-y-3">
+      
       
       <div className="flex gap-2">
         <Input 
