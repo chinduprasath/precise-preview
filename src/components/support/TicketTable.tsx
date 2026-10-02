@@ -131,8 +131,12 @@ const TicketTable: React.FC<TicketTableProps> = ({
               </TableRow>
             ) : (
               filteredTickets.map((ticket) => (
-                <TableRow key={ticket.id}>
-                  <TableCell className="font-medium">{ticket.id}</TableCell>
+                <TableRow
+                  key={ticket.id}
+                  className={!isAdmin ? "cursor-pointer" : undefined}
+                  onClick={!isAdmin ? () => onViewTicket(ticket.id) : undefined}
+                >
+                  <TableCell className="font-medium text-primary">{ticket.id}</TableCell>
                   <TableCell>{new Date(ticket.createdAt).toLocaleDateString()}</TableCell>
                   {isAdmin && (
                     <TableCell>
@@ -212,7 +216,7 @@ const TicketTable: React.FC<TicketTableProps> = ({
                     </TableCell>
                   )}
                   <TableCell>{new Date(ticket.lastUpdated).toLocaleDateString()}</TableCell>
-                  <TableCell>
+                  <TableCell onClick={(e) => e.stopPropagation()}>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="icon">
