@@ -14,7 +14,7 @@ import TicketDetail from "@/components/support/TicketDetail";
 import CreateTicketForm from "@/components/support/CreateTicketForm";
 import { Ticket, TicketCategory, TicketPriority, UserType } from "@/types/ticket";
 import { toast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 
 const SupportPage = () => {
   const [tickets, setTickets] = useState<Ticket[]>([]);
@@ -155,11 +155,9 @@ const SupportPage = () => {
     fetchTickets();
   }, []);
   
+  const navigate = useNavigate();
   const handleViewTicket = (ticketId: string) => {
-    const ticket = tickets.find((t) => t.id === ticketId);
-    if (ticket) {
-      setSelectedTicket(ticket);
-    }
+    navigate(`/support/tickets/${ticketId}`);
   };
   
   const handleReply = async (
