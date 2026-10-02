@@ -13,6 +13,7 @@ import ReachPage from "./pages/reach";
 import ServicesPage from "./pages/services";
 import OrdersPage from "./pages/orders";
 import PlaceOrderPage from "./pages/orders/place";
+import OrderDetailPage from "./pages/orders/detail";
 import RequestsPage from "./pages/requests";
 import LandingPage from "./pages/landing";
 import SignUpPage from "./pages/auth/signup";
@@ -99,6 +100,7 @@ function App() {
                 <Route path="/services" element={<ServicesPage />} />
                 <Route path="/orders" element={<OrdersPage />} />
                 <Route path="/orders/place" element={<PlaceOrderPage />} />
+                <Route path="/orders/:id" element={<OrderDetailPage />} />
                 <Route path="/requests" element={<RequestsPage />} />
                 <Route path="/reports" element={<ReportsPage />} />
                 <Route path="/notifications" element={<NotificationsPage />} />

@@ -20,6 +20,8 @@ import CouponSection from '@/components/orders/place/CouponSection';
 import OrderSummary from '@/components/orders/place/OrderSummary';
 import VisitPromoteTab from '@/components/orders/place/VisitPromoteTab';
 import PollContentTab from '@/components/orders/place/PollContentTab';
+import { addStoredOrder } from '@/data/orders';
+import { Order } from '@/types/order';
 
 const influencerMock = {
   avatar: "https://picsum.photos/id/64/100/100",
@@ -161,6 +163,7 @@ export default function PlaceOrderPage() {
   const [appliedCoupon, setAppliedCoupon] = useState<{code: string, discount: number, type: string} | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showThankYouDialog, setShowThankYouDialog] = useState(false);
+  const [createdOrderId, setCreatedOrderId] = useState<string>("");
 
   // New states for dropdowns
   const [selectedOrderType, setSelectedOrderType] = useState<string>("Platform Based");
@@ -371,24 +374,104 @@ export default function PlaceOrderPage() {
 
     setIsSubmitting(true);
     
-    // Simulate API call
+    // Simulate API call & persist order
     setTimeout(() => {
+      const newOrderId = Date.now().toString();
+      const newOrderNumber = String(Math.floor(1000000000 + Math.random() * 9000000000));
+      const scheduledDateStr = selectedDateTime ? format(selectedDateTime, 'yyyy-MM-dd') : null;
+      const scheduledTimeStr = selectedDateTime ? format(selectedDateTime, 'HH:mm:ss') : null;
+      const gstAmount = Math.round((packagePrice - couponDiscount + platformFee) * 0.18);
+      const totalWithGst = packagePrice - couponDiscount + platformFee + gstAmount;
+
+      const newOrder: Order = {
+        id: newOrderId,
+        orderNumber: newOrderNumber,
+        date: new Date().toISOString(),
+        url: null,
+        status: 'pending_checkout',
+        scheduledDate: scheduledDateStr,
+        scheduledTime: scheduledTimeStr,
+        category: influencerMock.category,
+        productService: selectedContent,
+        orderType: selectedOrderType,
+        contentTypeName: selectedContent,
+        platform: selectedSinglePlatform,
+        businessVerified: true,
+        username: influencerName,
+        amount: totalWithGst,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        affiliateLink: affiliateLink || undefined,
+        notes: notesDescription || undefined,
+        influencer: {
+          name: influencerName,
+          avatar: influencerMock.avatar,
+          category: influencerMock.category,
+          location: influencerMock.location,
+          verified: true,
+          followers: [
+            { platform: 'Instagram', value: '2.3M' },
+            { platform: 'Facebook', value: '834K' },
+            { platform: 'YouTube', value: '569K' },
+            { platform: 'Twitter', value: '3.4M' },
+          ],
+        },
+        pricing: {
+          basePrice: packagePrice,
+          platformFee,
+          couponCode: appliedCoupon?.code,
+          couponDiscount,
+          gst: gstAmount,
+          total: totalWithGst,
+        },
+        content: {
+          type: selectedContent === 'Polls' ? 'polls' : selectedContent === 'Visit & Promote' ? 'visit_promote' : 'provided_content',
+          description,
+          files: files.map((f, idx) => ({
+            id: `f-${idx + 1}`,
+            name: f.name,
+            type: f.type || 'application/octet-stream',
+            size: `${(f.size / (1024 * 1024)).toFixed(1)} MB`,
+          })),
+          polls: selectedContent === 'Polls' ? [
+            {
+              id: 'p1',
+              question: 'Which product feature would you love to see released next?',
+              options: ['Automated Influencer Analytics', 'Multi-Platform Cross Posting', 'Instant Escrow Payouts', 'AI Caption & Reel Generator']
+            }
+          ] : undefined,
+          visitDetails: selectedContent === 'Visit & Promote' ? {
+            preferredDates: [scheduledDateStr || format(new Date(), 'yyyy-MM-dd')],
+            timeSlot: '11:00 AM - 03:00 PM',
+            venueName: 'Flagship Experience Store',
+            fullAddress: 'Plot 142, Linking Road, Khar West, Mumbai, Maharashtra 400052',
+            landmarkInfo: 'Near Khar Telephone Exchange',
+            travelReimbursement: true,
+            travelAmount: '₹5,000',
+            foodProvided: true,
+            foodDetails: 'Complimentary VIP catering & refreshments',
+            stayProvided: false,
+            contentDescription: description || 'Store walkthrough, try new collection, and interactive story poll.',
+            hashtags: '#brandvisit #experiencecentre #mumbaishopping',
+            handlesToTag: '@brand_official @influencer',
+            specialGuidelines: 'Please arrive 15 minutes before the scheduled time slot.'
+          } : undefined,
+        },
+        socialMediaLinks: {},
+        timeline: [
+          { step: 'Order Submitted', timestamp: format(new Date(), 'MMM dd, yyyy, hh:mm a'), status: 'completed', description: 'Order request submitted to influencer' },
+          { step: 'Payment in Escrow', timestamp: 'Pending', status: 'current', description: 'Funds awaiting checkout to be held in escrow' },
+          { step: 'Influencer Review', timestamp: 'Upcoming', status: 'upcoming', description: 'Awaiting influencer confirmation and acceptance' },
+          { step: 'Content Production', timestamp: 'Upcoming', status: 'upcoming', description: 'Influencer creates draft content for review' },
+          { step: 'Published & Completed', timestamp: 'Upcoming', status: 'upcoming', description: 'Live post verified and escrow funds released' },
+        ]
+      };
+
+      addStoredOrder(newOrder);
+      setCreatedOrderId(newOrderId);
       setIsSubmitting(false);
       setShowThankYouDialog(true);
-      
-      console.log({
-        orderType: selectedOrderType,
-        content: selectedContent,
-        platform: selectedSinglePlatform,
-        affiliateLink,
-        description,
-        selectedDateTime: selectedDateTime ? format(selectedDateTime, "PPP p") : undefined,
-        files: files.map((f) => f.name),
-        notesDescription,
-        appliedCoupon,
-        total
-      });
-    }, 1500);
+    }, 1200);
   };
 
   const isSpecialFlow = selectedContent === "Visit & Promote" || selectedContent === "Polls";
@@ -617,19 +700,22 @@ export default function PlaceOrderPage() {
               <p>Once the posting is completed, you can track the results on the Reach page.</p>
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter className="sm:space-x-4">
+          <AlertDialogFooter className="sm:space-x-3">
             <Button
               variant="outline"
               className="w-full sm:w-auto"
-              onClick={() => navigate('/')}
-            >
-              Return to Home
-            </Button>
-            <Button 
-              className="w-full sm:w-auto"
               onClick={() => navigate('/orders')}
             >
-              View Orders
+              All Orders
+            </Button>
+            <Button 
+              className="w-full sm:w-auto bg-primary text-primary-foreground font-semibold"
+              onClick={() => {
+                setShowThankYouDialog(false);
+                navigate(`/orders/${createdOrderId}`);
+              }}
+            >
+              View Order Details
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>

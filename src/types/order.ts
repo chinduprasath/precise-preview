@@ -12,6 +12,21 @@ export interface PollQuestion {
 export interface VisitDetails {
   preferredDates?: string[];
   timeSlot?: string;
+  venueName?: string;
+  fullAddress?: string;
+  landmarkInfo?: string;
+  travelReimbursement?: boolean;
+  travelAmount?: string;
+  foodProvided?: boolean;
+  foodDetails?: string;
+  stayProvided?: boolean;
+  stayDetails?: string;
+  giftsVouchers?: string;
+  otherPerks?: string;
+  contentDescription?: string;
+  hashtags?: string;
+  handlesToTag?: string;
+  specialGuidelines?: string;
   location?: string;
   offers?: {
     food?: boolean;
@@ -21,9 +36,17 @@ export interface VisitDetails {
   };
 }
 
+export interface OrderFileAttachment {
+  id: string;
+  name: string;
+  type: string;
+  size: string;
+  url?: string;
+}
+
 export interface OrderContent {
   type: OrderContentType;
-  files?: { id: string; name: string; type: string; size: string; url?: string }[];
+  files?: OrderFileAttachment[];
   description?: string;
   polls?: PollQuestion[];
   visitDetails?: VisitDetails;
@@ -36,6 +59,31 @@ export interface SocialMediaLinks {
   twitter?: string;
 }
 
+export interface OrderPricing {
+  basePrice: number;
+  platformFee: number;
+  couponCode?: string;
+  couponDiscount: number;
+  gst: number;
+  total: number;
+}
+
+export interface InfluencerProfileSummary {
+  name: string;
+  avatar: string;
+  category: string;
+  location: string;
+  verified?: boolean;
+  followers?: { platform: string; value: string }[];
+}
+
+export interface OrderTimelineStep {
+  step: string;
+  timestamp?: string;
+  status: 'completed' | 'current' | 'upcoming';
+  description?: string;
+}
+
 export interface Order {
   id: string;
   orderNumber: string;
@@ -46,14 +94,21 @@ export interface Order {
   scheduledTime: string | null;
   category: string | null;
   productService: string | null;
-  orderType?: string;
+  orderType?: string; // e.g. "Platform Based", "Custom Package"
+  contentTypeName?: string; // e.g. "Post Image/Video", "Polls", "Visit & Promote"
+  platform?: string; // e.g. "instagram", "facebook", "youtube", "twitter"
   businessVerified: boolean;
   username: string;
   amount?: number;
   createdAt: string;
   updatedAt: string;
+  affiliateLink?: string;
+  notes?: string;
+  influencer?: InfluencerProfileSummary;
+  pricing?: OrderPricing;
   content?: OrderContent; // Dynamic content based on order type
   socialMediaLinks?: SocialMediaLinks; // Social media post URLs
+  timeline?: OrderTimelineStep[];
 }
 
 export interface CouponCode {
@@ -61,3 +116,4 @@ export interface CouponCode {
   discount: number; // percentage discount
   isValid: boolean;
 }
+

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { format, parse, isAfter, isBefore, parseISO } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
 import { Order, OrderStatus, OrderContentType, SocialMediaLinks } from '@/types/order';
-import { orderData } from '@/data/orders';
+import { orderData, getStoredOrders } from '@/data/orders';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
 import { useToast } from '@/hooks/use-toast';
@@ -92,7 +92,7 @@ const OrdersPage = () => {
     refetchOnWindowFocus: false
   });
 
-  const orders = (apiOrders && apiOrders.length > 0) ? apiOrders : orderData;
+  const orders = (apiOrders && apiOrders.length > 0) ? apiOrders : getStoredOrders();
 
   const filteredOrders = React.useMemo(() => {
     let filtered = [...orders];
@@ -158,9 +158,7 @@ const OrdersPage = () => {
   };
 
   const handleViewDetails = (order: Order) => {
-    setSelectedOrder(order);
-    setSocialMediaLinks(order.socialMediaLinks || {});
-    setIsDetailOpen(true);
+    navigate(`/orders/${order.id}`);
   };
 
   const resetFilters = () => {
@@ -494,6 +492,16 @@ const OrdersPage = () => {
                               <TableCell className="text-right">
                                 <div className="flex justify-end gap-2">
                                   <Button 
+                                    variant="outline" 
+                                    size="sm"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleViewDetails(order);
+                                    }}
+                                  >
+                                    View
+                                  </Button>
+                                  <Button 
                                     variant="destructive" 
                                     size="sm"
                                     onClick={(e) => {
@@ -570,16 +578,28 @@ const OrdersPage = () => {
                                 <Badge variant="success">Completed</Badge>
                               </TableCell>
                               <TableCell className="text-right">
-                                <Button 
-                                  variant="default" 
-                                  size="sm"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleUpdate(order);
-                                  }}
-                                >
-                                  Update
-                                </Button>
+                                <div className="flex justify-end gap-2">
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleViewDetails(order);
+                                    }}
+                                  >
+                                    View
+                                  </Button>
+                                  <Button 
+                                    variant="default" 
+                                    size="sm"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleUpdate(order);
+                                    }}
+                                  >
+                                    Update
+                                  </Button>
+                                </div>
                               </TableCell>
                             </TableRow>
                           ))}
