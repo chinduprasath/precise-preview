@@ -1,5 +1,13 @@
 
-export type TicketStatus = 'New' | 'In Progress' | 'Resolved' | 'Closed';
+export type TicketStatus =
+  | 'New'
+  | 'Submitted'
+  | 'Under Review'
+  | 'In Progress'
+  | 'Waiting for User'
+  | 'Resolved'
+  | 'Closed'
+  | 'Escalated';
 export type TicketPriority = 'Low' | 'Medium' | 'High' | 'Critical';
 export type TicketCategory = 'Technical' | 'Payment' | 'Collaboration' | 'Account Issue' | 'Other';
 export type UserType = 'business' | 'influencer' | 'admin';

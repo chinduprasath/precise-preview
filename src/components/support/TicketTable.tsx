@@ -63,21 +63,32 @@ const TicketTable: React.FC<TicketTableProps> = ({
   
   const getStatusBadgeColor = (status: TicketStatus) => {
     switch (status) {
-      case "New": return "bg-blue-500";
-      case "In Progress": return "bg-yellow-500";
-      case "Resolved": return "bg-green-500";
-      case "Closed": return "bg-gray-500";
-      default: return "bg-gray-500";
+      case "New":
+      case "Submitted":
+      case "Under Review":
+        return "bg-blue-600 text-white hover:bg-blue-700";
+      case "In Progress":
+        return "bg-amber-600 text-white hover:bg-amber-700";
+      case "Waiting for User":
+        return "bg-purple-600 text-white hover:bg-purple-700";
+      case "Resolved":
+        return "bg-green-600 text-white hover:bg-green-700";
+      case "Closed":
+        return "bg-slate-500 text-white hover:bg-slate-600";
+      case "Escalated":
+        return "bg-red-600 text-white hover:bg-red-700";
+      default:
+        return "bg-gray-500 text-white";
     }
   };
   
   const getPriorityBadgeColor = (priority: TicketPriority) => {
     switch (priority) {
-      case "Low": return "bg-blue-400";
-      case "Medium": return "bg-yellow-400";
-      case "High": return "bg-orange-500";
-      case "Critical": return "bg-red-600";
-      default: return "bg-gray-500";
+      case "Low": return "bg-blue-500 text-white";
+      case "Medium": return "bg-amber-500 text-white";
+      case "High": return "bg-orange-500 text-white";
+      case "Critical": return "bg-red-600 text-white";
+      default: return "bg-gray-500 text-white";
     }
   };
 
@@ -87,20 +98,23 @@ const TicketTable: React.FC<TicketTableProps> = ({
         <div className="relative flex-1">
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Search tickets..."
+            placeholder="Search tickets by ID, subject, or user..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-8"
           />
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-full md:w-[180px]">
+          <SelectTrigger className="w-full md:w-[200px]">
             <SelectValue placeholder="Filter by status" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Statuses</SelectItem>
             <SelectItem value="New">New</SelectItem>
+            <SelectItem value="Submitted">Submitted</SelectItem>
+            <SelectItem value="Under Review">Under Review</SelectItem>
             <SelectItem value="In Progress">In Progress</SelectItem>
+            <SelectItem value="Waiting for User">Waiting for User</SelectItem>
             <SelectItem value="Resolved">Resolved</SelectItem>
             <SelectItem value="Closed">Closed</SelectItem>
           </SelectContent>
@@ -133,18 +147,20 @@ const TicketTable: React.FC<TicketTableProps> = ({
               filteredTickets.map((ticket) => (
                 <TableRow
                   key={ticket.id}
-                  className={!isAdmin ? "cursor-pointer" : undefined}
+                  className={!isAdmin ? "cursor-pointer hover:bg-muted/60 transition-colors" : undefined}
                   onClick={!isAdmin ? () => onViewTicket(ticket.id) : undefined}
                 >
-                  <TableCell className="font-medium text-primary">{ticket.id}</TableCell>
-                  <TableCell>{new Date(ticket.createdAt).toLocaleDateString()}</TableCell>
+                  <TableCell className="font-semibold text-primary hover:underline">
+                    {ticket.id}
+                  </TableCell>
+                  <TableCell>{new Date(ticket.createdAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}</TableCell>
                   {isAdmin && (
                     <TableCell>
                       {ticket.userName}{" "}
                       <Badge variant="outline">{ticket.userType}</Badge>
                     </TableCell>
                   )}
-                  <TableCell>{ticket.subject}</TableCell>
+                  <TableCell className="font-medium">{ticket.subject}</TableCell>
                   <TableCell>
                     {isAdmin && onStatusChange ? (
                       <Select

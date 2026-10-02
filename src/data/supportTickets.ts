@@ -35,6 +35,15 @@ export interface DetailActivity {
   kind: "created" | "assigned" | "reply" | "status" | "closed" | "reopened" | "attachment";
 }
 
+export interface DetailNote {
+  id: string;
+  author: string;
+  role: string;
+  createdAt: string;
+  content: string;
+  type?: "update" | "action_required" | "info" | "resolution";
+}
+
 export interface SupportTicketDetail {
   id: string;
   subject: string;
@@ -59,6 +68,7 @@ export interface SupportTicketDetail {
   };
   resolution?: string;
   messages: DetailMessage[];
+  notes?: DetailNote[];
   activity: DetailActivity[];
   relatedIds: string[];
 }
@@ -121,6 +131,24 @@ export const SUPPORT_TICKETS: SupportTicketDetail[] = [
         createdAt: d("2026-10-02T10:40:00"),
         message: "Okay, thank you.",
         status: "Read",
+      },
+    ],
+    notes: [
+      {
+        id: "n1",
+        author: "Alex Johnson",
+        role: "Support Admin",
+        createdAt: d("2026-10-02T10:45:00"),
+        content: "Gateway reconciliation in progress with Razorpay operations for transaction ID PAY-8493021. Expected resolution time is 2-4 hours. In case of auto-reversal, funds will reflect back in source account in 24-48 business hours.",
+        type: "update",
+      },
+      {
+        id: "n2",
+        author: "Finance Operations",
+        role: "Admin Team",
+        createdAt: d("2026-10-02T10:25:00"),
+        content: "Customer's payment attempt was debited at banking switch. Webhook response was delayed due to gateway queue. No manual refund required at this stage.",
+        type: "info",
       },
     ],
     activity: [
@@ -242,5 +270,55 @@ export const SUPPORT_TICKETS: SupportTicketDetail[] = [
   },
 ];
 
-export const getSupportTicket = (id?: string) =>
-  SUPPORT_TICKETS.find((t) => t.id.toLowerCase() === (id || "").toLowerCase());
+const STORAGE_KEY = "influex_support_tickets_v2";
+
+export const getSupportTickets = (): SupportTicketDetail[] => {
+  if (typeof window === "undefined") return SUPPORT_TICKETS;
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(SUPPORT_TICKETS));
+      return SUPPORT_TICKETS;
+    }
+    const parsed = JSON.parse(raw);
+    return parsed.map((t: SupportTicketDetail) => ({
+      ...t,
+      notes: t.notes || [],
+      chatEnabled: t.chatEnabled ?? true,
+    }));
+  } catch (e) {
+    console.error("Failed to load tickets from localStorage:", e);
+    return SUPPORT_TICKETS;
+  }
+};
+
+export const getSupportTicket = (id?: string): SupportTicketDetail | undefined => {
+  const tickets = getSupportTickets();
+  return tickets.find((t) => t.id.toLowerCase() === (id || "").toLowerCase());
+};
+
+export const saveSupportTicket = (ticket: SupportTicketDetail): void => {
+  if (typeof window === "undefined") return;
+  try {
+    const tickets = getSupportTickets();
+    const idx = tickets.findIndex((t) => t.id.toLowerCase() === ticket.id.toLowerCase());
+    if (idx >= 0) {
+      tickets[idx] = ticket;
+    } else {
+      tickets.unshift(ticket);
+    }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(tickets));
+  } catch (e) {
+    console.error("Failed to save ticket to localStorage:", e);
+  }
+};
+
+export const addSupportTicket = (ticket: SupportTicketDetail): void => {
+  saveSupportTicket(ticket);
+};
+
+export const resetSupportTickets = (): void => {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(SUPPORT_TICKETS));
+};
+

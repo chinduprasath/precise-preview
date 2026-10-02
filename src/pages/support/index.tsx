@@ -12,15 +12,30 @@ import {
 import TicketTable from "@/components/support/TicketTable";
 import TicketDetail from "@/components/support/TicketDetail";
 import CreateTicketForm from "@/components/support/CreateTicketForm";
-import { Ticket, TicketCategory, TicketPriority, UserType } from "@/types/ticket";
+import { Ticket, TicketCategory, TicketPriority, UserType, TicketStatus } from "@/types/ticket";
 import { toast } from "@/hooks/use-toast";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { getSupportTickets, addSupportTicket, SupportTicketDetail } from "@/data/supportTickets";
 
 const SupportPage = () => {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
   const [loading, setLoading] = useState(true);
-  const [userType, setUserType] = useState<UserType>("business");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const defaultTab = searchParams.get("tab") || "active";
+  const [activeTab, setActiveTab] = useState(defaultTab);
+
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+    if (tab && (tab === "new" || tab === "active" || tab === "resolved")) {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
+
+  const handleTabChange = (val: string) => {
+    setActiveTab(val);
+    setSearchParams({ tab: val });
+  };
   
   useEffect(() => {
     // Get user type from localStorage
@@ -29,117 +44,36 @@ const SupportPage = () => {
       setUserType(storedUserType);
     }
     
-    // In a real app, fetch tickets from the database
+    // Fetch tickets from persistent store
     const fetchTickets = async () => {
       setLoading(true);
       try {
-        // Example of how to fetch tickets from Supabase
-        // const { data, error } = await supabase
-        //   .from('tickets')
-        //   .select('*')
-        //   .eq('user_type', storedUserType)
-        //   .order('created_at', { ascending: false });
+        const stored = getSupportTickets();
+        const mappedTickets: Ticket[] = stored.map((t) => ({
+          id: t.id,
+          userId: "user1",
+          userName: "Current User",
+          userType: (storedUserType || "business") as UserType,
+          subject: t.subject,
+          category: (t.category as TicketCategory) || "Other",
+          priority: t.priority,
+          status: t.status as TicketStatus,
+          createdAt: t.createdAt,
+          lastUpdated: t.lastUpdated,
+          assignedTo: t.assignedTo,
+          messages: t.messages.map((m) => ({
+            id: m.id,
+            ticketId: t.id,
+            userId: m.sender === "user" ? "user1" : "admin1",
+            userName: m.name,
+            userType: (m.sender === "user" ? (storedUserType || "business") : "admin") as UserType,
+            message: m.message,
+            createdAt: m.createdAt,
+            isInternal: false,
+          })),
+        }));
         
-        // if (error) throw error;
-        // setTickets(data);
-        
-        // Using mock data for now
-        const mockTickets: Ticket[] = [
-          {
-            id: "T1001",
-            userId: "user1",
-            userName: "Current User",
-            userType: storedUserType || "business",
-            subject: "Payment processing issue",
-            category: "Payment",
-            priority: "High",
-            status: "New",
-            createdAt: new Date().toISOString(),
-            lastUpdated: new Date().toISOString(),
-            messages: [
-              {
-                id: "m1",
-                ticketId: "T1001",
-                userId: "user1",
-                userName: "Current User",
-                userType: storedUserType || "business",
-                message: "I'm having trouble processing a payment. The transaction fails every time.",
-                createdAt: new Date().toISOString(),
-                isInternal: false,
-              },
-            ],
-          },
-          {
-            id: "T1002",
-            userId: "user1",
-            userName: "Current User",
-            userType: storedUserType || "business",
-            subject: "Account verification",
-            category: "Account Issue",
-            priority: "Medium",
-            status: "In Progress",
-            createdAt: new Date(Date.now() - 86400000).toISOString(),
-            lastUpdated: new Date(Date.now() - 43200000).toISOString(),
-            messages: [
-              {
-                id: "m2",
-                ticketId: "T1002",
-                userId: "user1",
-                userName: "Current User",
-                userType: storedUserType || "business",
-                message: "I uploaded my verification documents yesterday but haven't received any updates.",
-                createdAt: new Date(Date.now() - 86400000).toISOString(),
-                isInternal: false,
-              },
-              {
-                id: "m3",
-                ticketId: "T1002",
-                userId: "admin1",
-                userName: "Support Team",
-                userType: "admin",
-                message: "Thank you for reaching out. I'm checking your documents now. Will update you shortly.",
-                createdAt: new Date(Date.now() - 43200000).toISOString(),
-                isInternal: false,
-              },
-            ],
-          },
-          {
-            id: "T1003",
-            userId: "user1",
-            userName: "Current User",
-            userType: storedUserType || "business",
-            subject: "Feature request",
-            category: "Other",
-            priority: "Low",
-            status: "Resolved",
-            createdAt: new Date(Date.now() - 172800000).toISOString(),
-            lastUpdated: new Date(Date.now() - 86400000).toISOString(),
-            messages: [
-              {
-                id: "m4",
-                ticketId: "T1003",
-                userId: "user1",
-                userName: "Current User",
-                userType: storedUserType || "business",
-                message: "I would like to suggest a new feature that allows bulk editing of campaigns.",
-                createdAt: new Date(Date.now() - 172800000).toISOString(),
-                isInternal: false,
-              },
-              {
-                id: "m5",
-                ticketId: "T1003",
-                userId: "admin1",
-                userName: "Support Team",
-                userType: "admin",
-                message: "Thank you for the suggestion! We've added it to our feature backlog and will consider it for future updates.",
-                createdAt: new Date(Date.now() - 86400000).toISOString(),
-                isInternal: false,
-              },
-            ],
-          },
-        ];
-        
-        setTickets(mockTickets);
+        setTickets(mappedTickets);
       } catch (error) {
         console.error("Error fetching tickets:", error);
         toast({
@@ -243,26 +177,28 @@ const SupportPage = () => {
       // In a real app, upload attachments to storage and save ticket to database
       
       // Example only: Create a new ticket object
+      const ticketId = `T${Math.floor(1000 + Math.random() * 9000)}`;
+      const createdAtIso = new Date().toISOString();
       const newTicket: Ticket = {
-        id: `T${Math.floor(1000 + Math.random() * 9000)}`,
+        id: ticketId,
         userId: "user1",
         userName: "Current User",
-        userType,
+        userType: (localStorage.getItem("userType") as UserType) || "business",
         subject,
         category,
         priority,
-        status: "New",
-        createdAt: new Date().toISOString(),
-        lastUpdated: new Date().toISOString(),
+        status: "Submitted",
+        createdAt: createdAtIso,
+        lastUpdated: createdAtIso,
         messages: [
           {
             id: `m${Math.random().toString(36).substring(7)}`,
-            ticketId: `T${Math.floor(1000 + Math.random() * 9000)}`,
+            ticketId,
             userId: "user1",
             userName: "Current User",
-            userType,
+            userType: (localStorage.getItem("userType") as UserType) || "business",
             message,
-            createdAt: new Date().toISOString(),
+            createdAt: createdAtIso,
             isInternal: false,
             attachments: attachments.length
               ? attachments.map((file) => ({
@@ -274,9 +210,59 @@ const SupportPage = () => {
           },
         ],
       };
+
+      const detailTicket: SupportTicketDetail = {
+        id: ticketId,
+        subject,
+        status: "Submitted",
+        priority,
+        category,
+        createdAt: createdAtIso,
+        lastUpdated: createdAtIso,
+        lastStatusChange: createdAtIso,
+        assignedTo: "Support Team",
+        agent: "Support Specialist",
+        expectedResponse: "Within 4 hours",
+        chatEnabled: true,
+        supportOnline: true,
+        issue: {
+          description: message,
+          affectedService: category,
+        },
+        messages: [
+          {
+            id: `m1`,
+            sender: "user",
+            name: "You",
+            role: "Customer",
+            createdAt: createdAtIso,
+            message,
+            status: "Sent",
+            attachments: attachments.map((f) => ({
+              name: f.name,
+              size: f.size,
+              type: f.type,
+              url: URL.createObjectURL(f),
+              uploadedAt: createdAtIso,
+            })),
+          },
+        ],
+        activity: [
+          {
+            id: `a1`,
+            createdAt: createdAtIso,
+            label: "Ticket created",
+            kind: "created",
+          },
+        ],
+        relatedIds: ["T1001"],
+      };
+
+      addSupportTicket(detailTicket);
       
       // Add the new ticket to the state
       setTickets((prevTickets) => [newTicket, ...prevTickets]);
+      setActiveTab("active");
       
       toast({
         title: "Ticket created",
@@ -303,10 +289,10 @@ const SupportPage = () => {
           </p>
         </div>
         
-        <Tabs defaultValue="new">
+        <Tabs value={activeTab} onValueChange={handleTabChange}>
           <TabsList className="mb-6">
-            <TabsTrigger value="new">Create New Ticket</TabsTrigger>
             <TabsTrigger value="active">Active Tickets</TabsTrigger>
+            <TabsTrigger value="new">Create New Ticket</TabsTrigger>
             <TabsTrigger value="resolved">Resolved Tickets</TabsTrigger>
           </TabsList>
           
@@ -328,7 +314,7 @@ const SupportPage = () => {
                 ) : (
                   <TicketTable
                     tickets={tickets.filter(
-                      (t) => t.status === "New" || t.status === "In Progress"
+                      (t) => t.status !== "Resolved" && t.status !== "Closed"
                     )}
                     isAdmin={false}
                     onViewTicket={handleViewTicket}
