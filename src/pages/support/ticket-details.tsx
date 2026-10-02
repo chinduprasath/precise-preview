@@ -842,13 +842,14 @@ const TicketDetailsPage = () => {
                           title="Chat Enabled"
                         />
                       ) : (
-                        <Ban
-                          className={cn(
-                            "h-3.5 w-3.5 shrink-0",
-                            activeTab === "chats" ? "text-rose-200" : "text-rose-500"
-                          )}
-                          title="Chat Disabled"
-                        />
+                        <span title="Chat Disabled" className="inline-flex items-center justify-center">
+                          <Ban
+                            className={cn(
+                              "h-3.5 w-3.5 shrink-0",
+                              activeTab === "chats" ? "text-rose-200" : "text-rose-500"
+                            )}
+                          />
+                        </span>
                       )}
                       <Badge
                         variant="secondary"

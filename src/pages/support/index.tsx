@@ -21,6 +21,7 @@ const SupportPage = () => {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
   const [loading, setLoading] = useState(true);
+  const [userType, setUserType] = useState<UserType>("business");
   const [searchParams, setSearchParams] = useSearchParams();
   const defaultTab = searchParams.get("tab") || "active";
   const [activeTab, setActiveTab] = useState(defaultTab);
