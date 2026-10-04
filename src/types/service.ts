@@ -2,7 +2,7 @@ export type ServiceType = {
   id: string;
   name: string;
   icon: string;
-  category: 'designers' | 'marketing' | 'social' | 'ott';
+  category: 'designers' | 'marketing' | 'social' | 'ai_automation' | 'ott';
 };
 
 export type ServiceCategoryType = {

@@ -2,7 +2,9 @@
 import React from 'react';
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Handshake } from "lucide-react";
 
 interface OrderTypeSelectorProps {
   selectedOrderType: string;
@@ -19,6 +21,10 @@ interface OrderTypeSelectorProps {
     color: string;
   }>;
   isCustomPackage?: boolean;
+  includeCollaborate?: boolean;
+  onCollaborateChange?: (checked: boolean) => void;
+  collaborateFee?: number;
+  formatCurrency?: (value: number) => string;
 }
 
 const OrderTypeSelector: React.FC<OrderTypeSelectorProps> = ({
@@ -31,6 +37,10 @@ const OrderTypeSelector: React.FC<OrderTypeSelectorProps> = ({
   contentTypesByOrder,
   socialPlatforms,
   isCustomPackage = false,
+  includeCollaborate = false,
+  onCollaborateChange,
+  collaborateFee = 500,
+  formatCurrency = (v: number) => `₹${v}`,
 }) => {
   return (
     <div className="space-y-4">
@@ -86,6 +96,32 @@ const OrderTypeSelector: React.FC<OrderTypeSelectorProps> = ({
                 ))}
               </SelectContent>
             </Select>
+          </div>
+        </div>
+
+        {/* Collaborate section */}
+        <div className="mt-4 pt-3.5 border-t border-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <label className="flex items-start sm:items-center gap-3 cursor-pointer select-none">
+            <Checkbox
+              checked={includeCollaborate}
+              onCheckedChange={(checked) => onCollaborateChange && onCollaborateChange(!!checked)}
+              className="mt-0.5 sm:mt-0"
+            />
+            <div>
+              <div className="flex items-center gap-1.5">
+                <Handshake className="w-4 h-4 text-primary" />
+                <span className="text-sm font-medium text-foreground">Collaborate</span>
+              </div>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Collaborate directly with the influencer for customized campaign delivery
+              </p>
+            </div>
+          </label>
+          <div className="flex items-center gap-2 pl-7 sm:pl-0 shrink-0">
+            <span className="text-xs text-muted-foreground">Influencer Price:</span>
+            <span className="text-sm font-bold text-primary px-2.5 py-1 rounded-md bg-primary/10 border border-primary/20">
+              {formatCurrency(collaborateFee)}
+            </span>
           </div>
         </div>
       </Card>

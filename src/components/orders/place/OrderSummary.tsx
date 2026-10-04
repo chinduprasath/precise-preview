@@ -10,6 +10,8 @@ interface OrderSummaryProps {
   contentSubmissionMethod: 'upload' | 'describe';
   packagePrice: number;
   platformFee: number;
+  includeCollaborate?: boolean;
+  collaborateFee?: number;
   couponDiscount: number;
   appliedCoupon: {code: string, discount: number, type: string} | null;
   total: number;
@@ -34,6 +36,8 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
   contentSubmissionMethod,
   packagePrice,
   platformFee,
+  includeCollaborate = false,
+  collaborateFee = 0,
   couponDiscount,
   appliedCoupon,
   total,
@@ -45,9 +49,11 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
   formatCurrency = (v: number) => `₹${v}`,
   showSendButton = true,
 }) => {
+  const activeCollaborateFee = includeCollaborate ? collaborateFee : 0;
   // Calculate GST (18%)
-  const gstAmount = Math.round((packagePrice - couponDiscount + platformFee) * 0.18);
-  const totalWithGST = packagePrice - couponDiscount + platformFee + gstAmount;
+  const subtotal = packagePrice + activeCollaborateFee - couponDiscount + platformFee;
+  const gstAmount = Math.round(subtotal * 0.18);
+  const totalWithGST = subtotal + gstAmount;
 
   // Get platform names as text
   const getPlatformText = () => {
@@ -62,6 +68,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
     { label: "Type", value: selectedOrderType },
     { label: "Content", value: `${selectedContent}${isCustomPackage ? "" : " (30 sec)"}` },
     { label: "Platform", value: getPlatformText() },
+    ...(includeCollaborate ? [{ label: "Collaborate", value: `Yes (+${formatCurrency(activeCollaborateFee)})` }] : []),
   ];
 
   return (
@@ -88,6 +95,12 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
           <span className="text-muted-foreground">Base Price</span>
           <span className="font-medium">{formatCurrency(packagePrice)}</span>
         </div>
+        {includeCollaborate && (
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-muted-foreground">Collaborate Fee</span>
+            <span className="font-medium text-primary">+{formatCurrency(activeCollaborateFee)}</span>
+          </div>
+        )}
         <div className="flex items-center justify-between text-sm">
           <span className="text-muted-foreground">Platform Fee</span>
           <span className="font-medium">{formatCurrency(platformFee)}</span>

@@ -1,7 +1,32 @@
 
 export type OrderStatus = 'pending' | 'completed' | 'rejected' | 'new' | 'pending_checkout';
 
-export type OrderContentType = 'upload_files' | 'provided_content' | 'polls' | 'visit_promote';
+export type OrderContentType = 'upload_files' | 'provided_content' | 'polls' | 'visit_promote' | 'service_request';
+
+export type SupportTeamStatus = 'under_review' | 'quote_provided' | 'in_progress' | 'completed' | 'cancelled';
+
+export interface ServiceRequestDetails {
+  serviceId?: string;
+  serviceName: string;
+  category: string;
+  clientName: string;
+  clientEmail: string;
+  clientPhone: string;
+  description: string;
+  budgetRange?: string;
+  timeline?: string;
+  supportStatus?: SupportTeamStatus;
+  supportStatusDisplay?: string;
+  assignedSpecialist?: {
+    name: string;
+    role: string;
+    avatar?: string;
+    email?: string;
+  };
+  supportReviewNotes?: string;
+  deliverables?: string[];
+  estimatedDeliveryDate?: string;
+}
 
 export interface PollQuestion {
   id: string;
@@ -50,6 +75,7 @@ export interface OrderContent {
   description?: string;
   polls?: PollQuestion[];
   visitDetails?: VisitDetails;
+  serviceDetails?: ServiceRequestDetails;
 }
 
 export interface SocialMediaLinks {
@@ -59,9 +85,17 @@ export interface SocialMediaLinks {
   twitter?: string;
 }
 
+export interface SocialMediaUsernames {
+  instagram?: string;
+  facebook?: string;
+  youtube?: string;
+  twitter?: string;
+}
+
 export interface OrderPricing {
   basePrice: number;
   platformFee: number;
+  collaborateFee?: number;
   couponCode?: string;
   couponDiscount: number;
   gst: number;
@@ -108,6 +142,12 @@ export interface Order {
   pricing?: OrderPricing;
   content?: OrderContent; // Dynamic content based on order type
   socialMediaLinks?: SocialMediaLinks; // Social media post URLs
+  socialMediaUsernames?: SocialMediaUsernames; // Social media usernames / handles
+  affiliatePlatforms?: string[]; // Platforms selected for affiliate link
+  includeCollaborate?: boolean;
+  collaborateFee?: number;
+  serviceDetails?: ServiceRequestDetails;
+  supportStatus?: string;
   timeline?: OrderTimelineStep[];
 }
 

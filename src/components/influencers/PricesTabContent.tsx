@@ -30,7 +30,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { ChevronDown, X, Info, Instagram, Facebook, Youtube, Edit, Plus, Eye, EyeOff } from 'lucide-react';
+import { ChevronDown, X, Info, Instagram, Facebook, Youtube, Edit, Plus, Eye, EyeOff, Handshake } from 'lucide-react';
 
 interface PricesTabContentProps {
   influencerId?: string;
@@ -240,6 +240,11 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
     price: ''
   });
   
+  // Collaborate fee state
+  const [collaborateFee, setCollaborateFee] = useState<string>(() => {
+    return localStorage.getItem('influencer_collaborate_fee') || '500';
+  });
+
   // Platform-specific pricing state
   const [platformPricing, setPlatformPricing] = useState<Record<string, Record<string, string>>>(() => {
     const initialPricing: Record<string, Record<string, string>> = {};
@@ -334,10 +339,12 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
   };
 
   const handleSavePrices = () => {
-    // Here you would typically save to a database or API
+    if (collaborateFee) {
+      localStorage.setItem('influencer_collaborate_fee', collaborateFee);
+    }
     toast({
       title: "Prices Updated",
-      description: "Your service prices have been successfully updated.",
+      description: "Your service prices and collaboration fee have been successfully updated.",
     });
     setIsPlatformEditOpen(false);
     setIsCustomEditOpen(false);
@@ -501,6 +508,14 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
                         </div>
                       ))}
                     </RadioGroup>
+
+                    <div className="pt-3 border-t flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Handshake className="h-4 w-4 text-primary" />
+                        <span className="text-sm font-medium">Collaborate Fee</span>
+                      </div>
+                      <span className="text-sm font-semibold text-primary">₹{collaborateFee}</span>
+                    </div>
                   </div>
                 ) : selectedPlatform ? (
                   <div className="text-center py-8 text-muted-foreground">
@@ -562,6 +577,34 @@ const PricesTabContent: React.FC<PricesTabContentProps> = ({
                     </tbody>
                   </table>
                 </div>
+
+                {/* Collaborate Section */}
+                <div className="p-4 border rounded-lg bg-muted/20 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <Handshake className="h-4 w-4 text-primary" />
+                      <Label htmlFor="collaborate-fee" className="font-semibold text-sm cursor-pointer">
+                        Collaborate
+                      </Label>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Enter fixed amount fee for collaboration requests
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className="text-sm font-semibold text-muted-foreground">₹</span>
+                    <Input
+                      id="collaborate-fee"
+                      type="number"
+                      value={collaborateFee}
+                      onChange={(e) => setCollaborateFee(e.target.value)}
+                      className="w-28 text-center font-medium"
+                      placeholder="500"
+                      min="0"
+                    />
+                  </div>
+                </div>
+
                 <DialogFooter>
                   <Button variant="outline" onClick={() => setIsPlatformEditOpen(false)}>Close</Button>
                   <Button onClick={handleSavePrices}>Update Prices</Button>

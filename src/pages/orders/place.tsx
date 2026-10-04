@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useRef } from "react";
-import { Instagram, Facebook, Youtube, Twitter, Clock, ArrowLeft, FileText, Loader2, Link2, Tag, Sparkles, ShieldCheck } from "lucide-react";
+import { Instagram, Facebook, Youtube, Twitter, Clock, ArrowLeft, FileText, Loader2, Link2, Tag, Sparkles, ShieldCheck, Check } from "lucide-react";
 import Layout from '@/components/layout/Layout';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 
 // Import new components
 import InfluencerProfileCard from '@/components/orders/place/InfluencerProfileCard';
@@ -169,6 +170,12 @@ export default function PlaceOrderPage() {
   const [selectedOrderType, setSelectedOrderType] = useState<string>("Platform Based");
   const [selectedContent, setSelectedContent] = useState<string>("Post Image/Video");
   const [selectedSinglePlatform, setSelectedSinglePlatform] = useState<string>("instagram");
+  const [selectedAffiliatePlatforms, setSelectedAffiliatePlatforms] = useState<string[]>(["instagram"]);
+  const [includeCollaborate, setIncludeCollaborate] = useState(false);
+  const [collaborateFee] = useState<number>(() => {
+    const stored = localStorage.getItem('influencer_collaborate_fee');
+    return stored ? parseInt(stored, 10) || 500 : 500;
+  });
   const [isAiEnhancing, setIsAiEnhancing] = useState(false);
 
   const dropAreaRef = useRef<HTMLDivElement>(null);
@@ -180,6 +187,7 @@ export default function PlaceOrderPage() {
 
   const packagePrice = 800;
   const platformFee = 99;
+  const activeCollaborateFee = includeCollaborate ? collaborateFee : 0;
   
   const couponDiscount = appliedCoupon ? 
     appliedCoupon.type === "percentage" 
@@ -187,7 +195,7 @@ export default function PlaceOrderPage() {
       : appliedCoupon.discount 
     : 0;
   
-  const total = packagePrice - couponDiscount + platformFee;
+  const total = packagePrice + activeCollaborateFee - couponDiscount + platformFee;
 
   const validateAffiliateLink = (link: string) => {
     // Make affiliate link optional - no validation required if empty
@@ -379,9 +387,11 @@ export default function PlaceOrderPage() {
       const newOrderId = Date.now().toString();
       const newOrderNumber = String(Math.floor(1000000000 + Math.random() * 9000000000));
       const scheduledDateStr = selectedDateTime ? format(selectedDateTime, 'yyyy-MM-dd') : null;
-      const scheduledTimeStr = selectedDateTime ? format(selectedDateTime, 'HH:mm:ss') : null;
-      const gstAmount = Math.round((packagePrice - couponDiscount + platformFee) * 0.18);
-      const totalWithGst = packagePrice - couponDiscount + platformFee + gstAmount;
+      const scheduledTimeStr = selectedDateTime ? format(selectedDateTime, 'hh:mm a') : null;
+      const activeCollaborateFee = includeCollaborate ? collaborateFee : 0;
+      const subtotal = packagePrice + activeCollaborateFee - couponDiscount + platformFee;
+      const gstAmount = Math.round(subtotal * 0.18);
+      const totalWithGst = subtotal + gstAmount;
 
       const newOrder: Order = {
         id: newOrderId,
@@ -402,6 +412,9 @@ export default function PlaceOrderPage() {
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         affiliateLink: affiliateLink || undefined,
+        affiliatePlatforms: selectedAffiliatePlatforms.length > 0 ? selectedAffiliatePlatforms : undefined,
+        includeCollaborate,
+        collaborateFee: activeCollaborateFee,
         notes: notesDescription || undefined,
         influencer: {
           name: influencerName,
@@ -419,6 +432,7 @@ export default function PlaceOrderPage() {
         pricing: {
           basePrice: packagePrice,
           platformFee,
+          collaborateFee: activeCollaborateFee,
           couponCode: appliedCoupon?.code,
           couponDiscount,
           gst: gstAmount,
@@ -523,6 +537,10 @@ export default function PlaceOrderPage() {
                   contentTypesByOrder={contentTypesByOrder}
                   socialPlatforms={socialPlatforms}
                   isCustomPackage={selectedOrderType === "Custom Package"}
+                  includeCollaborate={includeCollaborate}
+                  onCollaborateChange={setIncludeCollaborate}
+                  collaborateFee={collaborateFee}
+                  formatCurrency={formatCurrency}
                 />
               </SectionCard>
 
@@ -626,20 +644,66 @@ export default function PlaceOrderPage() {
                 title="Affiliate Link"
                 description="Optional — track conversions from this post"
               >
-                <Input
-                  id="affiliate-link"
-                  placeholder="https://example.com/your-affiliate-link"
-                  className={cn(
-                    "transition-all focus-visible:ring-primary",
-                    affiliateLinkError && "border-destructive focus-visible:ring-destructive"
+                <div className="space-y-3.5">
+                  <Input
+                    id="affiliate-link"
+                    placeholder="https://example.com/your-affiliate-link"
+                    className={cn(
+                      "transition-all focus-visible:ring-primary",
+                      affiliateLinkError && "border-destructive focus-visible:ring-destructive"
+                    )}
+                    value={affiliateLink}
+                    onChange={handleAffiliateLinkChange}
+                    onBlur={() => setAffiliateLinkError(validateAffiliateLink(affiliateLink))}
+                  />
+                  {affiliateLinkError && (
+                    <p className="text-xs text-destructive">{affiliateLinkError}</p>
                   )}
-                  value={affiliateLink}
-                  onChange={handleAffiliateLinkChange}
-                  onBlur={() => setAffiliateLinkError(validateAffiliateLink(affiliateLink))}
-                />
-                {affiliateLinkError && (
-                  <p className="text-xs text-destructive">{affiliateLinkError}</p>
-                )}
+
+                  {/* Social media icons with checkboxes */}
+                  <div className="pt-1">
+                    <p className="text-xs font-medium text-muted-foreground mb-2">
+                      Select social media platforms for affiliate link:
+                    </p>
+                    <div className="flex flex-wrap gap-2.5">
+                      {socialPlatforms.map((platform) => {
+                        const isChecked = selectedAffiliatePlatforms.includes(platform.id);
+                        return (
+                          <button
+                            key={platform.id}
+                            type="button"
+                            onClick={() => {
+                              setSelectedAffiliatePlatforms((prev) =>
+                                isChecked
+                                  ? prev.filter((id) => id !== platform.id)
+                                  : [...prev, platform.id]
+                              );
+                            }}
+                            className={cn(
+                              "inline-flex items-center gap-2 px-3 py-2 rounded-lg border text-xs font-medium cursor-pointer transition-all select-none",
+                              isChecked
+                                ? "border-primary/60 bg-primary/10 text-primary shadow-xs"
+                                : "border-border/70 bg-muted/20 text-muted-foreground hover:bg-muted/40 hover:text-foreground"
+                            )}
+                          >
+                            <div
+                              className={cn(
+                                "w-4 h-4 rounded-sm border flex items-center justify-center shrink-0 transition-colors",
+                                isChecked
+                                  ? "bg-primary border-primary text-primary-foreground"
+                                  : "border-muted-foreground/40 bg-background"
+                              )}
+                            >
+                              {isChecked && <Check className="w-3 h-3 stroke-[3]" />}
+                            </div>
+                            <span className={platform.color}>{platform.icon}</span>
+                            <span className="whitespace-nowrap font-medium text-foreground">{platform.name}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
               </SectionCard>
 
               {/* Coupon */}
@@ -670,6 +734,8 @@ export default function PlaceOrderPage() {
                     contentSubmissionMethod="upload"
                     packagePrice={packagePrice}
                     platformFee={platformFee}
+                    includeCollaborate={includeCollaborate}
+                    collaborateFee={collaborateFee}
                     couponDiscount={couponDiscount}
                     appliedCoupon={appliedCoupon}
                     total={total}

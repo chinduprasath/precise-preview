@@ -138,9 +138,9 @@ export const createNavigationItems = (userType: string): NavItem[] => {
       href: "/requests"
     });
     
-    // Remove Influencers and Reports items for influencer users
+    // Remove Influencers, Reports, and Reach items for influencer users
     navItems = navItems.filter(item => 
-      item.label !== "Influencers" && item.label !== "Reports"
+      item.label !== "Influencers" && item.label !== "Reports" && item.label !== "Reach"
     );
   }
   

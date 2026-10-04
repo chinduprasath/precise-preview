@@ -8,39 +8,18 @@ interface DataTabContentProps {
   influencerId?: string;
 }
 
-const MetricCard = ({ value, label }: { value: number | string; label: string }) => (
-  <div className="bg-gray-100 rounded-lg p-4 flex flex-col items-center">
-    <span className="text-3xl font-medium">{value}</span>
-    <span className="text-sm text-gray-600 mt-1">{label}</span>
+const MetricCard: React.FC<{ value: number | string; label: string }> = ({ value, label }) => (
+  <div className="bg-[#f4f6fa] dark:bg-muted/40 rounded-2xl p-4 md:p-5 border border-border/40 text-center flex flex-col items-center justify-center min-h-[92px] transition-all hover:shadow-xs">
+    <span className="text-2xl md:text-3xl font-extrabold text-[#111827] dark:text-foreground tracking-tight">
+      {value}
+    </span>
+    <span className="text-xs md:text-sm font-semibold text-[#64748b] dark:text-muted-foreground mt-1">
+      {label}
+    </span>
   </div>
 );
 
-const priceRangeData = [
-  { price: 2000, count: 2 },
-  { price: 2100, count: 3 },
-  { price: 2200, count: 4 },
-  { price: 2300, count: 5 },
-  { price: 2400, count: 6 },
-  { price: 2500, count: 7 },
-  { price: 2600, count: 8 },
-  { price: 2700, count: 7 },
-  { price: 2800, count: 6 },
-  { price: 2900, count: 5 },
-  { price: 3000, count: 4 },
-  { price: 3100, count: 3 },
-  { price: 3200, count: 2 },
-];
-
-const performanceComparisonData = [
-  { month: 'Jan', yourWeight: 200, idealWeight: 220 },
-  { month: 'Feb', yourWeight: 280, idealWeight: 220 },
-  { month: 'Mar', yourWeight: 280, idealWeight: 220 },
-  { month: 'Apr', yourWeight: 200, idealWeight: 220 },
-  { month: 'May', yourWeight: 200, idealWeight: 220 },
-  { month: 'Jun', yourWeight: 270, idealWeight: 220 },
-  { month: 'Jul', yourWeight: 280, idealWeight: 220 },
-];
-
+// Engagement Rate Over Time (Feb - Jun, 0 - 80)
 const engagementData = [
   { date: 'Feb', value: 52 },
   { date: 'Mar', value: 55 },
@@ -49,180 +28,266 @@ const engagementData = [
   { date: 'Jun', value: 62 },
 ];
 
-// Platform performance data
+// Content Performance by Platform (matching Image 2 pie slices & colors)
 const platformPerformanceData = [
-  { name: 'Instagram', value: 40 },
-  { name: 'Facebook', value: 30 },
-  { name: 'Twitter', value: 15 },
-  { name: 'YouTube', value: 15 },
+  { name: 'Instagram', value: 40, color: '#7982f6' }, // Periwinkle / Indigo
+  { name: 'Facebook', value: 30, color: '#72c18d' },  // Mint Green
+  { name: 'YouTube', value: 15, color: '#ff6900' },   // Orange
+  { name: 'Twitter', value: 15, color: '#fbbd24' },   // Amber / Golden Yellow
 ];
 
-const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff7300'];
-
-// Audience growth data
+// Audience Growth Trajectory (Jan - Jun, 0 - 2000)
 const audienceGrowthData = [
-  { month: 'Jan', instagram: 1000, facebook: 800, youtube: 600, twitter: 400 },
-  { month: 'Feb', instagram: 1200, facebook: 900, youtube: 700, twitter: 500 },
-  { month: 'Mar', instagram: 1300, facebook: 1000, youtube: 800, twitter: 600 },
-  { month: 'Apr', instagram: 1500, facebook: 1200, youtube: 900, twitter: 700 },
-  { month: 'May', instagram: 1700, facebook: 1300, youtube: 950, twitter: 800 },
-  { month: 'Jun', instagram: 1900, facebook: 1400, youtube: 1000, twitter: 900 },
+  { month: 'Jan', instagram: 1000, facebook: 600, youtube: 400, twitter: 200 },
+  { month: 'Feb', instagram: 1200, facebook: 750, youtube: 500, twitter: 300 },
+  { month: 'Mar', instagram: 1300, facebook: 950, youtube: 650, twitter: 420 },
+  { month: 'Apr', instagram: 1600, facebook: 1150, youtube: 750, twitter: 550 },
+  { month: 'May', instagram: 1800, facebook: 1250, youtube: 850, twitter: 650 },
+  { month: 'Jun', instagram: 2000, facebook: 1400, youtube: 950, twitter: 750 },
 ];
 
-// Conversion funnel data
-const conversionFunnelData = [
-  { month: 'Jan', clicks: 2500 },
-  { month: 'Feb', clicks: 3000 },
-  { month: 'Mar', clicks: 3500 },
-  { month: 'Apr', clicks: 3200 },
-  { month: 'May', clicks: 4000 },
+// Link Clicks by Month (Jan - May)
+const linkClicksData = [
+  { month: 'Jan', clicks: 830 },
+  { month: 'Feb', clicks: 1000 },
+  { month: 'Mar', clicks: 1220 },
+  { month: 'Apr', clicks: 1080 },
+  { month: 'May', clicks: 1390 },
 ];
 
 const DataTabContent: React.FC<DataTabContentProps> = ({ influencerId }) => {
-  const { analytics, loading, error } = useAnalyticsData(influencerId);
+  const { analytics, loading } = useAnalyticsData(influencerId);
 
-  if (loading) {
+  // Seamless fallback values matching Image 2
+  const campaignsCount = analytics?.total_campaigns ?? 90;
+  const avgLikes = analytics?.avg_likes ? formatNumber(analytics.avg_likes) : '90';
+  const avgViews = analytics?.avg_views ? formatNumber(analytics.avg_views) : '90K';
+  const avgReach = analytics?.avg_reach ? formatNumber(analytics.avg_reach) : '500K';
+  const engagementRate = analytics?.engagement_rate ? `${analytics.engagement_rate}%` : '90%';
+  const avgComments = analytics?.avg_comments ? formatNumber(analytics.avg_comments) : '90';
+  const avgShares = analytics?.avg_shares ? formatNumber(analytics.avg_shares) : '90';
+  const fakeFollowers = analytics?.fake_followers_percent ? `${analytics.fake_followers_percent}%` : '1%';
+
+  if (loading && !analytics) {
     return (
       <div className="flex items-center justify-center h-48">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="bg-red-50 p-4 rounded-md text-red-600">
-        <p>Error loading analytics data: {error}</p>
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      {/* Metrics Grid */}
-      <div className="grid grid-cols-4 gap-4">
-        <MetricCard 
-          value={analytics?.total_campaigns || 90} 
-          label="Total Campaigns" 
-        />
-        <MetricCard 
-          value={analytics?.avg_likes ? formatNumber(analytics.avg_likes) : "90"} 
-          label="Avg Likes" 
-        />
-        <MetricCard 
-          value={analytics?.avg_views ? formatNumber(analytics.avg_views) : "90K"} 
-          label="Avg Views" 
-        />
-        <MetricCard 
-          value={analytics?.avg_reach ? formatNumber(analytics.avg_reach) : "500K"} 
-          label="Avg Reach" 
-        />
-        <MetricCard 
-          value={analytics?.engagement_rate ? `${analytics.engagement_rate}%` : "90%"} 
-          label="Engagement" 
-        />
-        <MetricCard 
-          value={analytics?.avg_comments ? formatNumber(analytics.avg_comments) : "90"} 
-          label="Avg Comments" 
-        />
-        <MetricCard 
-          value={analytics?.avg_shares ? formatNumber(analytics.avg_shares) : "90"} 
-          label="Avg Shares" 
-        />
-        <MetricCard 
-          value={analytics?.fake_followers_percent ? `${analytics.fake_followers_percent}%` : "1%"} 
-          label="Fake Followers" 
-        />
+      {/* 8 Metrics Cards Grid (Matching Image 2) */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {/* Row 1 */}
+        <MetricCard value={campaignsCount} label="Campaigns" />
+        <MetricCard value={avgLikes} label="Avg Likes" />
+        <MetricCard value={avgViews} label="Avg Views" />
+        <MetricCard value={avgReach} label="Avg Reach" />
+
+        {/* Row 2 */}
+        <MetricCard value={engagementRate} label="Engagement" />
+        <MetricCard value={avgComments} label="Avg Comments" />
+        <MetricCard value={avgShares} label="Avg Shares" />
+        <MetricCard value={fakeFollowers} label="Fake Followers" />
       </div>
 
+      {/* Row 1 of Charts (Matching Image 2) */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Engagement Rate Over Time */}
-        <Card className="p-6">
-          <h3 className="text-lg font-semibold mb-4">Engagement Rate Over Time</h3>
-          <ResponsiveContainer width="100%" height={200}>
-            <AreaChart data={engagementData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-              <defs>
-                <linearGradient id="colorGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#4F46E5" stopOpacity={0.8}/>
-                  <stop offset="95%" stopColor="#4F46E5" stopOpacity={0.1}/>
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} />
-              <XAxis dataKey="date" />
-              <YAxis />
-              <Tooltip />
-              <Area 
-                type="monotone" 
-                dataKey="value" 
-                stroke="#4F46E5" 
-                strokeWidth={2}
-                fillOpacity={1} 
-                fill="url(#colorGradient)" 
-                name="Engagement Rate (%)"
-              />
-            </AreaChart>
-          </ResponsiveContainer>
+        {/* Chart 1: Engagement Rate Over Time */}
+        <Card className="p-6 bg-card border border-border/80 rounded-2xl shadow-xs">
+          <h3 className="text-base font-bold text-foreground mb-4">Engagement Rate Over Time</h3>
+          <div className="h-[230px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={engagementData} margin={{ top: 15, right: 15, left: -20, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="engagementGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#7982f6" stopOpacity={0.75} />
+                    <stop offset="95%" stopColor="#7982f6" stopOpacity={0.03} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="currentColor" className="text-border/40" />
+                <XAxis 
+                  dataKey="date" 
+                  tickLine={false} 
+                  axisLine={false} 
+                  tick={{ fill: '#64748b', fontSize: 12 }} 
+                />
+                <YAxis 
+                  domain={[0, 80]} 
+                  ticks={[0, 20, 40, 60, 80]} 
+                  tickLine={false} 
+                  axisLine={false} 
+                  tick={{ fill: '#64748b', fontSize: 12 }} 
+                />
+                <Tooltip 
+                  formatter={(value: number) => [`${value}%`, 'Engagement Rate']}
+                  contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0' }}
+                />
+                <Area 
+                  type="monotone" 
+                  dataKey="value" 
+                  stroke="#5b6cf9" 
+                  strokeWidth={2.5}
+                  fillOpacity={1} 
+                  fill="url(#engagementGradient)" 
+                  name="Engagement Rate (%)"
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
         </Card>
 
-        {/* Content Performance by Platform */}
-        <Card className="p-6">
-          <h3 className="text-lg font-semibold mb-4">Content Performance by Platform</h3>
-          <div className="flex justify-center">
-            <ResponsiveContainer width="100%" height={200}>
+        {/* Chart 2: Content Performance by Platform */}
+        <Card className="p-6 bg-card border border-border/80 rounded-2xl shadow-xs flex flex-col justify-between">
+          <h3 className="text-base font-bold text-foreground mb-2">Content Performance by Platform</h3>
+          <div className="h-[230px] w-full flex items-center justify-center">
+            <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
                   data={platformPerformanceData}
                   cx="50%"
                   cy="50%"
-                  labelLine={false}
-                  outerRadius={80}
-                  fill="#8884d8"
+                  outerRadius={85}
                   dataKey="value"
-                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                  stroke="#ffffff"
+                  strokeWidth={2}
                 >
                   {platformPerformanceData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
-                <Tooltip />
+                <Tooltip 
+                  formatter={(value: number, name: string) => [`${value}%`, name]}
+                  contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0' }}
+                />
               </PieChart>
             </ResponsiveContainer>
           </div>
         </Card>
       </div>
 
+      {/* Row 2 of Charts (Matching Image 3) */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Audience Growth Trajectory */}
-        <Card className="p-6">
-          <h3 className="text-lg font-semibold mb-4">Audience Growth Trajectory</h3>
-          <ResponsiveContainer width="100%" height={200}>
-            <LineChart data={audienceGrowthData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Line type="monotone" dataKey="instagram" stroke="#E1306C" />
-              <Line type="monotone" dataKey="facebook" stroke="#4267B2" />
-              <Line type="monotone" dataKey="youtube" stroke="#FF0000" />
-              <Line type="monotone" dataKey="twitter" stroke="#1DA1F2" />
-            </LineChart>
-          </ResponsiveContainer>
+        {/* Chart 3: Audience Growth Trajectory */}
+        <Card className="p-6 bg-card border border-border/80 rounded-2xl shadow-xs">
+          <h3 className="text-base font-bold text-foreground mb-4">Audience Growth Trajectory</h3>
+          <div className="h-[230px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={audienceGrowthData} margin={{ top: 15, right: 15, left: -10, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="currentColor" className="text-border/40" />
+                <XAxis 
+                  dataKey="month" 
+                  tickLine={false} 
+                  axisLine={false} 
+                  tick={{ fill: '#64748b', fontSize: 12 }} 
+                />
+                <YAxis 
+                  domain={[0, 2000]} 
+                  ticks={[0, 500, 1000, 1500, 2000]} 
+                  tickLine={false} 
+                  axisLine={false} 
+                  tick={{ fill: '#64748b', fontSize: 12 }} 
+                />
+                <Tooltip 
+                  contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0' }}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="instagram" 
+                  stroke="#e63973" 
+                  strokeWidth={2} 
+                  dot={{ r: 3.5, fill: '#ffffff', stroke: '#e63973', strokeWidth: 2 }}
+                  activeDot={{ r: 5, fill: '#ffffff', stroke: '#e63973', strokeWidth: 2 }}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="facebook" 
+                  stroke="#2563eb" 
+                  strokeWidth={2} 
+                  dot={{ r: 3.5, fill: '#ffffff', stroke: '#2563eb', strokeWidth: 2 }}
+                  activeDot={{ r: 5, fill: '#ffffff', stroke: '#2563eb', strokeWidth: 2 }}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="youtube" 
+                  stroke="#ef4444" 
+                  strokeWidth={2} 
+                  dot={{ r: 3.5, fill: '#ffffff', stroke: '#ef4444', strokeWidth: 2 }}
+                  activeDot={{ r: 5, fill: '#ffffff', stroke: '#ef4444', strokeWidth: 2 }}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="twitter" 
+                  stroke="#38bdf8" 
+                  strokeWidth={2} 
+                  dot={{ r: 3.5, fill: '#ffffff', stroke: '#38bdf8', strokeWidth: 2 }}
+                  activeDot={{ r: 5, fill: '#ffffff', stroke: '#38bdf8', strokeWidth: 2 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+          {/* Custom Legend Matching Image 3 */}
+          <div className="flex items-center justify-center gap-6 mt-3 text-xs font-semibold">
+            <div className="flex items-center gap-1.5 text-[#e63973]">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#e63973]" />
+              <span>instagram</span>
+            </div>
+            <div className="flex items-center gap-1.5 text-[#2563eb]">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#2563eb]" />
+              <span>facebook</span>
+            </div>
+            <div className="flex items-center gap-1.5 text-[#ef4444]">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#ef4444]" />
+              <span>youtube</span>
+            </div>
+            <div className="flex items-center gap-1.5 text-[#38bdf8]">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#38bdf8]" />
+              <span>twitter</span>
+            </div>
+          </div>
         </Card>
 
-        {/* Conversion Metrics */}
-        <Card className="p-6">
-          <h3 className="text-lg font-semibold mb-4">Link Clicks by Month</h3>
-          <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={conversionFunnelData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} />
-              <XAxis dataKey="month" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="clicks" fill="#8884d8" name="Link Clicks" />
-            </BarChart>
-          </ResponsiveContainer>
+        {/* Chart 4: Link Clicks by Month */}
+        <Card className="p-6 bg-card border border-border/80 rounded-2xl shadow-xs">
+          <h3 className="text-base font-bold text-foreground mb-4">Link Clicks by Month</h3>
+          <div className="h-[230px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={linkClicksData} margin={{ top: 15, right: 15, left: -20, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="currentColor" className="text-border/40" />
+                <XAxis 
+                  dataKey="month" 
+                  tickLine={false} 
+                  axisLine={false} 
+                  tick={{ fill: '#64748b', fontSize: 12 }} 
+                />
+                <YAxis 
+                  tickLine={false} 
+                  axisLine={false} 
+                  ticks={[0, 500, 1000, 1500]}
+                  domain={[0, 1600]}
+                  tick={{ fill: '#64748b', fontSize: 12 }} 
+                />
+                <Tooltip 
+                  formatter={(value: number) => [value, 'Link Clicks']}
+                  contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0' }}
+                />
+                <Bar 
+                  dataKey="clicks" 
+                  fill="#7c82fb" 
+                  name="Link Clicks" 
+                  radius={[4, 4, 0, 0]}
+                  barSize={32}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+          {/* Custom Legend Matching Image 3 */}
+          <div className="flex items-center justify-center gap-2 mt-3 text-xs font-semibold text-[#7c82fb]">
+            <span className="w-2.5 h-2.5 rounded-xs bg-[#7c82fb]" />
+            <span>Link Clicks</span>
+          </div>
         </Card>
       </div>
     </div>

@@ -26,8 +26,14 @@ import { formatNumber } from '@/components/influencers/utils/formatUtils';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Lock } from 'lucide-react';
 import { addDays, subDays, subHours } from 'date-fns';
+import { Navigate } from 'react-router-dom';
 
 const ReachPage = () => {
+  const userType = localStorage.getItem('userType');
+  if (userType === 'influencer') {
+    return <Navigate to="/dashboard/influencer" replace />;
+  }
+
   const [selectedOrder, setSelectedOrder] = useState<string>("1");
   const [timeRange, setTimeRange] = useState<string>('last_24_hours');
 

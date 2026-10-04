@@ -155,9 +155,16 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
   };
 
   return (
-    <div
-      className={`fixed inset-y-0 right-0 w-[400px] bg-background shadow-lg z-50 transform transition-transform duration-300 ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
-    >
+    <>
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black/40 backdrop-blur-xs z-[9998] transition-opacity"
+          onClick={onClose}
+        />
+      )}
+      <div
+        className={`fixed inset-y-0 right-0 w-[400px] bg-background shadow-2xl z-[9999] transform transition-transform duration-300 border-l border-border ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
+      >
       <div className="p-4 flex items-center justify-between border-b">
         <h2 className="text-lg font-semibold">Filters</h2>
         <div className="flex items-center gap-2">
@@ -449,7 +456,8 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
         <Button onClick={onClose}>Update</Button>
       </div>
     </div>
-  );
+  </>
+);
 };
 
 export default FilterPanel;

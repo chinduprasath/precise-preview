@@ -19,7 +19,7 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Eye, Filter, RefreshCw, Calendar, Clock, FileText, Download, Upload, BarChart, MapPin, Edit, X, ShoppingCart, Instagram, Facebook, Youtube, Twitter, ExternalLink } from 'lucide-react';
+import { Eye, Filter, RefreshCw, Calendar, Clock, FileText, Download, Upload, BarChart, MapPin, Edit, X, ShoppingCart, Instagram, Facebook, Youtube, Twitter, ExternalLink, Briefcase } from 'lucide-react';
 import DateTimePicker from '@/components/reach/DateTimePicker';
 import FilterDropdown from '@/components/filters/FilterDropdown';
 
@@ -30,7 +30,9 @@ const ORDER_TYPES = [
   { value: 'short_video', label: 'Short Video' },
   { value: 'long_video', label: 'Long Video' },
   { value: 'polls', label: 'Polls' },
-  { value: 'combo_package', label: 'Combo Package' }
+  { value: 'visit_promote', label: 'Visit & Promote' },
+  { value: 'combo_package', label: 'Combo Package' },
+  { value: 'service', label: 'Service' }
 ];
 
 // Define status options
@@ -42,7 +44,6 @@ const STATUS_OPTIONS = [
 const OrdersPage = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<'pending' | 'completed'>('pending');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isModifyMode, setIsModifyMode] = useState(false);
@@ -97,12 +98,6 @@ const OrdersPage = () => {
   const filteredOrders = React.useMemo(() => {
     let filtered = [...orders];
 
-    if (activeTab === 'pending') {
-      filtered = filtered.filter(order => order.status === 'pending_checkout');
-    } else {
-      filtered = filtered.filter(order => order.status === 'completed');
-    }
-
     if (startDate) {
       filtered = filtered.filter(order => {
         const orderDate = parseISO(order.createdAt);
@@ -117,17 +112,31 @@ const OrdersPage = () => {
       });
     }
 
-    if (statusFilter && ((statusFilter === 'pending_checkout' && activeTab !== 'pending') || 
-        (statusFilter === 'completed' && activeTab !== 'completed'))) {
+    if (statusFilter) {
       filtered = filtered.filter(order => order.status === statusFilter);
     }
 
     if (orderTypeFilter) {
-      filtered = filtered.filter(order => order.orderType === orderTypeFilter);
+      filtered = filtered.filter(order => {
+        if (orderTypeFilter.toLowerCase() === 'service' || orderTypeFilter.toLowerCase() === 'service_order') {
+          return (
+            order.orderType?.toLowerCase() === 'service' ||
+            order.orderType?.toLowerCase() === 'service order' ||
+            order.contentTypeName?.toLowerCase() === 'service' ||
+            order.contentTypeName?.toLowerCase() === 'service request' ||
+            order.content?.type === 'service_request'
+          );
+        }
+        return (
+          (order.orderType && order.orderType.toLowerCase() === orderTypeFilter.toLowerCase()) ||
+          (order.contentTypeName && order.contentTypeName.toLowerCase().replace('&', '').replace(/\s+/g, '_').includes(orderTypeFilter.toLowerCase())) ||
+          (order.productService && order.productService.toLowerCase().includes(orderTypeFilter.replace('_', ' ').toLowerCase()))
+        );
+      });
     }
 
     return filtered;
-  }, [orders, activeTab, startDate, endDate, statusFilter, orderTypeFilter]);
+  }, [orders, startDate, endDate, statusFilter, orderTypeFilter]);
 
   const handleCheckout = (order: Order) => {
     navigate('/checkout', { 
@@ -198,6 +207,8 @@ const OrdersPage = () => {
         return <BarChart className="w-4 h-4" />;
       case 'visit_promote':
         return <MapPin className="w-4 h-4" />;
+      case 'service_request':
+        return <Briefcase className="w-4 h-4 text-primary" />;
       default:
         return <FileText className="w-4 h-4" />;
     }
@@ -213,6 +224,8 @@ const OrdersPage = () => {
         return 'Poll Details';
       case 'visit_promote':
         return 'Visit & Promote Details';
+      case 'service_request':
+        return 'Service Request Details';
       default:
         return 'Content';
     }
@@ -431,185 +444,79 @@ const OrdersPage = () => {
               </Card>
             )}
             
-            <Tabs 
-              defaultValue="pending" 
-              value={activeTab}
-              onValueChange={(value) => setActiveTab(value as 'pending' | 'completed')}
-              className="w-full"
-            >
-              <TabsList className="grid w-full grid-cols-2 mb-4">
-                <TabsTrigger value="pending">Pending Orders</TabsTrigger>
-                <TabsTrigger value="completed">Completed Orders</TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="pending">
-                {isLoading ? (
-                  <div className="w-full h-72 flex items-center justify-center">
-                    <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full"></div>
-                  </div>
-                ) : filteredOrders.length === 0 ? (
-                  <div className="text-center py-12">
-                    <p className="text-muted-foreground">No pending orders found.</p>
-                  </div>
-                ) : (
-                  <div className="rounded-md border overflow-hidden">
-                    <div className="overflow-x-auto">
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>Username</TableHead>
-                            <TableHead>Order Date</TableHead>
-                            <TableHead>Scheduled Date</TableHead>
-                            <TableHead>Scheduled Time</TableHead>
-                            <TableHead>Order Type</TableHead>
-                            <TableHead>Category</TableHead>
-                            <TableHead>Product/Service</TableHead>
-                            <TableHead>Amount</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead className="text-right">Actions</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {filteredOrders.map((order) => (
-                            <TableRow 
-                              key={order.id} 
-                              className="cursor-pointer hover:bg-muted/50"
-                              onClick={() => handleViewDetails(order)}
-                            >
-                              <TableCell>{order.username}</TableCell>
-                              <TableCell>{formatDateTime(order.createdAt)}</TableCell>
-                              <TableCell>{order.scheduledDate || 'N/A'}</TableCell>
-                              <TableCell>{order.scheduledTime || 'N/A'}</TableCell>
-                              <TableCell>{order.orderType || 'Post'}</TableCell>
-                              <TableCell>{order.category || 'N/A'}</TableCell>
-                              <TableCell>{order.productService || 'N/A'}</TableCell>
-                              <TableCell>₹{order.amount || 0}</TableCell>
-                              <TableCell>
-                                <Badge variant={getStatusBadgeVariant(order.status)}>
-                                  {order.status === 'pending_checkout' ? 'Pending' : 'Completed'}
-                                </Badge>
-                              </TableCell>
-                              <TableCell className="text-right">
-                                <div className="flex justify-end gap-2">
-                                  <Button 
-                                    variant="outline" 
-                                    size="sm"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      handleViewDetails(order);
-                                    }}
-                                  >
-                                    View
-                                  </Button>
-                                  <Button 
-                                    variant="destructive" 
-                                    size="sm"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      handleReject(order);
-                                    }}
-                                  >
-                                    Reject
-                                  </Button>
-                                  <Button 
-                                    variant="default" 
-                                    size="sm"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      handleCheckout(order);
-                                    }}
-                                  >
-                                    Checkout
-                                  </Button>
-                                </div>
-                              </TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </div>
-                  </div>
-                )}
-              </TabsContent>
-              
-              <TabsContent value="completed">
-                {isLoading ? (
-                  <div className="w-full h-72 flex items-center justify-center">
-                    <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full"></div>
-                  </div>
-                ) : filteredOrders.length === 0 ? (
-                  <div className="text-center py-12">
-                    <p className="text-muted-foreground">No completed orders found.</p>
-                  </div>
-                ) : (
-                  <div className="rounded-md border overflow-hidden">
-                    <div className="overflow-x-auto">
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>Username</TableHead>
-                            <TableHead>Order Date</TableHead>
-                            <TableHead>Scheduled Date</TableHead>
-                            <TableHead>Scheduled Time</TableHead>
-                            <TableHead>Order Type</TableHead>
-                            <TableHead>Category</TableHead>
-                            <TableHead>Product/Service</TableHead>
-                            <TableHead>Amount</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead className="text-right">Actions</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {filteredOrders.map((order) => (
-                            <TableRow 
-                              key={order.id} 
-                              className="cursor-pointer hover:bg-muted/50"
-                              onClick={() => handleViewDetails(order)}
-                            >
-                              <TableCell>{order.username}</TableCell>
-                              <TableCell>{formatDateTime(order.createdAt)}</TableCell>
-                              <TableCell>{order.scheduledDate || 'N/A'}</TableCell>
-                              <TableCell>{order.scheduledTime || 'N/A'}</TableCell>
-                              <TableCell>{order.orderType || 'Post'}</TableCell>
-                              <TableCell>{order.category || 'N/A'}</TableCell>
-                              <TableCell>{order.productService || 'N/A'}</TableCell>
-                              <TableCell>₹{order.amount || 0}</TableCell>
-                              <TableCell>
-                                <Badge variant="success">Completed</Badge>
-                              </TableCell>
-                              <TableCell className="text-right">
-                                <div className="flex justify-end gap-2">
-                                  <Button 
-                                    variant="outline" 
-                                    size="sm"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      handleViewDetails(order);
-                                    }}
-                                  >
-                                    View
-                                  </Button>
-                                  <Button 
-                                    variant="default" 
-                                    size="sm"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      handleUpdate(order);
-                                    }}
-                                  >
-                                    Update
-                                  </Button>
-                                </div>
-                              </TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </div>
-                  </div>
-                )}
-              </TabsContent>
-            </Tabs>
+            {isLoading ? (
+              <div className="w-full h-72 flex items-center justify-center">
+                <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full"></div>
+              </div>
+            ) : filteredOrders.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-muted-foreground">No orders found.</p>
+              </div>
+            ) : (
+              <div className="rounded-md border overflow-hidden">
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Username</TableHead>
+                        <TableHead>Order Date</TableHead>
+                        <TableHead>Scheduled Date</TableHead>
+                        <TableHead>Scheduled Time</TableHead>
+                        <TableHead>Order Type</TableHead>
+                        <TableHead>Category</TableHead>
+                        <TableHead>Product/Service</TableHead>
+                        <TableHead>Amount</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredOrders.map((order) => (
+                        <TableRow 
+                          key={order.id} 
+                          className="cursor-pointer hover:bg-muted/50"
+                          onClick={() => handleViewDetails(order)}
+                        >
+                          <TableCell>{order.username}</TableCell>
+                          <TableCell>{formatDateTime(order.createdAt)}</TableCell>
+                          <TableCell>{order.scheduledDate || 'N/A'}</TableCell>
+                          <TableCell>{order.scheduledTime || 'N/A'}</TableCell>
+                          <TableCell className="font-medium">
+                            {order.orderType === 'Service' || order.orderType === 'Service Order' || order.contentTypeName === 'Service' || order.content?.type === 'service_request'
+                              ? 'Service'
+                              : (order.contentTypeName || order.orderType || 'Post')}
+                          </TableCell>
+                          <TableCell>{order.category || 'N/A'}</TableCell>
+                          <TableCell>{order.productService || 'N/A'}</TableCell>
+                          <TableCell>₹{order.amount || 0}</TableCell>
+                          <TableCell>
+                            <Badge variant={getStatusBadgeVariant(order.status)}>
+                              {order.status === 'pending_checkout' ? 'Pending' : order.status === 'completed' ? 'Completed' : order.status}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex justify-end gap-2">
+                              {order.status === 'pending_checkout' && (
+                                <Button 
+                                  variant="default" 
+                                  size="sm"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleCheckout(order);
+                                  }}
+                                >
+                                  Checkout
+                                </Button>
+                              )}
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </div>
+            )}
           </div>
         </main>
       </div>

@@ -24,6 +24,15 @@ interface SimpleInfluencer {
   state_id?: number | null;
   city_id?: number | null;
   niche_id?: number | null;
+  city?: string;
+  state?: string;
+  country?: string;
+  niche?: string;
+  category?: string;
+  website?: string;
+  languages?: string[];
+  collaborationType?: string;
+  primaryPlatform?: string;
 }
 
 const InfluencerProfilePage = () => {
@@ -68,14 +77,23 @@ const InfluencerProfilePage = () => {
             id: 'mock-id',
             name: 'Demo Influencer',
             username: '@demoinfluencer',
-            email: session.user.email || '',
-            bio: 'This is a demo influencer profile',
+            email: session.user.email || 'influ23@gmail.com',
+            bio: 'Content Creator & Digital Influencer passionate about lifestyle, tech, and fashion storytelling.',
             image_url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200',
             followers_instagram: 150000,
             followers_facebook: 75000,
             followers_youtube: 250000,
             followers_twitter: 100000,
-            engagement_rate: 4.5
+            engagement_rate: 4.5,
+            city: 'Mumbai',
+            state: 'Maharashtra',
+            country: 'India',
+            niche: 'Fashion & Lifestyle',
+            category: 'Beauty & Lifestyle',
+            website: 'https://demoinfluencer.com',
+            languages: ['English', 'Hindi', 'Marathi'],
+            collaborationType: 'Reels, Posts & Store Visits',
+            primaryPlatform: 'Instagram & YouTube',
           };
           
           setInfluencer(mockInfluencer);

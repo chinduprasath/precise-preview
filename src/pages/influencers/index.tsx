@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
 import { Button } from '@/components/ui/button';
-import { Instagram, Facebook, Twitter, Youtube, MessageCircle, Share2, Heart } from 'lucide-react';
+import { Instagram, Facebook, Twitter, Youtube, MessageCircle, Share2, Heart, LayoutGrid, Map as MapIcon } from 'lucide-react';
 import { Avatar } from '@/components/ui/avatar';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useLocations } from '@/hooks/useLocations';
@@ -15,6 +15,7 @@ import DataTabContent from '@/components/influencers/DataTabContent';
 import ServicesTabContent from '@/components/influencers/ServicesTabContent';
 import FilterPanel from '@/components/influencers/FilterPanel';
 import InfluencerList from '@/components/influencers/InfluencerList';
+import InfluencersMapView from '@/components/influencers/InfluencersMapView';
 import ActiveFilterChips from '@/components/influencers/ActiveFilterChips';
 import { MOCK_BLURRED_INFLUENCERS } from '@/data/mockInfluencers';
 import { useNavigate } from 'react-router-dom';
@@ -132,6 +133,7 @@ const InfluencersPage = () => {
   const [isPlatformDropdownOpen, setIsPlatformDropdownOpen] = useState(false);
   const [isAudienceCountryDropdownOpen, setIsAudienceCountryDropdownOpen] = useState(false);
   const [isAudienceLanguageDropdownOpen, setIsAudienceLanguageDropdownOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<'normal' | 'map'>('normal');
   const {
     countries,
     states,
@@ -317,97 +319,130 @@ const InfluencersPage = () => {
       <div className="flex-1 flex flex-col">
         <Header />
         <main className="flex-1 overflow-auto p-6 relative">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
             <ActiveFilterChips searchTerm={searchTerm} selectedPlatforms={selectedPlatforms} selectedType={selectedType} selectedGender={selectedGender} selectedAge={selectedAge} selectedAudienceCountries={selectedAudienceCountries} selectedAudienceLanguages={selectedAudienceLanguages} selectedCountry={selectedCountry} selectedState={selectedState} selectedCity={selectedCity} selectedNiche={selectedNiche} selectedHashtags={selectedHashtags} countries={countries} states={states} cities={cities} niches={niches} onRemoveFilter={handleRemoveFilter} />
-            <Button onClick={() => setIsFilterOpen(true)} className="shrink-0">Filter</Button>
+            <div className="flex items-center gap-2.5 shrink-0">
+              {/* Toggle button to switch between normal view and map view */}
+              <div className="flex items-center bg-muted/70 p-1 rounded-lg border border-border">
+                <Button
+                  size="sm"
+                  variant={viewMode === 'normal' ? 'default' : 'ghost'}
+                  onClick={() => setViewMode('normal')}
+                  className="h-8 px-3 gap-1.5 text-xs font-medium"
+                >
+                  <LayoutGrid className="w-3.5 h-3.5" />
+                  <span>Normal View</span>
+                </Button>
+                <Button
+                  size="sm"
+                  variant={viewMode === 'map' ? 'default' : 'ghost'}
+                  onClick={() => setViewMode('map')}
+                  className="h-8 px-3 gap-1.5 text-xs font-medium"
+                >
+                  <MapIcon className="w-3.5 h-3.5" />
+                  <span>Map View</span>
+                </Button>
+              </div>
+
+              <Button onClick={() => setIsFilterOpen(true)} className="shrink-0">Filter</Button>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-full">
-            <InfluencerList influencers={filteredInfluencers} selectedInfluencer={selectedInfluencer} onInfluencerClick={handleInfluencerClick} searchTerm={searchTerm} onSearchChange={setSearchTerm} loading={loading} isInitialLoad={isInitialLoad} />
+          {viewMode === 'map' ? (
+            <InfluencersMapView
+              influencers={filteredInfluencers}
+              selectedInfluencer={selectedInfluencer}
+              onSelectInfluencer={handleInfluencerClick}
+              onBookInfluencer={handleBookInfluencer}
+            />
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-full">
+              <InfluencerList influencers={filteredInfluencers} selectedInfluencer={selectedInfluencer} onInfluencerClick={handleInfluencerClick} searchTerm={searchTerm} onSearchChange={setSearchTerm} loading={loading} isInitialLoad={isInitialLoad} />
 
-            {/* Right column: Selected Influencer Details */}
-            <div className="md:col-span-2 h-full flex flex-col">
-              {selectedInfluencer ? <div className="bg-card rounded-lg shadow-sm border border-border p-6 flex-1 overflow-auto">
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-2xl font-bold">Profile</h2>
-                    <Button onClick={handleBookInfluencer} className="bg-primary text-primary-foreground hover:bg-primary/90 px-6 py-2">
-                      Book
-                    </Button>
-                  </div>
-                  <div className="flex items-start justify-between mb-6">
-                    <div className="flex items-center gap-4">
-                      <Avatar className="h-20 w-20">
-                        <img src={selectedInfluencer.image_url || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200'} alt={selectedInfluencer.name} className={`h-full w-full object-cover ${selectedInfluencer.is_blurred ? 'blur-sm' : ''}`} />
-                      </Avatar>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <h3 className="text-xl font-semibold text-foreground">{getSocialMediaPageName(selectedInfluencer)}</h3>
-                          <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            onClick={() => addToWishlist(selectedInfluencer)}
-                            className="h-8 w-8"
-                            disabled={isInWishlist(selectedInfluencer.id)}
-                          >
-                            <Heart className={`h-4 w-4 ${isInWishlist(selectedInfluencer.id) ? 'fill-red-500 text-red-500' : ''}`} />
-                          </Button>
-                          <Button variant="ghost" size="icon" onClick={handleChatInfluencer} className="h-8 w-8">
-                            <MessageCircle className="h-4 w-4" />
-                          </Button>
-                        </div>
-                        
-                        {selectedInfluencer.niche && <div className="flex items-center gap-2 mt-1">
-                            <span className="text-sm text-muted-foreground">{selectedInfluencer.niche.name}</span>
-                            {selectedInfluencer.city && selectedInfluencer.state && (
-                              <span className="text-sm text-muted-foreground">• {selectedInfluencer.city.name}, {selectedInfluencer.state.name}</span>
-                            )}
-                            <Button variant="ghost" size="icon" onClick={handleShareInfluencer} className="h-6 w-6">
-                              <Share2 className="h-3 w-3" />
+              {/* Right column: Selected Influencer Details */}
+              <div className="md:col-span-2 h-full flex flex-col">
+                {selectedInfluencer ? <div className="bg-card rounded-lg shadow-sm border border-border p-6 flex-1 overflow-auto">
+                    <div className="flex items-center justify-between mb-4">
+                      <h2 className="text-2xl font-bold">Profile</h2>
+                      <Button onClick={handleBookInfluencer} className="bg-primary text-primary-foreground hover:bg-primary/90 px-6 py-2">
+                        Book
+                      </Button>
+                    </div>
+                    <div className="flex items-start justify-between mb-6">
+                      <div className="flex items-center gap-4">
+                        <Avatar className="h-20 w-20">
+                          <img src={selectedInfluencer.image_url || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200'} alt={selectedInfluencer.name} className={`h-full w-full object-cover ${selectedInfluencer.is_blurred ? 'blur-sm' : ''}`} />
+                        </Avatar>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <h3 className="text-xl font-semibold text-foreground">{getSocialMediaPageName(selectedInfluencer)}</h3>
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              onClick={() => addToWishlist(selectedInfluencer)}
+                              className="h-8 w-8"
+                              disabled={isInWishlist(selectedInfluencer.id)}
+                            >
+                              <Heart className={`h-4 w-4 ${isInWishlist(selectedInfluencer.id) ? 'fill-red-500 text-red-500' : ''}`} />
                             </Button>
+                            <Button variant="ghost" size="icon" onClick={handleChatInfluencer} className="h-8 w-8">
+                              <MessageCircle className="h-4 w-4" />
+                            </Button>
+                          </div>
+                          
+                          {selectedInfluencer.niche && <div className="flex items-center gap-2 mt-1">
+                              <span className="text-sm text-muted-foreground">{selectedInfluencer.niche.name}</span>
+                              {selectedInfluencer.city && selectedInfluencer.state && (
+                                <span className="text-sm text-muted-foreground">• {selectedInfluencer.city.name}, {selectedInfluencer.state.name}</span>
+                              )}
+                              <Button variant="ghost" size="icon" onClick={handleShareInfluencer} className="h-6 w-6">
+                                <Share2 className="h-3 w-3" />
+                              </Button>
+                            </div>}
+                        </div>
+                      </div>
+                      <div className="flex flex-row gap-x-6">
+                        {selectedInfluencer.followers_instagram && selectedInfluencer.followers_instagram > 0 && <div className="flex flex-col items-center gap-1">
+                            <Instagram className="h-5 w-5 text-social-instagram" />
+                            <span className="text-sm font-medium">{formatNumber(selectedInfluencer.followers_instagram)}</span>
+                          </div>}
+                        {selectedInfluencer.followers_facebook && selectedInfluencer.followers_facebook > 0 && <div className="flex flex-col items-center gap-1">
+                            <Facebook className="h-5 w-5 text-social-facebook" />
+                            <span className="text-sm font-medium">{formatNumber(selectedInfluencer.followers_facebook)}</span>
+                          </div>}
+                        {selectedInfluencer.followers_youtube && selectedInfluencer.followers_youtube > 0 && <div className="flex flex-col items-center gap-1">
+                            <Youtube className="h-5 w-5 text-social-youtube" />
+                            <span className="text-sm font-medium">{formatNumber(selectedInfluencer.followers_youtube)}</span>
+                          </div>}
+                        {selectedInfluencer.followers_twitter && selectedInfluencer.followers_twitter > 0 && <div className="flex flex-col items-center gap-1">
+                            <Twitter className="h-5 w-5 text-social-twitter" />
+                            <span className="text-sm font-medium">{formatNumber(selectedInfluencer.followers_twitter)}</span>
                           </div>}
                       </div>
                     </div>
-                    <div className="flex flex-row gap-x-6">
-                      {selectedInfluencer.followers_instagram && selectedInfluencer.followers_instagram > 0 && <div className="flex flex-col items-center gap-1">
-                          <Instagram className="h-5 w-5 text-social-instagram" />
-                          <span className="text-sm font-medium">{formatNumber(selectedInfluencer.followers_instagram)}</span>
-                        </div>}
-                      {selectedInfluencer.followers_facebook && selectedInfluencer.followers_facebook > 0 && <div className="flex flex-col items-center gap-1">
-                          <Facebook className="h-5 w-5 text-social-facebook" />
-                          <span className="text-sm font-medium">{formatNumber(selectedInfluencer.followers_facebook)}</span>
-                        </div>}
-                      {selectedInfluencer.followers_youtube && selectedInfluencer.followers_youtube > 0 && <div className="flex flex-col items-center gap-1">
-                          <Youtube className="h-5 w-5 text-social-youtube" />
-                          <span className="text-sm font-medium">{formatNumber(selectedInfluencer.followers_youtube)}</span>
-                        </div>}
-                      {selectedInfluencer.followers_twitter && selectedInfluencer.followers_twitter > 0 && <div className="flex flex-col items-center gap-1">
-                          <Twitter className="h-5 w-5 text-social-twitter" />
-                          <span className="text-sm font-medium">{formatNumber(selectedInfluencer.followers_twitter)}</span>
-                        </div>}
-                    </div>
-                  </div>
 
-                  <Tabs defaultValue="services" className="w-full">
-                    <TabsList className="grid w-full grid-cols-3">
-                      <TabsTrigger value="services">Services</TabsTrigger>
-                      <TabsTrigger value="prices">Prices</TabsTrigger>
-                      <TabsTrigger value="data">Data</TabsTrigger>
-                    </TabsList>
-                    <TabsContent value="services" className="mt-4">
-                      <ServicesTabContent influencerId={selectedInfluencer.id} influencerName={selectedInfluencer.name} />
-                    </TabsContent>
-                    <TabsContent value="prices" className="mt-4">
-                      <PricesTabContent influencerId={selectedInfluencer.id} influencerName={selectedInfluencer.name} />
-                    </TabsContent>
-                    <TabsContent value="data" className="mt-4">
-                      <DataTabContent influencerId={selectedInfluencer?.id} />
-                    </TabsContent>
-                  </Tabs>
-                </div> : <div className="bg-card rounded-lg shadow-sm border border-border p-6 flex items-center justify-center h-full">
-                  <p className="text-muted-foreground">Select an influencer to view their profile</p>
-                </div>}
+                    <Tabs defaultValue="services" className="w-full">
+                      <TabsList className="grid w-full grid-cols-3">
+                        <TabsTrigger value="services">Services</TabsTrigger>
+                        <TabsTrigger value="prices">Prices</TabsTrigger>
+                        <TabsTrigger value="data">Data</TabsTrigger>
+                      </TabsList>
+                      <TabsContent value="services" className="mt-4">
+                        <ServicesTabContent influencerId={selectedInfluencer.id} influencerName={selectedInfluencer.name} />
+                      </TabsContent>
+                      <TabsContent value="prices" className="mt-4">
+                        <PricesTabContent influencerId={selectedInfluencer.id} influencerName={selectedInfluencer.name} />
+                      </TabsContent>
+                      <TabsContent value="data" className="mt-4">
+                        <DataTabContent influencerId={selectedInfluencer?.id} />
+                      </TabsContent>
+                    </Tabs>
+                  </div> : <div className="bg-card rounded-lg shadow-sm border border-border p-6 flex items-center justify-center h-full">
+                    <p className="text-muted-foreground">Select an influencer to view their profile</p>
+                  </div>}
+              </div>
             </div>
-          </div>
+          )}
         </main>
       </div>
       <FilterPanel isOpen={isFilterOpen} onClose={() => setIsFilterOpen(false)} followerRange={followerRange} setFollowerRange={setFollowerRange} engagementRange={engagementRange} setEngagementRange={setEngagementRange} priceRange={priceRange} setPriceRange={setPriceRange} selectedType={selectedType} setSelectedType={setSelectedType} selectedGender={selectedGender} setSelectedGender={setSelectedGender} selectedAge={selectedAge} setSelectedAge={setSelectedAge} selectedPlatforms={selectedPlatforms} setSelectedPlatforms={setSelectedPlatforms} selectedAudienceCountries={selectedAudienceCountries} setSelectedAudienceCountries={setSelectedAudienceCountries} selectedAudienceLanguages={selectedAudienceLanguages} setSelectedAudienceLanguages={setSelectedAudienceLanguages} isPlatformDropdownOpen={isPlatformDropdownOpen} setIsPlatformDropdownOpen={setIsPlatformDropdownOpen} isAudienceCountryDropdownOpen={isAudienceCountryDropdownOpen} setIsAudienceCountryDropdownOpen={setIsAudienceCountryDropdownOpen} isAudienceLanguageDropdownOpen={isAudienceLanguageDropdownOpen} setIsAudienceLanguageDropdownOpen={setIsAudienceLanguageDropdownOpen} countries={countries} states={states} cities={cities} niches={niches} selectedCountry={selectedCountry} setSelectedCountry={setSelectedCountry} selectedState={selectedState} setSelectedState={setSelectedState} selectedCity={selectedCity} setSelectedCity={setSelectedCity} selectedNiche={selectedNiche} setSelectedNiche={setSelectedNiche} selectedHashtags={selectedHashtags} setSelectedHashtags={setSelectedHashtags} addHashtag={addHashtag} loadingLocations={loadingLocations} loadingNiches={loadingNiches} onResetFilters={resetFilters} formatNumber={formatNumber} />

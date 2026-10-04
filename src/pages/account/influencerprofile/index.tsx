@@ -8,6 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { LineChart } from '@/components/ui/line-chart';
 import ServicesTabContent from '@/components/influencers/ServicesTabContent';
 import PricesTabContent from '@/components/influencers/PricesTabContent';
+import DataTabContent from '@/components/influencers/DataTabContent';
 
 interface SocialStats {
   platform: string;
@@ -170,9 +171,10 @@ const InfluencerProfilePage = () => {
           <div className="col-span-9">
             <Card className="p-6">
               <Tabs defaultValue="services" className="w-full">
-                <TabsList className="grid w-full grid-cols-2 mb-6">
+                <TabsList className="grid w-full grid-cols-3 mb-6">
                   <TabsTrigger value="services">Services</TabsTrigger>
                   <TabsTrigger value="prices">Prices</TabsTrigger>
+                  <TabsTrigger value="data">Data</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="services" className="mt-0">
@@ -181,6 +183,10 @@ const InfluencerProfilePage = () => {
 
                 <TabsContent value="prices" className="mt-0">
                   <PricesTabContent influencerId={user?.id} influencerName={user?.email?.split('@')[0] || 'Username'} />
+                </TabsContent>
+
+                <TabsContent value="data" className="mt-0">
+                  <DataTabContent influencerId={user?.id} />
                 </TabsContent>
               </Tabs>
             </Card>

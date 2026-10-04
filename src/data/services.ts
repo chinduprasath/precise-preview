@@ -23,6 +23,12 @@ export const services: ServiceType[] = [
   { id: '15', name: 'Snapchat', icon: '👻', category: 'social' },
   { id: '16', name: 'Twitter', icon: '🐦', category: 'social' },
   
+  // AI & Automation Category
+  { id: '21', name: 'AI chatbots', icon: '🤖', category: 'ai_automation' },
+  { id: '22', name: 'AI marketing', icon: '🧠', category: 'ai_automation' },
+  { id: '23', name: 'CRM Automation', icon: '⚙️', category: 'ai_automation' },
+  { id: '24', name: 'Whatsapp Automation', icon: '💬', category: 'ai_automation' },
+  
   // OTT Category
   { id: '17', name: 'Hotstar', icon: 'H', category: 'ott' },
   { id: '18', name: 'Amazon', icon: 'A', category: 'ott' },
@@ -45,6 +51,11 @@ export const serviceCategories: ServiceCategoryType[] = [
     id: 'social',
     name: 'Social Media Campaigns',
     services: services.filter(service => service.category === 'social')
+  },
+  {
+    id: 'ai_automation',
+    name: 'AI & Automation',
+    services: services.filter(service => service.category === 'ai_automation')
   },
   {
     id: 'ott',

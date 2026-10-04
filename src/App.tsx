@@ -15,6 +15,7 @@ import OrdersPage from "./pages/orders";
 import PlaceOrderPage from "./pages/orders/place";
 import OrderDetailPage from "./pages/orders/detail";
 import RequestsPage from "./pages/requests";
+import RequestDetailPage from "./pages/requests/detail";
 import LandingPage from "./pages/landing";
 import SignUpPage from "./pages/auth/signup";
 import SignInPage from "./pages/auth/signin";
@@ -102,6 +103,8 @@ function App() {
                 <Route path="/orders/place" element={<PlaceOrderPage />} />
                 <Route path="/orders/:id" element={<OrderDetailPage />} />
                 <Route path="/requests" element={<RequestsPage />} />
+                <Route path="/requests/:id" element={<RequestDetailPage />} />
+                <Route path="/request/:id" element={<RequestDetailPage />} />
                 <Route path="/reports" element={<ReportsPage />} />
                 <Route path="/notifications" element={<NotificationsPage />} />
                 <Route path="/offers" element={<OffersPage />} />

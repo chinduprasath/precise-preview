@@ -1,7 +1,27 @@
 
 import React from 'react';
 import { Avatar } from '@/components/ui/avatar';
-import { Instagram, Facebook, Youtube, Twitter, Copy, Share2, ArrowUp, ArrowDown, Activity } from 'lucide-react';
+import { 
+  Instagram, 
+  Facebook, 
+  Youtube, 
+  Twitter, 
+  Copy, 
+  Share2, 
+  Pencil, 
+  ChevronDown, 
+  MapPin, 
+  Sparkles, 
+  Bookmark, 
+  Globe, 
+  ExternalLink, 
+  Languages, 
+  Briefcase, 
+  Video, 
+  CheckCircle2, 
+  User, 
+  FileText 
+} from 'lucide-react';
 import { formatNumber } from '@/components/influencers/utils/formatUtils';
 import { formatCurrency } from '@/components/reach/utils/formatUtils';
 import PricesTabContent from '@/components/influencers/PricesTabContent';
@@ -11,6 +31,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
 interface InfluencerProfileProps {
   influencer?: any | null;
@@ -44,6 +65,27 @@ const InfluencerProfile: React.FC<InfluencerProfileProps> = ({ influencer }) => 
     );
   }
   
+  // Format Location: (City, State, Country)
+  const locationString = [
+    influencer?.city?.name || influencer?.city || 'Mumbai',
+    influencer?.state?.name || influencer?.state || 'Maharashtra',
+    influencer?.country?.name || influencer?.country || 'India'
+  ].filter(Boolean).join(', ');
+
+  const niche = influencer?.niche?.name || influencer?.niche || 'Fashion & Lifestyle';
+  const category = influencer?.category || 'XYZ Products';
+  const website = influencer?.website || 'www.xyz.com';
+  const websiteDisplay = website.replace(/^https?:\/\//, '');
+  const websiteUrl = website.startsWith('http') ? website : `https://${website}`;
+  const addressString = influencer?.address || (
+    influencer?.city && influencer?.state
+      ? `12-A, MG Road, ${influencer.city}, ${influencer.state}, ${influencer.country || 'India'}`
+      : '12-A, MG Road, Hyderabad, Telangana, 500001'
+  );
+  const languages: string[] = influencer?.languages || ['English', 'Hindi', 'Marathi'];
+  const collaborationType = influencer?.collaborationType || 'Reels, Posts & Store Visits';
+  const primaryPlatform = influencer?.primaryPlatform || 'Instagram & YouTube';
+
   return (
     <div className="p-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -110,81 +152,106 @@ const InfluencerProfile: React.FC<InfluencerProfileProps> = ({ influencer }) => 
             )}
           </div>
 
-          {/* Stats Metrics */}
-          <div className="grid grid-cols-3 gap-2 mb-6">
-            <div className="bg-white p-3 rounded-lg text-center">
-              <div className="text-xl font-bold">90</div>
-              <div className="text-xs text-gray-500">Total Campaigns</div>
-            </div>
-            <div className="bg-white p-3 rounded-lg text-center">
-              <div className="text-xl font-bold">90</div>
-              <div className="text-xs text-gray-500">Avg Likes</div>
-            </div>
-            <div className="bg-white p-3 rounded-lg text-center">
-              <div className="text-xl font-bold">90</div>
-              <div className="text-xs text-gray-500">Engagement</div>
-            </div>
-            <div className="bg-white p-3 rounded-lg text-center">
-              <div className="text-xl font-bold">90</div>
-              <div className="text-xs text-gray-500">Avg Comments</div>
-            </div>
-            <div className="bg-white p-3 rounded-lg text-center">
-              <div className="text-xl font-bold">90</div>
-              <div className="text-xs text-gray-500">Avg Shares</div>
-            </div>
-            <div className="bg-white p-3 rounded-lg text-center">
-              <div className="text-xl font-bold">90</div>
-              <div className="text-xs text-gray-500">Fake Followers</div>
-            </div>
-          </div>
-
-          {/* Network Stats */}
-          <div className="mt-8 space-y-6">
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <ArrowUp className="text-blue-500" />
-                <span className="font-medium">Upload</span>
-                <span className="ml-auto text-gray-700 font-medium">5,03 mbps</span>
+          {/* Influencer Info Card (Matching Design Format) */}
+          <Card className="bg-white dark:bg-card border border-border/80 shadow-xs rounded-2xl overflow-hidden mt-4">
+            <CardContent className="p-5">
+              <div className="flex justify-between items-center mb-3">
+                <h2 className="text-lg font-bold text-foreground">Influencer Info</h2>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => toast({ title: "Edit", description: "Edit profile details enabled" })}
+                  className="h-8 px-2 text-foreground hover:bg-muted font-medium flex items-center gap-1"
+                >
+                  <Pencil className="h-4 w-4 mr-1" />
+                  Edit
+                </Button>
               </div>
-              <div className="h-16 bg-blue-50 rounded-lg mb-4 overflow-hidden relative">
-                <div className="absolute inset-0 flex items-end">
-                  <svg className="w-full h-full" viewBox="0 0 100 25">
-                    <path d="M0,15 Q10,10 20,15 T40,10 T60,20 T80,5 T100,15" fill="none" stroke="#3b82f6" strokeWidth="2"></path>
-                  </svg>
+
+              <div className="space-y-3.5">
+                <div>
+                  <p className="text-slate-500 dark:text-muted-foreground text-sm mb-1 font-normal">Influencer Name</p>
+                  <p className="font-semibold text-foreground text-sm">
+                    {influencer?.name || 'Demo Influencer'}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-slate-500 dark:text-muted-foreground text-sm mb-1 font-normal">Category</p>
+                  <p className="font-semibold text-foreground text-sm">
+                    {category}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-slate-500 dark:text-muted-foreground text-sm mb-1 font-normal">Niche</p>
+                  <p className="font-semibold text-foreground text-sm">
+                    {niche}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-slate-500 dark:text-muted-foreground text-sm mb-1 font-normal">Location (City, State, Country)</p>
+                  <p className="font-semibold text-foreground text-sm">
+                    {locationString}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-slate-500 dark:text-muted-foreground text-sm mb-1 font-normal">Website Link</p>
+                  <a 
+                    href={websiteUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-semibold text-foreground text-sm hover:text-primary hover:underline transition-colors block"
+                  >
+                    {websiteDisplay}
+                  </a>
+                </div>
+
+                <div>
+                  <p className="text-slate-500 dark:text-muted-foreground text-sm mb-1 font-normal">Primary Platform</p>
+                  <p className="font-semibold text-foreground text-sm">
+                    {primaryPlatform}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-slate-500 dark:text-muted-foreground text-sm mb-1 font-normal">Languages Known</p>
+                  <p className="font-semibold text-foreground text-sm">
+                    {languages.join(', ')}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-slate-500 dark:text-muted-foreground text-sm mb-1 font-normal">Collaboration Types</p>
+                  <p className="font-semibold text-foreground text-sm">
+                    {collaborationType}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-slate-500 dark:text-muted-foreground text-sm mb-1 font-normal">Price Range</p>
+                  <p className="font-semibold text-foreground text-sm">₹5,000 - ₹50,000</p>
+                </div>
+
+                <div>
+                  <p className="text-slate-500 dark:text-muted-foreground text-sm mb-1 font-normal">Creator Status</p>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    <p className="font-semibold text-foreground text-sm">Active (Verified Creator)</p>
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-slate-500 dark:text-muted-foreground text-sm mb-1 font-normal">Bio / About</p>
+                  <p className="font-medium text-foreground text-sm leading-relaxed">
+                    {influencer?.bio || 'Content Creator & Digital Influencer passionate about lifestyle, tech, and fashion storytelling.'}
+                  </p>
                 </div>
               </div>
-            </div>
-
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <ArrowDown className="text-blue-300" />
-                <span className="font-medium">Download</span>
-                <span className="ml-auto text-gray-700 font-medium">14,34 mbps</span>
-              </div>
-              <div className="h-16 bg-blue-50 rounded-lg mb-4 overflow-hidden relative">
-                <div className="absolute inset-0 flex items-end">
-                  <svg className="w-full h-full" viewBox="0 0 100 25">
-                    <path d="M0,10 Q10,20 20,5 T40,15 T60,5 T80,20 T100,10" fill="none" stroke="#93c5fd" strokeWidth="2"></path>
-                  </svg>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <Activity className="text-green-500" />
-                <span className="font-medium">Ping</span>
-                <span className="ml-auto text-gray-700 font-medium">10 ms</span>
-              </div>
-              <div className="h-16 bg-green-50 rounded-lg overflow-hidden relative">
-                <div className="absolute inset-0 flex items-end">
-                  <svg className="w-full h-full" viewBox="0 0 100 25">
-                    <path d="M0,15 Q10,10 20,15 T40,10 T60,15 T80,5 T100,10" fill="none" stroke="#22c55e" strokeWidth="2"></path>
-                  </svg>
-                </div>
-              </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Tabs Section (Right Column) */}

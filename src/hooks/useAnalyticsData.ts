@@ -42,7 +42,13 @@ export function useAnalyticsData(influencerId?: string) {
         setLoading(true);
         
         if (!influencerId) {
-          throw new Error('Influencer ID is required');
+          if (isMounted) {
+            setAnalytics(null);
+            setMonthlyData([]);
+            setError(null);
+            setLoading(false);
+          }
+          return;
         }
 
         // Fetch general analytics
@@ -107,9 +113,9 @@ export function useAnalyticsData(influencerId?: string) {
           setError(null);
         }
       } catch (err) {
-        console.error('Error fetching analytics data:', err);
+        console.warn('Analytics data not found or error fetching:', err);
         if (isMounted) {
-          setError('Failed to load analytics data');
+          setError(null);
         }
       } finally {
         if (isMounted) {

@@ -16,8 +16,23 @@ export interface PollQuestion {
 export interface VisitPromoteDetails {
   venueName?: string;
   fullAddress?: string;
+  landmarkInfo?: string;
+  preferredDates?: string[];
+  timeSlot?: string;
+  offers?: string;
+  guidelines?: string;
   googleMapsLink?: string;
   affiliateLinks?: string[];
+  travelReimbursement?: boolean;
+  travelAmount?: string;
+  foodProvided?: boolean;
+  foodDetails?: string;
+  stayProvided?: boolean;
+  stayDetails?: string;
+  contentDescription?: string;
+  hashtags?: string;
+  handlesToTag?: string;
+  specialGuidelines?: string;
 }
 
 export interface RequestContent {
@@ -32,6 +47,21 @@ export interface RequestPrice {
   serviceType: ServiceType;
   platform: SocialPlatform;
   price: number;
+}
+
+export interface BusinessInfo {
+  businessName: string;
+  category: string;
+  serviceType: string;
+  website: string;
+  address: string;
+  accountManagement: string;
+  socialLinks?: {
+    instagram?: string;
+    facebook?: string;
+    youtube?: string;
+    twitter?: string;
+  };
 }
 
 export interface InfluencerRequest {
@@ -50,5 +80,8 @@ export interface InfluencerRequest {
   dateRequested?: string;
   createdAt: string;
   updatedAt: string;
+  orderType?: string; // Custom package name or image 2 value e.g. "Post Image/Video", "Reels/Shorts", "Polls", "Visit & Promote"
   content?: RequestContent; // Dynamic content based on content type
+  businessInfo?: BusinessInfo; // Business details matching business dashboard
+  priceNote?: string; // Note or reason for custom price proposal
 }

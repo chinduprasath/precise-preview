@@ -289,6 +289,273 @@ export const initialOrders: Order[] = [
       { step: 'Deliverables Approved', timestamp: 'Sep 26, 2026, 06:00 PM', status: 'completed', description: 'Campaign completed successfully' },
     ],
   },
+
+  // 5. Pending Order: Polls on Twitter
+  {
+    id: '5',
+    orderNumber: '4292424250',
+    date: '2026-10-02T12:00:00.000Z',
+    url: null,
+    status: 'pending_checkout',
+    scheduledDate: '2026-10-20',
+    scheduledTime: '15:00:00',
+    category: 'Fashion & Lifestyle',
+    productService: 'Twitter/X Community Polls',
+    orderType: 'Platform Based',
+    contentTypeName: 'Polls',
+    platform: 'twitter',
+    businessVerified: true,
+    username: 'Sarah Johnson',
+    amount: 950,
+    createdAt: '2026-10-02T12:00:00.000Z',
+    updatedAt: '2026-10-02T12:00:00.000Z',
+    affiliateLink: 'https://brandshop.com/survey?ref=sarah_poll',
+    notes: 'Please run the poll for 48 hours to engage our target demographic before our winter release.',
+    influencer: {
+      name: 'Sarah Johnson',
+      avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200&auto=format&fit=crop',
+      category: 'Fashion & Lifestyle',
+      location: 'Mumbai, India',
+      verified: true,
+      followers: [
+        { platform: 'Twitter', value: '820K' },
+        { platform: 'Instagram', value: '1.4M' },
+        { platform: 'YouTube', value: '350K' },
+        { platform: 'Facebook', value: '290K' },
+      ],
+    },
+    pricing: {
+      basePrice: 750,
+      platformFee: 99,
+      couponDiscount: 50,
+      gst: 151,
+      total: 950,
+    },
+    content: {
+      type: 'polls',
+      description: 'Community engagement poll to choose our new winter capsule collection colorways and styles.',
+      polls: [
+        {
+          id: 'p1',
+          question: 'Which style should lead our upcoming winter collection drop?',
+          options: ['Oversized Trench Coat', 'Cropped Puffer Jacket', 'Wool Blend Knitwear', 'Layered Streetwear Look'],
+        },
+        {
+          id: 'p2',
+          question: 'What primary color palette do you prefer for daily winter outfits?',
+          options: ['Minimalist Slate & Black', 'Warm Camel & Beige', 'Forest Green & Olive', 'Deep Burgundy & Wine'],
+        },
+      ],
+    },
+    socialMediaLinks: {
+      twitter: '',
+    },
+    timeline: [
+      { step: 'Order Placed', timestamp: 'Oct 02, 2026, 12:00 PM', status: 'completed', description: 'Order request submitted' },
+      { step: 'Payment in Escrow', timestamp: 'Pending', status: 'current', description: 'Awaiting checkout confirmation' },
+      { step: 'Influencer Review', timestamp: 'Upcoming', status: 'upcoming', description: 'Reviewing poll questions' },
+      { step: 'Live Published', timestamp: 'Upcoming', status: 'upcoming', description: 'Poll published on Twitter' },
+    ],
+  },
+
+  // 6. Pending Order: Visit & Promote on Instagram
+  {
+    id: '6',
+    orderNumber: '4292424251',
+    date: '2026-10-02T13:30:00.000Z',
+    url: null,
+    status: 'pending_checkout',
+    scheduledDate: '2026-10-22',
+    scheduledTime: '11:00:00',
+    category: 'Retail & Hospitality',
+    productService: 'Store Visit & Grand Opening Promotion',
+    orderType: 'Platform Based',
+    contentTypeName: 'Visit & Promote',
+    platform: 'instagram',
+    businessVerified: true,
+    username: 'Rohan Mehra',
+    amount: 4500,
+    createdAt: '2026-10-02T13:30:00.000Z',
+    updatedAt: '2026-10-02T13:30:00.000Z',
+    affiliateLink: 'https://retailhub.com/grand-opening?ref=rohan_vip',
+    notes: 'VIP entrance via Gate 3. Valet parking provided. Coordinator Neha will welcome you at the reception.',
+    influencer: {
+      name: 'Rohan Mehra',
+      avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200&auto=format&fit=crop',
+      category: 'Lifestyle & Travel',
+      location: 'Delhi, India',
+      verified: true,
+      followers: [
+        { platform: 'Instagram', value: '890K' },
+        { platform: 'YouTube', value: '420K' },
+        { platform: 'Facebook', value: '180K' },
+        { platform: 'Twitter', value: '110K' },
+      ],
+    },
+    pricing: {
+      basePrice: 3800,
+      platformFee: 99,
+      couponDiscount: 100,
+      gst: 701,
+      total: 4500,
+    },
+    content: {
+      type: 'visit_promote',
+      description: 'Visit our new flagship experience store in Lower Parel, explore the interactive trial booths, and shoot 1 Reel + 3 Stories.',
+      visitDetails: {
+        preferredDates: ['2026-10-22', '2026-10-23'],
+        timeSlot: '11:00 AM - 02:30 PM',
+        venueName: 'Flagship Retail Experience Center',
+        fullAddress: 'Shop 12-16, Phoenix Palladium, High Street Phoenix, Lower Parel, Mumbai 400013',
+        landmarkInfo: 'Grand Atrium, Level 1 next to Apple Store',
+        travelReimbursement: true,
+        travelAmount: '₹2,000',
+        foodProvided: true,
+        foodDetails: 'Complimentary lunch & refreshments at Palladium Cafe',
+        stayProvided: false,
+        giftsVouchers: '₹10,000 shopping gift card + exclusive brand merchandise box',
+        otherPerks: 'Priority access before public store hours, professional photographer available on request',
+        contentDescription: '1 Store Tour Reel (60s) showing walkthrough and top 3 must-buy products. 3 Instagram Stories with countdown and store location sticker.',
+        hashtags: '#StoreLaunch #MumbaiShopping #ExperienceStore #GrandOpening #InfluencerVisit',
+        handlesToTag: '@retailhub_official @phoenixpalladium',
+        specialGuidelines: 'Highlight the custom personalization station where shoppers can customize their initials.',
+      },
+    },
+    socialMediaLinks: {
+      instagram: '',
+      facebook: '',
+    },
+    timeline: [
+      { step: 'Order Placed', timestamp: 'Oct 02, 2026, 01:30 PM', status: 'completed', description: 'Visit request submitted' },
+      { step: 'Payment in Escrow', timestamp: 'Pending', status: 'current', description: 'Awaiting checkout' },
+      { step: 'Venue Visit', timestamp: 'Upcoming', status: 'upcoming', description: 'Scheduled for Oct 22' },
+      { step: 'Published & Completed', timestamp: 'Upcoming', status: 'upcoming', description: 'Content verified' },
+    ],
+  },
+
+  // 7. Service Order: AI chatbots & Automation reviewed & priced by Support Team
+  {
+    id: '7',
+    orderNumber: '8923419821',
+    date: '2026-10-03T11:45:00.000Z',
+    url: null,
+    status: 'pending_checkout',
+    scheduledDate: '2026-10-25',
+    scheduledTime: '16:00:00',
+    category: 'AI & Automation',
+    productService: 'AI chatbots',
+    orderType: 'Service',
+    contentTypeName: 'Service',
+    platform: 'custom',
+    businessVerified: true,
+    username: 'Support Desk',
+    amount: 4247,
+    createdAt: '2026-10-03T11:45:00.000Z',
+    updatedAt: '2026-10-03T12:30:00.000Z',
+    supportStatus: 'Quote Provided - Ready for Checkout',
+    notes: 'Support reviewed client specifications. Pricing finalized for AI chatbots deployment, customized knowledge base integration, and WhatsApp webhook automation.',
+    influencer: {
+      name: 'AI & Automation Studio (Support Team)',
+      avatar: 'https://randomuser.me/api/portraits/men/32.jpg',
+      category: 'AI & Automation',
+      location: 'Bangalore, India',
+      verified: true,
+      followers: [
+        { platform: 'Projects Completed', value: '450+' },
+        { platform: 'Rating', value: '4.9 ★' },
+        { platform: 'Avg Turnaround', value: '3 Days' },
+        { platform: 'Specialists', value: '12' },
+      ],
+    },
+    pricing: {
+      basePrice: 3500,
+      platformFee: 99,
+      couponDiscount: 0,
+      gst: 648,
+      total: 4247,
+    },
+    serviceDetails: {
+      serviceId: '21',
+      serviceName: 'AI chatbots',
+      category: 'AI & Automation',
+      clientName: 'Vikram Malhotra',
+      clientEmail: 'vikram.m@malhotratech.in',
+      clientPhone: '+91 98765 43210',
+      description: 'Need an intelligent conversational AI chatbot for our website and customer support portal. Integrates with existing CRM and handles 24/7 lead capture.',
+      budgetRange: '$500 - $1,000',
+      timeline: 'Within 1 week',
+      supportStatus: 'quote_provided',
+      supportStatusDisplay: 'Quote Provided - Ready for Checkout',
+      assignedSpecialist: {
+        name: 'Alex Johnson',
+        role: 'Senior Automation Engineer & Support Lead',
+        avatar: 'https://randomuser.me/api/portraits/men/32.jpg',
+        email: 'alex.j@influex.com',
+      },
+      supportReviewNotes: 'Requirements and workflow analyzed by Alex Johnson. Scope confirmed for AI Chatbot training on company docs, WhatsApp webhook integration, and dashboard setup. Fixed price: ₹3,500 + GST. Awaiting client checkout.',
+      deliverables: [
+        'Custom Fine-tuned AI Chatbot Model (RAG on brand docs)',
+        'CRM & Lead Capture Webhook Integrations',
+        'Multi-channel Deployment (Web Widget & WhatsApp)',
+        'Admin Analytics Dashboard & 1 Month Support'
+      ],
+      estimatedDeliveryDate: '2026-10-25',
+    },
+    content: {
+      type: 'service_request',
+      description: 'Need an intelligent conversational AI chatbot for our website and customer support portal. Integrates with existing CRM and handles 24/7 lead capture.',
+      serviceDetails: {
+        serviceId: '21',
+        serviceName: 'AI chatbots',
+        category: 'AI & Automation',
+        clientName: 'Vikram Malhotra',
+        clientEmail: 'vikram.m@malhotratech.in',
+        clientPhone: '+91 98765 43210',
+        description: 'Need an intelligent conversational AI chatbot for our website and customer support portal. Integrates with existing CRM and handles 24/7 lead capture.',
+        budgetRange: '$500 - $1,000',
+        timeline: 'Within 1 week',
+        supportStatus: 'quote_provided',
+        supportStatusDisplay: 'Quote Provided - Ready for Checkout',
+        assignedSpecialist: {
+          name: 'Alex Johnson',
+          role: 'Senior Automation Engineer & Support Lead',
+          avatar: 'https://randomuser.me/api/portraits/men/32.jpg',
+          email: 'alex.j@influex.com',
+        },
+        supportReviewNotes: 'Requirements and workflow analyzed by Alex Johnson. Scope confirmed for AI Chatbot training on company docs, WhatsApp webhook integration, and dashboard setup. Fixed price: ₹3,500 + GST. Awaiting client checkout.',
+        deliverables: [
+          'Custom Fine-tuned AI Chatbot Model (RAG on brand docs)',
+          'CRM & Lead Capture Webhook Integrations',
+          'Multi-channel Deployment (Web Widget & WhatsApp)',
+          'Admin Analytics Dashboard & 1 Month Support'
+        ],
+        estimatedDeliveryDate: '2026-10-25',
+      },
+      files: [
+        {
+          id: 'sf-1',
+          name: 'system-architecture-brief.pdf',
+          type: 'application/pdf',
+          size: '3.4 MB',
+          url: '#',
+        },
+        {
+          id: 'sf-2',
+          name: 'faqs-and-knowledge-base.docx',
+          type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          size: '1.2 MB',
+          url: '#',
+        }
+      ],
+    },
+    timeline: [
+      { step: 'Service Request Sent', timestamp: 'Oct 03, 2026, 11:45 AM', status: 'completed', description: 'Request submitted with project brief and knowledge docs' },
+      { step: 'Support Team Review', timestamp: 'Oct 03, 2026, 12:15 PM', status: 'completed', description: 'Assigned to Alex Johnson (Senior Automation Lead)' },
+      { step: 'Pricing Fixed by Support', timestamp: 'Oct 03, 2026, 12:30 PM', status: 'completed', description: 'Scope verified and fixed price set to ₹3,500' },
+      { step: 'Payment & Checkout', timestamp: 'Pending', status: 'current', description: 'Ready for client checkout to commence setup' },
+      { step: 'Fulfillment & Deployment', timestamp: 'Upcoming', status: 'upcoming', description: 'Estimated go-live on or before Oct 25, 2026' },
+    ],
+  },
 ];
 
 // Persistent localStorage helper functions
@@ -300,7 +567,63 @@ export const getStoredOrders = (): Order[] => {
       return initialOrders;
     }
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) && parsed.length > 0 ? parsed : initialOrders;
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      const existingIds = new Set(parsed.map((o: Order) => String(o.id)));
+      const missingInitial = initialOrders.filter((o) => !existingIds.has(String(o.id)));
+      
+      let updatedList = [...parsed];
+      let needsSave = false;
+
+      if (missingInitial.length > 0) {
+        updatedList = [...updatedList, ...missingInitial];
+        needsSave = true;
+      }
+
+      // Check if any service order exists in the stored list
+      const hasService = updatedList.some(
+        (o: Order) =>
+          o.id === '7' ||
+          o.orderType === 'Service' ||
+          o.orderType === 'Service Order' ||
+          o.contentTypeName === 'Service' ||
+          o.contentTypeName === 'Service Request' ||
+          o.content?.type === 'service_request'
+      );
+
+      if (!hasService) {
+        const serviceOrder = initialOrders.find((o) => o.id === '7');
+        if (serviceOrder) {
+          updatedList = [serviceOrder, ...updatedList];
+          needsSave = true;
+        }
+      }
+
+      // Ensure any service order displays orderType: 'Service' and contentTypeName: 'Service'
+      updatedList = updatedList.map((o: Order) => {
+        if (
+          o.id === '7' ||
+          o.orderType === 'Service Order' ||
+          o.contentTypeName === 'Service Request' ||
+          o.content?.type === 'service_request'
+        ) {
+          if (o.orderType !== 'Service' || o.contentTypeName !== 'Service') {
+            needsSave = true;
+            return {
+              ...o,
+              orderType: 'Service',
+              contentTypeName: 'Service',
+            };
+          }
+        }
+        return o;
+      });
+
+      if (needsSave) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedList));
+      }
+      return updatedList;
+    }
+    return initialOrders;
   } catch (e) {
     console.error('Error loading stored orders:', e);
     return initialOrders;
