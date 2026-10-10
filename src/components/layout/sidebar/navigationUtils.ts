@@ -124,7 +124,7 @@ export const createNavigationItems = (userType: string): NavItem[] => {
     {
       icon: React.createElement(ShoppingCart, { className: "w-full h-full" }),
       label: "Orders",
-      href: "/orders"
+      href: userType === 'influencer' ? "/influencer/orders" : "/business/orders"
     }
   ];
   
@@ -132,16 +132,21 @@ export const createNavigationItems = (userType: string): NavItem[] => {
   
   // Add influencer-specific menu items
   if (userType === 'influencer') {
+    // Add Business Users right after Dashboard
+    navItems.splice(1, 0, {
+      icon: React.createElement(Building, { className: "w-full h-full" }),
+      label: "Business Users",
+      href: "/business-users"
+    });
+
     navItems.push({
       icon: React.createElement(Inbox, { className: "w-full h-full" }),
       label: "Requests",
       href: "/requests"
     });
     
-    // Remove Influencers, Reports, and Reach items for influencer users
-    navItems = navItems.filter(item => 
-      item.label !== "Influencers" && item.label !== "Reports" && item.label !== "Reach"
-    );
+    // Remove Influencers item for influencer users (influencers browse Business Users instead)
+    navItems = navItems.filter(item => item.label !== "Influencers");
   }
   
   return navItems;
@@ -159,6 +164,11 @@ export const isActiveLink = (currentPath: string, href: string, dashboardPath: s
     return true;
   }
   
+  // Also handle /orders matching /business/orders or /influencer/orders
+  if ((href === '/business/orders' || href === '/influencer/orders') && (currentPath === '/orders' || currentPath.startsWith('/orders/'))) {
+    return true;
+  }
+
   // For other paths, check if current path starts with the href
   // But make sure it's not just a partial string match (e.g., "/on" matching "/onboard")
   if (href !== '/' && href !== dashboardPath) {

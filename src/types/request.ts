@@ -64,6 +64,16 @@ export interface BusinessInfo {
   };
 }
 
+export interface DeliveredServiceInfo {
+  deliveryNotes?: string;
+  instagramUrl?: string;
+  youtubeUrl?: string;
+  facebookUrl?: string;
+  twitterUrl?: string;
+  isFilled?: boolean;
+  completedAt?: string;
+}
+
 export interface InfluencerRequest {
   id: string;
   businessId: string;
@@ -84,4 +94,5 @@ export interface InfluencerRequest {
   content?: RequestContent; // Dynamic content based on content type
   businessInfo?: BusinessInfo; // Business details matching business dashboard
   priceNote?: string; // Note or reason for custom price proposal
+  deliveredService?: DeliveredServiceInfo; // Delivered links and notes
 }

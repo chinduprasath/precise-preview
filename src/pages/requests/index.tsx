@@ -14,7 +14,7 @@ import DateTimePicker from '@/components/reach/DateTimePicker';
 import { InfluencerRequest, RequestStatus } from '@/types/request';
 import { useToast } from '@/components/ui/use-toast';
 import { useNavigate } from 'react-router-dom';
-import { Check, Filter } from 'lucide-react';
+import { Check, CheckCircle2, ArrowRight, Filter } from 'lucide-react';
 import FilterDropdown from '@/components/filters/FilterDropdown';
 import { format } from 'date-fns';
 import { getStoredRequests, updateRequest } from '@/data/requests';
@@ -109,13 +109,26 @@ const RequestsPage = () => {
     setFilteredRequests(filtered);
   }, [requests, startDate, endDate, orderTypeFilter]);
 
+  const isRequestDeliveredFilled = (req: InfluencerRequest) => {
+    if (req.deliveredService?.isFilled) return true;
+    if (!req.deliveredService) return false;
+    const { deliveryNotes, instagramUrl, youtubeUrl, facebookUrl, twitterUrl } = req.deliveredService;
+    return Boolean(
+      (deliveryNotes && deliveryNotes.trim().length > 0) ||
+      (instagramUrl && instagramUrl.trim().length > 0) ||
+      (youtubeUrl && youtubeUrl.trim().length > 0) ||
+      (facebookUrl && facebookUrl.trim().length > 0) ||
+      (twitterUrl && twitterUrl.trim().length > 0)
+    );
+  };
+
   const handleStatusFilterChange = (status: RequestStatus | 'all') => {
     setStatusFilter(status);
     setIsStatusFilterOpen(false);
     if (status === 'pending') {
       setActiveTab('pending');
-    } else if (status === 'approved') {
-      setActiveTab('accepted');
+    } else if (status === 'completed' || status === 'approved') {
+      setActiveTab('completed');
     } else if (status === 'rejected') {
       setActiveTab('rejected');
     }
@@ -125,8 +138,8 @@ const RequestsPage = () => {
     setActiveTab(tab);
     if (tab === 'pending') {
       setStatusFilter('pending');
-    } else if (tab === 'accepted') {
-      setStatusFilter('approved');
+    } else if (tab === 'completed') {
+      setStatusFilter('completed');
     } else if (tab === 'rejected') {
       setStatusFilter('rejected');
     }
@@ -143,7 +156,30 @@ const RequestsPage = () => {
     
     toast({
       title: "Request Accepted",
-      description: `Request #${requestId} accepted.`,
+      description: `Request #${requestId} accepted. You can now proceed to fulfill the order.`,
+    });
+  };
+
+  const handleCompleteRequest = (requestId: string, event?: React.MouseEvent) => {
+    if (event) {
+      event.stopPropagation();
+    }
+    
+    const existingReq = requests.find(r => r.id === requestId);
+    updateRequest(requestId, { 
+      status: 'completed',
+      deliveredService: {
+        ...(existingReq?.deliveredService || {}),
+        isFilled: true,
+        completedAt: new Date().toISOString()
+      }
+    });
+    const refreshed = getStoredRequests();
+    setRequests(refreshed);
+    
+    toast({
+      title: "Request Completed",
+      description: `Request #${requestId} has been marked as completed and moved to Completed.`,
     });
   };
   
@@ -161,8 +197,8 @@ const RequestsPage = () => {
   };
   
   // Filtered requests based on active tab
-  const pendingRequests = filteredRequests.filter(req => req.status === 'pending');
-  const acceptedRequests = filteredRequests.filter(req => req.status === 'approved');
+  const pendingRequests = filteredRequests.filter(req => req.status === 'pending' || req.status === 'approved');
+  const completedRequests = filteredRequests.filter(req => req.status === 'completed' || req.status === 'paid');
   const rejectedRequests = filteredRequests.filter(req => req.status === 'rejected');
 
   const formatRequestDate = (dateString?: string) => {
@@ -293,14 +329,14 @@ const RequestsPage = () => {
               </div>
             </div>
             
-            {/* Tabs Section (Image 1) */}
+            {/* Tabs Section */}
             <Tabs defaultValue="pending" value={activeTab} onValueChange={handleTabChange} className="w-full">
               <TabsList className="grid w-full grid-cols-3 mb-6">
                 <TabsTrigger value="pending" className="text-center font-medium">
-                  Pending Requests <Badge variant="secondary" className="ml-2 bg-muted/80">{pendingRequests.length}</Badge>
+                  Pending <Badge variant="secondary" className="ml-2 bg-muted/80">{pendingRequests.length}</Badge>
                 </TabsTrigger>
-                <TabsTrigger value="accepted" className="text-center font-medium">
-                  Accepted <Badge variant="secondary" className="ml-2 bg-muted/80">{acceptedRequests.length}</Badge>
+                <TabsTrigger value="completed" className="text-center font-medium">
+                  Completed <Badge variant="secondary" className="ml-2 bg-muted/80">{completedRequests.length}</Badge>
                 </TabsTrigger>
                 <TabsTrigger value="rejected" className="text-center font-medium">
                   Rejected <Badge variant="secondary" className="ml-2 bg-muted/80">{rejectedRequests.length}</Badge>
@@ -340,13 +376,32 @@ const RequestsPage = () => {
                               <TableCell className="font-medium text-gray-800">{request.businessName}</TableCell>
                               <TableCell className="font-bold text-gray-900">₹{request.price}</TableCell>
                               <TableCell onClick={(e) => e.stopPropagation()}>
-                                <Button 
-                                  size="sm" 
-                                  className="h-8 text-xs px-3 bg-emerald-600 hover:bg-emerald-700 text-white font-medium shadow-xs"
-                                  onClick={(e) => handleAcceptRequest(request.id, e)}
-                                >
-                                  <Check className="w-3.5 h-3.5 mr-1" /> Accept
-                                </Button>
+                                {request.status === 'pending' ? (
+                                  <Button 
+                                    size="sm" 
+                                    className="h-8 text-xs px-3 bg-emerald-600 hover:bg-emerald-700 text-white font-medium shadow-xs"
+                                    onClick={(e) => handleAcceptRequest(request.id, e)}
+                                  >
+                                    <Check className="w-3.5 h-3.5 mr-1" /> Accept
+                                  </Button>
+                                ) : isRequestDeliveredFilled(request) ? (
+                                  <Button 
+                                    size="sm" 
+                                    className="h-8 text-xs px-3 bg-emerald-600 hover:bg-emerald-700 text-white font-medium shadow-xs"
+                                    onClick={(e) => handleCompleteRequest(request.id, e)}
+                                  >
+                                    <CheckCircle2 className="w-3.5 h-3.5 mr-1" /> Complete
+                                  </Button>
+                                ) : (
+                                  <Button 
+                                    size="sm" 
+                                    variant="outline"
+                                    className="h-8 text-xs px-3 border-primary/40 text-primary hover:bg-primary/5 font-medium shadow-xs"
+                                    onClick={() => navigate(`/requests/${request.id}`)}
+                                  >
+                                    Proceed <ArrowRight className="w-3.5 h-3.5 ml-1" />
+                                  </Button>
+                                )}
                               </TableCell>
                             </TableRow>
                           ))
@@ -363,8 +418,8 @@ const RequestsPage = () => {
                 </div>
               </TabsContent>
 
-              {/* Accepted Requests Tab */}
-              <TabsContent value="accepted">
+              {/* Completed Requests Tab */}
+              <TabsContent value="completed">
                 <div className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
                   <div className="overflow-x-auto">
                     <Table>
@@ -381,8 +436,8 @@ const RequestsPage = () => {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {acceptedRequests.length > 0 ? (
-                          acceptedRequests.map((request) => (
+                        {completedRequests.length > 0 ? (
+                          completedRequests.map((request) => (
                             <TableRow 
                               key={request.id}
                               onClick={() => handleRowClick(request)}
@@ -397,7 +452,7 @@ const RequestsPage = () => {
                               <TableCell className="font-bold text-gray-900">₹{request.price}</TableCell>
                               <TableCell>
                                 <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 font-medium">
-                                  Accepted
+                                  Completed
                                 </Badge>
                               </TableCell>
                             </TableRow>
@@ -405,7 +460,7 @@ const RequestsPage = () => {
                         ) : (
                           <TableRow>
                             <TableCell colSpan={8} className="h-24 text-center text-muted-foreground">
-                              No accepted requests found
+                              No completed requests found
                             </TableCell>
                           </TableRow>
                         )}
@@ -447,14 +502,10 @@ const RequestsPage = () => {
                               <TableCell className="font-semibold text-gray-900 text-xs sm:text-sm">{getOrderTypeDisplay(request)}</TableCell>
                               <TableCell className="font-medium text-gray-800">{request.businessName}</TableCell>
                               <TableCell className="font-bold text-gray-900">₹{request.price}</TableCell>
-                              <TableCell onClick={(e) => e.stopPropagation()}>
-                                <Button 
-                                  size="sm" 
-                                  className="h-8 text-xs px-3 bg-emerald-600 hover:bg-emerald-700 text-white font-medium shadow-xs"
-                                  onClick={(e) => handleAcceptRequest(request.id, e)}
-                                >
-                                  <Check className="w-3.5 h-3.5 mr-1" /> Accept
-                                </Button>
+                              <TableCell>
+                                <Badge variant="outline" className="bg-rose-50 text-rose-700 border-rose-200 font-medium">
+                                  Rejected
+                                </Badge>
                               </TableCell>
                             </TableRow>
                           ))

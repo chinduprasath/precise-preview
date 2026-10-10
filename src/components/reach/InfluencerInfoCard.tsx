@@ -40,35 +40,44 @@ const InfluencerInfoCard: React.FC<InfluencerInfoCardProps> = ({
   ].filter(p => p.count && p.count > 0);
 
   return (
-    <div className="flex items-center gap-4 bg-card border border-border rounded-lg px-4 py-3">
-      <Avatar className="h-12 w-12">
+    <div className="flex items-center gap-3.5 bg-card border border-border/80 rounded-xl px-4 py-3 shadow-xs">
+      <Avatar className="h-12 w-12 border border-border/60 shrink-0">
         <AvatarImage src={avatar} alt={name} />
-        <AvatarFallback className="bg-primary/10 text-primary font-medium">
+        <AvatarFallback className="bg-primary/10 text-primary font-semibold text-sm">
           {name.split(' ').map(n => n[0]).join('').toUpperCase()}
         </AvatarFallback>
       </Avatar>
       
-      <div className="flex flex-col min-w-0">
-        <span className="font-semibold text-foreground truncate">{name}</span>
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <span>{category}</span>
-          <span>•</span>
-          <span className="flex items-center gap-1">
-            <MapPin className="h-3 w-3" />
-            {location}
+      <div className="flex flex-col min-w-0 space-y-1">
+        {/* Row 1: Influencer Name */}
+        <span className="font-bold text-foreground text-sm sm:text-base leading-tight truncate">
+          {name}
+        </span>
+        
+        {/* Row 2: Category & Location */}
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          <span className="font-medium text-foreground/80">{category}</span>
+          <span className="text-muted-foreground/60">•</span>
+          <span className="flex items-center gap-1 truncate">
+            <MapPin className="h-3 w-3 text-muted-foreground shrink-0" />
+            <span>{location}</span>
           </span>
         </div>
-      </div>
-      
-      <div className="flex items-center gap-4 ml-auto">
-        {platforms.map(({ key, icon: Icon, color, count }) => (
-          <div key={key} className="flex items-center gap-1">
-            <Icon className={`h-4 w-4 ${color}`} />
-            <span className="text-sm font-medium text-foreground">
-              {formatFollowers(count!)}
-            </span>
-          </div>
-        ))}
+
+        {/* Row 3: Social Media Icons and Counts (Below Category Row) */}
+        <div className="flex flex-wrap items-center gap-2 pt-0.5">
+          {platforms.map(({ key, icon: Icon, color, count }) => (
+            <div 
+              key={key} 
+              className="flex items-center gap-1.5 bg-muted/60 dark:bg-muted/30 border border-border/50 rounded-md px-2 py-0.5 text-xs font-medium"
+            >
+              <Icon className={`h-3.5 w-3.5 ${color}`} />
+              <span className="text-foreground font-semibold">
+                {formatFollowers(count!)}
+              </span>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

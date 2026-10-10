@@ -77,6 +77,14 @@ export default function RequestDetailPage() {
     links: true,
   });
 
+  // Delivery links & notes state
+  const [deliveryNotes, setDeliveryNotes] = useState<string>('All campaign deliverables and sponsored content have been successfully produced and published across scheduled channels in accordance with the campaign brief.');
+  const [deliveryInstagram, setDeliveryInstagram] = useState<string>('');
+  const [deliveryYoutube, setDeliveryYoutube] = useState<string>('');
+  const [deliveryFacebook, setDeliveryFacebook] = useState<string>('');
+  const [deliveryTwitter, setDeliveryTwitter] = useState<string>('');
+  const [isEditingDelivery, setIsEditingDelivery] = useState<boolean>(false);
+
   const togglePoll = (pollId: string) => {
     setExpandedPolls(prev => ({ ...prev, [pollId]: !prev[pollId] }));
   };
@@ -104,6 +112,13 @@ export default function RequestDetailPage() {
         setRequest(found);
         setCustomPrice(found.price.toString());
         setPriceNote(found.priceNote || '');
+        if (found.deliveredService?.deliveryNotes) {
+          setDeliveryNotes(found.deliveredService.deliveryNotes);
+        }
+        setDeliveryInstagram(found.deliveredService?.instagramUrl || '');
+        setDeliveryYoutube(found.deliveredService?.youtubeUrl || '');
+        setDeliveryFacebook(found.deliveredService?.facebookUrl || '');
+        setDeliveryTwitter(found.deliveredService?.twitterUrl || '');
       } else {
         toast({
           title: "Request Not Found",
@@ -255,6 +270,66 @@ export default function RequestDetailPage() {
     setTimeout(() => setCopiedLink(null), 2000);
   };
 
+  const handleSaveDeliveryDetails = () => {
+    if (!request) return;
+    setIsUpdating(true);
+    const hasAnyField = Boolean(
+      deliveryNotes.trim() ||
+      deliveryInstagram.trim() ||
+      deliveryYoutube.trim() ||
+      deliveryFacebook.trim() ||
+      deliveryTwitter.trim()
+    );
+    const updatedDelivery = {
+      deliveryNotes: deliveryNotes.trim() || undefined,
+      instagramUrl: deliveryInstagram.trim() || undefined,
+      youtubeUrl: deliveryYoutube.trim() || undefined,
+      facebookUrl: deliveryFacebook.trim() || undefined,
+      twitterUrl: deliveryTwitter.trim() || undefined,
+      isFilled: hasAnyField,
+      completedAt: request.deliveredService?.completedAt,
+    };
+    const updated = updateRequest(request.id, {
+      deliveredService: updatedDelivery
+    });
+    if (updated) {
+      setRequest(updated);
+      setIsEditingDelivery(false);
+      toast({
+        title: "Delivery Details Saved",
+        description: "Delivered service links & notes updated successfully.",
+      });
+    }
+    setIsUpdating(false);
+  };
+
+  const handleMarkAsCompleted = () => {
+    if (!request) return;
+    setIsUpdating(true);
+    const updatedDelivery = {
+      deliveryNotes: deliveryNotes.trim() || 'All campaign deliverables and sponsored content have been successfully produced and published across scheduled channels in accordance with the campaign brief.',
+      instagramUrl: deliveryInstagram.trim() || undefined,
+      youtubeUrl: deliveryYoutube.trim() || undefined,
+      facebookUrl: deliveryFacebook.trim() || undefined,
+      twitterUrl: deliveryTwitter.trim() || undefined,
+      isFilled: true,
+      completedAt: new Date().toISOString(),
+    };
+    const updated = updateRequest(request.id, {
+      status: 'completed',
+      deliveredService: updatedDelivery
+    });
+    if (updated) {
+      setRequest(updated);
+      setIsEditingDelivery(false);
+      toast({
+        title: "Order Completed",
+        description: `Order #${request.id} has been marked as completed!`,
+      });
+    }
+    setIsUpdating(false);
+  };
+
   if (!request) {
     return (
       <div className="flex h-screen bg-gray-50">
@@ -306,12 +381,12 @@ export default function RequestDetailPage() {
               <div className="flex items-center gap-3">
                 <Button 
                   variant="outline" 
-                  size="sm" 
+                  size="icon" 
                   onClick={() => navigate('/requests')}
-                  className="gap-1.5 text-xs h-9 hover:bg-muted"
+                  className="h-9 w-9 hover:bg-muted"
+                  title="Back to Requests"
                 >
                   <ArrowLeft className="w-4 h-4" />
-                  <span>Back to Requests</span>
                 </Button>
                 <div className="h-4 w-px bg-border hidden sm:block"></div>
                 <div>
@@ -1308,6 +1383,274 @@ export default function RequestDetailPage() {
                 )}
               </CardContent>
             </Card>
+
+            {/* Delivered Service Links & Notes Section (Moved to Bottom) */}
+            {(request.status === 'approved' || request.status === 'completed') && (
+              <Card className="border border-border/80 shadow-xs bg-white">
+                <CardHeader className="p-4 sm:p-6 pb-2 sm:pb-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                      <CardTitle className="text-base sm:text-lg font-bold text-gray-900">
+                        Delivered Service Links & Notes
+                      </CardTitle>
+                      <CardDescription className="text-xs text-muted-foreground mt-0.5">
+                        Post URLs and delivery notes for the service provided for this order
+                      </CardDescription>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setIsEditingDelivery(!isEditingDelivery)}
+                        className="h-9 text-xs gap-1.5"
+                      >
+                        <Edit className="w-3.5 h-3.5" />
+                        <span>{isEditingDelivery ? 'Cancel' : 'Edit Details'}</span>
+                      </Button>
+
+                      {request.status !== 'completed' ? (
+                        <Button
+                          size="sm"
+                          onClick={handleMarkAsCompleted}
+                          disabled={isUpdating}
+                          className="h-9 text-xs px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-medium gap-1.5 shadow-xs"
+                        >
+                          <Check className="w-4 h-4" />
+                          <span>Mark as Completed</span>
+                        </Button>
+                      ) : (
+                        <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 px-3 py-1 font-semibold text-xs flex items-center gap-1">
+                          <CheckCircle2 className="w-3.5 h-3.5" />
+                          <span>Completed</span>
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                </CardHeader>
+
+                <CardContent className="p-4 sm:p-6 pt-2 space-y-3">
+                  {/* Delivery Notes */}
+                  <div className="rounded-xl border border-gray-200/80 bg-white p-4 sm:p-5 shadow-2xs space-y-2">
+                    <div className="flex items-center gap-2 text-foreground font-semibold text-sm">
+                      <FileText className="w-4 h-4 text-primary" />
+                      <span>Delivery Notes</span>
+                    </div>
+                    {isEditingDelivery ? (
+                      <Textarea
+                        value={deliveryNotes}
+                        onChange={(e) => setDeliveryNotes(e.target.value)}
+                        placeholder="Enter delivery notes and campaign summary..."
+                        rows={3}
+                        className="text-xs sm:text-sm bg-white mt-1"
+                      />
+                    ) : (
+                      <p className="text-xs sm:text-sm text-gray-700 leading-relaxed">
+                        {deliveryNotes || "All campaign deliverables and sponsored content have been successfully produced and published across scheduled channels in accordance with the campaign brief."}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Platform 1: Instagram */}
+                  <div className="rounded-xl border border-gray-200/80 bg-white p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+                    <div className="flex items-center gap-3 flex-1">
+                      <div className="w-9 h-9 rounded-full bg-pink-50 flex items-center justify-center text-pink-600 shrink-0">
+                        <Instagram className="w-4 h-4" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-xs sm:text-sm">
+                          <span className="font-semibold text-foreground">Instagram</span>
+                          <span className="text-muted-foreground mx-1.5">•</span>
+                          <span className="text-xs text-muted-foreground">Post / Reel / Story URL</span>
+                        </div>
+                        {isEditingDelivery ? (
+                          <Input
+                            value={deliveryInstagram}
+                            onChange={(e) => setDeliveryInstagram(e.target.value)}
+                            placeholder="https://instagram.com/p/..."
+                            className="h-8 text-xs mt-1 w-full max-w-md"
+                          />
+                        ) : deliveryInstagram ? (
+                          <a 
+                            href={deliveryInstagram} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="text-xs text-primary hover:underline flex items-center gap-1 font-medium mt-0.5 truncate"
+                          >
+                            {deliveryInstagram} <ExternalLink className="w-3 h-3 shrink-0" />
+                          </a>
+                        ) : (
+                          <p className="text-xs italic text-muted-foreground mt-0.5">Delivery link not provided</p>
+                        )}
+                      </div>
+                    </div>
+                    {!isEditingDelivery && (
+                      <div className="shrink-0">
+                        {deliveryInstagram ? (
+                          <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-xs font-medium">Provided</Badge>
+                        ) : (
+                          <span className="text-xs italic text-muted-foreground">Not provided</span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Platform 2: YouTube */}
+                  <div className="rounded-xl border border-gray-200/80 bg-white p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+                    <div className="flex items-center gap-3 flex-1">
+                      <div className="w-9 h-9 rounded-full bg-red-50 flex items-center justify-center text-red-600 shrink-0">
+                        <Youtube className="w-4 h-4" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-xs sm:text-sm">
+                          <span className="font-semibold text-foreground">YouTube</span>
+                          <span className="text-muted-foreground mx-1.5">•</span>
+                          <span className="text-xs text-muted-foreground">Video / Short URL</span>
+                        </div>
+                        {isEditingDelivery ? (
+                          <Input
+                            value={deliveryYoutube}
+                            onChange={(e) => setDeliveryYoutube(e.target.value)}
+                            placeholder="https://youtube.com/watch?v=..."
+                            className="h-8 text-xs mt-1 w-full max-w-md"
+                          />
+                        ) : deliveryYoutube ? (
+                          <a 
+                            href={deliveryYoutube} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="text-xs text-primary hover:underline flex items-center gap-1 font-medium mt-0.5 truncate"
+                          >
+                            {deliveryYoutube} <ExternalLink className="w-3 h-3 shrink-0" />
+                          </a>
+                        ) : (
+                          <p className="text-xs italic text-muted-foreground mt-0.5">Delivery link not provided</p>
+                        )}
+                      </div>
+                    </div>
+                    {!isEditingDelivery && (
+                      <div className="shrink-0">
+                        {deliveryYoutube ? (
+                          <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-xs font-medium">Provided</Badge>
+                        ) : (
+                          <span className="text-xs italic text-muted-foreground">Not provided</span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Platform 3: Facebook */}
+                  <div className="rounded-xl border border-gray-200/80 bg-white p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+                    <div className="flex items-center gap-3 flex-1">
+                      <div className="w-9 h-9 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 shrink-0">
+                        <Facebook className="w-4 h-4" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-xs sm:text-sm">
+                          <span className="font-semibold text-foreground">Facebook</span>
+                          <span className="text-muted-foreground mx-1.5">•</span>
+                          <span className="text-xs text-muted-foreground">Post / Video URL</span>
+                        </div>
+                        {isEditingDelivery ? (
+                          <Input
+                            value={deliveryFacebook}
+                            onChange={(e) => setDeliveryFacebook(e.target.value)}
+                            placeholder="https://facebook.com/..."
+                            className="h-8 text-xs mt-1 w-full max-w-md"
+                          />
+                        ) : deliveryFacebook ? (
+                          <a 
+                            href={deliveryFacebook} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="text-xs text-primary hover:underline flex items-center gap-1 font-medium mt-0.5 truncate"
+                          >
+                            {deliveryFacebook} <ExternalLink className="w-3 h-3 shrink-0" />
+                          </a>
+                        ) : (
+                          <p className="text-xs italic text-muted-foreground mt-0.5">Delivery link not provided</p>
+                        )}
+                      </div>
+                    </div>
+                    {!isEditingDelivery && (
+                      <div className="shrink-0">
+                        {deliveryFacebook ? (
+                          <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-xs font-medium">Provided</Badge>
+                        ) : (
+                          <span className="text-xs italic text-muted-foreground">Not provided</span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Platform 4: Twitter / X */}
+                  <div className="rounded-xl border border-gray-200/80 bg-white p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+                    <div className="flex items-center gap-3 flex-1">
+                      <div className="w-9 h-9 rounded-full bg-sky-50 flex items-center justify-center text-sky-500 shrink-0">
+                        <Twitter className="w-4 h-4" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-xs sm:text-sm">
+                          <span className="font-semibold text-foreground">Twitter / X</span>
+                          <span className="text-muted-foreground mx-1.5">•</span>
+                          <span className="text-xs text-muted-foreground">Post / Tweet URL</span>
+                        </div>
+                        {isEditingDelivery ? (
+                          <Input
+                            value={deliveryTwitter}
+                            onChange={(e) => setDeliveryTwitter(e.target.value)}
+                            placeholder="https://x.com/..."
+                            className="h-8 text-xs mt-1 w-full max-w-md"
+                          />
+                        ) : deliveryTwitter ? (
+                          <a 
+                            href={deliveryTwitter} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="text-xs text-primary hover:underline flex items-center gap-1 font-medium mt-0.5 truncate"
+                          >
+                            {deliveryTwitter} <ExternalLink className="w-3 h-3 shrink-0" />
+                          </a>
+                        ) : (
+                          <p className="text-xs italic text-muted-foreground mt-0.5">Delivery link not provided</p>
+                        )}
+                      </div>
+                    </div>
+                    {!isEditingDelivery && (
+                      <div className="shrink-0">
+                        {deliveryTwitter ? (
+                          <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 text-xs font-medium">Provided</Badge>
+                        ) : (
+                          <span className="text-xs italic text-muted-foreground">Not provided</span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Edit Mode Save Button */}
+                  {isEditingDelivery && (
+                    <div className="flex items-center justify-end gap-2 pt-3 border-t">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => setIsEditingDelivery(false)}
+                        className="h-8 text-xs"
+                      >
+                        Cancel
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        onClick={handleSaveDeliveryDetails}
+                        disabled={isUpdating}
+                        className="h-8 text-xs bg-primary text-white"
+                      >
+                        Save Delivery Details
+                      </Button>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
 
           </div>
         </main>

@@ -11,6 +11,7 @@ import MetricCard from '@/components/dashboard/MetricCard';
 import TopPerformedOrders from '@/components/dashboard/TopPerformedOrders';
 import TopUsers from '@/components/dashboard/TopUsers';
 import PendingOrders from '@/components/dashboard/PendingOrders';
+import StatusSection from '@/components/dashboard/business/StatusSection';
 
 const InfluencerDashboard = () => {
   const [requests, setRequests] = useState<InfluencerRequest[]>([]);
@@ -217,6 +218,9 @@ const InfluencerDashboard = () => {
               <h1 className="text-2xl font-bold">Influencer Dashboard</h1>
               <p className="text-gray-500">Welcome back, Alex! Here's what's happening with your account.</p>
             </div>
+            
+            {/* Square-shaped Status Feed */}
+            <StatusSection />
             
             {/* First row of metrics */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">

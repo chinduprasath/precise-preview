@@ -29,11 +29,6 @@ import { addDays, subDays, subHours } from 'date-fns';
 import { Navigate } from 'react-router-dom';
 
 const ReachPage = () => {
-  const userType = localStorage.getItem('userType');
-  if (userType === 'influencer') {
-    return <Navigate to="/dashboard/influencer" replace />;
-  }
-
   const [selectedOrder, setSelectedOrder] = useState<string>("1");
   const [timeRange, setTimeRange] = useState<string>('last_24_hours');
 
@@ -87,17 +82,9 @@ const ReachPage = () => {
         <Header />
         <main className="flex-1 overflow-auto p-6">
           <div className="max-w-7xl mx-auto space-y-6">
-            <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-end">
-              <div className="w-full lg:w-auto lg:min-w-[350px]">
-                <OrderSelector 
-                  orders={mockOrders} 
-                  selectedOrderId={selectedOrder} 
-                  onOrderSelect={setSelectedOrder} 
-                  className="w-full"
-                />
-              </div>
-              
-              <div className="flex-1 w-full lg:w-auto">
+            <div className="flex flex-col xl:flex-row gap-4 items-start xl:items-end justify-between">
+              {/* Left Side: Influencer Section */}
+              <div className="w-full xl:w-auto flex-1 max-w-2xl">
                 <InfluencerInfoCard
                   name="foodieanjali"
                   category="Food"
@@ -111,28 +98,40 @@ const ReachPage = () => {
                   }}
                 />
               </div>
-              
-              <div className="flex justify-end w-full lg:w-auto">
-                <Select value={timeRange} onValueChange={setTimeRange}>
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Select time range" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {timeRangeOptions.map((option) => (
-                      <SelectItem 
-                        key={option.value} 
-                        value={option.value} 
-                        disabled={option.disabled}
-                        className={option.disabled ? "text-gray-400 cursor-not-allowed flex items-center justify-between w-full" : "flex items-center justify-between w-full"}
-                      >
-                        <div className="flex items-center gap-1">
-                          <span>{option.label}</span>
-                          {option.disabled && <Lock className="h-4 w-4 flex-shrink-0" />}
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+
+              {/* Right Side: Campaign dropdown and Last 24 hours dropdown */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-end gap-3 w-full xl:w-auto justify-end">
+                <div className="w-full sm:w-[320px] md:w-[360px]">
+                  <OrderSelector 
+                    orders={mockOrders} 
+                    selectedOrderId={selectedOrder} 
+                    onOrderSelect={setSelectedOrder} 
+                    className="w-full"
+                  />
+                </div>
+                
+                <div className="w-full sm:w-auto">
+                  <Select value={timeRange} onValueChange={setTimeRange}>
+                    <SelectTrigger className="w-full sm:w-[170px] bg-background h-10 border-border">
+                      <SelectValue placeholder="Select time range" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {timeRangeOptions.map((option) => (
+                        <SelectItem 
+                          key={option.value} 
+                          value={option.value} 
+                          disabled={option.disabled}
+                          className={option.disabled ? "text-gray-400 cursor-not-allowed flex items-center justify-between w-full" : "flex items-center justify-between w-full"}
+                        >
+                          <div className="flex items-center gap-1">
+                            <span>{option.label}</span>
+                            {option.disabled && <Lock className="h-4 w-4 flex-shrink-0" />}
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </div>
             

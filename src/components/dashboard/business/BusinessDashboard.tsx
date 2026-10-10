@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import DashboardHeader from './DashboardHeader';
+import StatusSection from './StatusSection';
 import MetricsSection from './MetricsSection';
 import ContentMetricsSection from './ContentMetricsSection';
 import TopPerformanceSection from './TopPerformanceSection';
@@ -31,6 +32,9 @@ const BusinessDashboard = () => {
         <main className="flex-1 overflow-auto p-6">
           <div className="max-w-7xl mx-auto">
             <DashboardHeader />
+            
+            {/* Square-shaped Status Feed */}
+            <StatusSection />
             
             {/* Main metrics */}
             <MetricsSection 

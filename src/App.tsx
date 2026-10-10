@@ -8,10 +8,13 @@ import { ThemeProvider } from "@/components/theme-provider";
 import Index from "./pages/Index";
 import InfluencersPage from "./pages/influencers";
 import InfluencerDetailPage from "./pages/influencers/detail";
+import BusinessUsersDirectoryPage from "./pages/business-users";
 import ChatsPage from "./pages/chats";
 import ReachPage from "./pages/reach";
 import ServicesPage from "./pages/services";
 import OrdersPage from "./pages/orders";
+import BusinessOrdersPage from "./pages/orders/business";
+import InfluencerOrdersPage from "./pages/orders/influencer";
 import PlaceOrderPage from "./pages/orders/place";
 import OrderDetailPage from "./pages/orders/detail";
 import RequestsPage from "./pages/requests";
@@ -96,10 +99,15 @@ function App() {
                 
                 <Route path="/influencers" element={<InfluencersPage />} />
                 <Route path="/influencers/:id" element={<InfluencerDetailPage />} />
+                <Route path="/business-users" element={<BusinessUsersDirectoryPage />} />
+                <Route path="/business-users/:id" element={<BusinessUsersDirectoryPage />} />
                 <Route path="/chats" element={<ChatsPage />} />
                 <Route path="/reach" element={<ReachPage />} />
                 <Route path="/services" element={<ServicesPage />} />
                 <Route path="/orders" element={<OrdersPage />} />
+                <Route path="/business/orders" element={<BusinessOrdersPage />} />
+                <Route path="/buisness/orders" element={<Navigate to="/business/orders" replace />} />
+                <Route path="/influencer/orders" element={<InfluencerOrdersPage />} />
                 <Route path="/orders/place" element={<PlaceOrderPage />} />
                 <Route path="/orders/:id" element={<OrderDetailPage />} />
                 <Route path="/requests" element={<RequestsPage />} />
